@@ -7,7 +7,6 @@ lints:pre_commit:
     - export PATH="$HOME/.poetry/bin:$PATH"
     - poetry install
   script:
-    - pip install isort  # poetry fails to install isort for some reason...
     - poetry run pre-commit run --hook-stage push --all-files
   tags:
     - bdd
