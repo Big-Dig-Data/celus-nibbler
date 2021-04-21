@@ -1,0 +1,33 @@
+.version_tags_only: &version_tags_only
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^v[0-9].*/'
+      when: on_success
+    - when: never
+
+build:build:
+  stage: build
+  image: $IMAGE
+  parallel:
+    matrix:
+      - IMAGE: ['python:3.8', 'python:3.9']
+  needs: ["tests:run_tests", "lints:pre_commit"]
+  before_script:
+    - curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+    - export PATH="$HOME/.poetry/bin:$PATH"
+    - pip install build
+  script:
+    - python3 -m build --sdist --wheel
+  artifacts:
+    paths:
+      - dist/
+  <<: *version_tags_only
+
+release:publish:
+  stage: release
+  image: python:3
+  needs: ["build:build"]
+  before_script:
+    - echo "TODO install twine (or twine can be a part of pyproject.toml)"
+  script:
+    - echo "TODO publish using twine"
+  <<: *version_tags_only

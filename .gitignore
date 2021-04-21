@@ -1,0 +1,11 @@
+__pycache__
+.idea/
+*~
+.cache
+.coverage
+/.pytest_cache
+*.pyc
+*.swo
+*.swp
+.mypy_cache/
+poetry.lock
