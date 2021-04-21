@@ -3,3 +3,7 @@
 
 class RecordError(Exception):
     pass
+
+
+class WrongFormatError(Exception):
+    pass
