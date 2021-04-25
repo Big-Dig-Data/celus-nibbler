@@ -6,7 +6,16 @@ Non-counter data reader and processor.
 
 ### Build
 
-Poetry is used to manage python dependencies. After you [install](https://python-poetry.org/docs/#installation) it you can run:
+Poetry is used to manage python dependencies.
+
+- [install](https://python-poetry.org/docs/#installation) poetry
+
+- create venv
+`python -m venv venv`
+
+`source venv/bin/activate`
+
+- run:
 ```bash
 poetry install
 ```

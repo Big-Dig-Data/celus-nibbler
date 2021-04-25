@@ -1,7 +1,0 @@
-Title,Metric,Publisher,Success,Jan-2018,Feb-2018,Mar-2018,Apr-2018,May-2018,Jun-2018
-AAA,Exports,Pub 1,Success,1206,900,123,1520,669,1101
-AAA,Exports,Pub 1,Denied,1,10,5,3,0,0
-BBB,Exports,Pub 2,Success,10,15,3,23,8,10
-BBB,Exports,Pub 2,Denied,0,0,0,3,0,2
-CCC,Exports,Pub 1,Success,123,145,90,147,100,96
-CCC,Exports,Pub 1,Denied,10,15,30,7,3,15

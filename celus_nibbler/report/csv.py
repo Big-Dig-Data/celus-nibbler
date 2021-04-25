@@ -7,9 +7,8 @@ from time import strptime
 
 from celus_nibbler import CounterRecord
 from celus_nibbler.errors import WrongFormatError
+from celus_nibbler.report import BaseReport
 from celus_nibbler.utils import end_month, start_month
-
-from .base import BaseReport
 
 
 class CsvDefaultReport(BaseReport):
@@ -19,7 +18,19 @@ class CsvDefaultReport(BaseReport):
     platforms = []  # TODO check platforms
     metrics = []  # TODO check metrics
 
+    # metric_coordinates: Optional[Tuple[int, int]] = None  # (line, col)
+    # first_month_coordinates: Optional[Tuple[int, int]] = None  # (line, col)
+
+    metric_coordinates = (0, 0)
+    first_month_coordinates = (0, 1)
+
+    metric_line = metric_coordinates[0]
+    metric_col = metric_coordinates[1]
+    first_month_line = first_month_coordinates[0]
+    first_month_col = first_month_coordinates[1]
+
     def name_to_index(self, line: typing.Tuple[str, ...]) -> dict:
+
         result = {"title": None, "title_ids": None, "metric": None, "months": {}, "dimensions": {}}
 
         for (idx, item) in enumerate(line):
@@ -65,7 +76,7 @@ class CsvDefaultReport(BaseReport):
             value = int(line[idx])
             res.append(
                 CounterRecord(
-                    platform_name=self.platform_name,
+                    platform=self.platform,
                     title=title,
                     metric=metric,
                     start=start_month(date(year, month, 1)),
@@ -84,13 +95,35 @@ class CsvDefaultReport(BaseReport):
             name2idx = None
             reader = csv.reader(f)
             for line in reader:
-                if not name2idx:
+                if self.metric_line > 0:
+                    self.metric_line -= 1
+                    continue
+                elif not name2idx:
                     name2idx = self.name_to_index(line)
                     continue
+
                 for record in self.process_line(line, name2idx):
                     yield record
 
-    def __init__(self, csv_path: str, platform_name: str):
+    def __init__(self, csv_path: str, platform: str):
         self.header = None
         self.path = pathlib.Path(csv_path)
-        self.platform_name = platform_name
+        self.platform = platform
+
+
+class Format1_3_1Parser(CsvDefaultReport):
+
+    platforms = [
+        'Naxos',
+        'CHBeck',
+        'Knovel',
+        'Bisnode',
+        'Uptodate',
+        'SciFinder',
+        'SciVal',
+    ]
+    metric_coordinates = (0, 1)
+    first_month_coordinates = (1, 1)
+
+    def __init__(self, csv_path: str, platform: str):
+        CsvDefaultReport.__init__(self, csv_path, platform)

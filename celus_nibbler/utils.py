@@ -6,7 +6,7 @@ def start_month(in_date: date) -> date:
 
 
 def end_month(in_date: date):
-    if date.month == 12:
-        return date(year=in_date.year + 1, month=1, day=1)
+    if in_date.month == 12:
+        return date(year=in_date.year + 1, month=1, day=1) - timedelta(days=1)
     else:
         return date(year=in_date.year, month=in_date.month + 1, day=1) - timedelta(days=1)
