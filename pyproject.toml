@@ -25,8 +25,14 @@ description = "Non-counter data reader and processor."
 authors = ["Beda Kosata <beda@bigdigdata.com>", "Stepan Henek <stepan@bigdigdata.com>", "TODO <next@example.com>"]
 license = "MIT"
 
+[tool.poetry.scripts]
+nibbler-eat = 'celus_nibbler.__main__:main'
+
 [tool.poetry.dependencies]
-python = "^3.6.1"
+python = "^3.8.1"
+
+pydantic = "^1.8.2"
+python-dateutil = "^2.8.2"
 
 [tool.poetry.dev-dependencies]
 black = {version = "20.8b1", allow-prereleases = true}
