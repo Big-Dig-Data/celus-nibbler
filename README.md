@@ -15,10 +15,13 @@ Poetry is used to manage python dependencies.
 
 `source venv/bin/activate`
 
-- run:
-```bash
-poetry install
-```
+- to install all packages and dependecies run:
+`poetry install`
+    - if `poetry.lock` file has been already created previously remove this file and run the command again
+
+
+- to install pre-commits (such as black, isort, etc.) run:
+`pre-commit install`
 
 ### Pre-commit deployment
 To pass the basic lints you may want to install pre-push hook to

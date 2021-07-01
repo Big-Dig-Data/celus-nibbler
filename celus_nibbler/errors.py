@@ -1,48 +1,56 @@
+from celus_nibbler.utils import colnum_to_colletters
+
 # TODO more verbose exception (e.g. write why does it failed)
 
 
-class RecordError(Exception):
+class NibblerError(Exception):
     pass
 
 
-class WrongFormatError(Exception):
+class RecordError(NibblerError):
     pass
 
 
-class TableException(Exception):
+class WrongFormatError(NibblerError):
+    pass
+
+
+class NibblerValidation(NibblerError):
+    def __init__(self, reason="unknown"):
+        self.reason = reason
+        super().__init__(reason)
+
+    def __str__(self):
+        return self.reason
+
+
+class TableException(NibblerError):
     """
     General exception informing about position in which the exception occured
     """
 
-    def __init__(self, row=None, col=None, message="Problem with parsing your format has occured."):
+    def __init__(
+        self,
+        value=None,
+        row: int = None,
+        col: int = None,
+        reason: str = "unspecified",
+    ):
+        super().__init__()
+        self.value = value
         self.row = row
         self.col = col
-        self.message = message
-        super().__init__(self.message)  # necessary?
+        self.reason = reason
 
     def __str__(self):
-        if self.row or self.col:
-            return (
-                f'{self.message} Exception found on row: {self.row}, col: {self.col} in the form.'
-            )
-        else:
-            return f'{self.message} Exeption position in the form undefined.'
+        self.laymancount_row = self.row + 1 if self.row is not None else "unspecified"
+        self.laymancount_col = self.col + 1 if self.col is not None else "unspecified"
+        self.colletters_explanation = (
+            f" (col \"{colnum_to_colletters(self.laymancount_col)}\" if using software for table sheets)"
+            if self.col is not None
+            else ""
+        )
+        return f'Problem with parsing your format has occured.\nValue causing this exception: {self.value}\nLocation of this value: row {self.laymancount_row}, col {self.laymancount_col}{self.colletters_explanation}.\nReason: {self.reason}.'
 
     def __repr__(self):
-        return self.__str__()
-
-
-class FindParserException(TableException):
-    """
-    Exceptions raised during search for the right parser
-    """
-
-    def __init__(self, problem):
-        self.problem = problem
-        super().__init__()
-
-    def __str__(self):
-        return f'{super().__str__()}\nThe problem is: {self.problem}.'
-
-    def __repr__(self):
-        return self.__str__()
+        return str(self)
