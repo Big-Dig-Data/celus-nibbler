@@ -26,8 +26,7 @@ release:publish:
   stage: release
   image: python:3
   needs: ["build:build"]
-  before_script:
-    - echo "TODO install twine (or twine can be a part of pyproject.toml)"
   script:
-    - echo "TODO publish using twine"
+    - pip install twine
+    - TWINE_PASSWORD=${CI_JOB_TOKEN} TWINE_USERNAME=gitlab-ci-token python -m twine upload --repository-url ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi dist/*
   <<: *version_tags_only
