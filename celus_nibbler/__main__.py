@@ -4,12 +4,10 @@ import pathlib
 import sys
 
 from celus_nibbler import findparser_and_parse
-from celus_nibbler.logging_config import DEFAULT_LOGGING  # noqa
 
 
 def main():
     logging.basicConfig(level=logging.DEBUG)
-    # logging.config.dictConfig(DEFAULT_LOGGING)
 
     logger = logging.getLogger(__name__)
     logger.debug("Logging is configured.")
