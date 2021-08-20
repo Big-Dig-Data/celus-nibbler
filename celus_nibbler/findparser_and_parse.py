@@ -9,7 +9,7 @@ from celus_nibbler.validators import Platform
 logger = logging.getLogger(__name__)
 
 
-def findparser(table: list, platform: str) -> typing.Optional[GeneralParser]:
+def findparser(table: list, platform: str) -> typing.Optional[typing.Type[GeneralParser]]:
     plat_OK = [parser for parser in all_parsers if platform in parser.platforms]
     if len(plat_OK) < 1:
         logger.warning('there is no parser which expects your platform %s', platform)
@@ -45,10 +45,12 @@ def findparser(table: list, platform: str) -> typing.Optional[GeneralParser]:
         parser = plat_heur_metrtitle_OK[0]
         return parser
 
+    return None
+
 
 def findparser_and_parse(
     file: pathlib.Path, platform: str
-) -> typing.Optional[typing.Tuple[list, list, list]]:
+) -> typing.Optional[typing.Tuple[GeneralParser, list, list]]:
     platform = Platform(platform=platform).platform
     with open(file) as f:
         logger.info('----- file \'%s\'  is tested -----', file.name)

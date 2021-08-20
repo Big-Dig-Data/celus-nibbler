@@ -27,7 +27,7 @@ def main():
         if parsed := findparser_and_parse(pathlib.Path(file), platform):
             (_, _, records) = parsed
             for record in records:
-                print(record)
+                print(",".join((f'"{e}"' if e else "") for e in record.serialize()))
 
 
 if __name__ == "__main__":

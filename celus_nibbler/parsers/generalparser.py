@@ -1,4 +1,5 @@
 import datetime
+import logging
 import typing
 
 from pydantic import ValidationError
@@ -8,14 +9,16 @@ from celus_nibbler.errors import TableException
 from celus_nibbler.record import CounterRecord
 from celus_nibbler.utils import end_month, start_month
 
+logger = logging.getLogger(__name__)
+
 
 class GeneralParser:
 
-    platforms = None
+    platforms: list = []
 
-    metric_list = None
+    metric_list: list = []
 
-    table_map = None
+    table_map: dict = {}
 
     def __init__(self, table: list, platform: str = None):
         self.header = None
@@ -117,6 +120,13 @@ class HorizontalDatesParser(GeneralParser):
                         'value',
                     ) from e
                 float_value = float(value)
+
+                if len(dates) <= col_with_values_idx:
+                    logger.warning(
+                        "Missing month header for value with index %d", col_with_values_idx
+                    )
+                    continue
+
                 counter_report.append(
                     CounterRecord(
                         platform=self.platform,
