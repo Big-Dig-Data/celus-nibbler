@@ -1,6 +1,7 @@
 import datetime
 import logging
 import typing
+from abc import ABCMeta, abstractmethod
 
 from pydantic import ValidationError
 
@@ -12,9 +13,7 @@ from celus_nibbler.utils import end_month, start_month
 logger = logging.getLogger(__name__)
 
 
-class GeneralParser:
-
-    platforms: list = []
+class GeneralParser(metaclass=ABCMeta):
 
     metric_list: list = []
 
@@ -36,6 +35,15 @@ class GeneralParser:
             if self.table[row][col] != content:
                 return False
         return True
+
+    @abstractmethod
+    def parse(self) -> typing.List[CounterRecord]:
+        pass
+
+    @property
+    @abstractmethod
+    def platforms(self) -> typing.List[str]:
+        pass
 
 
 class HorizontalDatesParser(GeneralParser):

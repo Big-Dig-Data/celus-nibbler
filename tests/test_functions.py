@@ -5,7 +5,7 @@ import typing
 
 import pytest
 
-from celus_nibbler import findparser, findparser_and_parse
+from celus_nibbler import findparser, findparser_and_parse, get_supported_platforms
 
 logger = logging.getLogger(__name__)
 
@@ -56,3 +56,20 @@ def test_findparser_and_parse_csv(parser: str, platform: str, path: pathlib.Path
 
         with pytest.raises(StopIteration):
             assert next(reader) is None, "No more date present in the file"
+
+
+def test_get_supported_platforms():
+    """ Test whether all supported platforms are properly returned """
+    assert get_supported_platforms() == [
+        'ACS',
+        'Bisnode',
+        'CHBeck',
+        'InCites',
+        'Knovel',
+        'Micromedex',
+        'Naxos',
+        'SciFinder',
+        'SciVal',
+        'SpringerLink',
+        'Uptodate',
+    ], "supported platforms doesn't match"

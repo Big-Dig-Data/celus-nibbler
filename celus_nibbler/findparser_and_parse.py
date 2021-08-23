@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 def findparser(table: list, platform: str) -> typing.Optional[typing.Type[GeneralParser]]:
-    plat_OK = [parser for parser in all_parsers if platform in parser.platforms]
+    plat_OK = [parser for parser in all_parsers() if platform in parser.platforms]
     if len(plat_OK) < 1:
         logger.warning('there is no parser which expects your platform %s', platform)
     else:
