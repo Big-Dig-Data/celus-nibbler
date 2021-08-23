@@ -4,12 +4,10 @@ import pathlib
 import sys
 
 from celus_nibbler import findparser_and_parse
-from celus_nibbler.logging_config import DEFAULT_LOGGING  # noqa
 
 
 def main():
     logging.basicConfig(level=logging.DEBUG)
-    # logging.config.dictConfig(DEFAULT_LOGGING)
 
     logger = logging.getLogger(__name__)
     logger.debug("Logging is configured.")
@@ -27,7 +25,7 @@ def main():
         if parsed := findparser_and_parse(pathlib.Path(file), platform):
             (_, _, records) = parsed
             for record in records:
-                print(record)
+                print(",".join((f'"{e}"' if e else "") for e in record.serialize()))
 
 
 if __name__ == "__main__":
