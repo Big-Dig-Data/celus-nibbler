@@ -4,6 +4,7 @@ import pathlib
 import typing
 
 from celus_nibbler.parsers import GeneralParser, all_parsers
+from celus_nibbler.record import CounterRecord
 from celus_nibbler.validators import Platform
 
 logger = logging.getLogger(__name__)
@@ -43,6 +44,7 @@ def findparser(table: list, platform: str) -> typing.Optional[typing.Type[Genera
             len(plat_heur_metrtitle_OK),
         )
         parser = plat_heur_metrtitle_OK[0]
+        logger.info('Parser used: %s', parser)
         return parser
 
     return None
@@ -50,7 +52,7 @@ def findparser(table: list, platform: str) -> typing.Optional[typing.Type[Genera
 
 def findparser_and_parse(
     file: pathlib.Path, platform: str
-) -> typing.Optional[typing.Tuple[GeneralParser, list, list]]:
+) -> typing.Optional[typing.List[CounterRecord]]:
     platform = Platform(platform=platform).platform
     with open(file) as f:
         logger.info('----- file \'%s\'  is tested -----', file.name)
@@ -64,11 +66,9 @@ def findparser_and_parse(
         else:
             logger.info('findparser() function finished')
             new_metrics = parser.find_new_metrics(parser(table))
-            # TODO logger for new metrics
+            # TODO figure out what to do with new metrics...
+            logger.info('New metrics found: %s', new_metrics)
             logger.info('parse() function called')
-            counter_report = parser.parse(parser(table, platform))
+            counter_reports = parser.parse(parser(table, platform))
             logger.info('parse() function finished')
-            output = (parser, new_metrics, counter_report)
-            logger.info('Parser used: %s', output[0])
-            logger.info('New metrics found: %s', output[1])
-            return output
+            return counter_reports

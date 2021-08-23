@@ -40,6 +40,10 @@ class GeneralParser(metaclass=ABCMeta):
     def parse(self) -> typing.List[CounterRecord]:
         pass
 
+    @abstractmethod
+    def find_new_metrics(self) -> typing.List[str]:
+        pass
+
     @property
     @abstractmethod
     def platforms(self) -> typing.List[str]:
@@ -58,7 +62,7 @@ class HorizontalDatesParser(GeneralParser):
 
     def find_new_metrics(self) -> typing.List[str]:
         """
-        check if expected matrics are present in the metrics column
+        check if expected metrics are present in the metrics column
         """
         first_row_with_metrics = self.table_map['metric_title']['row'] + 1
         col_with_metrics = self.table_map['metric_title']['col']

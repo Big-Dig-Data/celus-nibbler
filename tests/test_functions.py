@@ -47,10 +47,8 @@ def test_findparser_and_parse_csv(parser: str, platform: str, path: pathlib.Path
     with open(f"{path}.out") as results_file:
         logger.info('----- file \'%s\'  is tested -----', path)
         reader = csv.reader(results_file)
-        output = findparser_and_parse(path, platform)
-        assert output is not None
-        output_parser, _, records = output
-        assert parser == output_parser.__name__
+        records = findparser_and_parse(path, platform)
+        assert records is not None
         for record in records:
             assert next(reader) == list(record.serialize()), "Compare lines"
 
