@@ -1,6 +1,7 @@
 import datetime
 import logging
 import typing
+from enum import Enum, auto
 
 from pydantic import ValidationError
 
@@ -10,6 +11,17 @@ from celus_nibbler.record import CounterRecord
 from celus_nibbler.utils import end_month, start_month
 
 logger = logging.getLogger(__name__)
+
+
+class MonthsDirection(Enum):
+    VERTICAL = auto()
+    HORIZONTAL = auto()
+
+
+class Occurrence(Enum):
+    FOR_EACH_VALUE = auto()
+    ONE_FOR_WHOLE_COL = auto()
+    ONE_FOR_WHOLE_TABLE = auto()
 
 
 class GeneralParser:
@@ -52,14 +64,16 @@ class HorizontalDatesParser(GeneralParser):
         """
         check if expected matrics are present in the metrics column
         """
-        first_row_with_metrics = self.table_map['metric_title']['row'] + 1
-        col_with_metrics = self.table_map['metric_title']['col']
-        new_metrics = []
-        for row_with_metrics_idx, row_with_metrics in enumerate(
-            self.table[first_row_with_metrics:]
-        ):
-            metric = row_with_metrics[col_with_metrics]
-            if metric not in self.metric_list and metric not in new_metrics:
+
+        def check_not_in_metriclist_and_append(
+            metric: str,
+            metric_list: list,
+            new_metrics: str,
+            first_row_with_metrics: int,
+            row_with_metrics_idx: int,
+            col_with_metrics: int,
+        ) -> typing.List[str]:
+            if metric not in metric_list and metric not in new_metrics:
                 try:
                     metric = validators.Metric(metric=metric).metric
                 except ValidationError as e:
@@ -70,32 +84,77 @@ class HorizontalDatesParser(GeneralParser):
                         'metric',
                     ) from e
                 new_metrics.append(metric)
+                return new_metrics
+            else:
+                pass
+
+        new_metrics = []
+        first_row_with_metrics = self.table_map['metric']['first_value_position']['row']
+        col_with_metrics = self.table_map['metric']['first_value_position']['col']
+        if self.table_map['metric']['occurrence'] == Occurrence.ONE_FOR_WHOLE_TABLE:
+            metric = first_row_with_metrics[col_with_metrics]
+            new_metrics = check_not_in_metriclist_and_append(
+                metric,
+                self.metric_list,
+                new_metrics,
+                first_row_with_metrics,
+                0,
+                col_with_metrics,
+            )
+        elif self.table_map['metric']['occurrence'] == Occurrence.FOR_EACH_VALUE:
+            for row_with_metrics_idx, row_with_metrics in enumerate(
+                self.table[first_row_with_metrics:]
+            ):
+                metric = row_with_metrics[col_with_metrics]
+                new_metrics = check_not_in_metriclist_and_append(
+                    metric,
+                    self.metric_list,
+                    new_metrics,
+                    first_row_with_metrics,
+                    row_with_metrics_idx,
+                    col_with_metrics,
+                )
+                # previous version ##
+                # if metric not in self.metric_list and metric not in new_metrics:
+                #     try:
+                #         metric = validators.Metric(metric=metric).metric
+                #     except ValidationError as e:
+                #         raise TableException(
+                #             metric,
+                #             first_row_with_metrics + row_with_metrics_idx,
+                #             col_with_metrics,
+                #             'metric',
+                #         ) from e
+                #     new_metrics.append(metric)
         return new_metrics
 
     def parse_dates(self) -> typing.List[datetime.date]:
-        row_with_dates = self.table_map['months']['start_at']['row']
-        first_col_with_dates = self.table_map['months']['start_at']['col']
-        cells_with_dates = self.table[row_with_dates][first_col_with_dates:]
         parsed_dates = []
-        for string_idx, string in enumerate(cells_with_dates):
-            try:
-                date = validators.Date(date=string).date
-            except ValidationError as e:
-                raise TableException(
-                    string,
-                    row_with_dates,
-                    first_col_with_dates + string_idx,
-                    'date',
-                ) from e
-
-            parsed_dates.append(date)
+        if self.table_map['months']['first_value_position']['row'] == Occurrence.ONE_FOR_WHOLE_COL:
+            row_with_dates = self.table_map['months']['first_value_position']['row']
+            first_col_with_dates = self.table_map['months']['first_value_position']['col']
+            cells_with_dates = self.table[row_with_dates][first_col_with_dates:]
+            for string_idx, string in enumerate(cells_with_dates):
+                try:
+                    date = validators.Date(date=string).date
+                except ValidationError as e:
+                    raise TableException(
+                        string,
+                        row_with_dates,
+                        first_col_with_dates + string_idx,
+                        'date',
+                    ) from e
+                parsed_dates.append(date)
+        else:
+            # TODO add parsing for dates which has Occurrence.FOR_EACH_VALUE and possibly Occurrence.ONE_FOR_WHOLE_TABLE
+            pass
         return parsed_dates
 
     def parse(self) -> typing.List[CounterRecord]:
         counter_report = []
-        first_row_with_values = self.table_map['months']['start_at']['row'] + 1
-        first_col_with_values = self.table_map['months']['start_at']['col']
-        col_with_metrics = self.table_map['metric_title']['col']
+        first_row_with_values = self.table_map['values']['first_value_position']['row']
+        first_col_with_values = self.table_map['values']['first_value_position']['col']
+        col_with_metrics = self.table_map['metric']['first_value_position']['col']
         dates = self.parse_dates()
         for row_with_values_idx, row_with_values in enumerate(self.table[first_row_with_values:]):
             metric = row_with_values[col_with_metrics]

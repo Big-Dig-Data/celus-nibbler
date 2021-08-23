@@ -1,17 +1,4 @@
-from enum import Enum, auto
-
-from .generalparser import HorizontalDatesParser
-
-
-class MonthsDirection(Enum):
-    VERTICAL = auto()
-    HORIZONTAL = auto()
-
-
-class Occurrence:
-    FOR_EACH_VALUE = auto()
-    ONE_FOR_ALL_VALUES = auto()
-
+from .generalparser import HorizontalDatesParser, MonthsDirection, Occurrence
 
 # # old Parser_1_3_1
 # class Parser_1_3_1(HorizontalDatesParser):
@@ -88,8 +75,8 @@ class Parser_1_3_1(HorizontalDatesParser):
             'occurrence': Occurrence.FOR_EACH_VALUE,
             'first_value_position': {'row': 1, 'col': 0},
         },
-        'month': {
-            'occurrence': Occurrence.FOR_EACH_VALUE,
+        'months': {
+            'occurrence': Occurrence.ONE_FOR_WHOLE_COL,
             'first_value_position': {'row': 0, 'col': 1},
         },
         'title': None,
@@ -169,8 +156,8 @@ class Parser_1_3_2(HorizontalDatesParser):
             'occurrence': Occurrence.FOR_EACH_VALUE,
             'first_value_position': {'row': 2, 'col': 0},
         },
-        'month': {
-            'occurrence': Occurrence.FOR_EACH_VALUE,
+        'months': {
+            'occurrence': Occurrence.ONE_FOR_WHOLE_COL,
             'first_value_position': {'row': 1, 'col': 1},
         },
         'title': None,
@@ -251,8 +238,8 @@ class Parser_1_5_1(HorizontalDatesParser):
             'occurrence': Occurrence.FOR_EACH_VALUE,
             'first_value_position': {'row': 1, 'col': 1},
         },
-        'month': {
-            'occurrence': Occurrence.FOR_EACH_VALUE,
+        'months': {
+            'occurrence': Occurrence.ONE_FOR_WHOLE_COL,
             'first_value_position': {'row': 0, 'col': 2},
         },
         'title': {
@@ -334,8 +321,8 @@ class Parser_1_5_2(HorizontalDatesParser):
             'occurrence': Occurrence.FOR_EACH_VALUE,
             'first_value_position': {'row': 1, 'col': 0},
         },
-        'month': {
-            'occurrence': Occurrence.FOR_EACH_VALUE,
+        'months': {
+            'occurrence': Occurrence.ONE_FOR_WHOLE_COL,
             'first_value_position': {'row': 0, 'col': 2},
         },
         'title': {
