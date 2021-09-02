@@ -1,13 +1,13 @@
 import os
 from datetime import datetime
 
-import pandas as pd
+import pyexcel
 
 from celus_nibbler.convertors.memory_usage import log_memory
 
 my_file = 'beckonline'
 my_format = 'xlsx'
-tool = 'pandas'
+tool = 'pyexcel'
 
 
 print(20 * '*' + f"  {tool}  " + 20 * '*')
@@ -16,21 +16,15 @@ print(20 * '*' + f"  {tool}  " + 20 * '*')
 print(f"filename: {my_file}")
 print(f"format: {my_format}")
 
+
 start_time = datetime.now()
 
-log_memory('read file')
-read_file = pd.read_excel(
-    f"/Users/Zbynek/Documents/MyDocuments/BDD/projekty/Nibbler/celus-nibbler/celus_nibbler/convertors/{my_file}.{my_format}"
+log_memory('load file, create file and save the file')
+pyexcel.save_as(
+    file_name=f"/Users/Zbynek/Documents/MyDocuments/BDD/projekty/Nibbler/celus-nibbler/celus_nibbler/convertors/{my_file}.{my_format}",
+    dest_file_name=f"/Users/Zbynek/Documents/MyDocuments/BDD/projekty/Nibbler/celus-nibbler/celus_nibbler/convertors/{my_format}_format_export_by_{tool}.csv",
 )
-log_memory('file read')
-
-
-read_file.to_csv(
-    f"/Users/Zbynek/Documents/MyDocuments/BDD/projekty/Nibbler/celus-nibbler/celus_nibbler/convertors/{my_format}_format_export_by_{tool}.csv",
-    index=None,
-    header=True,
-)
-log_memory('csv file created and written')
+log_memory('loading the file, creating file and saving the file done')
 
 
 end_time = datetime.now()
