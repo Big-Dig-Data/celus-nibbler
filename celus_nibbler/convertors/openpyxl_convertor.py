@@ -9,8 +9,10 @@ read_only = True
 
 start_time = datetime.now()
 excel = openpyxl.load_workbook(
-    filename=f"/Users/Zbynek/Documents/MyDocuments/BDD/projekty/Nibbler/celus-nibbler/celus_nibbler/parsers/convertors/{my_file}.{my_format}",
+    filename=f"/Users/Zbynek/Documents/MyDocuments/BDD/projekty/Nibbler/celus-nibbler/celus_nibbler/convertors/{my_file}.{my_format}",
     read_only=read_only,
+    data_only=True,
+    keep_links=False,
 )
 
 
@@ -19,7 +21,7 @@ sheet = excel.active
 
 col = csv.writer(
     open(
-        f"/Users/Zbynek/Documents/MyDocuments/BDD/projekty/Nibbler/celus-nibbler/celus_nibbler/parsers/convertors/{my_format}_format_export_by_openpyxl.csv",
+        f"/Users/Zbynek/Documents/MyDocuments/BDD/projekty/Nibbler/celus-nibbler/celus_nibbler/convertors/{my_format}_format_export_by_openpyxl.csv",
         'w',
         newline="",
     )

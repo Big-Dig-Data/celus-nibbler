@@ -57,3 +57,5 @@ def test_findparser_and_parse_csv(parser: str, platform: str, path: pathlib.Path
         # with pytest.raises(StopIteration):
         #     assert next(reader) is None, "No more date present in the file"
         # there are empty lines in most of the tables, `next(reader) is not None` in most of the cases
+
+        # should throw an iterration error.
