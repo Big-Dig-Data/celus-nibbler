@@ -56,4 +56,9 @@ def openpyxl_convertor(my_file):
     file_size = os.stat(
         f"/Users/Zbynek/Documents/MyDocuments/BDD/projekty/Nibbler/celus-nibbler/celus_nibbler/convertors/{my_file}.{my_format}"
     ).st_size
-    print(f"filesize: {file_size} bites")
+    if file_size < 1000000:
+        file_size_in_KB = file_size / 1000
+        print(f"filesize: {file_size_in_KB} KB")
+    else:
+        file_size_in_MB = file_size / 1000000
+        print(f"filesize: {file_size_in_MB} MB")

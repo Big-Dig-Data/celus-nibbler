@@ -3,12 +3,17 @@ from celus_nibbler.convertors.pandas_convertor import pandas_convertor
 from celus_nibbler.convertors.pyexcel_convertor import pyexcel_convertor
 
 my_files = [
+    "smallfile_27KB",
+    "smallfile_116KB",
+    "smallfile_205KB",
+    "smallfile_383KB",
+    "smallfile_850KB",
     "bigfile_1-2MB",
     "bigfile_2-3MB",
     "bigfile_3-4MB",
     "bigfile_4-5MB",
-    "bigfile_5-6MB",
-    "bigfile_7MB",
+    # "bigfile_5-6MB",
+    # "bigfile_7MB",
     # "bigfile_10MB",
     # "bigfile_11-12MB",
 ]

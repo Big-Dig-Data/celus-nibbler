@@ -2,15 +2,14 @@ from datetime import datetime
 
 import openpyxl
 
-
 start_time = datetime.now()
 
 new_file = openpyxl.Workbook()
 new_sheet = new_file.active
 
 
-for row in range(1, 24500):
-    for col in range(1, 200):
+for row in range(1, 3800):
+    for col in range(1, 100):
         new_sheet.cell(row=row, column=col, value="hodnota")
 
 
