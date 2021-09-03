@@ -23,6 +23,7 @@ def pyexcel_convertor(my_file):
         dest_file_name=f"/Users/Zbynek/Documents/MyDocuments/BDD/projekty/Nibbler/celus-nibbler/celus_nibbler/convertors/{my_file}_export_by_{tool}.csv",
     )
     log_memory('loading the file, creating file and saving the file done')
+    pyexcel.free_resources()
 
     end_time = datetime.now()
     duration = end_time - start_time
