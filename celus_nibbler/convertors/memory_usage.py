@@ -1,7 +1,8 @@
 import os
-import sys
 
 import psutil
+
+# import sys
 
 
 def memory_usage_psutil():
@@ -12,5 +13,6 @@ def memory_usage_psutil():
 
 def log_memory(name=''):
     usage = memory_usage_psutil()
-    prefix = f'{name}: ' if name else ''
-    print(f'{prefix}Memory usage: {usage:.2f} MB', file=sys.stderr)
+    # prefix = f'{name}: ' if name else ''
+    return f"{usage:.2f} MB"
+    # print(f'{prefix}Memory usage: {usage:.2f} MB', file=sys.stderr)

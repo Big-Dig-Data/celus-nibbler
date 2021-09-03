@@ -1,3 +1,5 @@
+import csv
+
 from celus_nibbler.convertors.openpyxl_convertor import openpyxl_convertor
 from celus_nibbler.convertors.pandas_convertor import pandas_convertor
 from celus_nibbler.convertors.pyexcel_convertor import pyexcel_convertor
@@ -18,7 +20,56 @@ my_files = [
     # "bigfile_11-12MB",
 ]
 
-for my_file in my_files:
-    openpyxl_convertor(my_file)
-    pandas_convertor(my_file)
-    pyexcel_convertor(my_file)
+
+outcome_file = "/Users/Zbynek/Documents/MyDocuments/BDD/projekty/Nibbler/celus-nibbler/celus_nibbler/convertors/outcomes.csv"
+
+with open(outcome_file, 'w', newline='') as file:
+    writer = csv.writer(file)
+    writer.writerow(
+        [
+            "file name",
+            "file format",
+            "file size in MB",
+            "tool",
+            "memory_usage after sheet loaded",
+            "memory_usage after sheet converted",
+            "duration",
+        ]
+    )
+    for my_file in my_files:
+        outcomes = openpyxl_convertor(my_file)
+        writer.writerow(
+            [
+                outcomes[0],
+                outcomes[1],
+                outcomes[2],
+                outcomes[3],
+                outcomes[4],
+                outcomes[5],
+                outcomes[6],
+            ]
+        )
+        outcomes = pandas_convertor(my_file)
+        writer.writerow(
+            [
+                outcomes[0],
+                outcomes[1],
+                outcomes[2],
+                outcomes[3],
+                outcomes[4],
+                outcomes[5],
+                outcomes[6],
+            ]
+        )
+        outcomes = pyexcel_convertor(my_file)
+        writer.writerow(
+            [
+                outcomes[0],
+                outcomes[1],
+                outcomes[2],
+                outcomes[3],
+                outcomes[4],
+                outcomes[5],
+                outcomes[6],
+            ]
+        )

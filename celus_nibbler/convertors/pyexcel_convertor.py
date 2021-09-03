@@ -9,21 +9,19 @@ from celus_nibbler.convertors.memory_usage import log_memory
 def pyexcel_convertor(my_file):
     my_format = 'xlsx'
     tool = 'pyexcel'
-
     print(20 * '*' + f"  {tool}  " + 20 * '*')
 
     print(f"filename: {my_file}")
-    print(f"format: {my_format}")
 
     start_time = datetime.now()
 
-    log_memory('load file, create file and save the file')
     pyexcel.save_as(
         file_name=f"/Users/Zbynek/Documents/MyDocuments/BDD/projekty/Nibbler/celus-nibbler/celus_nibbler/convertors/{my_file}.{my_format}",
         dest_file_name=f"/Users/Zbynek/Documents/MyDocuments/BDD/projekty/Nibbler/celus-nibbler/celus_nibbler/convertors/{my_file}_export_by_{tool}.csv",
     )
-    log_memory('loading the file, creating file and saving the file done')
     pyexcel.free_resources()
+    sheet_loaded_memory_usage = log_memory()
+    sheet_converted_memory_usage = log_memory()
 
     end_time = datetime.now()
     duration = end_time - start_time
@@ -33,9 +31,13 @@ def pyexcel_convertor(my_file):
     file_size = os.stat(
         f"/Users/Zbynek/Documents/MyDocuments/BDD/projekty/Nibbler/celus-nibbler/celus_nibbler/convertors/{my_file}.{my_format}"
     ).st_size
-    if file_size < 1000000:
-        file_size_in_KB = file_size / 1000
-        print(f"filesize: {file_size_in_KB} KB")
-    else:
-        file_size_in_MB = file_size / 1000000
-        print(f"filesize: {file_size_in_MB} MB")
+    file_size_in_MB = file_size / 1000000
+    return (
+        my_file,
+        my_format,
+        file_size_in_MB,
+        tool,
+        sheet_loaded_memory_usage,
+        sheet_converted_memory_usage,
+        duration,
+    )
