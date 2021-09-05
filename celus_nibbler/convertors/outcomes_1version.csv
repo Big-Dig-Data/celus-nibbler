@@ -1,0 +1,40 @@
+file name,file format,file size in MB,tool,memory_usage after sheet loaded,memory_usage after sheet converted,duration
+smallfile_27KB,xlsx,0.027283,openpyxl,64.38 MB,65.24 MB,0:00:00.351705
+smallfile_27KB,xlsx,0.027283,pandas,67.25 MB,67.39 MB,0:00:00.402152
+smallfile_27KB,xlsx,0.027283,pyexcel,None,70.18 MB,0:00:00.468147
+smallfile_116KB,xlsx,0.116268,openpyxl,70.39 MB,70.65 MB,0:00:01.691385
+smallfile_116KB,xlsx,0.116268,pandas,71.32 MB,71.42 MB,0:00:01.565085
+smallfile_116KB,xlsx,0.116268,pyexcel,None,89.69 MB,0:00:02.062717
+smallfile_205KB,xlsx,0.205258,openpyxl,89.86 MB,78.55 MB,0:00:02.624289
+smallfile_205KB,xlsx,0.205258,pandas,78.97 MB,78.91 MB,0:00:02.730658
+smallfile_205KB,xlsx,0.205258,pyexcel,None,111.11 MB,0:00:03.974658
+smallfile_383KB,xlsx,0.383137,openpyxl,111.22 MB,82.60 MB,0:00:04.982853
+smallfile_383KB,xlsx,0.383137,pandas,84.14 MB,84.51 MB,0:00:05.106098
+smallfile_383KB,xlsx,0.383137,pyexcel,None,144.08 MB,0:00:06.945918
+smallfile_850KB,xlsx,0.850013,openpyxl,144.14 MB,87.11 MB,0:00:10.630924
+smallfile_850KB,xlsx,0.850013,pandas,98.86 MB,100.00 MB,0:00:12.824982
+smallfile_850KB,xlsx,0.850013,pyexcel,None,233.02 MB,0:00:16.544767
+bigfile_1-2MB,xlsx,1.499639,openpyxl,233.06 MB,84.67 MB,0:00:19.298805
+bigfile_1-2MB,xlsx,1.499639,pandas,115.97 MB,121.25 MB,0:00:22.400444
+bigfile_1-2MB,xlsx,1.499639,pyexcel,None,288.85 MB,0:00:24.431477
+bigfile_2-3MB,xlsx,2.49716,openpyxl,288.87 MB,97.93 MB,0:00:35.699441
+bigfile_2-3MB,xlsx,2.49716,pandas,150.91 MB,144.31 MB,0:00:43.890643
+bigfile_2-3MB,xlsx,2.49716,pyexcel,None,390.54 MB,0:00:45.694349
+bigfile_3-4MB,xlsx,3.231278,openpyxl,362.36 MB,76.77 MB,0:00:43.867553
+bigfile_3-4MB,xlsx,3.231278,pandas,171.02 MB,172.43 MB,0:00:41.789269
+bigfile_3-4MB,xlsx,3.231278,pyexcel,None,531.73 MB,0:01:10.119936
+bigfile_4-5MB,xlsx,4.153114,openpyxl,532.53 MB,88.93 MB,0:00:56.538505
+bigfile_4-5MB,xlsx,4.153114,pandas,207.90 MB,209.42 MB,0:00:55.271250
+bigfile_4-5MB,xlsx,4.153114,pyexcel,None,793.26 MB,0:01:08.857217
+bigfile_5-6MB,xlsx,5.535944,openpyxl,793.47 MB,90.77 MB,0:01:05.147455
+bigfile_5-6MB,xlsx,5.535944,pandas,258.86 MB,260.14 MB,0:01:14.750949
+bigfile_5-6MB,xlsx,5.535944,pyexcel,None,966.93 MB,0:01:41.184294
+bigfile_7MB,xlsx,6.918552,openpyxl,967.15 MB,95.93 MB,0:01:29.142032
+bigfile_7MB,xlsx,6.918552,pandas,311.74 MB,312.91 MB,0:01:40.411789
+bigfile_7MB,xlsx,6.918552,pyexcel,None,1231.25 MB,0:02:02.468813
+bigfile_10MB,xlsx,9.684245,openpyxl,1223.93 MB,69.65 MB,0:02:11.954567
+bigfile_10MB,xlsx,9.684245,pandas,417.97 MB,419.39 MB,0:02:13.344201
+bigfile_10MB,xlsx,9.684245,pyexcel,None,1308.03 MB,0:02:42.542910
+bigfile_11-12MB,xlsx,11.297567,openpyxl,1302.47 MB,73.27 MB,0:02:37.554523
+bigfile_11-12MB,xlsx,11.297567,pandas,479.36 MB,480.51 MB,0:02:39.342497
+bigfile_11-12MB,xlsx,11.297567,pyexcel,None,1375.92 MB,0:03:14.008623

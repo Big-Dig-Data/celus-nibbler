@@ -15,12 +15,14 @@ def pyexcel_convertor(my_file):
 
     start_time = datetime.now()
 
+    sheet_loaded_memory_usage = None
+
     pyexcel.save_as(
         file_name=f"/Users/Zbynek/Documents/MyDocuments/BDD/projekty/Nibbler/celus-nibbler/celus_nibbler/convertors/{my_file}.{my_format}",
         dest_file_name=f"/Users/Zbynek/Documents/MyDocuments/BDD/projekty/Nibbler/celus-nibbler/celus_nibbler/convertors/{my_file}_export_by_{tool}.csv",
     )
     pyexcel.free_resources()
-    sheet_loaded_memory_usage = log_memory()
+
     sheet_converted_memory_usage = log_memory()
 
     end_time = datetime.now()

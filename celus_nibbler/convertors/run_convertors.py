@@ -14,10 +14,10 @@ my_files = [
     "bigfile_2-3MB",
     "bigfile_3-4MB",
     "bigfile_4-5MB",
-    # "bigfile_5-6MB",
-    # "bigfile_7MB",
-    # "bigfile_10MB",
-    # "bigfile_11-12MB",
+    "bigfile_5-6MB",
+    "bigfile_7MB",
+    "bigfile_10MB",
+    "bigfile_11-12MB",
 ]
 
 
