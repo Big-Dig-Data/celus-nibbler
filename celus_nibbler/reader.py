@@ -66,7 +66,9 @@ class NaiveXlsxReader(TableReader):
 
     def __init__(self, filename_or_stream):
         super().__init__(filename_or_stream)
-        workbook = openpyxl.load_workbook(self.stream, read_only=True, data_only=True, keep_links=False)
+        workbook = openpyxl.load_workbook(
+            self.stream, read_only=True, data_only=True, keep_links=False
+        )
         sheet = workbook.active
         self.data = []
         for row in sheet.rows:
