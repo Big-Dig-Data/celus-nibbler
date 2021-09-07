@@ -7,6 +7,7 @@ from pydantic import ValidationError
 
 from celus_nibbler import validators
 from celus_nibbler.errors import TableException
+from celus_nibbler.reader import TableReader
 from celus_nibbler.record import CounterRecord
 from celus_nibbler.utils import end_month, start_month
 
@@ -19,7 +20,7 @@ class GeneralParser(metaclass=ABCMeta):
 
     table_map: dict = {}
 
-    def __init__(self, table: list, platform: str = None):
+    def __init__(self, table: TableReader, platform: str = None):
         self.header = None
         self.table = table
         self.platform = platform
