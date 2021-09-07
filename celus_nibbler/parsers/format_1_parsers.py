@@ -1,15 +1,6 @@
-from enum import Enum, auto
+from celus_nibbler import validators
 
-from .generalparser import HorizontalDatesParser
-
-
-class MonthsDirection(Enum):
-    VERTICAL = auto()
-    HORIZONTAL = auto()
-
-
-class FirstMonth:
-    JANUARY = 'january'
+from .generalparser import Coord, HorizontalDatesParser, RelatedTo
 
 
 class Parser_1_3_1(HorizontalDatesParser):
@@ -23,31 +14,17 @@ class Parser_1_3_1(HorizontalDatesParser):
         'SciVal',
     ]
 
-    metric_list = [
-        'Sessions',
-        'Documents',
-        'Tracks',
-        'Resources',
-        'Views',
-        'Access_from_IP',
-        'FP',
-        'login',
+    heuristics = [
+        Coord(0, 0, content='Metric'),
     ]
-
-    table_map = {
-        'heuristics': [
-            {'row': 0, 'col': 0, 'content': 'Metric'},
-        ],
-        'metric_title': {'row': 0, 'col': 0, 'content': 'Metric'},
-        'months': {
-            'direction': MonthsDirection.HORIZONTAL,
-            'start_at': {
-                'row': 0,
-                'col': 1,
-                'month': FirstMonth.JANUARY,  # could be any other month
-            },
-        },
-    }
+    metric_title = Coord(0, 0, content='Metric')
+    values = Coord(1, 1, relation=RelatedTo.FIELD)
+    metric = Coord(1, 0, relation=RelatedTo.ROW)
+    months = Coord(0, 1, relation=RelatedTo.COL)
+    separate_year = None
+    title = None
+    title_ids = None
+    dimension_data = None
 
 
 class Parser_1_3_2(HorizontalDatesParser):
@@ -60,30 +37,18 @@ class Parser_1_3_2(HorizontalDatesParser):
         'Naxos',
     ]
 
-    metric_list = [
-        'back+front',
-        'Document Count',
-        'BR2',
-        'Exports',
-        'Documents',
-        'Tracks',
-        'Exports',
+    heuristics = [
+        Coord(1, 0, content=''),
     ]
-
-    table_map = {
-        'heuristics': [
-            {'row': 1, 'col': 0, 'content': ''},
-        ],
-        'metric_title': {'row': 1, 'col': 0, 'content': ''},
-        'months': {
-            'direction': MonthsDirection.HORIZONTAL,
-            'start_at': {
-                'row': 1,
-                'col': 1,
-                'month': FirstMonth.JANUARY,  # could be any other month
-            },
-        },
-    }
+    metric_title = Coord(1, 0, content='')
+    values = Coord(2, 1, relation=RelatedTo.FIELD)
+    metric = Coord(2, 0, relation=RelatedTo.ROW)
+    months = Coord(1, 1, relation=RelatedTo.COL)
+    separate_year = None
+    title = None
+    title_ids = None
+    dimension_data = None
+    # TOASK is this correct? are there in this table really no dimension data?
 
 
 class Parser_1_5_1(HorizontalDatesParser):
@@ -92,34 +57,17 @@ class Parser_1_5_1(HorizontalDatesParser):
         'InCites',
     ]
 
-    metric_list = [
-        'Result Clicks',
-        'Platform Page Views',
-        'Platform Sessions',
-        'Queries',
-        'Queries ESI',
-        'Result Clicks ESI',
-        'Sessions ESI',
-        'Views',
-        'Visits',
-        'Sessions',
+    heuristics = [
+        Coord(0, 1, content='Metric'),
     ]
-
-    table_map = {
-        'heuristics': [
-            {'row': 0, 'col': 0, 'content': 'Title'},
-            {'row': 0, 'col': 1, 'content': 'Metric'},
-        ],
-        'metric_title': {'row': 0, 'col': 1, 'content': 'Metric'},
-        'months': {
-            'direction': MonthsDirection.HORIZONTAL,
-            'start_at': {
-                'row': 0,
-                'col': 2,
-                'month': FirstMonth.JANUARY,  # could be any other month
-            },
-        },
-    }
+    metric_title = Coord(0, 1, content='Metric')
+    values = Coord(1, 2, relation=RelatedTo.FIELD)
+    metric = Coord(1, 1, relation=RelatedTo.ROW)
+    months = Coord(0, 2, relation=RelatedTo.COL)
+    separate_year = None
+    title = Coord(1, 0, relation=RelatedTo.ROW)
+    title_ids = None
+    dimension_data = None
 
 
 class Parser_1_5_2(HorizontalDatesParser):
@@ -129,28 +77,59 @@ class Parser_1_5_2(HorizontalDatesParser):
         'Naxos',
     ]
 
-    metric_list = [
-        'Sessions',
-        'Document_count',
-        'Naxos Music Library',
-        'Naxos Music Library Jazz',
-        'Naxos Music Library World',
-        'Naxos Spoken Word Library',
-        'NVL',
+    heuristics = [
+        Coord(0, 0, content='Metric'),
+        Coord(0, 1, content='Title'),
+    ]
+    metric_title = Coord(0, 0, content='Metric')
+    values = Coord(1, 2, relation=RelatedTo.FIELD)
+    metric = Coord(1, 0, relation=RelatedTo.ROW)
+    months = Coord(0, 2, relation=RelatedTo.COL)
+    separate_year = None
+    title = Coord(1, 1, relation=RelatedTo.ROW)
+    title_ids = None
+    dimension_data = None
+
+
+class Parser_1_2(HorizontalDatesParser):
+
+    platforms = [
+        'ClassiquesGarnierNumerique',
     ]
 
-    table_map = {
-        'heuristics': [
-            {'row': 0, 'col': 0, 'content': 'Metric'},
-            {'row': 0, 'col': 1, 'content': 'Title'},
-        ],
-        'metric_title': {'row': 0, 'col': 0, 'content': 'Metric'},
-        'months': {
-            'direction': MonthsDirection.HORIZONTAL,
-            'start_at': {
-                'row': 0,
-                'col': 2,
-                'month': FirstMonth.JANUARY,  # could be any other month
-            },
-        },
-    }
+    heuristics = [
+        Coord(0, 0, content='Title'),
+        Coord(0, 1, content='Metric'),
+        Coord(0, 2, content='Authentization'),
+    ]
+    metric_title = Coord(0, 1, content='Metric')
+    values = Coord(1, 3, relation=RelatedTo.FIELD)
+    metric = Coord(1, 1, relation=RelatedTo.ROW)
+    months = Coord(0, 3, relation=RelatedTo.COL)
+    separate_year = None
+    title = Coord(1, 0, relation=RelatedTo.ROW)
+    title_ids = None
+    dimension_data = None
+
+
+class Parser_1_3_3(HorizontalDatesParser):
+
+    platforms = [
+        'Naxos',
+        'Brepolis',
+    ]
+
+    heuristics = [
+        Coord(1, 0, content='Name:'),
+        Coord(2, 0, content='ID Number:'),
+        Coord(3, 0, content='Type of license:'),
+    ]
+    metric_title = Coord(7, 1, content=None)
+    values = Coord(8, 2, relation=RelatedTo.FIELD)
+    metric = Coord(8, 1, relation=RelatedTo.ROW)
+    months = Coord(7, 2, relation=RelatedTo.COL)
+    separate_year = Coord(6, 2, relation=RelatedTo.TABLE)
+    title = Coord(0, 1, relation=RelatedTo.TABLE)
+    title_ids = None
+    dimension_data = None
+    date_validation = validators.DateInString

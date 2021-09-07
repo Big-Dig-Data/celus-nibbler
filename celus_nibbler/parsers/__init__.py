@@ -2,8 +2,10 @@ import itertools
 import typing
 
 from celus_nibbler.parsers.format_1_parsers import (
+    Parser_1_2,
     Parser_1_3_1,
     Parser_1_3_2,
+    Parser_1_3_3,
     Parser_1_5_1,
     Parser_1_5_2,
 )
@@ -18,6 +20,8 @@ def all_parsers() -> typing.List[typing.Type[GeneralParser]]:
         Parser_1_3_2,
         Parser_1_5_1,
         Parser_1_5_2,
+        Parser_1_3_3,
+        Parser_1_2,
     ]
 
 
@@ -37,4 +41,6 @@ __all__ = [
     "Parser_1_3_2",
     "Parser_1_5_1",
     "Parser_1_5_2",
+    "Parser_1_3_3",
+    "Parser_1_2",
 ]

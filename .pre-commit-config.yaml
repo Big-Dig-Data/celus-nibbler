@@ -8,7 +8,6 @@ repos:
     - id: end-of-file-fixer
       exclude: '^.*\.(tsv|json|svg)'
     - id: check-yaml
-    - id: check-added-large-files
 
   - repo: local
     hooks:

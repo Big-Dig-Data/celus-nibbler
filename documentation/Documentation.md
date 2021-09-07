@@ -5,6 +5,11 @@
 - [] there should not be a parser class which serves to two tables which both are having different dimensions.
 - each type of non-counter report has its own parser
 
+## Terminology
+- **TableReader**: reads uploaded file which might be in either .csv format (`NaiveCSVReader()`), .xlsx format (`NaiveXLSXReader()`) and in the future possibly .xls format (`NaiveXLSReader()`) and creates standard format `read_table` (list of lists) which is list of rows with values.
+- **Parser**: parses standard format `read_table` (list of lists) created by TableReader and creates a CounterReport from it.
+
+
 ## Parsers
 
 - each parser carries:
@@ -25,12 +30,29 @@
 
 - validations even during parsing
 
+### class RelatedTo(Enum)
+
+This class instructs the parser how to iterate over the variable (titles, metrics, etc.) and assign values he finds in it to each record.
+
+- `TABLE` -  the one value in this variable goes to each record in a table
+- `ROW`  -  iterate over this variable and assign each value in it to every record in a row
+- `COL`  -  iterate over this variable and assign each value in it to every record in a column
+- `FIELD`   -   iterate over this variable and assign each value in it to only one record at the time
+
+**For more explanation:** there are tables which have only one mentioning of "title" for the whole table, therefore this value "title" will be specified as `['title']['occurrence'] = RelatedTo.TABLE` so that the parser will know that the value in variable "title" should be assigned to each record in this table without any iteration over this variable. There are tables which have titles in each row, thus in these cases title will have `RelatedTo.ROW` and the parser will know to iterate over the "title" variable for each report in a row. Other values have `RelatedTo.COL` (those are months mostly) and in this case parser knows that it should iterate over this variable in a matter that it assigns its values to each report in a column. There are values which has its own mentioning per value (those are mostly values obviously, but in some table types those can be also "title" or "metric" values and others) so these values will have `RelatedTo.FIELD` and parser will know that it should assign this value only to one report at the time.
+
+The same architecture and logic will apply to metrics, months, and to any dimension data we will encounter. All of these values can be mentioned in various tables for each row or for each col, or even for each value, and some of then  one for whole table - using this we will have an easy way to explain to any parser how to assign these values to each record.
 ## Exceptions
 - if wrong parser is used for a report, it tells in what place validation failed and how it failed.
 
 ## Tests
 - `test_findparser()` - going through all tables in directory `celus-nibbler/tests/data/csv/<parser_name>` and tests whether `findparser()` assigns for each table a parser which name corresponds with directory `<parser_name>` in which the table is located.
 - `test_findparser_and_parse()` - goes through each item in `testing_data.data` and checks wheter `findparser_and_parse()` finds the exact parser and parses the exact counter-report as mentioned in `testing_data.data`.
+
+### naming of test files
+- rule for naming test files is: `<firstsheet_parser>-<secondsheet_parser>-<nsheet-parser>-<unique_letters>.sufix`
+- please notice the `'-'` which are important to distiguish parsers in the filename.
+- `'0'` means:  this sheet has no data to be parsed (for example: file `1_2_1-0-2_2_1-gkr.csv` has in first sheet data to be parsed by parser `1_2_1`, in second sheet there are no data to be parsed, third sheet has data to be parsed by parser `2_2_1`)
 
 
 ## Formats
@@ -52,22 +74,7 @@ platforms = [
     ]
 ```
 
-```
-table_map = {
-        'heuristics': [
-            {'row': 0, 'col': 0, 'content': 'Metric'},
-        ],
-        'metric_title': {'row': 0, 'col': 0, 'content': 'Metric'},
-        'months': {
-            'direction': 'in cols',
-            'start_at': {
-                'row': 0,
-                'col': 1,
-                'month': 'january',
-            },
-        },
-    }
-```
+
 
 #### examples:
 ![example1](img/Format_1_3_1(ex1).png)<br>
@@ -95,22 +102,7 @@ platforms = [
     ]
 ```
 
-```
-table_map = {
-    'heuristics': [
-        {'row': 1, 'col': 0, 'content': ''},
-    ],
-    'metric_title': {'row': 1, 'col': 0, 'content': ''},
-    'months': {
-        'direction': 'in cols',
-        'start_at': {
-            'row': 1,
-            'col': 1,
-            'month': 'january',
-        },
-    },
-}
-```
+
 
 
 #### examples:
@@ -133,23 +125,7 @@ platforms = [
     ]
 ```
 
-```
-table_map = {
-        'heuristics': [
-            {'row': 0, 'col': 0, 'content': 'Title'},
-            {'row': 0, 'col': 1, 'content': 'Metric'},
-        ],
-        'metric_title': {'row': 0, 'col': 1, 'content': 'Metric'},
-        'months': {
-            'direction': 'in cols',
-            'start_at': {
-                'row': 0,
-                'col': 2,
-                'month': 'january',
-            },
-        },
-    }
-```
+
 
 #### examples:
 ![example1](img/Format_1_5_1(ex1).png)<br>
@@ -167,24 +143,6 @@ platforms = [
     'Micromedex',
     'Naxos',
 ]
-```
-
-```
-table_map = {
-    'heuristics': [
-        {'row': 0, 'col': 0, 'content': 'Metric'},
-        {'row': 0, 'col': 1, 'content': 'Title'},
-    ],
-    'metric_title': {'row': 0, 'col': 0, 'content': 'Metric'},
-    'months': {
-        'direction': 'in cols',
-        'start_at': {
-            'row': 0,
-            'col': 2,
-            'month': 'january',
-        },
-    },
-}
 ```
 
 

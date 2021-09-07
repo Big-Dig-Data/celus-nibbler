@@ -1,4 +1,5 @@
 import datetime
+from typing import Optional
 
 from dateutil import parser as datetimes_parser
 from pydantic import BaseModel, validator
@@ -18,10 +19,6 @@ def stripped(name: str) -> str:
 
 class Value(BaseModel):
     value: int
-
-    @validator("value", pre=True)
-    def to_float(cls, value: str) -> float:
-        return float(value)
 
     @validator("value")
     def non_negative(cls, value: int) -> int:
@@ -50,6 +47,16 @@ class Metric(BaseModel):
         return metric
 
 
+class Title(BaseModel):
+    title: Optional[str]
+
+    @validator("title")
+    def not_digit(cls, title: str) -> str:
+        if title.isdigit():
+            raise NibblerValidation("cant-be-digit")
+        return title
+
+
 class Date(BaseModel):
     date: datetime.date
 
@@ -58,8 +65,22 @@ class Date(BaseModel):
 
     @validator("date", pre=True)
     def to_datetime(cls, date: str) -> str:
-        datetimes_parser.parse(date).date()
         try:
-            return datetimes_parser.parse(date).date()
+            return datetimes_parser.parse(date)
+        except datetimes_parser.ParserError:
+            raise NibblerValidation("cant-parse-date")
+
+
+class DateInString(BaseModel):
+    date: datetime.date
+
+    _stripped_date = validator('date', allow_reuse=True, pre=True)(stripped)
+    _non_empty_date = validator('date', allow_reuse=True, pre=True)(non_empty)
+
+    @validator("date", pre=True)
+    def to_datetime(cls, date: str) -> str:
+        # TODO add some validation whether the date in the 'date' variable is really on the last index
+        try:
+            return datetimes_parser.parse(date.split(' ')[-1])
         except datetimes_parser.ParserError:
             raise NibblerValidation("cant-parse-date")

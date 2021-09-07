@@ -1,33 +1,34 @@
-import csv
 import logging
 import pathlib
 import typing
 
+from celus_nibbler.errors import WrongFormatError
 from celus_nibbler.parsers import GeneralParser, all_parsers
+from celus_nibbler.reader import NaiveCSVReader, NaiveXlsxReader, TableReader
 from celus_nibbler.record import CounterRecord
 from celus_nibbler.validators import Platform
 
 logger = logging.getLogger(__name__)
 
 
-def findparser(table: list, platform: str) -> typing.Optional[typing.Type[GeneralParser]]:
+def findparser(sheet: TableReader, platform: str) -> typing.Optional[typing.Type[GeneralParser]]:
     plat_OK = [parser for parser in all_parsers() if platform in parser.platforms]
     if len(plat_OK) < 1:
         logger.warning('there is no parser which expects your platform %s', platform)
     else:
         logger.info('there is %s parsers, which expects your platform %s', len(plat_OK), platform)
 
-    plat_heur_OK = [parser for parser in plat_OK if parser.heuristic_check(parser(table))]
+    plat_heur_OK = [parser for parser in plat_OK if parser(sheet).heuristic_check()]
     if len(plat_heur_OK) < 1:
-        logger.warning('there is no parser which heuristics matching your format of the table.')
+        logger.warning('there is no parser which heuristics matching format of your uploaded file.')
     else:
         logger.info(
-            'there is %s parsers, which heuristics matching your format of the table.',
+            'there is %s parsers, which heuristics matching format of your uploaded file.',
             len(plat_heur_OK),
         )
 
     plat_heur_metrtitle_OK = [
-        parser for parser in plat_heur_OK if parser.metric_title_check(parser(table))
+        parser for parser in plat_heur_OK if parser(sheet).metric_title_check()
     ]
     if len(plat_heur_metrtitle_OK) < 1:
         logger.warning('the metric_title, which parser expect to find in the file, was not found')
@@ -46,29 +47,39 @@ def findparser(table: list, platform: str) -> typing.Optional[typing.Type[Genera
         parser = plat_heur_metrtitle_OK[0]
         logger.info('Parser used: %s', parser)
         return parser
-
     return None
 
 
+def read_file(file_path: pathlib.Path) -> TableReader:
+    if file_path.suffix.lower() == '.csv':
+        with open(file_path) as file:
+            sheets = NaiveCSVReader(file)
+    elif file_path.suffix.lower() == '.xlsx':
+        sheets = NaiveXlsxReader(file_path)
+    else:
+        raise WrongFormatError(file_path, file_path.suffix)
+    return sheets
+
+
 def findparser_and_parse(
-    file: pathlib.Path, platform: str
-) -> typing.Optional[typing.List[CounterRecord]]:
+    file_path: pathlib.Path, platform: str
+) -> typing.Optional[typing.List[typing.List[CounterRecord]]]:
+
     platform = Platform(platform=platform).platform
-    with open(file) as f:
-        logger.info('----- file \'%s\'  is tested -----', file.name)
-        reader = csv.reader(f)
-        table = list(reader)
-        logger.info('findparser() function called')
-        parser = findparser(table, platform)
-        if not parser:
-            logger.warning('parser has not been chosen, the file wont be parsed')
-            return None
+    logger.info('\n\n----- file \'%s\'  is tested -----', file_path.name)
+    sheets = read_file(file_path)
+    sheets_of_counter_records = []
+    for sheet_idx, sheet in enumerate(sheets):
+        logger.info('\n-- sheet %s  is tested --', sheet_idx)
+        counter_records = []
+        if parser := findparser(sheet, platform):
+            if counter_records := parser(sheet, sheet_idx, platform).parse():
+                pass  # expected an indented block error if no block of code here
+            else:
+                logger.warning('sheet %s has not been parsed', sheet_idx + 1)
         else:
-            logger.info('findparser() function finished')
-            new_metrics = parser.find_new_metrics(parser(table))
-            # TODO figure out what to do with new metrics...
-            logger.info('New metrics found: %s', new_metrics)
-            logger.info('parse() function called')
-            counter_reports = parser.parse(parser(table, platform))
-            logger.info('parse() function finished')
-            return counter_reports
+            logger.warning(
+                'parser has not been chosen for sheet %s, the sheet wont be parsed', sheet_idx + 1
+            )
+        sheets_of_counter_records.append(counter_records)
+    return sheets_of_counter_records
