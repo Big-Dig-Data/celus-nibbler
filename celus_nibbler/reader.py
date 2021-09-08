@@ -1,7 +1,7 @@
-from abc import ABCMeta, abstractmethod
 import csv
+from abc import ABCMeta, abstractmethod
 from io import StringIO
-from typing import Iterable, Sequence, IO, Union
+from typing import IO, Iterable, Sequence, Union
 
 import openpyxl
 
