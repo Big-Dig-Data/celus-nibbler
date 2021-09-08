@@ -1,23 +1,24 @@
+from abc import ABCMeta, abstractmethod
 import csv
 from io import StringIO
-from typing import Iterable, Sequence
+from typing import Iterable, Sequence, IO, Union
 
 import openpyxl
 
 
-class TableReader(metaclass=abc.ABCMeta):
+class TableReader(metaclass=ABCMeta):
     """
     Abstract reader for tabular data - defines the API to be used by parsers when reading input data
     """
 
-    def __init__(self, source: typing.Union[bytes, str, typing.IO]):
+    def __init__(self, source: Union[bytes, str, IO]):
         self.needs_close = False
-        if hasattr(filename_or_stream, 'read'):
-            self.stream = filename_or_stream
-        elif isinstance(filename_or_stream, bytes):
-            self.stream = StringIO(filename_or_stream.decode('utf-8'))
+        if hasattr(source, 'read'):
+            self.stream = source
+        elif isinstance(source, bytes):
+            self.stream = StringIO(source.decode('utf-8'))
         else:
-            self.stream = open(filename_or_stream, 'rb')
+            self.stream = open(source, 'rb')
             self.needs_close = True
 
     def close(self):
@@ -27,6 +28,7 @@ class TableReader(metaclass=abc.ABCMeta):
 
     # abstract methods to implement
 
+    @abstractmethod
     def __getitem__(self, item) -> Sequence:
         raise NotImplementedError()
 
@@ -43,9 +45,8 @@ class NaiveCSVReader(TableReader):
     Useful as transitional implementation, should be replaced in the future.
     """
 
-    def __init__(self, filename_or_stream):
-        super().__init__(filename_or_stream)
-        self.data = []
+    def __init__(self, source: Union[bytes, str, IO]):
+        super().__init__(source)
         reader = csv.reader(self.stream)
         self.data = list(reader)
         self.close()
@@ -65,8 +66,8 @@ class NaiveXlsxReader(TableReader):
     Useful as transitional implementation, should be replaced in the future.
     """
 
-    def __init__(self, filename_or_stream):
-        super().__init__(filename_or_stream)
+    def __init__(self, source: Union[bytes, str, IO]):
+        super().__init__(source)
         workbook = openpyxl.load_workbook(
             self.stream, read_only=True, data_only=True, keep_links=False
         )
