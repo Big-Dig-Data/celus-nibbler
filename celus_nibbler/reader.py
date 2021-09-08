@@ -5,12 +5,12 @@ from typing import Iterable, Sequence
 import openpyxl
 
 
-class TableReader:
+class TableReader(metaclass=abc.ABCMeta):
     """
     Abstract reader for tabular data - defines the API to be used by parsers when reading input data
     """
 
-    def __init__(self, filename_or_stream):
+    def __init__(self, source: typing.Union[bytes, str, typing.IO]):
         self.needs_close = False
         if hasattr(filename_or_stream, 'read'):
             self.stream = filename_or_stream
@@ -30,6 +30,7 @@ class TableReader:
     def __getitem__(self, item) -> Sequence:
         raise NotImplementedError()
 
+    @abstractmethod
     def __iter__(self):
         raise NotImplementedError()
 
