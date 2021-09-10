@@ -1,7 +1,7 @@
 import csv
 from abc import ABCMeta, abstractmethod
 from io import StringIO
-from typing import IO, Iterable, Sequence, Union
+from typing import IO, Sequence, Union
 
 import openpyxl
 
@@ -51,7 +51,7 @@ class NaiveCSVReader(TableReader):
         self.data = list(reader)
         self.close()
 
-    def __getitem__(self, item) -> Iterable:
+    def __getitem__(self, item) -> Sequence:
         return self.data[item]
 
     def __iter__(self):
@@ -77,7 +77,7 @@ class NaiveXlsxReader(TableReader):
             self.data.append([cell.value for cell in row])
         self.close()
 
-    def __getitem__(self, item) -> Iterable:
+    def __getitem__(self, item) -> Sequence:
         return self.data[item]
 
     def __iter__(self):
