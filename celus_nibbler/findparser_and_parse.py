@@ -1,16 +1,16 @@
-import csv
 import logging
 import pathlib
 import typing
 
 from celus_nibbler.parsers import GeneralParser, all_parsers
+from celus_nibbler.reader import NaiveCSVReader, TableReader
 from celus_nibbler.record import CounterRecord
 from celus_nibbler.validators import Platform
 
 logger = logging.getLogger(__name__)
 
 
-def findparser(table: list, platform: str) -> typing.Optional[typing.Type[GeneralParser]]:
+def findparser(table: TableReader, platform: str) -> typing.Optional[typing.Type[GeneralParser]]:
     plat_OK = [parser for parser in all_parsers() if platform in parser.platforms]
     if len(plat_OK) < 1:
         logger.warning('there is no parser which expects your platform %s', platform)
@@ -56,19 +56,18 @@ def findparser_and_parse(
     platform = Platform(platform=platform).platform
     with open(file) as f:
         logger.info('----- file \'%s\'  is tested -----', file.name)
-        reader = csv.reader(f)
-        table = list(reader)
+        reader = NaiveCSVReader(f)
         logger.info('findparser() function called')
-        parser = findparser(table, platform)
+        parser = findparser(reader, platform)
         if not parser:
             logger.warning('parser has not been chosen, the file wont be parsed')
             return None
         else:
             logger.info('findparser() function finished')
-            new_metrics = parser.find_new_metrics(parser(table))
+            new_metrics = parser.find_new_metrics(parser(reader))
             # TODO figure out what to do with new metrics...
             logger.info('New metrics found: %s', new_metrics)
             logger.info('parse() function called')
-            counter_reports = parser.parse(parser(table, platform))
+            counter_reports = parser.parse(parser(reader, platform))
             logger.info('parse() function finished')
             return counter_reports
