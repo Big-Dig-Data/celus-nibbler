@@ -3,7 +3,7 @@ import logging.config
 import pathlib
 import sys
 
-from celus_nibbler import findparser_and_parse
+from celus_nibbler import findparser_and_parse, get_supported_platforms_count
 
 
 def main():
@@ -17,6 +17,10 @@ def main():
         print()
         print("usage:")
         print(f"    {pathlib.Path(sys.argv[0]).name} platform file [file..]")
+        print()
+        print("Supported platforms:")
+        for platform, count in get_supported_platforms_count():
+            print(f"  {platform}({count})")
         sys.exit(1)
 
     platform = sys.argv[1]
