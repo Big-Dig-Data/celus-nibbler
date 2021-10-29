@@ -1,3 +1,4 @@
+import collections
 import itertools
 import typing
 
@@ -25,11 +26,24 @@ def all_parsers() -> typing.List[typing.Type[GeneralParser]]:
     ]
 
 
-def get_supported_platforms():
+def get_supported_platforms() -> typing.List[str]:
     """ Lists all supported platforms"""
     return sorted(
         list(set(itertools.chain.from_iterable(parser.platforms for parser in all_parsers())))
     )
+
+
+def get_supported_platforms_count() -> typing.List[typing.Tuple[str, int]]:
+    counter: typing.Dict[str, int] = collections.Counter()
+    for parser in all_parsers():
+        for platform in parser.platforms:
+            counter[platform] += 1
+
+    res = []
+    for key in sorted(counter.keys()):
+        res.append((key, counter[key]))
+
+    return res
 
 
 __all__ = [
