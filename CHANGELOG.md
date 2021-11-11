@@ -4,6 +4,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2021-11-11
+
+### Added
+- `nibbler-eat` returns list of supported platforms
+- two new parsers added
+- `ignore_metrics` - option to ignore specific metrics
+- parsing of .xlsx files
+- multiple sheets handling within one document
+- date parsing improvements
+
+### Changed
+- `find_parser_and_parse` - return list of list of records now
+- using extra python classes insted of dict in parsing
+
+### Removed
+- `find_new_metrics` - no longer used
+
 ## [0.2.0] - 2021-08-26
 
 ### Added
