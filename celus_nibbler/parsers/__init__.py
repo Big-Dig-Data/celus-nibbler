@@ -11,7 +11,8 @@ from celus_nibbler.parsers.format_1_parsers import (
     Parser_1_5_2,
 )
 
-from .generalparser import GeneralParser, HorizontalDatesParser
+from .generalparser import GeneralParser
+from .horizontal_dates_parser import HorizontalDatesParser
 
 
 def all_parsers() -> typing.List[typing.Type[GeneralParser]]:

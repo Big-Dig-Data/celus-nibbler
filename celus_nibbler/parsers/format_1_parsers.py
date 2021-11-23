@@ -1,6 +1,7 @@
 from celus_nibbler import validators
+from celus_nibbler.descriptors import Coord, RelatedTo
 
-from .generalparser import Coord, HorizontalDatesParser, RelatedTo
+from .horizontal_dates_parser import HorizontalDatesParser
 
 
 class Parser_1_3_1(HorizontalDatesParser):
