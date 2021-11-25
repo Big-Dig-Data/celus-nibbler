@@ -99,15 +99,15 @@ def test_findparser_and_parse_csv(
 
     with open(f"{file_path}.out") as results_file:
         logger.info('----- file \'%s\'  is tested -----', file_path)
-        reader = csv.reader(results_file)
+        results_records = csv.reader(results_file)
         sheets_of_counter_records = findparser_and_parse(file_path, platform)
-        assert sheets_of_counter_records is not None
+        assert sheets_of_counter_records != [[]], "This table has not been parsed."
         for sheet in sheets_of_counter_records:
             for record in sheet:
-                assert next(reader) == list(record.serialize()), "Compare lines"
-
+                assert next(results_records) == list(record.serialize()), "Compare lines"
         with pytest.raises(StopIteration):
-            assert next(reader) is None, "No more date present in the file"
+            next(results_records)
+            # this code instructs that `next(results_records)` should throw `StopIteration`
 
 
 @pytest.mark.parametrize(
@@ -122,15 +122,15 @@ def test_findparser_and_parse_xlsx(
 
     with open(f"{file_path}.out") as results_file:
         logger.info('----- file \'%s\'  is tested -----', file_path)
-        reader = csv.reader(results_file)
+        results_records = csv.reader(results_file)
         sheets_of_counter_records = findparser_and_parse(file_path, platform)
         assert sheets_of_counter_records is not None
         for sheet in sheets_of_counter_records:
             for record in sheet:
-                assert next(reader) == list(record.serialize()), "Compare lines"
-
+                assert next(results_records) == list(record.serialize()), "Compare lines"
         with pytest.raises(StopIteration):
-            assert next(reader) is None, "No more date present in the file"
+            next(results_records)
+            # this code instructs that `next(results_records)` should throw `StopIteration`
 
 
 def test_get_supported_platforms():
