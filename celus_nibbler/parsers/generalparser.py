@@ -7,6 +7,7 @@ from jellyfish import porter_stem
 from unidecode import unidecode
 
 from celus_nibbler import validators
+from celus_nibbler.descriptors import String
 from celus_nibbler.reader import TableReader
 from celus_nibbler.record import CounterRecord
 
@@ -31,8 +32,16 @@ class GeneralParser(metaclass=ABCMeta):
         check if there is an expected content in the expected location of the table
         """
         for heuristic in self.heuristics:
-            if self.table[heuristic.start_row][heuristic.start_col] != heuristic.content:
-                return False
+            if heuristic.content_type == String.IS:
+                if self.table[heuristic.start_row][heuristic.start_col] != heuristic.content:
+                    return False
+            elif heuristic.content_type == String.STARTSWITH:
+                if not self.table[heuristic.start_row][heuristic.start_col].startswith(
+                    heuristic.content
+                ):
+                    return False
+            else:
+                raise Exception("heuristic has unrecognized content_type")
         return True
 
     def metric_title_check(self) -> bool:
