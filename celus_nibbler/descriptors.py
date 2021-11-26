@@ -40,6 +40,7 @@ class String(Enum):
     ENDSWITH = auto()
     CONTAINS = auto()
     IS = auto()
+    ISNOT = auto()
 
 
 class Coord:
