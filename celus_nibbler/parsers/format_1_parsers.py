@@ -1,5 +1,5 @@
 from celus_nibbler import validators
-from celus_nibbler.descriptors import Coord, RelatedTo
+from celus_nibbler.descriptors import Coord, RelatedTo, String
 
 from .horizontal_dates_parser import HorizontalDatesParser
 
@@ -134,3 +134,43 @@ class Parser_1_3_3(HorizontalDatesParser):
     title_ids = None
     dimension_data = None
     date_validation = validators.DateInString
+
+
+class Parser_1_1_1(HorizontalDatesParser):
+
+    platforms = [
+        'SUS_FLVC_Ulrichs',
+    ]
+
+    heuristics = [
+        Coord(0, 0, content_type=String.STARTSWITH, content='Total Searches from'),
+        Coord(4, 0, content_type=String.STARTSWITH, content='Full record views from'),
+    ]
+    metric_title = Coord(5, 0, content='Usage Type')
+    values = Coord(6, 1, relation=RelatedTo.FIELD)
+    metric = Coord(6, 0, relation=RelatedTo.ROW)
+    months = Coord(5, 1, relation=RelatedTo.COL)
+    separate_year = None
+    title = None
+    title_ids = None
+    dimension_data = None
+
+
+# class Parser_1_1_2(HorizontalDatesParser):
+
+#     platforms = [
+#         'SciFinder',
+#     ]
+
+#     heuristics = [
+#         Coord(0, 0, content_type=String.STARTSWITH, content='SciFinder-web Activity Usage Summary'),
+#         Coord(4, 0, content_type=String.STARTSWITH, content='Full record views from'),
+#     ]
+#     metric_title = Coord(5, 0, content='Usage Type')
+#     values = Coord(6, 1, relation=RelatedTo.FIELD)
+#     metric = Coord(6, 0, relation=RelatedTo.ROW)
+#     months = Coord(5, 1, relation=RelatedTo.COL)
+#     separate_year = None
+#     title = None
+#     title_ids = None
+#     dimension_data = None

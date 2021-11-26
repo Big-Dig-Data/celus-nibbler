@@ -145,6 +145,7 @@ def test_get_supported_platforms():
         'Knovel',
         'Micromedex',
         'Naxos',
+        'SUS_FLVC_Ulrichs',
         'SciFinder',
         'SciVal',
         'SpringerLink',
