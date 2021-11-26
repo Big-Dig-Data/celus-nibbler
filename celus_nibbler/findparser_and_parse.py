@@ -76,10 +76,10 @@ def findparser_and_parse(
             if counter_records := parser(sheet, sheet_idx, platform).parse():
                 pass  # expected an indented block error if no block of code here
             else:
-                logger.warning('sheet %s has not been parsed', sheet_idx + 1)
+                logger.warning('sheet %s has not been parsed', sheet_idx)
         else:
             logger.warning(
-                'parser has not been chosen for sheet %s, the sheet wont be parsed', sheet_idx + 1
+                'parser has not been chosen for sheet %s, the sheet wont be parsed', sheet_idx
             )
         sheets_of_counter_records.append(counter_records)
     return sheets_of_counter_records
