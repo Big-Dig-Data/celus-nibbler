@@ -22,15 +22,15 @@ class ValueNotUsedWarning(NibblerWarning):
         self.reason = reason
 
     def __str__(self):
-        self.laymancount_sheet = self.sheet + 1 if self.sheet is not None else "unspecified"
-        self.laymancount_row = self.row + 1 if self.row is not None else "unspecified"
-        self.laymancount_col = self.col + 1 if self.col is not None else "unspecified"
+        self.sheet = self.sheet if self.sheet is not None else "unspecified"
+        self.row = self.row if self.row is not None else "unspecified"
+        self.col = self.col if self.col is not None else "unspecified"
         self.colletters_explanation = (
-            f" (col \"{colnum_to_colletters(self.laymancount_col)}\" if using software for table sheets)"
+            f" (col \"{colnum_to_colletters(self.col + 1)}\" if using software for table sheets)"
             if self.col is not None
             else ""
         )
-        return f'Value \'{self.value}\' was ignored.\nPosition: sheet {self.laymancount_sheet}, col {self.laymancount_col}{self.colletters_explanation}, row {self.laymancount_row}) is outside the table.\nReason: {self.reason}.'
+        return f'Value \'{self.value}\' was ignored.\nPosition: sheet {self.sheet}, col {self.col}{self.colletters_explanation}, row {self.row}) is outside the table.\nReason: {self.reason}.'
 
     def __repr__(self):
         return str(self)

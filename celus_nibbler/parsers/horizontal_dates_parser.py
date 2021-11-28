@@ -51,7 +51,7 @@ class HorizontalDatesParser(GeneralParser):
                 except NibblerValidation:
                     logger.warning(
                         f"parser could not parse '{cell_with_date}' as a date, therefore this value will be ignored. "
-                        f'Location: col {self.separate_year.start_col + cell_with_date_idx + 1} in sheet {self.sheet_idx + 1}'
+                        f'Location: col {cell_with_date_idx} in sheet {self.sheet_idx}'
                     )
                     parsed_dates.append(None)
                     continue
@@ -62,8 +62,8 @@ class HorizontalDatesParser(GeneralParser):
                     except NibblerValidation:
                         logger.warning(
                             f"parser could not parse '{cells_with_years[cell_with_date_idx]}' as a year, "
-                            f'therefore these values will be ignored. Location: row {self.separate_year.start_row + 1} col '
-                            f'{self.separate_year.start_col + cell_with_date_idx + 1} in sheet {self.sheet_idx + 1}'
+                            f'therefore these values will be ignored. Location: row {self.separate_year.start_row} col '
+                            f'{self.separate_year.start_col + cell_with_date_idx} in sheet {self.sheet_idx}'
                         )
                         parsed_dates.append(None)
                         continue
@@ -134,7 +134,7 @@ class HorizontalDatesParser(GeneralParser):
                     break
             else:
                 logger.warning(
-                    f'this table in sheet {self.sheet_idx + 1} wont be parsed, no instructions on how to parse metrics was provided'
+                    f'this table in sheet {self.sheet_idx} wont be parsed, no instructions on how to parse metrics was provided'
                 )
                 break
             if metric.lower() in ignore_metrics:
@@ -199,7 +199,7 @@ class HorizontalDatesParser(GeneralParser):
                     #     'The value does not have a corresponding date. Most likely its position is outside the table.',
                     # )
                     logger.warning(
-                        f'value: {value} was ignored. It does not have a corresponding date. Most likely its position (sheet: {self.sheet_idx}, col: {self.values.start_col + col_with_values_idx + 1}, row: {self.values.start_row + row_with_values_idx + 1}) is outside the table.'
+                        f'value: {value} was ignored. It does not have a corresponding date. Most likely its position (sheet: {self.sheet_idx}, col: {self.values.start_col + col_with_values_idx}, row: {self.values.start_row + row_with_values_idx}) is outside the table.'
                     )
                     continue
                 else:

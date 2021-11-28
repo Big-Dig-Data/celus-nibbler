@@ -79,7 +79,7 @@ def test_reader_and_findparser_xlsx(
         if parsers[sheet_idx] == '0':
             assert (
                 found_parser is None
-            ), f"parser {found_parser.__name__} found for sheet {sheet_idx + 1} where are no data to be parsed"
+            ), f"parser {found_parser.__name__} found for sheet {sheet_idx} where are no data to be parsed"
         else:
             assert found_parser is not None, "No parser found"
             assert (
