@@ -174,3 +174,23 @@ class Parser_1_1_1(HorizontalDatesParser):
 #     title = None
 #     title_ids = None
 #     dimension_data = None
+
+
+class Parser_1_1_4(HorizontalDatesParser):
+
+    platforms = [
+        'SciFinder',
+    ]
+
+    heuristics = [
+        Coord(0, 0, content='Name'),
+        Coord(0, 1, content='Type'),
+    ]
+    metric_title = Coord(0, 1, content='Type')
+    values = Coord(1, 2, relation=RelatedTo.FIELD)
+    metric = Coord(1, 1, relation=RelatedTo.ROW)
+    months = Coord(0, 2, relation=RelatedTo.COL)
+    separate_year = None
+    title = None
+    title_ids = None
+    dimension_data = None

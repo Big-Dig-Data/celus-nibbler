@@ -8,8 +8,7 @@ from celus_nibbler import validators
 from celus_nibbler.descriptors import RelatedTo
 from celus_nibbler.errors import NibblerValidation, TableException
 from celus_nibbler.record import CounterRecord
-from celus_nibbler.settings import IGNORE_METRICS as ignore_metrics
-from celus_nibbler.settings import IGNORE_TITLES as ignore_titles
+from celus_nibbler.settings import IGNORE_METRICS, IGNORE_MONTHS, IGNORE_TITLES
 from celus_nibbler.utils import end_month, start_month
 
 from .generalparser import GeneralParser
@@ -46,31 +45,37 @@ class HorizontalDatesParser(GeneralParser):
                 cells_with_years = None
 
             for cell_with_date_idx, cell_with_date in enumerate(cells_with_dates):
-                try:
-                    date = parse_date(cell_with_date)
-                except NibblerValidation:
-                    logger.warning(
-                        f"parser could not parse '{cell_with_date}' as a date, therefore this value will be ignored. "
-                        f'Location: col {cell_with_date_idx} in sheet {self.sheet_idx}'
-                    )
+                if cell_with_date in IGNORE_MONTHS:
                     parsed_dates.append(None)
-                    continue
-
-                if cells_with_years is not None:
+                else:
                     try:
-                        separate_year = parse_date(str(cells_with_years[cell_with_date_idx])).year
+                        date = parse_date(cell_with_date)
                     except NibblerValidation:
                         logger.warning(
-                            f"parser could not parse '{cells_with_years[cell_with_date_idx]}' as a year, "
-                            f'therefore these values will be ignored. Location: row {self.separate_year.start_row} col '
-                            f'{self.separate_year.start_col + cell_with_date_idx} in sheet {self.sheet_idx}'
+                            f"parser could not parse '{cell_with_date}' as a date, therefore this value will be ignored. "
+                            f'Location: col {self.months.start_col + cell_with_date_idx} in sheet {self.sheet_idx}.'
                         )
                         parsed_dates.append(None)
                         continue
-                    date = date.replace(year=separate_year)
 
-                logger.info('date is: %s ', date)
-                parsed_dates.append(date)
+                    if cells_with_years is not None:
+                        try:
+                            separate_year = parse_date(
+                                str(cells_with_years[cell_with_date_idx])
+                            ).year
+                        except NibblerValidation:
+                            logger.warning(
+                                f"parser could not parse '{cells_with_years[cell_with_date_idx]}' as a year, "
+                                f'therefore these values will be ignored. Location: row {self.separate_year.start_row} col '
+                                f'{self.separate_year.start_col + cell_with_date_idx} in sheet {self.sheet_idx}'
+                            )
+                            parsed_dates.append(None)
+                            continue
+                        date = date.replace(year=separate_year)
+
+                    logger.info('date is: %s ', date)
+                    parsed_dates.append(date)
+
         else:
             # TODO add parsing for dates which has RelatedTo.ROW and possibly RelatedTo.TABLE
             pass
@@ -137,9 +142,9 @@ class HorizontalDatesParser(GeneralParser):
                     f'this table in sheet {self.sheet_idx} wont be parsed, no instructions on how to parse metrics was provided'
                 )
                 break
-            if metric.lower() in ignore_metrics:
+            if metric.lower() in IGNORE_METRICS:
                 logger.info(
-                    'metric \'%s\' was ignored, because was found in "ignore_metrics"', metric
+                    'metric \'%s\' was ignored, because was found in "IGNORE_METRICS"', metric
                 )
                 continue
             try:
@@ -169,10 +174,10 @@ class HorizontalDatesParser(GeneralParser):
                 title = None
 
             if title is not None:
-                if title.lower() in ignore_titles:
+                if title.lower() in IGNORE_TITLES:
                     title = None
                     logger.info(
-                        'title \'%s\' was ignored, because was found in "ignore_titles"', title
+                        'title \'%s\' was ignored, because was found in "IGNORE_TITLES"', title
                     )
                 else:
                     try:
@@ -191,15 +196,8 @@ class HorizontalDatesParser(GeneralParser):
             cells_with_values = row_with_values[self.values.start_col :]
             for col_with_values_idx, value in enumerate(cells_with_values):
                 if col_with_values_idx >= len(dates) or dates[col_with_values_idx] is None:
-                    # warning = ValueNotUsedWarning(
-                    #     value,
-                    #     self.values.start_row + row_with_values_idx,
-                    #     self.values.start_col + col_with_values_idx,
-                    #     self.sheet_idx,
-                    #     'The value does not have a corresponding date. Most likely its position is outside the table.',
-                    # )
                     logger.warning(
-                        f'value: {value} was ignored. It does not have a corresponding date. Most likely its position (sheet: {self.sheet_idx}, col: {self.values.start_col + col_with_values_idx}, row: {self.values.start_row + row_with_values_idx}) is outside the table.'
+                        f'value: {value} was ignored. It does not have a corresponding date. The date value is either included in settings.IGNORE_MONTHS or the values position is outside the table. Position is sheet: {self.sheet_idx}, col: {self.values.start_col + col_with_values_idx}, row: {self.values.start_row + row_with_values_idx}'
                     )
                     continue
                 else:
