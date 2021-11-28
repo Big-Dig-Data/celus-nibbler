@@ -13,18 +13,25 @@ logger = logging.getLogger(__name__)
 
 def findparser(sheet: TableReader, platform: str) -> typing.Optional[typing.Type[GeneralParser]]:
     plat_OK = [parser for parser in all_parsers() if platform in parser.platforms]
+
     if len(plat_OK) < 1:
         logger.warning('there is no parser which expects your platform %s', platform)
     else:
-        logger.info('there is %s parsers, which expects your platform %s', len(plat_OK), platform)
+        logger.info(
+            'there is %s parsers, which expects your platform %s. These parsers are: %s',
+            len(plat_OK),
+            platform,
+            [parser.__name__ for parser in plat_OK],
+        )
 
     plat_heur_OK = [parser for parser in plat_OK if parser(sheet).heuristic_check()]
     if len(plat_heur_OK) < 1:
         logger.warning('there is no parser which heuristics matching format of your uploaded file.')
     else:
         logger.info(
-            'there is %s parsers, which heuristics matching format of your uploaded file.',
+            'there is %s parsers, which heuristics matching format of your uploaded file. These parsers are: %s',
             len(plat_heur_OK),
+            [parser.__name__ for parser in plat_heur_OK],
         )
 
     plat_heur_metrtitle_OK = [
@@ -35,17 +42,19 @@ def findparser(sheet: TableReader, platform: str) -> typing.Optional[typing.Type
         return None
     elif len(plat_heur_metrtitle_OK) > 1:
         logger.warning(
-            '%s parsers, matching the metric_title in the file, has been found. Script needs to find exactly 1 parser, to work properly.',
+            '%s parsers, matching the metric_title in the file, has been found. Script needs to find exactly 1 parser, to work properly. These parsers are: %s',
             len(plat_heur_metrtitle_OK),
+            [parser.__name__ for parser in plat_heur_metrtitle_OK],
         )
         return None
     elif len(plat_heur_metrtitle_OK) == 1:
         logger.info(
-            '%s parser, matching the metric_title in the file, has been found.',
+            '%s parser, matching the metric_title in the file, has been found. This parser is: %s',
             len(plat_heur_metrtitle_OK),
+            [parser.__name__ for parser in plat_heur_metrtitle_OK],
         )
         parser = plat_heur_metrtitle_OK[0]
-        logger.info('Parser used: %s', parser)
+        logger.info('Parser used: %s', parser.__name__)
         return parser
     return None
 

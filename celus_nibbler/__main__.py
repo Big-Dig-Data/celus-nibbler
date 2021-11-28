@@ -6,10 +6,11 @@ import sys
 from unidecode import unidecode
 
 from celus_nibbler import findparser_and_parse, get_supported_platforms_count
+from celus_nibbler.parsers import all_parsers
 
 
 def main():
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(format='%(levelname)s:  %(message)s', level=logging.DEBUG)
 
     logger = logging.getLogger(__name__)
     logger.debug("Logging is configured.")
@@ -26,6 +27,12 @@ def main():
         sys.exit(1)
 
     platform = unidecode(sys.argv[1])
+
+    used_parsers = ''
+    for parser in all_parsers():
+        used_parsers += f'\n{parser.__name__}'
+
+    logger.info('Using parsers: %s', used_parsers)
 
     for file in sys.argv[2:]:
         if sheets_of_counter_records := findparser_and_parse(pathlib.Path(file), platform):
