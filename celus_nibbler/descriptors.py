@@ -26,7 +26,7 @@ class RelatedTo(Enum):
     TABLE = auto()
 
 
-class String(Enum):
+class Text(Enum):
     """
     This class explain occurrence of `content` in the string.
 
@@ -41,14 +41,29 @@ class String(Enum):
     CONTAINS = auto()
     IS = auto()
     ISNOT = auto()
+    ISANY = auto()
+
+
+class Content:
+    def __init__(self, type=Text.IS, content=None):
+        self.type = type
+        self.content = content
+
+    def __str__(self) -> str:
+        return f'The {self.type} {self.content}'
 
 
 class Coord:
-    def __init__(self, start_row, start_col, content_type=String.IS, content=None, relation=None):
+    def __init__(
+        self,
+        start_row,
+        start_col,
+        contains=Content(Text.IS, None),
+        relation=None,
+    ):
         self.start_row = start_row
         self.start_col = start_col
-        self.content_type = content_type
-        self.content = content
+        self.contains = contains
         self.relation = relation
 
     def __str__(self):

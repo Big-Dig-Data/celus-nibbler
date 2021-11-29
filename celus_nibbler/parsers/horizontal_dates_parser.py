@@ -29,16 +29,16 @@ class HorizontalDatesParser(GeneralParser):
                 return self.date_validation(date=value).date
 
         if self.months.relation == RelatedTo.COL:
-            cells_with_dates: list = self.table[self.months.start_row][self.months.start_col :]
+            cells_with_dates: list = self.sheet[self.months.start_row][self.months.start_col :]
 
             if self.separate_year is not None:
                 if self.separate_year.relation == RelatedTo.TABLE:
                     cells_with_years: list = [
-                        self.table[self.separate_year.start_row][self.separate_year.start_col]
+                        self.sheet[self.separate_year.start_row][self.separate_year.start_col]
                         for e in range(len(cells_with_dates))
                     ]
                 elif self.separate_year.RelatedTo.COL:
-                    cells_with_years: list = self.table[self.separate_year.start_row][
+                    cells_with_years: list = self.sheet[self.separate_year.start_row][
                         self.separate_year.start_col :
                     ]
             else:
@@ -89,11 +89,11 @@ class HorizontalDatesParser(GeneralParser):
 
         if self.metric is not None:
             if self.metric.relation == RelatedTo.TABLE:
-                metric_one_for_whole_table = self.table[self.metric.start_row][
+                metric_one_for_whole_sheet = self.sheet[self.metric.start_row][
                     self.metric.start_col
                 ]
             else:
-                metric_one_for_whole_table = None
+                metric_one_for_whole_sheet = None
             if self.metric.relation == RelatedTo.ROW:
                 col_with_metrics = self.metric.start_col
             else:
@@ -103,15 +103,15 @@ class HorizontalDatesParser(GeneralParser):
             # else:
             #     row_with_metrics = None
         else:
-            metric_one_for_whole_table = col_with_metrics = None  # row_with_metrics =
+            metric_one_for_whole_sheet = col_with_metrics = None  # row_with_metrics =
 
         # prepare how to parse Titles
 
         if self.title is not None:
             if self.title.relation == RelatedTo.TABLE:
-                title_one_for_whole_table = self.table[self.title.start_row][self.title.start_col]
+                title_one_for_whole_sheet = self.sheet[self.title.start_row][self.title.start_col]
             else:
-                title_one_for_whole_table = None
+                title_one_for_whole_sheet = None
             if self.title.relation == RelatedTo.ROW:
                 col_with_titles = self.title.start_col
             else:
@@ -121,14 +121,14 @@ class HorizontalDatesParser(GeneralParser):
             # else:
             #     row_with_titles = None
         else:
-            title_one_for_whole_table = col_with_titles = None  # row_with_titles =
+            title_one_for_whole_sheet = col_with_titles = None  # row_with_titles =
 
         # PARSING row by row
-        for row_with_values_idx, row_with_values in enumerate(self.table[self.values.start_row :]):
+        for row_with_values_idx, row_with_values in enumerate(self.sheet[self.values.start_row :]):
 
             # parsing of metrics
-            if metric_one_for_whole_table is not None:
-                metric = metric_one_for_whole_table
+            if metric_one_for_whole_sheet is not None:
+                metric = metric_one_for_whole_sheet
             elif col_with_metrics is not None:
                 if row_with_values[col_with_metrics] is not None:
                     metric = row_with_values[col_with_metrics]
@@ -139,7 +139,7 @@ class HorizontalDatesParser(GeneralParser):
                     break
             else:
                 logger.warning(
-                    f'this table in sheet {self.sheet_idx} wont be parsed, no instructions on how to parse metrics was provided'
+                    f'sheet {self.sheet_idx} wont be parsed, no instructions on how to parse metrics was provided'
                 )
                 break
             if metric.lower() in IGNORE_METRICS:
@@ -160,8 +160,8 @@ class HorizontalDatesParser(GeneralParser):
             logger.info('metric is: \'%s\' ', metric)
 
             # parsing of titles
-            if title_one_for_whole_table is not None:
-                title = title_one_for_whole_table
+            if title_one_for_whole_sheet is not None:
+                title = title_one_for_whole_sheet
             elif col_with_titles is not None:
                 if row_with_values[col_with_titles] is not None:
                     title = row_with_values[col_with_titles]
@@ -197,7 +197,7 @@ class HorizontalDatesParser(GeneralParser):
             for col_with_values_idx, value in enumerate(cells_with_values):
                 if col_with_values_idx >= len(dates) or dates[col_with_values_idx] is None:
                     logger.warning(
-                        f'value: {value} was ignored. It does not have a corresponding date. The date value is either included in settings.IGNORE_MONTHS or the values position is outside the table. Position is sheet: {self.sheet_idx}, col: {self.values.start_col + col_with_values_idx}, row: {self.values.start_row + row_with_values_idx}'
+                        f'value: {value} was ignored. It does not have a corresponding date. The date value is either included in settings.IGNORE_MONTHS or the values position is outside the sheet. Position is sheet: {self.sheet_idx}, col: {self.values.start_col + col_with_values_idx}, row: {self.values.start_row + row_with_values_idx}'
                     )
                     continue
                 else:

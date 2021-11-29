@@ -7,7 +7,7 @@ from jellyfish import porter_stem
 from unidecode import unidecode
 
 from celus_nibbler import validators
-from celus_nibbler.descriptors import String
+from celus_nibbler.descriptors import Text
 from celus_nibbler.reader import TableReader
 from celus_nibbler.record import CounterRecord
 
@@ -20,28 +20,31 @@ class GeneralParser(metaclass=ABCMeta):
     date_validation = validators.Date
 
     def __init__(
-        self, table: TableReader, sheet_idx: typing.Optional[int] = None, platform: str = None
+        self, sheet: TableReader, sheet_idx: typing.Optional[int] = None, platform: str = None
     ):
         self.header = None
-        self.table = table
+        self.sheet = sheet
         self.sheet_idx = sheet_idx
         self.platform = platform
 
     def heuristic_check(self) -> bool:
         """
-        check if there is an expected content in the expected location of the table
+        check if there is an expected content in the expected location of the sheet
         """
         for heuristic in self.heuristics:
-            if heuristic.content_type == String.IS:
-                if self.table[heuristic.start_row][heuristic.start_col] != heuristic.content:
+            if heuristic.contains.type == Text.IS:
+                if (
+                    self.sheet[heuristic.start_row][heuristic.start_col]
+                    != heuristic.contains.content
+                ):
                     return False
-            elif heuristic.content_type == String.STARTSWITH:
-                if not self.table[heuristic.start_row][heuristic.start_col].startswith(
-                    heuristic.content
+            elif heuristic.contains.type == Text.STARTSWITH:
+                if not self.sheet[heuristic.start_row][heuristic.start_col].startswith(
+                    heuristic.contains.content
                 ):
                     return False
             else:
-                raise Exception("heuristic has unrecognized content_type")
+                raise Exception("heuristic has unrecognized type")
         return True
 
     def metric_title_check(self) -> bool:
@@ -50,8 +53,8 @@ class GeneralParser(metaclass=ABCMeta):
         """
         row = self.metric_title.start_row
         col = self.metric_title.start_col
-        expected_content = self.metric_title.content
-        given_content = self.table[row][col]
+        expected_content = self.metric_title.contains.content
+        given_content = self.sheet[row][col]
         if isinstance(expected_content, str):
             expected_content = porter_stem(unidecode(expected_content.strip()).lower())
         if isinstance(given_content, str):
