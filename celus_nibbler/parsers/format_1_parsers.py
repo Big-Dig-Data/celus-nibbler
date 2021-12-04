@@ -183,13 +183,34 @@ class Parser_1_1_1(HorizontalDatesParser):
 #     dimension_data = None
 
 
-class Parser_1_1_4(HorizontalDatesParser):
+class Parser_1_1_4_1(HorizontalDatesParser):
 
     platforms = [
         'SciFinder',
     ]
 
-    sheet_name = Content(Text.ISANY)
+    sheet_name = Content(Text.IS, 'SFoW')
+    heuristics = [
+        Coord(0, 0, Content(Text.IS, 'Name')),
+        Coord(0, 1, Content(Text.IS, 'Type')),
+    ]
+    metric_title = Coord(0, 1, Content(Text.IS, 'Type'))
+    values = Coord(1, 2, relation=RelatedTo.FIELD)
+    metric = Coord(1, 1, relation=RelatedTo.ROW)
+    months = Coord(0, 2, relation=RelatedTo.COL)
+    separate_year = None
+    title = None
+    title_ids = None
+    dimension_data = None
+
+
+class Parser_1_1_4_2(HorizontalDatesParser):
+
+    platforms = [
+        'SciFinder_n',
+    ]
+
+    sheet_name = Content(Text.IS, 'SFn')
     heuristics = [
         Coord(0, 0, Content(Text.IS, 'Name')),
         Coord(0, 1, Content(Text.IS, 'Type')),

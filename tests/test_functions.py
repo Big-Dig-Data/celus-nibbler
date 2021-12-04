@@ -147,6 +147,7 @@ def test_get_supported_platforms():
         'Naxos',
         'SUS_FLVC_Ulrichs',
         'SciFinder',
+        'SciFinder_n',
         'SciVal',
         'SpringerLink',
         'Uptodate',
