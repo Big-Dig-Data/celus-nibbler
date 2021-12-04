@@ -5,6 +5,8 @@ from typing import IO, Sequence, Union
 
 import openpyxl
 
+from celus_nibbler.templates import Sheet
+
 
 class TableReader(metaclass=ABCMeta):
     """
@@ -48,10 +50,10 @@ class NaiveCSVReader(TableReader):
     def __init__(self, source: Union[bytes, str, IO]):
         super().__init__(source)
         reader = csv.reader(self.stream)
-        self.sheets = [list(reader)]
+        self.sheets: list[Sheet] = [Sheet(index=0, name=None, values=list(reader))]
         self.close()
 
-    def __getitem__(self, item) -> Sequence:
+    def __getitem__(self, item) -> Sheet:
         return self.sheets[item]
 
     def __iter__(self):
@@ -71,15 +73,18 @@ class NaiveXlsxReader(TableReader):
         workbook = openpyxl.load_workbook(
             self.stream, read_only=True, data_only=True, keep_links=False
         )
+        self.sheetnames = workbook.sheetnames
         self.sheets = []
-        for sheet in workbook.worksheets:
+        for sheet_idx, sheet in enumerate(workbook.worksheets):
             values = []
             for row in sheet.rows:
                 values.append([cell.value for cell in row])
-            self.sheets.append(values)
+            self.sheets.append(
+                Sheet(index=sheet_idx, name=self.sheetnames[sheet_idx], values=values)
+            )
         self.close()
 
-    def __getitem__(self, item) -> Sequence:
+    def __getitem__(self, item) -> Sheet:
         return self.sheets[item]
 
     def __iter__(self):

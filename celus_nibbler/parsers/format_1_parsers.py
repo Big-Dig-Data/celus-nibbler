@@ -1,5 +1,5 @@
 from celus_nibbler import validators
-from celus_nibbler.descriptors import Content, Coord, RelatedTo, Text
+from celus_nibbler.templates import Content, Coord, RelatedTo, Text
 
 from .horizontal_dates_parser import HorizontalDatesParser
 

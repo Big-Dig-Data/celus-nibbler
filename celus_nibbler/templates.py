@@ -1,4 +1,5 @@
 from enum import Enum, auto
+from typing import Optional, Union
 
 
 class MonthsDirection(Enum):
@@ -36,18 +37,24 @@ class Text(Enum):
     IS = the string is the `content`
     """
 
-    STARTSWITH = auto()
-    ENDSWITH = auto()
-    CONTAINS = auto()
+    ISANY = auto()
     IS = auto()
     ISNOT = auto()
+    CONTAINS = auto()
+    STARTSWITH = auto()
+    ENDSWITH = auto()
+
+
+class Number(Enum):
     ISANY = auto()
+    IS = auto()
+    ISNOT = auto()
 
 
 class Content:
     def __init__(self, type=Text.IS, content=None):
-        self.type = type
-        self.content = content
+        self.type: Union[Text, Number] = type
+        self.content: Union[str, int] = content
 
     def __str__(self) -> str:
         return f'The {self.type} {self.content}'
@@ -61,10 +68,20 @@ class Coord:
         contains=Content(Text.IS, None),
         relation=None,
     ):
-        self.start_row = start_row
-        self.start_col = start_col
-        self.contains = contains
-        self.relation = relation
+        self.start_row: int = start_row
+        self.start_col: int = start_col
+        self.contains: Content = contains
+        self.relation: RelatedTo = relation
 
     def __str__(self):
         return f'Coords are start_row:{self.start_row} start_col:{self.start_col} content:{self.content} relation:{self.relation}'
+
+
+class Sheet:
+    def __init__(self, index, name, values):
+        self.idx: int = index
+        self.name: Optional[str] = name
+        self.values: Optional[list] = values
+
+    def __str__(self) -> str:
+        return f'Sheet  name: {self.name}  index: {self.idx}'

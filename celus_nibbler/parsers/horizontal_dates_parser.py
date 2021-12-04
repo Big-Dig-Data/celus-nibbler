@@ -5,11 +5,11 @@ import typing
 from pydantic import ValidationError
 
 from celus_nibbler import validators
-from celus_nibbler.descriptors import RelatedTo
 from celus_nibbler.errors import NibblerValidation, TableException
 from celus_nibbler.record import CounterRecord
 from celus_nibbler.settings import IGNORE_METRICS, IGNORE_MONTHS, IGNORE_TITLES
-from celus_nibbler.utils import end_month, start_month
+from celus_nibbler.templates import RelatedTo
+from celus_nibbler.utils import assign_by_relatedto, end_month, start_month
 
 from .generalparser import GeneralParser
 
@@ -29,16 +29,20 @@ class HorizontalDatesParser(GeneralParser):
                 return self.date_validation(date=value).date
 
         if self.months.relation == RelatedTo.COL:
-            cells_with_dates: list = self.sheet[self.months.start_row][self.months.start_col :]
+            cells_with_dates: list = self.sheet.values[self.months.start_row][
+                self.months.start_col :
+            ]
 
             if self.separate_year is not None:
                 if self.separate_year.relation == RelatedTo.TABLE:
                     cells_with_years: list = [
-                        self.sheet[self.separate_year.start_row][self.separate_year.start_col]
+                        self.sheet.values[self.separate_year.start_row][
+                            self.separate_year.start_col
+                        ]
                         for e in range(len(cells_with_dates))
                     ]
-                elif self.separate_year.RelatedTo.COL:
-                    cells_with_years: list = self.sheet[self.separate_year.start_row][
+                elif self.separate_year.relation == RelatedTo.COL:
+                    cells_with_years: list = self.sheet.values[self.separate_year.start_row][
                         self.separate_year.start_col :
                     ]
             else:
@@ -86,45 +90,15 @@ class HorizontalDatesParser(GeneralParser):
         dates: list = self.parse_dates()
 
         # prepare how to parse Metrics
-
-        if self.metric is not None:
-            if self.metric.relation == RelatedTo.TABLE:
-                metric_one_for_whole_sheet = self.sheet[self.metric.start_row][
-                    self.metric.start_col
-                ]
-            else:
-                metric_one_for_whole_sheet = None
-            if self.metric.relation == RelatedTo.ROW:
-                col_with_metrics = self.metric.start_col
-            else:
-                col_with_metrics = None
-            # if self.metric.relation == RelatedTo.COL:
-            #     row_with_metrics = self.metric.start_row
-            # else:
-            #     row_with_metrics = None
-        else:
-            metric_one_for_whole_sheet = col_with_metrics = None  # row_with_metrics =
+        metric_one_for_whole_sheet, col_with_metrics = assign_by_relatedto(self.metric, self.sheet)
 
         # prepare how to parse Titles
-
-        if self.title is not None:
-            if self.title.relation == RelatedTo.TABLE:
-                title_one_for_whole_sheet = self.sheet[self.title.start_row][self.title.start_col]
-            else:
-                title_one_for_whole_sheet = None
-            if self.title.relation == RelatedTo.ROW:
-                col_with_titles = self.title.start_col
-            else:
-                col_with_titles = None
-            # if self.title.relation == RelatedTo.COL:
-            #     row_with_titles = self.title.start_row
-            # else:
-            #     row_with_titles = None
-        else:
-            title_one_for_whole_sheet = col_with_titles = None  # row_with_titles =
+        title_one_for_whole_sheet, col_with_titles = assign_by_relatedto(self.title, self.sheet)
 
         # PARSING row by row
-        for row_with_values_idx, row_with_values in enumerate(self.sheet[self.values.start_row :]):
+        for row_with_values_idx, row_with_values in enumerate(
+            self.sheet.values[self.values.start_row :]
+        ):
 
             # parsing of metrics
             if metric_one_for_whole_sheet is not None:

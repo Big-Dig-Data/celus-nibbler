@@ -13,21 +13,21 @@ class TestNaiveCSVReader:
 
     def test_indexing(self):
         sheets = NaiveCSVReader(self.data_csv)
-        for row_idx, row in enumerate(sheets[self.onlysheet_idx]):
+        for row_idx, row in enumerate(sheets[self.onlysheet_idx].values):
             assert row == self.data_list[self.onlysheet_idx][row_idx]
 
         with pytest.raises(IndexError):
-            assert sheets[self.onlysheet_idx][3]
-        assert sheets[self.onlysheet_idx][-1] == self.data_list[self.onlysheet_idx][2]
+            assert sheets[self.onlysheet_idx].values[3]
+        assert sheets[self.onlysheet_idx].values[-1] == self.data_list[self.onlysheet_idx][2]
 
     def test_slicing(self):
         sheets = NaiveCSVReader(self.data_csv)
-        assert sheets[self.onlysheet_idx][0:2] == self.data_list[self.onlysheet_idx][0:2]
-        assert sheets[self.onlysheet_idx][1:] == self.data_list[self.onlysheet_idx][1:]
+        assert sheets[self.onlysheet_idx].values[0:2] == self.data_list[self.onlysheet_idx][0:2]
+        assert sheets[self.onlysheet_idx].values[1:] == self.data_list[self.onlysheet_idx][1:]
 
     def test_iteration(self):
         sheets = NaiveCSVReader(self.data_csv)
-        for i, row in enumerate(sheets[self.onlysheet_idx]):
+        for i, row in enumerate(sheets[self.onlysheet_idx].values):
             assert row == self.data_list[self.onlysheet_idx][i]
 
 
@@ -39,18 +39,19 @@ class TestNaiveXlsxReader:
     def test_indexing(self):
         sheets = NaiveXlsxReader(self.file_path)
         for sheet_idx, sheet in enumerate(sheets):
-            for row_idx in range(len(sheet)):
-                assert sheets[sheet_idx][row_idx] == self.data_list[sheet_idx][row_idx]
+            for row_idx in range(len(sheet.values)):
+                # assert sheets[sheet_idx][row_idx] == self.data_list[sheet_idx][row_idx]
+                assert sheets[sheet_idx].values[row_idx] == self.data_list[sheet_idx][row_idx]
         with pytest.raises(IndexError):
-            assert sheets[0][3]
-        assert sheets[0][-1] == self.data_list[0][2]
+            assert sheets[0].values[3]
+        assert sheets[0].values[-1] == self.data_list[0][2]
 
     def test_slicing(self):
         sheets = NaiveXlsxReader(self.file_path)
-        assert sheets[0][0:2] == self.data_list[0][0:2]
-        assert sheets[0][1:] == self.data_list[0][1:]
+        assert sheets[0].values[0:2] == self.data_list[0][0:2]
+        assert sheets[0].values[1:] == self.data_list[0][1:]
 
     def test_iteration(self):
         sheets = NaiveXlsxReader(self.file_path)
-        for i, row in enumerate(sheets[0]):
+        for i, row in enumerate(sheets[0].values):
             assert row == self.data_list[0][i]
