@@ -22,6 +22,18 @@ class GeneralParser(metaclass=ABCMeta):
         self.sheet_idx = sheet_idx
         self.platform = platform
 
+    platforms = None
+    sheet_name = None
+    heuristics = None
+    metric_title = None
+    values = None
+    metric = None
+    months = None
+    separate_year = None
+    title = None
+    title_ids = None
+    dimension_data = None
+
     def sheet_name_check(self) -> bool:
         """
         check if the the name of the sheet is expected

@@ -30,44 +30,61 @@ def format_str(item: str) -> str:
     return item
 
 
-def content_check(item_to_check: str, control_item_content: Content) -> bool:
-    item_to_check = format_str(item_to_check) if item_to_check is not None else None
-    control_item = (
-        format_str(control_item_content.content)
-        if control_item_content.content is not None
-        else None
-    )
-    control_item_type = control_item_content.type
-    if control_item_type == Text.ISANY:
+def content_check(item_to_check: str, control_item: Content) -> bool:
+
+    if isinstance(item_to_check, str):
+        item_to_check = format_str(item_to_check)
+    elif item_to_check is None:
+        pass
+    else:
+        raise TypeError("item_to_check cannt be other than str or None")
+
+    if control_item is None:
+        if item_to_check is None:
+            return True
+        else:
+            return False
+    elif control_item.type is None:
+        raise TypeError('you have to define Content.type it cannt be None')
+
+    control_item_content = None
+    if isinstance(control_item.content, str):
+        control_item_content = format_str(control_item.content)
+    elif control_item.content is None:
+        pass
+    else:
+        raise TypeError("control_item.content cannt be other than str or None")
+
+    if control_item.type == Text.ISANY:
         return True
-    elif control_item_type == Text.IS:
-        if control_item == item_to_check:
+    elif control_item.type == Text.IS:
+        if control_item_content == item_to_check:
             return True
         else:
             return False
-    elif control_item_type == Text.ISNOT:
-        if control_item != item_to_check:
+    elif control_item.type == Text.ISNOT:
+        if control_item_content != item_to_check:
             return True
         else:
             return False
-    elif control_item_type == Text.CONTAINS:
-        if control_item in item_to_check:
+    elif control_item.type == Text.CONTAINS:
+        if control_item_content in item_to_check:
             return True
         else:
             return False
-    elif control_item_type == Text.STARTSWITH:
-        if item_to_check.startswith(control_item):
+    elif control_item.type == Text.STARTSWITH:
+        if item_to_check.startswith(control_item_content):
             return True
         else:
             return False
-    elif control_item_type == Text.ENDSWITH:
-        if item_to_check.endswith(control_item):
+    elif control_item.type == Text.ENDSWITH:
+        if item_to_check.endswith(control_item_content):
             return True
         else:
             return False
     else:
-        raise TypeError(
-            'The %s is not supperted Content.type to check by content_check()', control_item_type
+        raise Exception(
+            'The %s is not supperted Content.type to check by content_check()', control_item.type
         )
 
 
