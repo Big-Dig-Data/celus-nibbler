@@ -170,8 +170,8 @@ class Parser_1_1_1(HorizontalDatesParser):
 #     ]
 
 #     sheet_name = [Content(Text.ISANY#
-#         Coord(0, 0, type=Text.STARTSWITH, Content(Text.IS,'SciFinder-)web Activity Usage Summary'),
-#         Coord(4, 0, type=Text.STARTSWITH, Content(Text.IS,'Full )record views from'),
+#         Coord(0, 0, conttype=Text.STARTSWITH, Content(Text.IS,'SciFinder-)web Activity Usage Summary'),
+#         Coord(4, 0, conttype=Text.STARTSWITH, Content(Text.IS,'Full )record views from'),
 #     ]
 #     metric_title = Coord(5, 0, Content(Text.IS,'Usage )Type')
 #     values = Coord(6, 1, relation=RelatedTo.FIELD)

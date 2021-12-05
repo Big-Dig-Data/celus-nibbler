@@ -44,8 +44,8 @@ def content_check(item_to_check: str, control_item: Content) -> bool:
             return True
         else:
             return False
-    elif control_item.type is None:
-        raise TypeError('you have to define Content.type it cannt be None')
+    elif control_item.conttype is None:
+        raise TypeError('you have to define Content.conttype it cannt be None')
 
     control_item_content = None
     if isinstance(control_item.content, str):
@@ -55,36 +55,37 @@ def content_check(item_to_check: str, control_item: Content) -> bool:
     else:
         raise TypeError("control_item.content cannt be other than str or None")
 
-    if control_item.type == Text.ISANY:
+    if control_item.conttype == Text.ISANY:
         return True
-    elif control_item.type == Text.IS:
+    elif control_item.conttype == Text.IS:
         if control_item_content == item_to_check:
             return True
         else:
             return False
-    elif control_item.type == Text.ISNOT:
+    elif control_item.conttype == Text.ISNOT:
         if control_item_content != item_to_check:
             return True
         else:
             return False
-    elif control_item.type == Text.CONTAINS:
+    elif control_item.conttype == Text.CONTAINS:
         if control_item_content in item_to_check:
             return True
         else:
             return False
-    elif control_item.type == Text.STARTSWITH:
+    elif control_item.conttype == Text.STARTSWITH:
         if item_to_check.startswith(control_item_content):
             return True
         else:
             return False
-    elif control_item.type == Text.ENDSWITH:
+    elif control_item.conttype == Text.ENDSWITH:
         if item_to_check.endswith(control_item_content):
             return True
         else:
             return False
     else:
         raise Exception(
-            'The %s is not supperted Content.type to check by content_check()', control_item.type
+            'The %s is not supperted Content.conttype to check by content_check()',
+            control_item.conttype,
         )
 
 

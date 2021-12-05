@@ -52,12 +52,12 @@ class Number(Enum):
 
 
 class Content:
-    def __init__(self, type=Text.IS, content=None):
-        self.type: Union[Text, Number] = type
+    def __init__(self, conttype=Text.IS, content=None):
+        self.conttype: Union[Text, Number] = conttype
         self.content: Union[str, int] = content
 
     def __str__(self) -> str:
-        return f'The {self.type} {self.content}'
+        return f'The {self.conttype} {self.content}'
 
 
 class Coord:
