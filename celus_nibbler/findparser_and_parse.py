@@ -1,17 +1,18 @@
 import logging
 import pathlib
-from typing import Optional
+import typing
 
 from celus_nibbler.errors import WrongFormatError
 from celus_nibbler.parsers import GeneralParser, all_parsers
 from celus_nibbler.reader import NaiveCSVReader, NaiveXlsxReader, TableReader
+from celus_nibbler.record import CounterRecord
 from celus_nibbler.templates import Sheet
 from celus_nibbler.validators import Platform
 
 logger = logging.getLogger(__name__)
 
 
-def findparser(sheet: Sheet, platform: str) -> Optional[GeneralParser]:
+def findparser(sheet: Sheet, platform: str) -> typing.Optional[GeneralParser]:
     plat_OK = [parser for parser in all_parsers() if platform in parser.platforms]
 
     if len(plat_OK) < 1:
@@ -75,9 +76,7 @@ def read_file(file_path: pathlib.Path) -> TableReader:
 
 def findparser_and_parse(
     file_path: pathlib.Path, platform: str
-):  # -> Optional[list[list[CounterRecord]]]:
-    # the above commented code specifying typing fails the test with python 3.8.12
-    # however this code passes the test with python 3.9.6..
+) -> typing.Optional[typing.List[typing.List[CounterRecord]]]:
 
     platform = Platform(platform=platform).platform
     logger.info('\n\n----- file \'%s\'  is tested -----', file_path.name)
