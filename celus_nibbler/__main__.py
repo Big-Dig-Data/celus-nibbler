@@ -6,7 +6,6 @@ import sys
 from unidecode import unidecode
 
 from celus_nibbler import findparser_and_parse, get_supported_platforms_count
-from celus_nibbler.parsers import all_parsers
 
 
 def main():
@@ -27,10 +26,6 @@ def main():
         sys.exit(1)
 
     platform = unidecode(sys.argv[1])
-
-    used_parsers = "\n".join([e.__name__ for e in all_parsers()])
-
-    logger.info('Using parsers: %s', used_parsers)
 
     for file in sys.argv[2:]:
         if sheets_of_counter_records := findparser_and_parse(pathlib.Path(file), platform):

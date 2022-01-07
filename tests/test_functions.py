@@ -6,9 +6,13 @@ import typing
 import pytest
 
 from celus_nibbler import findparser, findparser_and_parse, get_supported_platforms
+from celus_nibbler.parsers import all_parsers
 from celus_nibbler.reader import NaiveCSVReader, NaiveXlsxReader
 
 logger = logging.getLogger(__name__)
+
+available_parsers = "\n".join([e.__name__ for e in all_parsers()])
+logger.info('Available parsers: %s', available_parsers)
 
 
 def detect_test_files(
