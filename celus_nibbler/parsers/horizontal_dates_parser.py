@@ -77,7 +77,7 @@ class HorizontalDatesParser(GeneralParser):
                             continue
                         date = date.replace(year=separate_year)
 
-                    logger.info('date is: %s ', date)
+                    logger.debug('date is: %s ', date)
                     parsed_dates.append(date)
 
         else:
@@ -131,7 +131,7 @@ class HorizontalDatesParser(GeneralParser):
                     self.sheet_idx,
                     'metric',
                 ) from e
-            logger.info('metric is: \'%s\' ', metric)
+            logger.debug('metric is: \'%s\' ', metric)
 
             # parsing of titles
             if title_one_for_whole_sheet is not None:
@@ -164,7 +164,7 @@ class HorizontalDatesParser(GeneralParser):
                             self.sheet_idx,
                             'title',
                         ) from e
-                    logger.info('title is: \'%s\' ', title)
+                    logger.debug('title is: \'%s\' ', title)
 
             # PARSING cell by cell
             cells_with_values = row_with_values[self.values.start_col :]
@@ -186,7 +186,7 @@ class HorizontalDatesParser(GeneralParser):
                             'value',
                         ) from e
                     float_value = float(value)
-                    logger.info('float_value is: %s ', float_value)
+                    logger.debug('float_value is: %s ', float_value)
 
                     counter_report.append(
                         CounterRecord(
