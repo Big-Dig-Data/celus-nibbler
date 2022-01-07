@@ -28,9 +28,7 @@ def main():
 
     platform = unidecode(sys.argv[1])
 
-    used_parsers = ''
-    for parser in all_parsers():
-        used_parsers += f'\n{parser.__name__}'
+    used_parsers = "\n".join([e.__name__ for e in all_parsers()])
 
     logger.info('Using parsers: %s', used_parsers)
 
