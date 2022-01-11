@@ -1,3 +1,4 @@
+import typing
 from datetime import date, timedelta
 
 from jellyfish import porter_stem
@@ -30,7 +31,9 @@ def format_str(item: str) -> str:
     return item
 
 
-def content_check(item_to_check: str, control_item: Content) -> bool:
+def content_check(
+    item_to_check: typing.Optional[str], control_item: typing.Optional[Content]
+) -> bool:
 
     if isinstance(item_to_check, str):
         item_to_check = format_str(item_to_check)
