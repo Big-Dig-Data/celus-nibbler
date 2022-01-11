@@ -100,10 +100,6 @@ def assign_by_relatedto(item, sheet):
             col_with_items = item.start_col
         else:
             col_with_items = None
-        # if item.relation == RelatedTo.COL:
-        #     row_with_items = item.start_row
-        # else:
-        #     row_with_items = None
     else:
         item_one_for_whole_sheet = col_with_items = None  # row_with_items =
 
