@@ -40,7 +40,6 @@ class TestNaiveXlsxReader:
         sheets = NaiveXlsxReader(self.file_path)
         for sheet_idx, sheet in enumerate(sheets):
             for row_idx in range(len(sheet.values)):
-                # assert sheets[sheet_idx][row_idx] == self.data_list[sheet_idx][row_idx]
                 assert sheets[sheet_idx].values[row_idx] == self.data_list[sheet_idx][row_idx]
         with pytest.raises(IndexError):
             assert sheets[0].values[3]
