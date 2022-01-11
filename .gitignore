@@ -10,6 +10,7 @@ idea/
 *.swo
 *.swp
 .mypy_cache/
+poetry.lock
 .vscode/*
 *.log
 .python-version
