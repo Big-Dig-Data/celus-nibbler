@@ -45,15 +45,9 @@ class Text(Enum):
     ENDSWITH = auto()
 
 
-class Number(Enum):
-    ISANY = auto()
-    IS = auto()
-    ISNOT = auto()
-
-
 class Content:
     def __init__(self, conttype=Text.IS, content=None):
-        self.conttype: Union[Text, Number] = conttype
+        self.conttype: Text = conttype
         self.content: Union[str, int] = content
 
     def __str__(self) -> str:
