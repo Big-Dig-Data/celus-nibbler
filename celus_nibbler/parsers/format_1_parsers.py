@@ -174,18 +174,10 @@ class Parser_1_1_4_1(HorizontalDatesParser):
     months = Coord(0, 2, relation=RelatedTo.COL)
 
 
-class Parser_1_1_4_2(HorizontalDatesParser):
+class Parser_1_1_4_2(Parser_1_1_4_1):
 
     platforms = [
         'SciFinder_n',
     ]
 
     sheet_name = Content(Text.IS, 'SFn')
-    heuristics = [
-        Coord(0, 0, Content(Text.IS, 'Name')),
-        Coord(0, 1, Content(Text.IS, 'Type')),
-    ]
-    metric_title = Coord(0, 1, Content(Text.IS, 'Type'))
-    values = Coord(1, 2, relation=RelatedTo.FIELD)
-    metric = Coord(1, 1, relation=RelatedTo.ROW)
-    months = Coord(0, 2, relation=RelatedTo.COL)
