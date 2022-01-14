@@ -83,5 +83,20 @@ class Sheet:
         self.name: Optional[str] = name
         self.values: Optional[list] = values
 
+    def assign_by_relatedto(self, item):
+        if item is not None:
+            if item.relation == RelatedTo.TABLE:
+                item_one_for_whole_sheet = self.values[item.start_row][item.start_col]
+            else:
+                item_one_for_whole_sheet = None
+            if item.relation == RelatedTo.ROW:
+                col_with_items = item.start_col
+            else:
+                col_with_items = None
+        else:
+            item_one_for_whole_sheet = col_with_items = None  # row_with_items =
+
+        return item_one_for_whole_sheet, col_with_items  # , row_with_items
+
     def __str__(self) -> str:
         return f'Sheet  name: {self.name}  index: {self.idx}'

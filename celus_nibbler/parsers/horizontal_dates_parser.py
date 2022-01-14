@@ -9,7 +9,7 @@ from celus_nibbler.errors import NibblerValidation, TableException
 from celus_nibbler.record import CounterRecord
 from celus_nibbler.settings import IGNORE_METRICS, IGNORE_MONTHS, IGNORE_TITLES
 from celus_nibbler.templates import RelatedTo
-from celus_nibbler.utils import assign_by_relatedto, end_month, start_month
+from celus_nibbler.utils import end_month, start_month
 
 from .generalparser import GeneralParser
 
@@ -90,10 +90,10 @@ class HorizontalDatesParser(GeneralParser):
         dates: list = self.parse_dates()
 
         # prepare how to parse Metrics
-        metric_one_for_whole_sheet, col_with_metrics = assign_by_relatedto(self.metric, self.sheet)
+        metric_one_for_whole_sheet, col_with_metrics = self.sheet.assign_by_relatedto(self.metric)
 
         # prepare how to parse Titles
-        title_one_for_whole_sheet, col_with_titles = assign_by_relatedto(self.title, self.sheet)
+        title_one_for_whole_sheet, col_with_titles = self.sheet.assign_by_relatedto(self.title)
 
         # PARSING row by row
         for row_with_values_idx, row_with_values in enumerate(

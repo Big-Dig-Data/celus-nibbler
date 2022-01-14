@@ -4,7 +4,7 @@ from datetime import date, timedelta
 from jellyfish import porter_stem
 from unidecode import unidecode
 
-from celus_nibbler.templates import Content, RelatedTo, Text
+from celus_nibbler.templates import Content, Text
 
 
 def start_month(in_date: date) -> date:
@@ -90,20 +90,3 @@ def content_check(
             'The %s is not supperted Content.conttype to check by content_check()',
             control_item.conttype,
         )
-
-
-def assign_by_relatedto(item, sheet):
-
-    if item is not None:
-        if item.relation == RelatedTo.TABLE:
-            item_one_for_whole_sheet = sheet.values[item.start_row][item.start_col]
-        else:
-            item_one_for_whole_sheet = None
-        if item.relation == RelatedTo.ROW:
-            col_with_items = item.start_col
-        else:
-            col_with_items = None
-    else:
-        item_one_for_whole_sheet = col_with_items = None  # row_with_items =
-
-    return item_one_for_whole_sheet, col_with_items  # , row_with_items
