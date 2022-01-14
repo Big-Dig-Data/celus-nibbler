@@ -185,8 +185,7 @@ class HorizontalDatesParser(GeneralParser):
                             self.sheet_idx,
                             'value',
                         ) from e
-                    float_value = float(value)
-                    logger.debug('float_value is: %s ', float_value)
+                    logger.debug('value is: %s ', value)
 
                     counter_report.append(
                         CounterRecord(
@@ -197,7 +196,7 @@ class HorizontalDatesParser(GeneralParser):
                             end=end_month(dates[col_with_values_idx]),
                             dimension_data=None,
                             title_ids=None,
-                            value=round(float_value),
+                            value=value,
                         )
                     )
         return counter_report
