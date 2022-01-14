@@ -65,13 +65,13 @@ class Coord:
         self,
         start_row,
         start_col,
-        contains=Content(Text.IS, None),
+        contains=None,
         relation=None,
     ):
         self.start_row: int = start_row
         self.start_col: int = start_col
-        self.contains: Content = contains
-        self.relation: RelatedTo = relation
+        self.contains: Optional[Content] = contains
+        self.relation: Optional[RelatedTo] = relation
 
     def __str__(self):
         return f'Coords are start_row:{self.start_row} start_col:{self.start_col} content:{self.content} relation:{self.relation}'
