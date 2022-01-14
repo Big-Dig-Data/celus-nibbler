@@ -48,7 +48,7 @@ class GeneralParser(metaclass=ABCMeta):
             content_check_outcome = content_check(
                 self.sheet.values[heuristic.start_row][heuristic.start_col], heuristic.contains
             )
-            if content_check_outcome is not True:
+            if not content_check_outcome:
                 return False
         return True
 
