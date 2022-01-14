@@ -23,10 +23,6 @@ class Parser_1_3_1(HorizontalDatesParser):
     values = Coord(1, 1, relation=RelatedTo.FIELD)
     metric = Coord(1, 0, relation=RelatedTo.ROW)
     months = Coord(0, 1, relation=RelatedTo.COL)
-    separate_year = None
-    title = None
-    title_ids = None
-    dimension_data = None
 
 
 class Parser_1_3_2(HorizontalDatesParser):
@@ -47,10 +43,6 @@ class Parser_1_3_2(HorizontalDatesParser):
     values = Coord(2, 1, relation=RelatedTo.FIELD)
     metric = Coord(2, 0, relation=RelatedTo.ROW)
     months = Coord(1, 1, relation=RelatedTo.COL)
-    separate_year = None
-    title = None
-    title_ids = None
-    dimension_data = None
     # TOASK is this correct? are there in this table really no dimension data?
 
 
@@ -68,10 +60,7 @@ class Parser_1_5_1(HorizontalDatesParser):
     values = Coord(1, 2, relation=RelatedTo.FIELD)
     metric = Coord(1, 1, relation=RelatedTo.ROW)
     months = Coord(0, 2, relation=RelatedTo.COL)
-    separate_year = None
     title = Coord(1, 0, relation=RelatedTo.ROW)
-    title_ids = None
-    dimension_data = None
 
 
 class Parser_1_5_2(HorizontalDatesParser):
@@ -90,10 +79,7 @@ class Parser_1_5_2(HorizontalDatesParser):
     values = Coord(1, 2, relation=RelatedTo.FIELD)
     metric = Coord(1, 0, relation=RelatedTo.ROW)
     months = Coord(0, 2, relation=RelatedTo.COL)
-    separate_year = None
     title = Coord(1, 1, relation=RelatedTo.ROW)
-    title_ids = None
-    dimension_data = None
 
 
 class Parser_1_2(HorizontalDatesParser):
@@ -112,10 +98,7 @@ class Parser_1_2(HorizontalDatesParser):
     values = Coord(1, 3, relation=RelatedTo.FIELD)
     metric = Coord(1, 1, relation=RelatedTo.ROW)
     months = Coord(0, 3, relation=RelatedTo.COL)
-    separate_year = None
     title = Coord(1, 0, relation=RelatedTo.ROW)
-    title_ids = None
-    dimension_data = None
 
 
 class Parser_1_3_3(HorizontalDatesParser):
@@ -137,8 +120,6 @@ class Parser_1_3_3(HorizontalDatesParser):
     months = Coord(7, 2, relation=RelatedTo.COL)
     separate_year = Coord(6, 2, relation=RelatedTo.TABLE)
     title = Coord(0, 1, relation=RelatedTo.TABLE)
-    title_ids = None
-    dimension_data = None
     date_validation = validators.DateInString
 
 
@@ -157,10 +138,6 @@ class Parser_1_1_1(HorizontalDatesParser):
     values = Coord(6, 1, relation=RelatedTo.FIELD)
     metric = Coord(6, 0, relation=RelatedTo.ROW)
     months = Coord(5, 1, relation=RelatedTo.COL)
-    separate_year = None
-    title = None
-    title_ids = None
-    dimension_data = None
 
 
 # class Parser_1_1_2(HorizontalDatesParser):
@@ -177,10 +154,7 @@ class Parser_1_1_1(HorizontalDatesParser):
 #     values = Coord(6, 1, relation=RelatedTo.FIELD)
 #     metric = Coord(6, 0, relation=RelatedTo.ROW)
 #     months = Coord(5, 1, relation=RelatedTo.COL)
-#     separate_year = None
-#     title = None
-#     title_ids = None
-#     dimension_data = None
+#
 
 
 class Parser_1_1_4_1(HorizontalDatesParser):
@@ -198,10 +172,6 @@ class Parser_1_1_4_1(HorizontalDatesParser):
     values = Coord(1, 2, relation=RelatedTo.FIELD)
     metric = Coord(1, 1, relation=RelatedTo.ROW)
     months = Coord(0, 2, relation=RelatedTo.COL)
-    separate_year = None
-    title = None
-    title_ids = None
-    dimension_data = None
 
 
 class Parser_1_1_4_2(HorizontalDatesParser):
@@ -219,7 +189,3 @@ class Parser_1_1_4_2(HorizontalDatesParser):
     values = Coord(1, 2, relation=RelatedTo.FIELD)
     metric = Coord(1, 1, relation=RelatedTo.ROW)
     months = Coord(0, 2, relation=RelatedTo.COL)
-    separate_year = None
-    title = None
-    title_ids = None
-    dimension_data = None
