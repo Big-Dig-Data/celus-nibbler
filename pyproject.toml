@@ -52,3 +52,13 @@ tox = "^3.23.0"
 flake8 = "^3.9.1"
 build = "^0.3.1"
 isort = "^5.8.0"
+
+[tool.poetry.plugins]
+
+[tool.poetry.plugins."nibbler_parsers"]
+"1_2" = "celus_nibbler.parsers:Parser_1_2"
+"1_3_1" = "celus_nibbler.parsers:Parser_1_3_1"
+"1_3_2" = "celus_nibbler.parsers:Parser_1_3_2"
+"1_3_3" = "celus_nibbler.parsers:Parser_1_3_3"
+"1_5_1" = "celus_nibbler.parsers:Parser_1_5_1"
+"1_5_2" = "celus_nibbler.parsers:Parser_1_5_2"

@@ -2,6 +2,8 @@ import collections
 import itertools
 import typing
 
+import pkg_resources
+
 from celus_nibbler.parsers.format_1_parsers import (
     Parser_1_2,
     Parser_1_3_1,
@@ -17,12 +19,7 @@ from .generalparser import GeneralParser, HorizontalDatesParser
 def all_parsers() -> typing.List[typing.Type[GeneralParser]]:
     """ Lists all available parsers """
     return [
-        Parser_1_3_1,
-        Parser_1_3_2,
-        Parser_1_5_1,
-        Parser_1_5_2,
-        Parser_1_3_3,
-        Parser_1_2,
+        entry_point.load() for entry_point in pkg_resources.iter_entry_points("nibbler_parsers")
     ]
 
 
