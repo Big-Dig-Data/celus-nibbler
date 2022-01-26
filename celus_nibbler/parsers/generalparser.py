@@ -1,4 +1,5 @@
 import datetime
+import itertools
 import logging
 import typing
 from abc import ABCMeta, abstractmethod
@@ -205,13 +206,15 @@ class HorizontalDatesParser(GeneralParser):
             title_one_for_whole_table = col_with_titles = None  # row_with_titles =
 
         # PARSING row by row
-        for row_with_values_idx, row_with_values in enumerate(self.table[self.values.start_row :]):
+        for row_with_values_idx, row_with_values in enumerate(
+            itertools.islice(self.table, self.values.start_row, None)
+        ):
 
             # parsing of metrics
             if metric_one_for_whole_table is not None:
                 metric = metric_one_for_whole_table
             elif col_with_metrics is not None:
-                if row_with_values[col_with_metrics] is not None:
+                if row_with_values[col_with_metrics]:
                     metric = row_with_values[col_with_metrics]
                 else:
                     logger.info(

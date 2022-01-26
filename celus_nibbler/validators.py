@@ -1,5 +1,5 @@
 import datetime
-from typing import Optional
+from typing import Optional, Union
 
 from dateutil import parser as datetimes_parser
 from pydantic import BaseModel, validator
@@ -18,13 +18,13 @@ def stripped(name: str) -> str:
 
 
 class Value(BaseModel):
-    value: int
+    value: Union[int, float]
 
     @validator("value")
-    def non_negative(cls, value: int) -> int:
+    def non_negative(cls, value: Union[int, float]) -> int:
         if value < 0:
             raise NibblerValidation("cant-be-negative")
-        return value
+        return round(value)
 
 
 class Platform(BaseModel):

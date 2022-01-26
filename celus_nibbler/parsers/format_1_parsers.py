@@ -124,7 +124,7 @@ class Parser_1_3_3(HorizontalDatesParser):
         Coord(2, 0, content='ID Number:'),
         Coord(3, 0, content='Type of license:'),
     ]
-    metric_title = Coord(7, 1, content=None)
+    metric_title = Coord(7, 1, content="")
     values = Coord(8, 2, relation=RelatedTo.FIELD)
     metric = Coord(8, 1, relation=RelatedTo.ROW)
     months = Coord(7, 2, relation=RelatedTo.COL)

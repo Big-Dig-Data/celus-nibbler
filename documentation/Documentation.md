@@ -6,7 +6,7 @@
 - each type of non-counter report has its own parser
 
 ## Terminology
-- **TableReader**: reads uploaded file which might be in either .csv format (`NaiveCSVReader()`), .xlsx format (`NaiveXLSXReader()`) and in the future possibly .xls format (`NaiveXLSReader()`) and creates standard format `read_table` (list of lists) which is list of rows with values.
+- **TableReader**: reads uploaded file which might be in either .csv format (`CsvReader()`), .xlsx format (`XlsxReader()`) and in the future possibly .xls format (`XlsReader()`) and creates standard format `read_table` (list of lists) which is list of rows with values.
 - **Parser**: parses standard format `read_table` (list of lists) created by TableReader and creates a CounterReport from it.
 
 

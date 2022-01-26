@@ -6,7 +6,7 @@ import typing
 import pytest
 
 from celus_nibbler import findparser, findparser_and_parse, get_supported_platforms
-from celus_nibbler.reader import NaiveCSVReader, NaiveXlsxReader
+from celus_nibbler.reader import CsvReader, XlsxReader
 
 logger = logging.getLogger(__name__)
 
@@ -43,19 +43,19 @@ def test_reader_and_findparser_csv(
     """
     with file_path.open() as file:
         logger.info('----- file \'%s\'  is tested -----', file_path)
-        sheets = NaiveCSVReader(file)
-        for sheet_idx, sheet in enumerate(sheets):
-            logger.info('\n-- sheet %s  is tested --', sheet_idx)
+        sheets = CsvReader(file)
+        for sheet in sheets:
+            logger.info('\n-- sheet %s  is tested --', sheet.sheet_idx)
             found_parser = findparser(sheet, platform)
-            if parsers[sheet_idx] == '0':
+            if parsers[sheet.sheet_idx] == '0':
                 assert (
                     found_parser is None
-                ), f"parser {found_parser.__name__} found for sheet {sheet_idx + 1} where are no data to be parsed"
+                ), f"parser {found_parser.__name__} found for sheet {sheet.sheet_idx + 1} where are no data to be parsed"
             else:
                 assert found_parser is not None, "No parser found"
                 assert (
-                    found_parser.__name__ == 'Parser_' + parsers[sheet_idx]
-                ), f"Parser mismatch: parser found ({found_parser.__name__}) but should find parser (Parser_{parsers[sheet_idx]})"
+                    found_parser.__name__ == 'Parser_' + parsers[sheet.sheet_idx]
+                ), f"Parser mismatch: parser found ({found_parser.__name__}) but should find parser (Parser_{parsers[sheet.sheet_idx]})"
 
         # found_parser = findparser(sheet, platform)
         # assert found_parser is not None, "No parser found"
@@ -72,19 +72,19 @@ def test_reader_and_findparser_xlsx(
     goes through each filename in data/xlsx/ and checks whether findparser() assigns correct parser which corresponds with the name of the filenames directory (for ex.: Parser_1_3_1)
     """
     logger.info('----- file \'%s\'  is tested -----', file_path)
-    sheets = NaiveXlsxReader(file_path)
-    for sheet_idx, sheet in enumerate(sheets):
-        logger.info('\n-- sheet %s  is tested --', sheet_idx)
+    sheets = XlsxReader(file_path)
+    for sheet in sheets:
+        logger.info('\n-- sheet %s  is tested --', sheet.sheet_idx)
         found_parser = findparser(sheet, platform)
-        if parsers[sheet_idx] == '0':
+        if parsers[sheet.sheet_idx] == '0':
             assert (
                 found_parser is None
-            ), f"parser {found_parser.__name__} found for sheet {sheet_idx + 1} where are no data to be parsed"
+            ), f"parser {found_parser.__name__} found for sheet {sheet.sheet_idx + 1} where are no data to be parsed"
         else:
             assert found_parser is not None, "No parser found"
             assert (
-                found_parser.__name__ == 'Parser_' + parsers[sheet_idx]
-            ), f"Parser mismatch: parser found ({found_parser.__name__}) but should find parser (Parser_{parsers[sheet_idx]})"
+                found_parser.__name__ == 'Parser_' + parsers[sheet.sheet_idx]
+            ), f"Parser mismatch: parser found ({found_parser.__name__}) but should find parser (Parser_{parsers[sheet.sheet_idx]})"
 
 
 @pytest.mark.parametrize(
