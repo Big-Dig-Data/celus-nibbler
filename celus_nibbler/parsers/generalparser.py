@@ -10,7 +10,7 @@ from pydantic import ValidationError
 from unidecode import unidecode
 
 from celus_nibbler import validators
-from celus_nibbler.errors import NibblerValidation, TableException
+from celus_nibbler.errors import TableException
 from celus_nibbler.reader import TableReader
 from celus_nibbler.record import CounterRecord
 from celus_nibbler.settings import IGNORE_METRICS as ignore_metrics
@@ -135,7 +135,7 @@ class HorizontalDatesParser(GeneralParser):
             for cell_with_date_idx, cell_with_date in enumerate(cells_with_dates):
                 try:
                     date = parse_date(cell_with_date)
-                except NibblerValidation:
+                except ValidationError:
                     logger.warning(
                         f"parser could not parse '{cell_with_date}' as a date, therefore this value will be ignored. "
                         f'Location: col {self.separate_year.start_col + cell_with_date_idx + 1} in sheet {self.sheet_idx + 1}'
@@ -146,7 +146,7 @@ class HorizontalDatesParser(GeneralParser):
                 if cells_with_years is not None:
                     try:
                         separate_year = parse_date(str(cells_with_years[cell_with_date_idx])).year
-                    except NibblerValidation:
+                    except ValidationError:
                         logger.warning(
                             f"parser could not parse '{cells_with_years[cell_with_date_idx]}' as a year, "
                             f'therefore these values will be ignored. Location: row {self.separate_year.start_row + 1} col '

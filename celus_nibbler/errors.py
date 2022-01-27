@@ -24,15 +24,6 @@ class WrongFormatError(NibblerError):
         return str(self)
 
 
-class NibblerValidation(NibblerError):
-    def __init__(self, reason="unknown"):
-        self.reason = reason
-        super().__init__(reason)
-
-    def __str__(self):
-        return self.reason
-
-
 class TableException(NibblerError):
     """
     General exception informing about position in which the exception occured

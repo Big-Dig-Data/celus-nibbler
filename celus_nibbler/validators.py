@@ -2,14 +2,12 @@ import datetime
 from typing import Optional, Union
 
 from dateutil import parser as datetimes_parser
-from pydantic import BaseModel, validator
-
-from .errors import NibblerValidation
+from pydantic import BaseModel, ValidationError, validator
 
 
 def non_empty(name: str) -> str:
     if not name:
-        raise NibblerValidation("cant-be-empty")
+        raise ValidationError("cant-be-empty")
     return name
 
 
@@ -23,7 +21,7 @@ class Value(BaseModel):
     @validator("value")
     def non_negative(cls, value: Union[int, float]) -> int:
         if value < 0:
-            raise NibblerValidation("cant-be-negative")
+            raise ValidationError("cant-be-negative")
         return round(value)
 
 
@@ -43,7 +41,7 @@ class Metric(BaseModel):
     @validator("metric")
     def not_digit(cls, metric: str) -> str:
         if metric.isdigit():
-            raise NibblerValidation("cant-be-digit")
+            raise ValidationError("cant-be-digit")
         return metric
 
 
@@ -53,7 +51,7 @@ class Title(BaseModel):
     @validator("title")
     def not_digit(cls, title: str) -> str:
         if title.isdigit():
-            raise NibblerValidation("cant-be-digit")
+            raise ValidationError("cant-be-digit")
         return title
 
 
@@ -68,7 +66,7 @@ class Date(BaseModel):
         try:
             return datetimes_parser.parse(date)
         except datetimes_parser.ParserError:
-            raise NibblerValidation("cant-parse-date")
+            raise ValidationError("cant-parse-date")
 
 
 class DateInString(BaseModel):
@@ -83,4 +81,4 @@ class DateInString(BaseModel):
         try:
             return datetimes_parser.parse(date.split(' ')[-1])
         except datetimes_parser.ParserError:
-            raise NibblerValidation("cant-parse-date")
+            raise ValidationError("cant-parse-date")
