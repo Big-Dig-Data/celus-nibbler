@@ -10,8 +10,9 @@ from pydantic import ValidationError
 from unidecode import unidecode
 
 from celus_nibbler import validators
+from celus_nibbler.conditions import BaseCondition
 from celus_nibbler.errors import TableException
-from celus_nibbler.reader import TableReader
+from celus_nibbler.reader import SheetReader
 from celus_nibbler.record import CounterRecord
 from celus_nibbler.settings import IGNORE_METRICS as ignore_metrics
 from celus_nibbler.settings import IGNORE_TITLES as ignore_titles
@@ -60,9 +61,10 @@ class Coord:
 
 class GeneralParser(metaclass=ABCMeta):
     date_validation = validators.Date
+    heuristics: typing.Optional[BaseCondition] = None
 
     def __init__(
-        self, table: TableReader, sheet_idx: typing.Optional[int] = None, platform: str = None
+        self, table: SheetReader, sheet_idx: typing.Optional[int] = None, platform: str = None
     ):
         self.header = None
         self.table = table
@@ -70,12 +72,8 @@ class GeneralParser(metaclass=ABCMeta):
         self.platform = platform
 
     def heuristic_check(self) -> bool:
-        """
-        check if there is an expected content in the expected location of the table
-        """
-        for heuristic in self.heuristics:
-            if self.table[heuristic.start_row][heuristic.start_col] != heuristic.content:
-                return False
+        if self.heuristics:
+            return self.heuristics.check(self.table)
         return True
 
     def metric_title_check(self) -> bool:

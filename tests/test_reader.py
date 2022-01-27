@@ -1,4 +1,3 @@
-from io import StringIO
 from pathlib import Path
 
 import pytest
@@ -7,10 +6,6 @@ from celus_nibbler.reader import CsvReader, SheetReader, XlsxReader
 
 
 class TestSheetReader:
-    @pytest.fixture
-    def sheet_csv(self):
-        return StringIO("Name,Value\nFirst,1\nSecond,2\nThird,3\nFourth,4\n")
-
     @pytest.mark.parametrize("window_size", [2, 100])
     def test_iteration(self, window_size, sheet_csv):
         reader = SheetReader(0, None, sheet_csv, window_size)
