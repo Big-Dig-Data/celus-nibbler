@@ -4,19 +4,11 @@ import typing
 
 import pkg_resources
 
-from celus_nibbler.parsers.format_1_parsers import (
-    Parser_1_2,
-    Parser_1_3_1,
-    Parser_1_3_2,
-    Parser_1_3_3,
-    Parser_1_5_1,
-    Parser_1_5_2,
-)
-
-from .generalparser import GeneralParser, HorizontalDatesParser
+from . import format_1
+from .base import BaseParser
 
 
-def all_parsers() -> typing.List[typing.Type[GeneralParser]]:
+def all_parsers() -> typing.List[typing.Type[BaseParser]]:
     """ Lists all available parsers """
     return [
         entry_point.load() for entry_point in pkg_resources.iter_entry_points("nibbler_parsers")
@@ -43,15 +35,4 @@ def get_supported_platforms_count() -> typing.List[typing.Tuple[str, int]]:
     return res
 
 
-__all__ = [
-    "all_parsers",
-    "GeneralParser",
-    "HorizontalDatesParser",
-    "format_1_parsers",
-    "Parser_1_3_1",
-    "Parser_1_3_2",
-    "Parser_1_5_1",
-    "Parser_1_5_2",
-    "Parser_1_3_3",
-    "Parser_1_2",
-]
+__all__ = ["all_parsers", "format_1", "get_supported_platforms", "get_supported_platforms_count"]

@@ -3,7 +3,7 @@ import pathlib
 import typing
 
 from celus_nibbler.errors import WrongFormatError
-from celus_nibbler.parsers import GeneralParser, all_parsers
+from celus_nibbler.parsers import BaseParser, all_parsers
 from celus_nibbler.reader import CsvReader, SheetReader, TableReader, XlsxReader
 from celus_nibbler.record import CounterRecord
 from celus_nibbler.validators import Platform
@@ -11,14 +11,16 @@ from celus_nibbler.validators import Platform
 logger = logging.getLogger(__name__)
 
 
-def findparser(sheet: SheetReader, platform: str) -> typing.Optional[typing.Type[GeneralParser]]:
+def findparser(sheet: SheetReader, platform: str) -> typing.Optional[typing.Type[BaseParser]]:
     plat_OK = [parser for parser in all_parsers() if platform in parser.platforms]
     if len(plat_OK) < 1:
         logger.warning('there is no parser which expects your platform %s', platform)
     else:
         logger.info('there is %s parsers, which expects your platform %s', len(plat_OK), platform)
 
-    plat_heur_OK = [parser for parser in plat_OK if parser(sheet).heuristic_check()]
+    plat_heur_OK = [
+        parser for parser in plat_OK if parser(sheet, platform=platform).heuristic_check()
+    ]
     if len(plat_heur_OK) < 1:
         logger.warning('there is no parser which heuristics matching format of your uploaded file.')
         return None
@@ -60,7 +62,7 @@ def findparser_and_parse(
         logger.info('\n-- sheet %s  is tested --', sheet.sheet_idx)
         counter_records = []
         if parser := findparser(sheet, platform):
-            if counter_records := parser(sheet, sheet.sheet_idx, platform).parse():
+            if counter_records := parser(sheet, platform).parse():
                 pass  # expected an indented block error if no block of code here
             else:
                 logger.warning('sheet %s has not been parsed', sheet.sheet_idx + 1)
