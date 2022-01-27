@@ -41,7 +41,6 @@ class MonthDataCells:
 class BaseParser(metaclass=ABCMeta):
     metrics_to_skip: typing.List[str] = ["Total"]
     titles_to_skip: typing.List[str] = ["Total"]
-    date_validation = validators.Date
     heuristics: typing.Optional[BaseCondition] = None
     title_cells: typing.Optional[CoordRange] = None
     title_ids_cells: typing.Dict[str, CoordRange] = {}

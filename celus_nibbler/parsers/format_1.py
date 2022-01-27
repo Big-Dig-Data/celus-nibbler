@@ -1,5 +1,6 @@
 import datetime
 import re
+import typing
 
 from celus_nibbler import validators
 from celus_nibbler.conditions import RegexCondition, StemmerCondition
@@ -7,6 +8,29 @@ from celus_nibbler.coordinates import Coord, CoordRange, Direction
 from celus_nibbler.record import CounterRecord
 
 from .base import VerticalParser
+
+
+class Parser_1_1_1(VerticalParser):
+    platforms = [
+        "SUS_FLVC_Ulrichs",
+    ]
+
+    heuristics = (
+        RegexCondition(re.compile("^Total Searches from"), Coord(0, 0))
+        & RegexCondition(re.compile("^Full record views from"), Coord(4, 0))
+        & RegexCondition(re.compile("^Usage Type$"), Coord(5, 0))
+    )
+    date_header_cells = CoordRange(Coord(5, 1), Direction.RIGHT)
+    metric_cells = CoordRange(Coord(5, 0), Direction.DOWN)
+
+    def prepare_record(self, *args, **kwargs) -> CounterRecord:
+        # Update platform name
+        res = super().prepare_record(*args, **kwargs)
+        dimension_data: typing.Dict[str, str] = res.dimension_data or {}
+        if self.sheet.name:
+            dimension_data["Library"] = self.sheet.name
+        res.dimension_data = dimension_data
+        return res
 
 
 class Parser_1_2(VerticalParser):
@@ -86,6 +110,31 @@ class Parser_1_3_3(VerticalParser):
         return datetime.date(year_cell_date.year, month_cell_date.month, 1)
 
 
+class Parser_1_1_4(VerticalParser):
+    platforms = [
+        'SciFinder',
+        'SciFinder_n',
+    ]
+
+    # fmt: off
+    heuristics = (
+        RegexCondition(re.compile("^Name$"), Coord(0, 0))
+        & RegexCondition(re.compile("^Type$"), Coord(0, 1))
+    )
+    # fmt: on
+    date_header_cells = CoordRange(Coord(0, 2), Direction.RIGHT)
+    dimensions_cells = {"Name": CoordRange(Coord(1, 0), Direction.DOWN)}
+
+    def prepare_record(self, *args, **kwargs) -> CounterRecord:
+        # Update platform name
+        res = super().prepare_record(*args, **kwargs)
+        if self.sheet.name == "SFoW":
+            res.platform = "SciFinder"
+        elif self.sheet.name == "SFn":
+            res.platform = "SciFinder_n"
+        return res
+
+
 class Parser_1_5_1(VerticalParser):
 
     platforms = [
@@ -104,9 +153,12 @@ class Parser_1_5_2(VerticalParser):
         'Naxos',
     ]
 
-    heuristics = RegexCondition(re.compile("^Metric$"), Coord(0, 0)) & RegexCondition(
-        re.compile("^Title$"), Coord(0, 1)
+    # fmt: off
+    heuristics = (
+        RegexCondition(re.compile("^Metric$"), Coord(0, 0))
+        & RegexCondition(re.compile("^Title$"), Coord(0, 1))
     )
+    # fmt: on
     date_header_cells = CoordRange(Coord(0, 2), Direction.RIGHT)
     metric_cells = CoordRange(Coord(1, 0), Direction.DOWN)
     title_cells = CoordRange(Coord(1, 1), Direction.DOWN)
