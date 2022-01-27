@@ -5,9 +5,7 @@ import typing
 from abc import ABCMeta, abstractmethod
 from enum import Enum, auto
 
-from jellyfish import porter_stem
 from pydantic import ValidationError
-from unidecode import unidecode
 
 from celus_nibbler import validators
 from celus_nibbler.conditions import BaseCondition
@@ -75,20 +73,6 @@ class GeneralParser(metaclass=ABCMeta):
         if self.heuristics:
             return self.heuristics.check(self.table)
         return True
-
-    def metric_title_check(self) -> bool:
-        """
-        check if column with metrics has expected title
-        """
-        row = self.metric_title.start_row
-        col = self.metric_title.start_col
-        expected_content = self.metric_title.content
-        given_content = self.table[row][col]
-        if isinstance(expected_content, str):
-            expected_content = porter_stem(unidecode(expected_content.strip()).lower())
-        if isinstance(given_content, str):
-            given_content = porter_stem(unidecode(given_content.strip()).lower())
-        return given_content == expected_content
 
     @abstractmethod
     def parse_dates(self) -> typing.List[datetime.date]:

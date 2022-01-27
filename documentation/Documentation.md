@@ -57,7 +57,7 @@ The same architecture and logic will apply to metrics, months, and to any dimens
 
 ## Formats
 
-each parser recognizes corresponding table to parse by matching its `heuristics`, `metric_title` and table platform is in parsers `platforms`. See class attributes of each parser in `celus_nibbler/parsers/format_....py` respectively.
+each parser recognizes corresponding table to parse by matching its `heuristics` and table platform is in parsers `platforms`. See class attributes of each parser in `celus_nibbler/parsers/format_....py` respectively.
 
 
 ***

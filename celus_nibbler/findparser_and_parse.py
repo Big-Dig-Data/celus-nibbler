@@ -21,33 +21,21 @@ def findparser(sheet: SheetReader, platform: str) -> typing.Optional[typing.Type
     plat_heur_OK = [parser for parser in plat_OK if parser(sheet).heuristic_check()]
     if len(plat_heur_OK) < 1:
         logger.warning('there is no parser which heuristics matching format of your uploaded file.')
-    else:
-        logger.info(
-            'there is %s parsers, which heuristics matching format of your uploaded file.',
+        return None
+    elif len(plat_heur_OK) > 1:
+        logger.warning(
+            '%s parsers, matching the heuristics in the file, has been found. Script needs to find exactly 1 parser, to work properly.',
             len(plat_heur_OK),
         )
+        return None
 
-    plat_heur_metrtitle_OK = [
-        parser for parser in plat_heur_OK if parser(sheet).metric_title_check()
-    ]
-    if len(plat_heur_metrtitle_OK) < 1:
-        logger.warning('the metric_title, which parser expect to find in the file, was not found')
-        return None
-    elif len(plat_heur_metrtitle_OK) > 1:
-        logger.warning(
-            '%s parsers, matching the metric_title in the file, has been found. Script needs to find exactly 1 parser, to work properly.',
-            len(plat_heur_metrtitle_OK),
-        )
-        return None
-    elif len(plat_heur_metrtitle_OK) == 1:
-        logger.info(
-            '%s parser, matching the metric_title in the file, has been found.',
-            len(plat_heur_metrtitle_OK),
-        )
-        parser = plat_heur_metrtitle_OK[0]
-        logger.info('Parser used: %s', parser)
-        return parser
-    return None
+    logger.info(
+        '%s parser, matching the heuristics in the file, has been found.',
+        len(plat_heur_OK),
+    )
+    parser = plat_heur_OK[0]
+    logger.info('Parser used: %s', parser)
+    return parser
 
 
 def read_file(file_path: pathlib.Path) -> TableReader:

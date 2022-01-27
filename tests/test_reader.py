@@ -10,7 +10,7 @@ class TestSheetReader:
     def test_iteration(self, window_size, sheet_csv):
         reader = SheetReader(0, None, sheet_csv, window_size)
         assert list(reader) == [
-            ["Name", "Value"],
+            ["Name", "Values"],
             ["First", "1"],
             ["Second", "2"],
             ["Third", "3"],
@@ -20,7 +20,7 @@ class TestSheetReader:
     @pytest.mark.parametrize("window_size", [2, 100])
     def test_next(self, window_size, sheet_csv):
         reader = SheetReader(0, None, sheet_csv, window_size)
-        assert next(reader) == ["Name", "Value"]
+        assert next(reader) == ["Name", "Values"]
         assert next(reader) == ["First", "1"]
         assert next(reader) == ["Second", "2"]
         assert next(reader) == ["Third", "3"]
@@ -31,7 +31,7 @@ class TestSheetReader:
     @pytest.mark.parametrize("window_size", [2, 100])
     def test_getitem(self, window_size, sheet_csv):
         reader = SheetReader(0, None, sheet_csv, window_size)
-        assert reader[0] == ["Name", "Value"]
+        assert reader[0] == ["Name", "Values"]
         assert reader[4] == ["Fourth", "4"]
         assert reader[1] == ["First", "1"]
         assert reader[3] == ["Third", "3"]

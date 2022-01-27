@@ -2,7 +2,7 @@ import re
 
 import pytest
 
-from celus_nibbler.conditions import RegexCondition
+from celus_nibbler.conditions import RegexCondition, StemmerCondition
 from celus_nibbler.coordinates import Coord
 from celus_nibbler.errors import TableException
 
@@ -23,7 +23,7 @@ def test_regex(sheet):
 def test_and(sheet):
     all_pass = (
         RegexCondition(re.compile("^Name$"), Coord(0, 0)).check(sheet)
-        & RegexCondition(re.compile("^Value$"), Coord(0, 1)).check(sheet)
+        & RegexCondition(re.compile("^Values$"), Coord(0, 1)).check(sheet)
         & RegexCondition(re.compile("^First$"), Coord(1, 0)).check(sheet)
     )
     assert all_pass is True
@@ -53,7 +53,7 @@ def test_and(sheet):
 def test_or(sheet):
     all_pass = (
         RegexCondition(re.compile("^Name$"), Coord(0, 0)).check(sheet)
-        | RegexCondition(re.compile("^Value$"), Coord(0, 1)).check(sheet)
+        | RegexCondition(re.compile("^Values$"), Coord(0, 1)).check(sheet)
         | RegexCondition(re.compile("^First$"), Coord(1, 0)).check(sheet)
     )
     assert all_pass is True
@@ -84,3 +84,8 @@ def test_neg(sheet):
     assert (~RegexCondition(re.compile("^Name$"), Coord(0, 0))).check(sheet) is False
     assert (~RegexCondition(re.compile("^3$"), Coord(3, 1))).check(sheet) is False
     assert (~RegexCondition(re.compile("no match"), Coord(0, 1))).check(sheet) is True
+
+
+def test_stemmer(sheet):
+    assert StemmerCondition("Names", Coord(0, 0)).check(sheet) is True, "Names should match Name"
+    assert StemmerCondition("Value", Coord(0, 1)).check(sheet) is True, "Value should match Values"

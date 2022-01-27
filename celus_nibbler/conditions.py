@@ -1,6 +1,9 @@
 import re
 from abc import ABCMeta, abstractmethod
 
+from jellyfish import porter_stem
+from unidecode import unidecode
+
 from .coordinates import Coord
 from .reader import SheetReader
 
@@ -51,3 +54,17 @@ class RegexCondition(BaseCondition):
 
     def check(self, sheet: SheetReader):
         return bool(self.pattern.match(self.coord.content(sheet)))
+
+
+class StemmerCondition(BaseCondition):
+    """ Compare contante based on Porter Stemming algorithm """
+
+    def _convert(self, text: str) -> str:
+        return porter_stem(unidecode(text.strip()).lower())
+
+    def __init__(self, content: str, coord: Coord):
+        self.content = self._convert(content)
+        self.coord = coord
+
+    def check(self, sheet: SheetReader):
+        return self._convert(self.coord.content(sheet)) == self.content
