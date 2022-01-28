@@ -48,6 +48,7 @@ class BaseArea(metaclass=ABCMeta):
     def __init__(self, sheet: SheetReader, platform: str):
         self.sheet = sheet
         self.platform = platform
+        self.setup()
 
     @property
     @abstractmethod
@@ -83,6 +84,10 @@ class BaseArea(metaclass=ABCMeta):
 
     @abstractmethod
     def find_data_cells(self) -> typing.List[MonthDataCells]:
+        pass
+
+    def setup(self):
+        """ To be overiden. It should serve to read fixed variables from the list """
         pass
 
 

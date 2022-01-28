@@ -121,19 +121,24 @@ class Parser_1_3_3(BaseParser):
         date_header_cells = CoordRange(Coord(7, 2), Direction.RIGHT)
         metric_cells = CoordRange(Coord(8, 1), Direction.DOWN)
 
+        def setup(self):
+            # read fixed Title name
+            content = Coord(0, 1).content(self.sheet)
+            self.title = validators.Title(title=content).title
+
+            # read fixed year
+            content = Coord(6, 2).content(self.sheet)
+            self.year = validators.DateInString(date=content).date.year
+
         def prepare_record(self, *args, **kwargs) -> CounterRecord:
             res = super().prepare_record(*args, **kwargs)
-            content = Coord(0, 1).content(self.sheet)
-            title = validators.Title(title=content).title
-            res.title = title
+            res.title = self.title
             return res
 
         def parse_date(self, cell: Coord) -> datetime.date:
             content = cell.content(self.sheet)
-            month_cell_date = validators.Date(date=content).date
-            content = Coord(6, 2).content(self.sheet)
-            year_cell_date = validators.DateInString(date=content).date
-            return datetime.date(year_cell_date.year, month_cell_date.month, 1)
+            month = validators.Date(date=content).date.month
+            return datetime.date(self.year, month, 1)
 
     areas = [Area]
 
