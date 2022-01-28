@@ -38,22 +38,21 @@ class MonthDataCells:
         return str(self)
 
 
-class BaseParser(metaclass=ABCMeta):
-    metrics_to_skip: typing.List[str] = ["Total"]
-    titles_to_skip: typing.List[str] = ["Total"]
-    heuristics: typing.Optional[BaseCondition] = None
+class BaseArea(metaclass=ABCMeta):
+
     title_cells: typing.Optional[CoordRange] = None
     title_ids_cells: typing.Dict[str, CoordRange] = {}
     metric_cells: typing.Optional[CoordRange] = None
     dimensions_cells: typing.Dict[str, CoordRange] = {}
 
-    def parse_date(self, cell: Coord) -> datetime.date:
-        content = cell.content(self.sheet)
-        return validators.Date(date=content).date
-
     def __init__(self, sheet: SheetReader, platform: str):
         self.sheet = sheet
         self.platform = platform
+
+    @property
+    @abstractmethod
+    def date_header_cells(self) -> CoordRange:
+        pass
 
     def prepare_record(
         self,
@@ -78,6 +77,34 @@ class BaseParser(metaclass=ABCMeta):
             platform=self.platform,
         )
 
+    def parse_date(self, cell: Coord) -> datetime.date:
+        content = cell.content(self.sheet)
+        return validators.Date(date=content).date
+
+    @abstractmethod
+    def find_data_cells(self) -> typing.List[MonthDataCells]:
+        pass
+
+
+class BaseParser(metaclass=ABCMeta):
+    metrics_to_skip: typing.List[str] = ["Total"]
+    titles_to_skip: typing.List[str] = ["Total"]
+    heuristics: typing.Optional[BaseCondition] = None
+
+    @property
+    @abstractmethod
+    def areas(self) -> typing.List[typing.Type[BaseArea]]:
+        """ Areas defined """
+        pass
+
+    def get_areas(self) -> typing.List[BaseArea]:
+        """ List of all data source areas withing the sheet """
+        return [area_class(self.sheet, self.platform) for area_class in self.areas]
+
+    def __init__(self, sheet: SheetReader, platform: str):
+        self.sheet = sheet
+        self.platform = platform
+
     def heuristic_check(self) -> bool:
         if self.heuristics:
             return self.heuristics.check(self.sheet)
@@ -87,15 +114,6 @@ class BaseParser(metaclass=ABCMeta):
     @abstractmethod
     def platforms(self) -> typing.List[str]:
         """ List of available platforms (used for validation) """
-        pass
-
-    @property
-    @abstractmethod
-    def date_header_cells(self) -> CoordRange:
-        pass
-
-    @abstractmethod
-    def find_data_cells(self) -> typing.List[MonthDataCells]:
         pass
 
     def _parse_content(
@@ -128,9 +146,13 @@ class BaseParser(metaclass=ABCMeta):
         return getattr(validated, name)
 
     def parse(self) -> typing.Generator[CounterRecord, None, None]:
-        data_cells = self.find_data_cells()
+        for area in self.get_areas():
+            yield from self.parse_area(area)
+
+    def parse_area(self, area: BaseArea) -> typing.Generator[CounterRecord, None, None]:
+        data_cells = area.find_data_cells()
         if not data_cells:
-            date_cells = self.date_header_cells
+            date_cells = area.date_header_cells
             raise TableException(
                 row=date_cells.coord.row,
                 col=date_cells.coord.col,
@@ -141,38 +163,39 @@ class BaseParser(metaclass=ABCMeta):
         try:
             for idx in itertools.count(0):
                 # iterates through ranges
-                if self.metric_cells:
+                if area.metric_cells:
                     metric = self._parse_content(
-                        self.metric_cells, idx, validators.Metric, "metric"
+                        area.metric_cells, idx, validators.Metric, "metric"
                     )
                     if metric in self.metrics_to_skip:
                         continue
                 else:
                     metric = None
 
-                if self.title_cells:
-                    title = self._parse_content(self.title_cells, idx, validators.Title, "title")
+                if area.title_cells:
+                    title = self._parse_content(area.title_cells, idx, validators.Title, "title")
                     if title in self.titles_to_skip:
                         continue
                 else:
                     title = None
 
                 dimension_data = {}
-                for k, range in self.dimensions_cells.items():
+                for k, rng in area.dimensions_cells.items():
                     dimension_data[k] = self._parse_content(
-                        range, idx, validators.Dimension, "dimension"
+                        rng, idx, validators.Dimension, "dimension"
                     )
 
                 for data in data_cells:
                     value = self._parse_content(data, idx, validators.Value, "value")
-                    res = self.prepare_record(
+                    # TODO implement title_ids parsing
+                    res = area.prepare_record(
                         value=round(value),
                         date=data.month,
                         metric=metric,
                         title=title,
                         dimension_data=dimension_data,
                     )
-                    logger.debug(f"Parsed {res.serialize()}")
+                    logger.debug("Parsed %s", res.serialize())
                     yield res
 
         except TableException as e:
@@ -183,7 +206,7 @@ class BaseParser(metaclass=ABCMeta):
                 raise
 
 
-class VerticalParser(BaseParser):
+class VerticalArea(BaseArea):
     def find_data_cells(self) -> typing.List[MonthDataCells]:
         res = []
         for cell in self.date_header_cells:
