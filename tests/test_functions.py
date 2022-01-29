@@ -145,6 +145,7 @@ def test_get_supported_platforms():
         'Knovel',
         'Micromedex',
         'Naxos',
+        'Ovid',
         'SUS_FLVC_Ulrichs',
         'SciFinder',
         'SciFinder_n',

@@ -23,7 +23,12 @@ class SheetReader:
         self.name = name
         self.sheet_idx = sheet_idx
         self.file = file
-        self.csv_reader = csv.reader(file)
+
+        # guess dialect
+        self.dialect = csv.Sniffer().sniff(file.readline())
+        self.file.seek(0)
+
+        self.csv_reader = csv.reader(file, self.dialect)
         # Load basic window
         self.window_start = 0
         self.window_size = window_size
@@ -31,7 +36,7 @@ class SheetReader:
 
     def update_window(self, window_start: int):
         self.file.seek(0)
-        self.csv_reader = csv.reader(self.file)
+        self.csv_reader = csv.reader(self.file, self.dialect)
         self.window_start = window_start
         self.window = deque(
             itertools.islice(

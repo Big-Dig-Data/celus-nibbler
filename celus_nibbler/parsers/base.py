@@ -190,15 +190,22 @@ class BaseParser(metaclass=ABCMeta):
                         rng, idx, validators.Dimension, "dimension"
                     )
 
+                title_ids = {}
+                for key in ["DOI", "ISBN", "ISSN"]:
+                    if rng := area.title_ids_cells.get(key):
+                        value = self._parse_content(rng, idx, getattr(validators, key), key.lower())
+                        if value:
+                            title_ids[key] = value
+
                 for data in data_cells:
                     value = self._parse_content(data, idx, validators.Value, "value")
-                    # TODO implement title_ids parsing
                     res = area.prepare_record(
                         value=round(value),
                         date=data.month,
                         metric=metric,
                         title=title,
                         dimension_data=dimension_data,
+                        title_ids=title_ids,
                     )
                     logger.debug("Parsed %s", res.serialize())
                     yield res

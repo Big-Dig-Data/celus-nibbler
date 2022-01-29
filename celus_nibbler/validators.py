@@ -1,4 +1,5 @@
 import datetime
+import re
 from typing import Optional, Union
 
 from dateutil import parser as datetimes_parser
@@ -74,6 +75,45 @@ class Date(BaseModel):
             return datetimes_parser.parse(date)
         except datetimes_parser.ParserError:
             raise ValidationError("cant-parse-date")
+
+
+class DOI(BaseModel):
+    doi: str
+
+    @validator("doi")
+    def check_doi(cls, doi: str) -> str:
+        if not doi:
+            return ""
+        if not re.match(r"^10\.[\d\.]+\/[^\s]+$", doi):
+            raise ValidationError("not-doi")
+
+        return doi
+
+
+class ISBN(BaseModel):
+    isbn: str
+
+    @validator("isbn")
+    def check_isbn(cls, isbn: str) -> str:
+        if not isbn:
+            return ""
+
+        if not re.match(r"^[0-9\-]{9,}$", isbn):
+            raise ValidationError("not-isbn")
+
+        return isbn
+
+
+class ISSN(BaseModel):
+    issn: str
+
+    @validator("issn")
+    def check_isbn(cls, issn: str) -> str:
+        if not issn:
+            return ""
+        if not re.match(r"^[0-9]{4}-[0-9]{3}[0-9X]$", issn):
+            raise ValidationError("not-issn")
+        return issn
 
 
 class DateInString(BaseModel):
