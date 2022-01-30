@@ -1,5 +1,6 @@
 import csv
 import itertools
+import logging
 import pathlib
 import tempfile
 from abc import ABCMeta, abstractmethod
@@ -8,6 +9,10 @@ from io import StringIO
 from typing import IO, Optional, Sequence, Union
 
 import openpyxl
+from chardet import detect
+from chardet.universaldetector import UniversalDetector
+
+logger = logging.getLogger(__name__)
 
 
 class SheetReader:
@@ -92,25 +97,6 @@ class TableReader(metaclass=ABCMeta):
     Abstract reader for tabular data - defines the API to be used by parsers when reading input data
     """
 
-    def __init__(self, source: Union[bytes, str, IO, pathlib.Path]):
-        self.needs_close = False
-        if hasattr(source, 'read'):
-            self.file = source
-        elif isinstance(source, bytes):
-            self.file = StringIO(source.decode('utf-8'))
-        elif isinstance(source, (str, pathlib.Path)):
-            self.file = open(source, 'rb')
-            self.needs_close = True
-        else:
-            raise NotImplementedError()
-
-    def close(self):
-        if self.needs_close:
-            self.file.close()
-            self.needs_close = False
-
-    # abstract methods to implement
-
     @abstractmethod
     def __getitem__(self, item) -> SheetReader:
         raise NotImplementedError()
@@ -125,10 +111,28 @@ class CsvReader(TableReader):
     Reads CSV file in stream mode
     """
 
-    def __init__(self, source: Union[bytes, str, IO[str], pathlib.Path]):
-        super().__init__(source)
-        self.file: IO[str]
-        self.sheets = [SheetReader(0, None, self.file)]
+    def __init__(self, source: Union[bytes, str, pathlib.Path]):
+        # detect encoding
+        file: IO[str]
+        if isinstance(source, bytes):
+            encoding = detect(source).get("encoding")
+            logger.debug("Encoding '%s' was found for csv data", encoding)
+            file = StringIO(source.decode(encoding or "utf8"))
+        elif isinstance(source, (str, pathlib.Path)):
+            detector = UniversalDetector()
+            with open(source, "rb") as f:
+                for e in f:
+                    detector.feed(e)
+                    if detector.done:
+                        break
+                detector.close()
+            encoding = detector.result.get("encoding")
+            logger.debug("Encoding '%s' was found for csv file", encoding)
+            file = open(source, "r", encoding=encoding)
+        else:
+            raise NotImplementedError()
+
+        self.sheets = [SheetReader(0, None, file)]
 
     def __getitem__(self, item) -> SheetReader:
         return self.sheets[item]
@@ -142,23 +146,25 @@ class XlsxReader(TableReader):
     Reads XLSX file in stream mode (TODO verify this)
     """
 
-    def __init__(self, source: Union[bytes, str, IO, pathlib.Path]):
-        super().__init__(source)
-        workbook = openpyxl.load_workbook(
-            self.file, read_only=True, data_only=True, keep_links=False
-        )
-        self.sheets = []
+    def __init__(self, source: Union[str, pathlib.Path]):
+        with open(source, "rb") as file:
+            workbook = openpyxl.load_workbook(
+                file, read_only=True, data_only=True, keep_links=False
+            )
+            self.sheets = []
 
-        # Store each sheet as temporary CSV file
-        for idx, sheet in enumerate(workbook.worksheets):
-            f = tempfile.TemporaryFile("w+")
-            writer = csv.writer(f)
-            for row in sheet.rows:
-                writer.writerow([cell.value for cell in row])
-            f.seek(0)
-            self.sheets.append(SheetReader(idx, workbook.sheetnames[idx], f))
+            # Store each sheet as temporary CSV file
+            for idx, sheet in enumerate(workbook.worksheets):
 
-        self.close()
+                # write data to csv
+                f = tempfile.TemporaryFile("w+")
+                writer = csv.writer(f)
+                for row in sheet.rows:
+                    writer.writerow([cell.value for cell in row])
+                f.seek(0)
+                self.sheets.append(SheetReader(idx, workbook.sheetnames[idx], f))
+
+            workbook.close()
 
     def __getitem__(self, item) -> SheetReader:
         return self.sheets[item]

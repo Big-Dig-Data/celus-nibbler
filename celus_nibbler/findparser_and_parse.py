@@ -42,8 +42,7 @@ def findparser(sheet: SheetReader, platform: str) -> typing.Optional[typing.Type
 
 def read_file(file_path: pathlib.Path) -> TableReader:
     if file_path.suffix.lower() in ['.csv', '.tsv']:
-        with open(file_path) as file:
-            return CsvReader(file)
+        return CsvReader(file_path)
     elif file_path.suffix.lower() == '.xlsx':
         return XlsxReader(file_path)
 
