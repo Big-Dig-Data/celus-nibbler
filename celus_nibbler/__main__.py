@@ -1,7 +1,9 @@
 import logging
 import logging.config
+import os
 import pathlib
 import sys
+from distutils.util import strtobool
 
 from unidecode import unidecode
 
@@ -9,7 +11,9 @@ from celus_nibbler import eat, get_supported_platforms_count
 
 
 def main():
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(
+        level=logging.DEBUG if strtobool(os.environ.get("DEBUG", "0")) else logging.WARNING
+    )
 
     logger = logging.getLogger(__name__)
     logger.debug("Logging is configured.")
