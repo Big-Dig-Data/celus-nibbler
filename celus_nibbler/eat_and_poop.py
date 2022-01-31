@@ -11,6 +11,35 @@ from celus_nibbler.validators import Platform
 logger = logging.getLogger(__name__)
 
 
+class Poop:
+    """  nibblonians dark matter """
+
+    def __init__(self, parser: BaseParser):
+        self.parser = parser
+
+    def records(self) -> typing.Optional[typing.Generator[CounterRecord, None, None]]:
+        if counter_records := self.parser.parse():
+            return counter_records
+        else:
+            logger.warning('sheet %s has not been parsed', self.parser.sheet.sheet_idx + 1)
+            return None
+
+    def metrics_and_dimensions(self) -> typing.Tuple[typing.List[str], typing.List[str]]:
+        seen_metrics = set()
+        seen_dimensions = set()
+        if records := self.records():
+            for record in records:
+                # add non-empty metrics
+                if record.metric:
+                    seen_metrics.add(record.metric)
+                # add non-empty dimensions
+                if record.dimension_data:
+                    seen_dimensions.update(k for k, v in record.dimension_data.items() if v)
+
+            return list(e for e in seen_metrics), list(seen_dimensions)
+        return ([], [])
+
+
 def findparser(sheet: SheetReader, platform: str) -> typing.Optional[typing.Type[BaseParser]]:
     plat_OK = [parser for parser in all_parsers() if platform in parser.platforms]
     if len(plat_OK) < 1:
@@ -49,26 +78,22 @@ def read_file(file_path: pathlib.Path) -> TableReader:
     raise WrongFormatError(file_path, file_path.suffix)
 
 
-def findparser_and_parse(
-    file_path: pathlib.Path, platform: str
-) -> typing.Optional[typing.List[typing.List[CounterRecord]]]:
+def eat(
+    file_path: pathlib.Path,
+    platform: str,
+) -> typing.Optional[typing.List[Poop]]:
 
     platform = Platform(platform=platform).platform
     logger.info('\n\n----- file \'%s\'  is tested -----', file_path.name)
-    sheets = read_file(file_path)
-    sheets_of_counter_records = []
-    for sheet in sheets:
+    reader = read_file(file_path)
+    poops = []
+    for sheet in reader:
         logger.info('\n-- sheet %s  is tested --', sheet.sheet_idx)
-        counter_records = []
         if parser := findparser(sheet, platform):
-            if counter_records := parser(sheet, platform).parse():
-                pass  # expected an indented block error if no block of code here
-            else:
-                logger.warning('sheet %s has not been parsed', sheet.sheet_idx + 1)
+            poops.append(Poop(parser(sheet, platform)))
         else:
             logger.warning(
                 'parser has not been chosen for sheet %s, the sheet wont be parsed',
                 sheet.sheet_idx + 1,
             )
-        sheets_of_counter_records.append(counter_records)
-    return sheets_of_counter_records
+    return poops

@@ -5,7 +5,7 @@ import sys
 
 from unidecode import unidecode
 
-from celus_nibbler import findparser_and_parse, get_supported_platforms_count
+from celus_nibbler import eat, get_supported_platforms_count
 
 
 def main():
@@ -28,9 +28,9 @@ def main():
     platform = unidecode(sys.argv[1])
 
     for file in sys.argv[2:]:
-        if sheets_of_counter_records := findparser_and_parse(pathlib.Path(file), platform):
-            for sheet in sheets_of_counter_records:
-                for record in sheet:
+        if poops := eat(pathlib.Path(file), platform):
+            for poop in poops:
+                for record in poop.records():
                     print(",".join((f'"{e}"' if e else "") for e in record.serialize()))
 
 

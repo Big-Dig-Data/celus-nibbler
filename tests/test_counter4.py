@@ -3,7 +3,7 @@ import pathlib
 
 import pytest
 
-from celus_nibbler import findparser_and_parse
+from celus_nibbler import eat
 
 
 @pytest.mark.parametrize(
@@ -15,9 +15,9 @@ def test_tsv(platform, file):
     output_path = pathlib.Path(__file__).parent / 'data/counter' / f"{file}.out"
     with output_path.open() as f:
         reader = csv.reader(f)
-        sheet = findparser_and_parse(source_path, platform)[0]
+        poop = eat(source_path, platform)[0]
 
-        for record in sheet:
+        for record in poop.records():
             assert next(reader) == list(record.serialize()), "Compare lines"
 
         with pytest.raises(StopIteration):

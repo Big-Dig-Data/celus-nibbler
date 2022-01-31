@@ -47,7 +47,7 @@ The same architecture and logic will apply to metrics, months, and to any dimens
 
 ## Tests
 - `test_findparser()` - going through all tables in directory `celus-nibbler/tests/data/csv/<parser_name>` and tests whether `findparser()` assigns for each table a parser which name corresponds with directory `<parser_name>` in which the table is located.
-- `test_findparser_and_parse()` - goes through each item in `testing_data.data` and checks wheter `findparser_and_parse()` finds the exact parser and parses the exact counter-report as mentioned in `testing_data.data`.
+- `test_eat()` - goes through each item in `testing_data.data` and checks wheter `eat()` finds the exact parser and parses the exact counter-report as mentioned in `testing_data.data`.
 
 ### naming of test files
 - rule for naming test files is: `<firstsheet_parser>-<secondsheet_parser>-<nsheet-parser>-<unique_letters>.sufix`

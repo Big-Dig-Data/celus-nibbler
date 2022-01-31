@@ -5,7 +5,7 @@ import typing
 
 import pytest
 
-from celus_nibbler import findparser, findparser_and_parse, get_supported_platforms
+from celus_nibbler import eat, findparser, get_supported_platforms
 from celus_nibbler.reader import CsvReader, XlsxReader
 
 logger = logging.getLogger(__name__)
@@ -35,9 +35,7 @@ def format_test_id(val):
 @pytest.mark.parametrize(
     "parsers, platform, file_path", detect_test_files(ext='csv'), ids=format_test_id
 )
-def test_reader_and_findparser_csv(
-    parsers: typing.Tuple[str], platform: str, file_path: pathlib.Path
-):
+def test_eat_csv(parsers: typing.Tuple[str], platform: str, file_path: pathlib.Path):
     """
     goes through each filename in data/csv/ and checks whether findparser() assigns correct parser which corresponds with the name of the filenames directory (for ex.: Parser_1_3_1)
     """
@@ -60,9 +58,7 @@ def test_reader_and_findparser_csv(
 @pytest.mark.parametrize(
     "parsers, platform, file_path", detect_test_files(ext='xlsx'), ids=format_test_id
 )
-def test_reader_and_findparser_xlsx(
-    parsers: typing.Tuple[str], platform: str, file_path: pathlib.Path
-):
+def test_eat_xlsx(parsers: typing.Tuple[str], platform: str, file_path: pathlib.Path):
     """
     goes through each filename in data/xlsx/ and checks whether findparser() assigns correct parser which corresponds with the name of the filenames directory (for ex.: Parser_1_3_1)
     """
@@ -89,16 +85,16 @@ def test_findparser_and_parse_csv(
     parsers: typing.Tuple[str], platform: str, file_path: pathlib.Path
 ):
     """
-    checks whether findparser_and_parse() finds correct parser and parse data correctly
+    checks whether eat() finds correct parser and parse data correctly
     """
 
     with open(f"{file_path}.out") as results_file:
         logger.info('----- file \'%s\'  is tested -----', file_path)
         reader = csv.reader(results_file)
-        sheets_of_counter_records = findparser_and_parse(file_path, platform)
-        assert sheets_of_counter_records is not None
-        for sheet in sheets_of_counter_records:
-            for record in sheet:
+        poops = eat(file_path, platform)
+        assert poops, "not None or empty"
+        for poop in poops:
+            for record in poop.records():
                 assert next(reader) == list(record.serialize()), "Compare lines"
 
         with pytest.raises(StopIteration):
@@ -112,16 +108,16 @@ def test_findparser_and_parse_xlsx(
     parsers: typing.Tuple[str], platform: str, file_path: pathlib.Path
 ):
     """
-    checks whether findparser_and_parse() finds correct parser and parse data correctly
+    checks whether eat() finds correct parser and parse data correctly
     """
 
     with open(f"{file_path}.out") as results_file:
         logger.info('----- file \'%s\'  is tested -----', file_path)
         reader = csv.reader(results_file)
-        sheets_of_counter_records = findparser_and_parse(file_path, platform)
-        assert sheets_of_counter_records is not None
-        for sheet in sheets_of_counter_records:
-            for record in sheet:
+        poops = eat(file_path, platform)
+        assert poops, "not None or empty"
+        for poop in poops:
+            for record in poop.records():
                 assert next(reader) == list(record.serialize()), "Compare lines"
 
         with pytest.raises(StopIteration):
@@ -148,3 +144,20 @@ def test_get_supported_platforms():
         'SpringerLink',
         'Uptodate',
     ], "supported platforms doesn't match"
+
+
+def test_extra_poop_info():
+    file_path = (
+        pathlib.Path(__file__).parent / 'data/parser/xlsx/ClassiquesGarnierNumerique/1_2-1_2-a.xlsx'
+    )
+
+    poops = eat(file_path, "ClassiquesGarnierNumerique")
+    assert poops and len(poops) == 2
+    assert [sorted(e) for e in poops[0].metrics_and_dimensions()] == [
+        ["Consult", "Search"],
+        ["Authentization"],
+    ]
+    assert [sorted(e) for e in poops[1].metrics_and_dimensions()] == [
+        ["Consult", "Search"],
+        ["Authentization"],
+    ]
