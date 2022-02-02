@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 class Poop:
-    """  nibblonians dark matter """
+    """nibblonians dark matter"""
 
     def __init__(self, parser: BaseParser):
         self.parser = parser

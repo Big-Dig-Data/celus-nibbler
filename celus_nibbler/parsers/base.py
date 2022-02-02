@@ -87,7 +87,7 @@ class BaseArea(metaclass=ABCMeta):
         pass
 
     def setup(self):
-        """ To be overiden. It should serve to read fixed variables from the list """
+        """To be overiden. It should serve to read fixed variables from the list"""
         pass
 
 
@@ -99,11 +99,11 @@ class BaseParser(metaclass=ABCMeta):
     @property
     @abstractmethod
     def areas(self) -> typing.List[typing.Type[BaseArea]]:
-        """ Areas defined """
+        """Areas defined"""
         pass
 
     def get_areas(self) -> typing.List[BaseArea]:
-        """ List of all data source areas withing the sheet """
+        """List of all data source areas withing the sheet"""
         return [area_class(self.sheet, self.platform) for area_class in self.areas]
 
     def __init__(self, sheet: SheetReader, platform: str):
@@ -118,7 +118,7 @@ class BaseParser(metaclass=ABCMeta):
     @property
     @abstractmethod
     def platforms(self) -> typing.List[str]:
-        """ List of available platforms (used for validation) """
+        """List of available platforms (used for validation)"""
         pass
 
     def _parse_content(

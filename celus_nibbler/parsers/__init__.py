@@ -9,14 +9,14 @@ from .base import BaseParser
 
 
 def all_parsers() -> typing.List[typing.Type[BaseParser]]:
-    """ Lists all available parsers """
+    """Lists all available parsers"""
     return [
         entry_point.load() for entry_point in pkg_resources.iter_entry_points("nibbler_parsers")
     ]
 
 
 def get_supported_platforms() -> typing.List[str]:
-    """ Lists all supported platforms"""
+    """Lists all supported platforms"""
     return sorted(
         list(set(itertools.chain.from_iterable(parser.platforms for parser in all_parsers())))
     )

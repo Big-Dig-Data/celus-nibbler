@@ -125,7 +125,7 @@ def test_findparser_and_parse_xlsx(
 
 
 def test_get_supported_platforms():
-    """ Test whether all supported platforms are properly returned """
+    """Test whether all supported platforms are properly returned"""
     assert get_supported_platforms() == [
         'ACS',
         'Bisnode',

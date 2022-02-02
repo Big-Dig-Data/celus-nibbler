@@ -57,7 +57,7 @@ class RegexCondition(BaseCondition):
 
 
 class StemmerCondition(BaseCondition):
-    """ Compare contante based on Porter Stemming algorithm """
+    """Compare contante based on Porter Stemming algorithm"""
 
     def _convert(self, text: str) -> str:
         return porter_stem(unidecode(text.strip()).lower())
