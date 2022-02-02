@@ -172,6 +172,9 @@ class Parser_1_1_4_1(HorizontalDatesParser):
     values = Coord(1, 2, relation=RelatedTo.FIELD)
     metric = Coord(1, 1, relation=RelatedTo.ROW)
     months = Coord(0, 2, relation=RelatedTo.COL)
+    dimension_data = {
+        "institution": Coord(0, 0, relation=RelatedTo.ROW),
+    }
 
 
 class Parser_1_1_4_2(Parser_1_1_4_1):

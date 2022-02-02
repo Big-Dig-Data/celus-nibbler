@@ -1,5 +1,5 @@
 import datetime
-from typing import Optional
+from typing import Optional, Union
 
 from dateutil import parser as datetimes_parser
 from pydantic import BaseModel, validator
@@ -50,11 +50,44 @@ class Metric(BaseModel):
 class Title(BaseModel):
     title: Optional[str]
 
+    _stripped_title = validator('title', allow_reuse=True)(stripped)
+    _non_empty_title = validator('title', allow_reuse=True)(non_empty)
+
     @validator("title")
     def not_digit(cls, title: str) -> str:
         if title.isdigit():
             raise NibblerValidation("cant-be-digit")
         return title
+
+
+class DimensionData(BaseModel):
+    key: str
+    value: Union[str, int]
+    # ToAsk: is it possible that the `vaule` can be iteger in some cases? not sure how can all these various dimension_data look like
+
+    _non_empty_key = validator('key', allow_reuse=True)(non_empty)
+    _non_empty_value = validator('value', allow_reuse=True)(non_empty)
+    # _stripped_value = validator('value', allow_reuse=True)(stripped)
+
+    @validator("key", allow_reuse=True)
+    @validator("value", allow_reuse=True)
+    def stripped(cls, v):
+        if isinstance(v, str):
+            v = v.strip()
+        return v
+
+    @validator("key")
+    def not_digit(cls, key: str) -> str:
+        if key.isdigit():
+            raise NibblerValidation("cant-be-digit")
+        return key
+
+    @validator("value")
+    def non_negative(cls, value):
+        if isinstance(value, int):
+            if value < 0:
+                raise NibblerValidation("cant-be-negative")
+        return value
 
 
 class Date(BaseModel):

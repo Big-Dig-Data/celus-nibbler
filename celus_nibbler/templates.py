@@ -84,13 +84,13 @@ class Sheet:
             else:
                 item_one_for_whole_sheet = None
             if item.relation == RelatedTo.ROW:
-                col_with_items = item.start_col
+                col_with_items: int = item.start_col
             else:
                 col_with_items = None
         else:
-            item_one_for_whole_sheet = col_with_items = None  # row_with_items =
+            item_one_for_whole_sheet = col_with_items = None
 
-        return item_one_for_whole_sheet, col_with_items  # , row_with_items
+        return item_one_for_whole_sheet, col_with_items
 
     def __str__(self) -> str:
         return f'Sheet  name: {self.name}  index: {self.idx}'

@@ -95,6 +95,16 @@ class HorizontalDatesParser(GeneralParser):
         # prepare how to parse Titles
         title_one_for_whole_sheet, col_with_titles = self.sheet.assign_by_relatedto(self.title)
 
+        # prepare how to parse dimension_data
+        dimension_one_for_whole_sheet = {}
+        columns_with_dimensions = {}
+        record_dimension_data = {}
+        for dim_name_a, dim_value_a in self.dimension_data.items():
+            (
+                dimension_one_for_whole_sheet[dim_name_a],
+                columns_with_dimensions[dim_name_a],
+            ) = self.sheet.assign_by_relatedto(dim_value_a)
+
         # PARSING row by row
         for row_with_values_idx, row_with_values in enumerate(
             self.sheet.values[self.values.start_row :]
@@ -166,6 +176,43 @@ class HorizontalDatesParser(GeneralParser):
                         ) from e
                     logger.debug('title is: \'%s\' ', title)
 
+            # parsing of dimension_data
+            dimensions_to_assign = {}
+            for dim_name_b, dim_value_b in dimension_one_for_whole_sheet.items():
+                if dim_value_b is not None:
+                    dimensions_to_assign[dim_name_b] = dim_value_b
+
+            for dim_name_b, col_idx in columns_with_dimensions.items():
+                if col_idx is not None:
+                    if row_with_values[col_idx] is not None:
+                        dimensions_to_assign[dim_name_b] = row_with_values[col_idx]
+                    else:
+                        dimensions_to_assign[dim_name_b] = None
+                        logger.info(
+                            f'in row {row_with_values_idx + self.values.start_row} no value for dimension "{dim_name_b}" was found'
+                        )
+            for dim_name_b, dim_value_b in dimensions_to_assign.items():
+                if dim_value_b is not None:
+                    if dim_value_b.lower() in IGNORE_TITLES:
+                        dimensions_to_assign[dim_name_b] = None
+                        logger.info(
+                            f'value "{dim_value_b.lower()}" of dimension "{dim_name_b}" was ignored, because it was found in "IGNORE_TITLES"'
+                        )
+                    else:
+                        try:
+                            record_dimension_data[
+                                validators.DimensionData(dim_name_b=dim_name_b).dim_name_b
+                            ] = validators.DimensionData(dim_value_b=dim_value_b).dim_value_b
+                        except ValidationError as e:
+                            raise TableException(
+                                {dim_name_b: dim_value_b},
+                                self.values.start_row + row_with_values_idx,
+                                col_idx,
+                                self.sheet_idx,
+                                f'{dim_name_b}:{dim_value_b} pair in dimensions_to_assign',
+                            ) from e
+                        logger.debug(f'dimension {dim_name_b} is: {dim_value_b}')
+
             # PARSING cell by cell
             cells_with_values = row_with_values[self.values.start_col :]
             for col_with_values_idx, value in enumerate(cells_with_values):
@@ -194,7 +241,7 @@ class HorizontalDatesParser(GeneralParser):
                             metric=metric,
                             start=start_month(dates[col_with_values_idx]),
                             end=end_month(dates[col_with_values_idx]),
-                            dimension_data=None,
+                            dimension_data=record_dimension_data,
                             title_ids=None,
                             value=value,
                         )
