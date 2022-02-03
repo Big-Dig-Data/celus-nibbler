@@ -22,8 +22,8 @@ testpaths = "tests/"
 name = "celus-nibbler"
 version = "0.3.0"
 description = "Non-counter data reader and processor."
-authors = ["Beda Kosata <beda@bigdigdata.com>", "Stepan Henek <stepan@bigdigdata.com>", "Zbynek Vyhlas <zbyneksmail@gmail.com>"]
-license = "Proprietary"
+authors = ["Stepan Henek <stepan@bigdigdata.com>", "Zbynek Vyhlas <zbyneksmail@gmail.com>"]
+license = "MIT"
 classifiers = [
 	"Programming Language :: Python :: 3",
 	"Topic :: Software Development :: Libraries"
