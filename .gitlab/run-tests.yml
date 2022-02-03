@@ -6,8 +6,8 @@ tests:run_tests:
       - IMAGE: ['python:3.8', 'python:3.9']
   needs: []
   before_script:
-    - curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
-    - export PATH="$HOME/.poetry/bin:$PATH"
+    - curl -sSL https://install.python-poetry.org | python3 -
+    - export PATH="$HOME/.local/bin:$PATH"
     - poetry install
   script:
     - poetry run pytest -v --junitxml=report.xml --cov=celus_nibbler --cov-report=xml --cov-report=term

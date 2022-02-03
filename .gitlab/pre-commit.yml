@@ -3,8 +3,8 @@ lints:pre_commit:
   needs: []
   image: python:3.8
   before_script:
-    - curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
-    - export PATH="$HOME/.poetry/bin:$PATH"
+    - curl -sSL https://install.python-poetry.org | python3 -
+    - export PATH="$HOME/.local/bin:$PATH"
     - poetry install
   script:
     - poetry run pre-commit run --hook-stage push --all-files
