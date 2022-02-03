@@ -8,7 +8,10 @@ from celus_nibbler import eat
 
 @pytest.mark.parametrize(
     "platform,file",
-    (("Ovid", "4/BR1-a.tsv"),),
+    (
+        ("Ovid", "4/BR1-a.tsv"),
+        ("WileyOnlineLibrary", "4/BR2-a.tsv"),
+    ),
 )
 def test_tsv(platform, file):
     source_path = pathlib.Path(__file__).parent / 'data/counter' / file
