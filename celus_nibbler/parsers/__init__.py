@@ -4,7 +4,6 @@ import typing
 
 import pkg_resources
 
-from . import format_1
 from .base import BaseParser
 
 

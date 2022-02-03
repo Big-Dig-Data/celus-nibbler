@@ -57,12 +57,4 @@ isort = "^5.8.0"
 [tool.poetry.plugins]
 
 [tool.poetry.plugins."nibbler_parsers"]
-"1_1_1" = "celus_nibbler.parsers.format_1:Parser_1_1_1"
-"1_1_4" = "celus_nibbler.parsers.format_1:Parser_1_1_4"
-"1_2" = "celus_nibbler.parsers.format_1:Parser_1_2"
-"1_3_1" = "celus_nibbler.parsers.format_1:Parser_1_3_1"
-"1_3_2" = "celus_nibbler.parsers.format_1:Parser_1_3_2"
-"1_3_3" = "celus_nibbler.parsers.format_1:Parser_1_3_3"
-"1_5_1" = "celus_nibbler.parsers.format_1:Parser_1_5_1"
-"1_5_2" = "celus_nibbler.parsers.format_1:Parser_1_5_2"
 "BR1" = "celus_nibbler.parsers.counter4:BR1"
