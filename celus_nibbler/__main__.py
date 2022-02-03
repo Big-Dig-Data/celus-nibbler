@@ -19,7 +19,7 @@ def main():
     logger.debug("Logging is configured.")
 
     if len(sys.argv) < 3:
-        print("Some arguemnts are missing")
+        print("Some arguments are missing")
         print()
         print("usage:")
         print(f"    {pathlib.Path(sys.argv[0]).name} platform file [file..]")
