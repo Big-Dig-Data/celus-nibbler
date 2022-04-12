@@ -109,3 +109,17 @@ class TestEncoding:
         sheets = CsvReader(path)
         for i, row in enumerate(sheets[0]):
             assert row == self.output[0][i]
+
+
+class TestTsv:
+    sample_path = Path(__file__).parent / 'data/reader/sample.tsv'
+
+    def test_tsv(self):
+        self.sample_path
+        (sheet,) = CsvReader(self.sample_path)
+        assert next(sheet) == ["Tabs", "mixed,with,", "commas"]
+        assert next(sheet) == ["1", "2", "3"]
+        assert next(sheet) == ["4", "5", "6"]
+        assert next(sheet) == ["7", "8", "9"]
+        with pytest.raises(StopIteration):
+            next(sheet)

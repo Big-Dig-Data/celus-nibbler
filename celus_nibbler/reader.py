@@ -23,14 +23,19 @@ class SheetReader:
     WINDOW_SIZE = 1000  # number of lines to be cached
 
     def __init__(
-        self, sheet_idx: int, name: Optional[str], file: IO[str], window_size: int = WINDOW_SIZE
+        self,
+        sheet_idx: int,
+        name: Optional[str],
+        file: IO[str],
+        window_size: int = WINDOW_SIZE,
+        delimiters: Optional[str] = None,
     ):
         self.name = name
         self.sheet_idx = sheet_idx
         self.file = file
 
         # guess dialect
-        self.dialect = csv.Sniffer().sniff(file.readline())
+        self.dialect = csv.Sniffer().sniff(file.readline(), delimiters=delimiters)
         self.file.seek(0)
 
         self.csv_reader = csv.reader(file, self.dialect)
@@ -114,11 +119,14 @@ class CsvReader(TableReader):
     def __init__(self, source: Union[bytes, str, pathlib.Path]):
         # detect encoding
         file: IO[str]
+        delimiters = None
         if isinstance(source, bytes):
             encoding = detect(source).get("encoding")
             logger.debug("Encoding '%s' was found for csv data", encoding)
             file = StringIO(source.decode(encoding or "utf8"))
         elif isinstance(source, (str, pathlib.Path)):
+            source = pathlib.Path(source)  # make user that source is Path
+
             detector = UniversalDetector()
             with open(source, "rb") as f:
                 for e in f:
@@ -128,11 +136,16 @@ class CsvReader(TableReader):
                 detector.close()
             encoding = detector.result.get("encoding")
             logger.debug("Encoding '%s' was found for csv file", encoding)
+
+            # Determine delimiters based on the source name
+            if source.suffix == ".tsv":
+                delimiters = ["\t"]
+
             file = open(source, "r", encoding=encoding)
         else:
             raise NotImplementedError()
 
-        self.sheets = [SheetReader(0, None, file)]
+        self.sheets = [SheetReader(0, None, file, delimiters=delimiters)]
 
     def __getitem__(self, item) -> SheetReader:
         return self.sheets[item]
