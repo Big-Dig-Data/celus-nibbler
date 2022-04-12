@@ -11,6 +11,7 @@ from celus_nibbler import eat
     (
         ("Ovid", "4/BR1-a.tsv"),
         ("WileyOnlineLibrary", "4/BR2-a.tsv"),
+        ("Psychiatry Online", "4/BR3-a.tsv"),
     ),
 )
 def test_tsv(platform, file):
