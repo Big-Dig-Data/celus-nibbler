@@ -86,6 +86,9 @@ class BaseArea(metaclass=ABCMeta):
     def find_data_cells(self) -> typing.List[MonthDataCells]:
         pass
 
+    def get_months(self) -> typing.List[datetime.date]:
+        return [e.month for e in self.find_data_cells()]
+
     def setup(self):
         """To be overiden. It should serve to read fixed variables from the list"""
         pass
@@ -153,6 +156,9 @@ class BaseParser(metaclass=ABCMeta):
     def parse(self) -> typing.Generator[CounterRecord, None, None]:
         for area in self.get_areas():
             yield from self.parse_area(area)
+
+    def get_months(self) -> typing.List[typing.List[datetime.date]]:
+        return [e.get_months() for e in self.get_areas()]
 
     def parse_area(self, area: BaseArea) -> typing.Generator[CounterRecord, None, None]:
         data_cells = area.find_data_cells()
@@ -225,7 +231,10 @@ class VerticalArea(BaseArea):
             try:
                 date = self.parse_date(cell)
                 res.append(
-                    MonthDataCells(date, CoordRange(Coord(cell.row + 1, cell.col), Direction.DOWN))
+                    MonthDataCells(
+                        date.replace(day=1),
+                        CoordRange(Coord(cell.row + 1, cell.col), Direction.DOWN),
+                    )
                 )
 
             except TableException as e:

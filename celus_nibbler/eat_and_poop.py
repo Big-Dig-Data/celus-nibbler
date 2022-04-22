@@ -1,6 +1,7 @@
 import logging
 import pathlib
 import typing
+from datetime import date
 
 from celus_nibbler.errors import WrongFormatError
 from celus_nibbler.parsers import BaseParser, all_parsers
@@ -42,6 +43,10 @@ class Poop:
 
             return list(e for e in seen_metrics), list(seen_dimensions)
         return ([], [])
+
+    def get_months(self) -> typing.List[typing.List[date]]:
+        """Get months of the sheet (divided into areas)"""
+        return self.parser.get_months()
 
 
 def findparser(
