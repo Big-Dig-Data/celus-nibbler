@@ -10,6 +10,8 @@ from celus_nibbler import eat
     "platform,file",
     (
         ("Ovid", "4/BR1-a.tsv"),
+        ("Ovid", "4/BR1-empty1.tsv"),
+        ("Ovid", "4/BR1-empty2.tsv"),
         ("WileyOnlineLibrary", "4/BR2-a.tsv"),
         ("Psychiatry Online", "4/BR3-a.tsv"),
     ),
