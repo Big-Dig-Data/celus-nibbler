@@ -40,8 +40,17 @@ class Poop:
         return ([], [])
 
 
-def findparser(sheet: SheetReader, platform: str) -> typing.Optional[typing.Type[BaseParser]]:
-    plat_OK = [parser for parser in all_parsers() if platform in parser.platforms]
+def findparser(
+    sheet: SheetReader,
+    platform: str,
+    parsers: typing.Optional[typing.List[str]] = None,
+    check_platform: bool = True,
+) -> typing.Optional[typing.Type[BaseParser]]:
+    plat_OK = [
+        parser
+        for parser in all_parsers(parsers)
+        if not check_platform or platform in parser.platforms
+    ]
     if len(plat_OK) < 1:
         logger.warning('there is no parser which expects your platform %s', platform)
     else:
@@ -81,15 +90,18 @@ def read_file(file_path: pathlib.Path) -> TableReader:
 def eat(
     file_path: pathlib.Path,
     platform: str,
+    parsers: typing.Optional[typing.List[str]] = None,
+    check_platform: bool = True,
 ) -> typing.Optional[typing.List[Poop]]:
-
     platform = Platform(platform=platform).platform
-    logger.info('\n\n----- file \'%s\'  is tested -----', file_path.name)
+
+    logger.info('Eating file "%s"', file_path)
+
     reader = read_file(file_path)
     poops = []
     for sheet in reader:
-        logger.info('\n-- sheet %s  is tested --', sheet.sheet_idx)
-        if parser := findparser(sheet, platform):
+        logger.info('Digesting sheet %d', sheet.sheet_idx)
+        if parser := findparser(sheet, platform, parsers, check_platform):
             poops.append(Poop(parser(sheet, platform)))
         else:
             logger.warning(

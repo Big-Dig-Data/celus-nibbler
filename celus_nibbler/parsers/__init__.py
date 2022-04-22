@@ -7,23 +7,37 @@ import pkg_resources
 from .base import BaseParser
 
 
-def all_parsers() -> typing.List[typing.Type[BaseParser]]:
-    """Lists all available parsers"""
+def all_parsers(
+    parsers: typing.Optional[typing.List[str]] = None,
+) -> typing.List[typing.Type[BaseParser]]:
+    """Lists all available parsers
+
+    :param parsers: use only parsers which names are on this list
+    :returns: List of parser classes
+    """
     return [
-        entry_point.load() for entry_point in pkg_resources.iter_entry_points("nibbler_parsers")
+        entry_point.load()
+        for entry_point in pkg_resources.iter_entry_points("nibbler_parsers")
+        if not parsers or any(entry_point.name.startswith(e) for e in parsers)
     ]
 
 
-def get_supported_platforms() -> typing.List[str]:
+def get_supported_platforms(
+    parsers: typing.Optional[typing.List[str]] = None,
+) -> typing.List[str]:
     """Lists all supported platforms"""
     return sorted(
-        list(set(itertools.chain.from_iterable(parser.platforms for parser in all_parsers())))
+        list(
+            set(itertools.chain.from_iterable(parser.platforms for parser in all_parsers(parsers)))
+        )
     )
 
 
-def get_supported_platforms_count() -> typing.List[typing.Tuple[str, int]]:
+def get_supported_platforms_count(
+    parsers: typing.Optional[typing.List[str]] = None,
+) -> typing.List[typing.Tuple[str, int]]:
     counter: typing.Dict[str, int] = collections.Counter()
-    for parser in all_parsers():
+    for parser in all_parsers(parsers):
         for platform in parser.platforms:
             counter[platform] += 1
 
@@ -34,4 +48,4 @@ def get_supported_platforms_count() -> typing.List[typing.Tuple[str, int]]:
     return res
 
 
-__all__ = ["all_parsers", "format_1", "get_supported_platforms", "get_supported_platforms_count"]
+__all__ = ["all_parsers", "get_supported_platforms", "get_supported_platforms_count"]
