@@ -12,3 +12,4 @@ def test_extra_poop_info():
         ["Book Title Requests"],
         ["Publisher"],
     ]
+    assert poops[0].sheet_idx == 0

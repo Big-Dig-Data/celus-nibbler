@@ -17,6 +17,10 @@ class Poop:
     def __init__(self, parser: BaseParser):
         self.parser = parser
 
+    @property
+    def sheet_idx(self):
+        return self.parser.sheet.sheet_idx
+
     def records(self) -> typing.Optional[typing.Generator[CounterRecord, None, None]]:
         if counter_records := self.parser.parse():
             return counter_records
