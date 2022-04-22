@@ -54,35 +54,35 @@ def findparser(
     platform: str,
     parsers: typing.Optional[typing.List[str]] = None,
     check_platform: bool = True,
+    use_heuristics: bool = True,
 ) -> typing.Optional[typing.Type[BaseParser]]:
-    plat_OK = [
+    parsers = [
         parser
         for parser in all_parsers(parsers)
         if not check_platform or platform in parser.platforms
     ]
-    if len(plat_OK) < 1:
+    if len(parsers) < 1:
         logger.warning('there is no parser which expects your platform %s', platform)
     else:
-        logger.info('there is %s parsers, which expects your platform %s', len(plat_OK), platform)
+        logger.info('there is %s parsers, which expects your platform %s', len(parsers), platform)
 
-    plat_heur_OK = [
-        parser for parser in plat_OK if parser(sheet, platform=platform).heuristic_check()
-    ]
-    if len(plat_heur_OK) < 1:
-        logger.warning('there is no parser which heuristics matching format of your uploaded file.')
+    if use_heuristics:
+        parsers = [
+            parser for parser in parsers if parser(sheet, platform=platform).heuristic_check()
+        ]
+
+    if len(parsers) < 1:
+        logger.warning('no parser found')
         return None
-    elif len(plat_heur_OK) > 1:
-        logger.warning(
-            '%s parsers, matching the heuristics in the file, has been found. Script needs to find exactly 1 parser, to work properly.',
-            len(plat_heur_OK),
-        )
+    elif len(parsers) > 1:
+        logger.warning('%s more than one parser found', len(parsers))
         return None
 
     logger.info(
         '%s parser, matching the heuristics in the file, has been found.',
-        len(plat_heur_OK),
+        len(parsers),
     )
-    parser = plat_heur_OK[0]
+    parser = parsers[0]
     logger.info('Parser used: %s', parser)
     return parser
 
@@ -101,6 +101,7 @@ def eat(
     platform: str,
     parsers: typing.Optional[typing.List[str]] = None,
     check_platform: bool = True,
+    use_heuristics: bool = True,
 ) -> typing.Optional[typing.List[Poop]]:
     platform = Platform(platform=platform).platform
 
@@ -110,7 +111,7 @@ def eat(
     poops = []
     for sheet in reader:
         logger.info('Digesting sheet %d', sheet.sheet_idx)
-        if parser := findparser(sheet, platform, parsers, check_platform):
+        if parser := findparser(sheet, platform, parsers, check_platform, use_heuristics):
             poops.append(Poop(parser(sheet, platform)))
         else:
             logger.warning(

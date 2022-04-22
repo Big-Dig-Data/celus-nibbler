@@ -7,7 +7,7 @@ from celus_nibbler import eat
 def test_extra_poop_info():
     file_path = pathlib.Path(__file__).parent / 'data/counter/4/BR1-a.tsv'
 
-    poops = eat(file_path, "Ovid")
+    poops = eat(file_path, "Ovid", parsers=["nibbler.counter4.BR1"])
     assert poops and len(poops) == 1
     assert [sorted(e) for e in poops[0].metrics_and_dimensions()] == [
         ["Book Title Requests"],
@@ -19,7 +19,7 @@ def test_extra_poop_info():
     for file in ['BR1-empty1.tsv', 'BR1-empty2.tsv']:
         file_path = pathlib.Path(__file__).parent / 'data/counter/4/' / file
 
-        poops = eat(file_path, "Ovid")
+        poops = eat(file_path, "Ovid", parsers=["nibbler.counter4.BR1"])
         assert poops and len(poops) == 1
         assert [sorted(e) for e in poops[0].metrics_and_dimensions()] == [[], []]
         assert poops[0].sheet_idx == 0
