@@ -17,6 +17,8 @@ from celus_nibbler import eat
         ("WileyOnlineLibrary", "4/BR2-b.tsv", "nibbler.counter4.BR2", False),
         ("Psychiatry Online", "4/BR3-a.tsv", "nibbler.counter4.BR3", True),
         ("Psychiatry Online", "4/BR3-b.tsv", "nibbler.counter4.BR3", False),
+        ("Tandfonline", "4/DB1-a.tsv", "nibbler.counter4.DB1", True),
+        ("Tandfonline", "4/DB1-b.tsv", "nibbler.counter4.DB1", False),
     ),
 )
 def test_tsv(platform, file, parser, heuristics):
