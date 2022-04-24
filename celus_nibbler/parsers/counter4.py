@@ -178,6 +178,7 @@ class BR3(BaseParser):
                 except TableException as e:
                     if e.reason in ["out-of-bounds"]:
                         raise TableException(
+                            value="Access Denied Category",
                             row=cell.row,
                             sheet=self.sheet.sheet_idx,
                             reason="missing-metric-in-header",
@@ -187,7 +188,7 @@ class BR3(BaseParser):
 
 
 class DB1(BaseParser):
-    titles_to_skip: typing.List[str] = ["Total", "Total for all titles"]
+    titles_to_skip: typing.List[str] = ["Total", "Total for all databases"]
     platforms = [
         "Encyclopaedia Britannica",
         "Journal of Clinical Psychiatry",
@@ -210,6 +211,36 @@ class DB1(BaseParser):
                 except TableException as e:
                     if e.reason in ["out-of-bounds"]:
                         raise TableException(
+                            value="User Activity",
+                            row=cell.row,
+                            sheet=self.sheet.sheet_idx,
+                            reason="missing-metric-in-header",
+                        )
+
+    areas = [Area]
+
+
+class DB2(BaseParser):
+    titles_to_skip: typing.List[str] = ["Total", "Total for all databases"]
+    platforms = [
+        "ProQuest",
+        "Tandfonline",
+    ]
+    heuristics = RegexCondition(re.compile(r"^Database Report 2 \(R4\)"), Coord(0, 0))
+
+    class Area(CounterHeaderArea):
+        @property
+        def metric_cells(self):
+            for cell in self.header_row:
+                try:
+                    content = cell.content(self.sheet)
+                    if content and content.strip().lower() == "Access denied category".lower():
+
+                        return CoordRange(Coord(cell.row + 1, cell.col), Direction.DOWN)
+                except TableException as e:
+                    if e.reason in ["out-of-bounds"]:
+                        raise TableException(
+                            value="Access denied category",
                             row=cell.row,
                             sheet=self.sheet.sheet_idx,
                             reason="missing-metric-in-header",
