@@ -21,6 +21,8 @@ from celus_nibbler import eat
         ("Tandfonline", "4/DB1-b.tsv", "nibbler.counter4.DB1", False),
         ("Tandfonline", "4/DB2-a.tsv", "nibbler.counter4.DB2", True),
         ("Tandfonline", "4/DB2-b.tsv", "nibbler.counter4.DB2", False),
+        ("ProQuest", "4/PR1-a.tsv", "nibbler.counter4.PR1", True),
+        ("ProQuest", "4/PR1-b.tsv", "nibbler.counter4.PR1", False),
     ),
 )
 def test_tsv(platform, file, parser, heuristics):

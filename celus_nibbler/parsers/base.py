@@ -42,6 +42,7 @@ class BaseArea(metaclass=ABCMeta):
 
     title_cells: typing.Optional[CoordRange] = None
     title_ids_cells: typing.Dict[str, CoordRange] = {}
+    platform_cells: typing.Optional[CoordRange] = None
     metric_cells: typing.Optional[CoordRange] = None
     dimensions_cells: typing.Dict[str, CoordRange] = {}
 
@@ -60,6 +61,7 @@ class BaseArea(metaclass=ABCMeta):
         value: int,
         date: datetime.date,
         title: typing.Optional[str] = None,
+        platform: typing.Optional[str] = None,
         metric: typing.Optional[str] = None,
         title_ids: typing.Dict[str, str] = {},
         dimension_data: typing.Dict[str, str] = {},
@@ -75,8 +77,11 @@ class BaseArea(metaclass=ABCMeta):
             metric=metric,
             title_ids=title_ids,
             dimension_data=dimension_data,
-            platform=self.platform,
+            platform=platform or self.platform,
         )
+
+    def get_platform(self):
+        return self.platform
 
     def parse_date(self, cell: Coord) -> datetime.date:
         content = cell.content(self.sheet)
@@ -97,6 +102,7 @@ class BaseArea(metaclass=ABCMeta):
 class BaseParser(metaclass=ABCMeta):
     metrics_to_skip: typing.List[str] = ["Total"]
     titles_to_skip: typing.List[str] = ["Total"]
+    platforms_to_skip: typing.List[str] = ["Total"]
     heuristics: typing.Optional[BaseCondition] = None
 
     @property
@@ -190,6 +196,15 @@ class BaseParser(metaclass=ABCMeta):
                 else:
                     title = None
 
+                if area.platform_cells:
+                    platform = self._parse_content(
+                        area.platform_cells, idx, validators.Platform, "platform"
+                    )
+                    if platform in self.platforms_to_skip:
+                        continue
+                else:
+                    platform = None
+
                 dimension_data = {}
                 for k, rng in area.dimensions_cells.items():
                     dimension_data[k] = self._parse_content(
@@ -210,6 +225,7 @@ class BaseParser(metaclass=ABCMeta):
                         date=data.month,
                         metric=metric,
                         title=title,
+                        platform=platform,
                         dimension_data=dimension_data,
                         title_ids=title_ids,
                     )

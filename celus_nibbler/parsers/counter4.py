@@ -247,3 +247,40 @@ class DB2(BaseParser):
                         )
 
     areas = [Area]
+
+
+class PR1(BaseParser):
+    titles_to_skip: typing.List[str] = ["Total", "Total for all platforms"]
+    platforms = [
+        "ProQuest",
+        "Tandfonline",
+    ]
+    heuristics = RegexCondition(re.compile(r"^Platform Report 1 \(R4\)"), Coord(0, 0))
+
+    class Area(CounterHeaderArea):
+        @property
+        def title_cells(self):
+            return None
+
+        @property
+        def platform_cells(self) -> CoordRange:
+            return CoordRange(Coord(self.header_row[0].row + 1, 0), Direction.DOWN)
+
+        @property
+        def metric_cells(self):
+            for cell in self.header_row:
+                try:
+                    content = cell.content(self.sheet)
+                    if content and content.strip().lower() == "User Activity".lower():
+
+                        return CoordRange(Coord(cell.row + 1, cell.col), Direction.DOWN)
+                except TableException as e:
+                    if e.reason in ["out-of-bounds"]:
+                        raise TableException(
+                            value="User Activity",
+                            row=cell.row,
+                            sheet=self.sheet.sheet_idx,
+                            reason="missing-metric-in-header",
+                        )
+
+    areas = [Area]
