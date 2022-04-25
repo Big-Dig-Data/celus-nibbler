@@ -4,6 +4,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
+## [2.0.0] - 2022-04-25
+
+### Added
+- sheet_idx property added to Poop class (sheet index from were the Poop comes from)
+- get_months() function added to Poop class
+- C4 format parsing (csv/tsv) - BR3, DB1, DB2, PR1, JR1, JR1a, JR1GOA, JR2, MR1
+
+### Changed
+- CounterRecord.platform removed (should be used as a part of `dimensions_data`)
+- C4 parsing is done in more dynamic way (no hardcoded lines nor columns)
+- eat() API extended - new options added `parsers`, `check_platform`, `use_heuristics`
+- eat() will return list which will contain None if nibbler is unable to parse the sheet
+
+### Removed
+- CounterRecord.platform removed (should be used as a part of `dimensions_data`)
+
+
 ## [1.1.0] - 2022-02-04
 
 ### Added
