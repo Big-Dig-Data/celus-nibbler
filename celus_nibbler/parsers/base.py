@@ -210,7 +210,7 @@ class BaseParser(metaclass=ABCMeta):
                     dimension_data["platform"] = platform
 
                 title_ids = {}
-                for key in ["DOI", "ISBN", "ISSN"]:
+                for key in ["DOI", "ISBN", "ISSN", "EISSN"]:
                     if rng := area.title_ids_cells.get(key):
                         value = self._parse_content(rng, idx, getattr(validators, key), key.lower())
                         if value:

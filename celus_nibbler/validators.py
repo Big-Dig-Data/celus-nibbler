@@ -16,6 +16,14 @@ def stripped(name: str) -> str:
     return name.strip()
 
 
+def issn(issn: str) -> str:
+    if not issn:
+        return ""
+    if not re.match(r"^[0-9]{4}-[0-9]{3}[0-9X]$", issn):
+        raise ValidationError("not-issn")
+    return issn
+
+
 class Value(BaseModel):
     value: Union[int, float]
 
@@ -107,13 +115,13 @@ class ISBN(BaseModel):
 class ISSN(BaseModel):
     issn: str
 
-    @validator("issn")
-    def check_isbn(cls, issn: str) -> str:
-        if not issn:
-            return ""
-        if not re.match(r"^[0-9]{4}-[0-9]{3}[0-9X]$", issn):
-            raise ValidationError("not-issn")
-        return issn
+    _issn_format = validator('issn', allow_reuse=True)(issn)
+
+
+class EISSN(BaseModel):
+    eissn: str
+
+    _issn_format = validator('eissn', allow_reuse=True)(issn)
 
 
 class DateInString(BaseModel):

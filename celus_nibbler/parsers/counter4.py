@@ -19,7 +19,8 @@ class CounterHeaderArea(VerticalArea):
         "Journal DOI",
     }
     ISBN_NAMES = {"ISBN"}
-    ISSN_NAMES = {"ISSN", "Print ISSN", "Online ISSN"}
+    ISSN_NAMES = {"ISSN", "Print ISSN"}
+    EISSN_NAMES = {"Online ISSN"}
     DIMENSION_NAMES_MAP = [
         ("Publisher", {"Publisher"}),
         ("platform", {"Platform", "platform"}),
@@ -94,6 +95,8 @@ class CounterHeaderArea(VerticalArea):
                 ids_cells["ISBN"] = CoordRange(Coord(cell.row + 1, cell.col), Direction.DOWN)
             elif content.strip() in self.ISSN_NAMES:
                 ids_cells["ISSN"] = CoordRange(Coord(cell.row + 1, cell.col), Direction.DOWN)
+            elif content.strip() in self.EISSN_NAMES:
+                ids_cells["EISSN"] = CoordRange(Coord(cell.row + 1, cell.col), Direction.DOWN)
 
         return ids_cells
 
