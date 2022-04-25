@@ -460,3 +460,24 @@ class JR2(BaseParser):
                         )
 
     areas = [Area]
+
+
+class MR1(BaseParser):
+    titles_to_skip: typing.List[str] = ["Total", "Total for all collections"]
+    platforms = [
+        "ProQuest",
+    ]
+    heuristics = RegexCondition(re.compile(r"^Multimedia Report 1 \(R4\)"), Coord(0, 0))
+
+    class Area(CounterHeaderArea):
+        DIMENSION_NAMES_MAP = [
+            ("Content Provider", {"Content Provider"}),
+            ("platform", {"Platform", "platform"}),
+        ]
+
+        def prepare_record(self, *args, **kwargs) -> CounterRecord:
+            res = super().prepare_record(*args, **kwargs)
+            res.metric = "Multimedia Full Content Unit Requests"
+            return res
+
+    areas = [Area]

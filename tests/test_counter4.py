@@ -31,6 +31,8 @@ from celus_nibbler import eat
         ("OUP", "4/JR1GOA-b.tsv", "nibbler.counter4.JR1GOA", False),
         ("ProQuest", "4/JR2-a.tsv", "nibbler.counter4.JR2", True),
         ("ProQuest", "4/JR2-b.tsv", "nibbler.counter4.JR2", False),
+        ("ProQuest", "4/MR1-a.tsv", "nibbler.counter4.MR1", True),
+        ("ProQuest", "4/MR1-b.tsv", "nibbler.counter4.MR1", False),
     ),
 )
 def test_tsv(platform, file, parser, heuristics):
