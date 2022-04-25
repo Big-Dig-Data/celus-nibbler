@@ -367,6 +367,31 @@ class JR1a(BaseParser):
     areas = [Area]
 
 
+class JR1GOA(BaseParser):
+    titles_to_skip: typing.List[str] = ["Total", "Total for all journals"]
+    platforms = [
+        "Journal of Clinical Psychiatry",
+        "Liebert Online",
+        "OUP",
+        "ProQuest",
+        "Psychiatry Online",
+        "Sage",
+        "ScienceDirect",
+        "SpringerLink",
+        "Tandfonline",
+        "World Scientific",
+    ]
+    heuristics = RegexCondition(re.compile(r"^Journal Report 1 GOA \(R4\)"), Coord(0, 0))
+
+    class Area(CounterHeaderArea):
+        def prepare_record(self, *args, **kwargs) -> CounterRecord:
+            res = super().prepare_record(*args, **kwargs)
+            res.metric = "Gold Open Access Article Requests"
+            return res
+
+    areas = [Area]
+
+
 class JR2(BaseParser):
     titles_to_skip: typing.List[str] = ["Total", "Total for all journals"]
     heuristics = RegexCondition(re.compile(r"^Journal Report 2 \(R4\)"), Coord(0, 0))
