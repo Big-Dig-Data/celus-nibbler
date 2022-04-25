@@ -349,6 +349,24 @@ class JR1(BaseParser):
     areas = [Area]
 
 
+class JR1a(BaseParser):
+    titles_to_skip: typing.List[str] = ["Total", "Total for all journals"]
+    platforms = [
+        "Liebert Online",
+        "Ovid",
+        "Sage",
+    ]
+    heuristics = RegexCondition(re.compile(r"^Journal Report 1a \(R4\)"), Coord(0, 0))
+
+    class Area(CounterHeaderArea):
+        def prepare_record(self, *args, **kwargs) -> CounterRecord:
+            res = super().prepare_record(*args, **kwargs)
+            res.metric = "Archive Article Requests"
+            return res
+
+    areas = [Area]
+
+
 class JR2(BaseParser):
     titles_to_skip: typing.List[str] = ["Total", "Total for all journals"]
     heuristics = RegexCondition(re.compile(r"^Journal Report 2 \(R4\)"), Coord(0, 0))
