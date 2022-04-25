@@ -13,9 +13,13 @@ from .base import BaseParser, VerticalArea
 
 class CounterHeaderArea(VerticalArea):
     MAX_HEADER_ROW = 50
-    DOI_NAMES = {"Book DOI", "DOI"}
+    DOI_NAMES = {
+        "Book DOI",
+        "DOI",
+        "Journal DOI",
+    }
     ISBN_NAMES = {"ISBN"}
-    ISSN_NAMES = {"ISSN"}
+    ISSN_NAMES = {"ISSN", "Print ISSN", "Online ISSN"}
     DIMENSION_NAMES_MAP = [
         ("Publisher", {"Publisher"}),
     ]
@@ -282,5 +286,63 @@ class PR1(BaseParser):
                             sheet=self.sheet.sheet_idx,
                             reason="missing-metric-in-header",
                         )
+
+    areas = [Area]
+
+
+class JR1(BaseParser):
+    titles_to_skip: typing.List[str] = ["Total", "Total for all journals"]
+    platforms = [
+        "AACR",
+        "AACN",
+        "AAP",
+        "AASM",
+        "ACM",
+        "AJTMH",
+        "AHA",
+        "Allen",
+        "AMA",
+        "AMS",
+        "Annual Reviews",
+        "ARRS",
+        "Berghahn Journals",
+        "Bone and Joint Journal",
+        "CS",
+        "CSIRO",
+        "DeGruyter",
+        "Edinburgh University Press",
+        "Emerald",
+        "Gale",
+        "Health Affairs",
+        "IET",
+        "IOS Press",
+        "JCO - Journal of Clinical Oncology",
+        "JOSPT",
+        "JNS - Journal of Neurosurgery",
+        "Liebert Online",
+        "Journal of Clinical Psychiatry",
+        "MAG",
+        "Nature_com",
+        "OUP",
+        "Ovid",
+        "ProQuest",
+        "Psychiatry Online",
+        "Radiology & Radiographics",
+        "Sage",
+        "ScienceDirect",
+        "SpringerLink",
+        "Tandfonline",
+        "Thieme",
+        "Topics in Spinal Cord Injury Rehabilitation",
+        "WileyOnlineLibrary",
+        "World Scientific",
+    ]
+    heuristics = RegexCondition(re.compile(r"^Journal Report 1 \(R4\)"), Coord(0, 0))
+
+    class Area(CounterHeaderArea):
+        def prepare_record(self, *args, **kwargs) -> CounterRecord:
+            res = super().prepare_record(*args, **kwargs)
+            res.metric = "FT Article Requests"
+            return res
 
     areas = [Area]
