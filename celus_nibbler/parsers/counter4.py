@@ -347,3 +347,73 @@ class JR1(BaseParser):
             return res
 
     areas = [Area]
+
+
+class JR2(BaseParser):
+    titles_to_skip: typing.List[str] = ["Total", "Total for all journals"]
+    heuristics = RegexCondition(re.compile(r"^Journal Report 2 \(R4\)"), Coord(0, 0))
+    platforms = [
+        "AACR",
+        "AACN",
+        "AAP",
+        "AASM",
+        "ACM",
+        "AJTMH",
+        "AHA",
+        "Allen",
+        "AMA",
+        "AMS",
+        "Annual Reviews",
+        "ARRS",
+        "Berghahn Journals",
+        "Bone and Joint Journal",
+        "CS",
+        "CSIRO",
+        "DeGruyter",
+        "Edinburgh University Press",
+        "Emerald",
+        "Gale",
+        "Health Affairs",
+        "IET",
+        "IOS Press",
+        "JCO - Journal of Clinical Oncology",
+        "JOSPT",
+        "JNS - Journal of Neurosurgery",
+        "Liebert Online",
+        "Journal of Clinical Psychiatry",
+        "MAG",
+        "Nature_com",
+        "OUP",
+        "Ovid",
+        "ProQuest",
+        "Psychiatry Online",
+        "Radiology & Radiographics",
+        "Sage",
+        "ScienceDirect",
+        "SpringerLink",
+        "Tandfonline",
+        "Thieme",
+        "Topics in Spinal Cord Injury Rehabilitation",
+        "WileyOnlineLibrary",
+        "World Scientific",
+    ]
+
+    class Area(CounterHeaderArea):
+        @property
+        def metric_cells(self):
+            for cell in self.header_row:
+                try:
+                    content = cell.content(self.sheet)
+                    if content and content.strip().lower() == "Access Denied Category".lower():
+
+                        return CoordRange(Coord(cell.row + 1, cell.col), Direction.DOWN)
+                except TableException as e:
+                    if e.reason in ["out-of-bounds"]:
+                        raise TableException(
+                            value="Access Denied Category",
+                            row=cell.row,
+                            sheet=self.sheet.sheet_idx,
+                            reason="missing-metric-in-header",
+                        )
+
+    areas = [Area]
