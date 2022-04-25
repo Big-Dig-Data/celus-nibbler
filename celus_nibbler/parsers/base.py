@@ -61,7 +61,6 @@ class BaseArea(metaclass=ABCMeta):
         value: int,
         date: datetime.date,
         title: typing.Optional[str] = None,
-        platform: typing.Optional[str] = None,
         metric: typing.Optional[str] = None,
         title_ids: typing.Dict[str, str] = {},
         dimension_data: typing.Dict[str, str] = {},
@@ -77,11 +76,7 @@ class BaseArea(metaclass=ABCMeta):
             metric=metric,
             title_ids=title_ids,
             dimension_data=dimension_data,
-            platform=platform or self.platform,
         )
-
-    def get_platform(self):
-        return self.platform
 
     def parse_date(self, cell: Coord) -> datetime.date:
         content = cell.content(self.sheet)
@@ -211,6 +206,9 @@ class BaseParser(metaclass=ABCMeta):
                         rng, idx, validators.Dimension, "dimension"
                     )
 
+                if platform:
+                    dimension_data["platform"] = platform
+
                 title_ids = {}
                 for key in ["DOI", "ISBN", "ISSN"]:
                     if rng := area.title_ids_cells.get(key):
@@ -225,7 +223,6 @@ class BaseParser(metaclass=ABCMeta):
                         date=data.month,
                         metric=metric,
                         title=title,
-                        platform=platform,
                         dimension_data=dimension_data,
                         title_ids=title_ids,
                     )

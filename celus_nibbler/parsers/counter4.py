@@ -22,6 +22,7 @@ class CounterHeaderArea(VerticalArea):
     ISSN_NAMES = {"ISSN", "Print ISSN", "Online ISSN"}
     DIMENSION_NAMES_MAP = [
         ("Publisher", {"Publisher"}),
+        ("platform", {"Platform", "platform"}),
     ]
 
     @property

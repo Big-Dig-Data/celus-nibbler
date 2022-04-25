@@ -6,7 +6,6 @@ from datetime import date
 @dataclass
 class CounterRecord:
     value: int
-    platform: typing.Optional[str] = None  # name of the issuer
     start: typing.Optional[date] = None  # mandatory, each record should have at least a start date
     end: typing.Optional[
         date
@@ -24,7 +23,7 @@ class CounterRecord:
         def serialize_dict(mapping: typing.Optional[dict]) -> str:
             if not mapping:
                 return ""
-            return "|".join(f"{k}:{v}" for k, v in mapping.items())
+            return "|".join(f"{k}:{mapping[k]}" for k in sorted(mapping.keys()))
 
         def format_date(dato_obj: typing.Optional[date]):
             if not dato_obj:
@@ -34,7 +33,6 @@ class CounterRecord:
         return (
             format_date(self.start),
             format_date(self.end),
-            self.platform or "",
             self.title or "",
             self.metric or "",
             serialize_dict(self.dimension_data),
