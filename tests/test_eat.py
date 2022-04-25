@@ -8,26 +8,26 @@ def test_eat():
 
     # Default call
     poops = eat(file_path, "Ovid")
-    assert len(poops) == 1
+    assert all(poops)
 
     # Wrong platform
     poops = eat(file_path, "Unknown")
-    assert len(poops) == 0
+    assert not any(poops)
 
     # Ignore platform
     poops = eat(file_path, "Unknown", check_platform=False)
-    assert len(poops) == 1
+    assert all(poops)
 
     # Non matching parsers
     poops = eat(file_path, "Unknown", check_platform=False, parsers=["non-existing"])
-    assert len(poops) == 0
+    assert not any(poops)
 
     # parser exact match
     poops = eat(
         file_path, "Unknown", check_platform=False, parsers=["non-existing", "nibbler.counter4.BR1"]
     )
-    assert len(poops) == 1
+    assert all(poops)
 
     # parser startswith match
     poops = eat(file_path, "Ovid", parsers=["non-existing", "nibbler.counter4"])
-    assert len(poops) == 1
+    assert all(poops)

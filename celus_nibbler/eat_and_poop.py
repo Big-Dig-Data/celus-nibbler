@@ -102,7 +102,7 @@ def eat(
     parsers: typing.Optional[typing.List[str]] = None,
     check_platform: bool = True,
     use_heuristics: bool = True,
-) -> typing.Optional[typing.List[Poop]]:
+) -> typing.Optional[typing.List[typing.Optional[Poop]]]:
     platform = Platform(platform=platform).platform
 
     logger.info('Eating file "%s"', file_path)
@@ -118,4 +118,5 @@ def eat(
                 'parser has not been chosen for sheet %s, the sheet wont be parsed',
                 sheet.sheet_idx + 1,
             )
+            poops.append(None)
     return poops
