@@ -45,7 +45,6 @@ class Dimension(BaseModel):
     dimension: str
 
     _stripped_dimension = validator('dimension', allow_reuse=True)(stripped)
-    _non_empty_dimension = validator('dimension', allow_reuse=True)(non_empty)
 
 
 class Metric(BaseModel):
