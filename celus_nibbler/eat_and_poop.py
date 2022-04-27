@@ -97,13 +97,16 @@ def read_file(file_path: pathlib.Path) -> TableReader:
 
 
 def eat(
-    file_path: pathlib.Path,
+    file_path: typing.Union[pathlib.Path, str],
     platform: str,
     parsers: typing.Optional[typing.List[str]] = None,
     check_platform: bool = True,
     use_heuristics: bool = True,
 ) -> typing.Optional[typing.List[typing.Optional[Poop]]]:
     platform = Platform(platform=platform).platform
+
+    # make sure that file_path is Path instance
+    file_path = pathlib.Path(file_path)
 
     logger.info('Eating file "%s"', file_path)
 
