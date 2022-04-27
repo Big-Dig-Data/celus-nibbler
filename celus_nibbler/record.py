@@ -1,20 +1,29 @@
 import typing
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date
 
 
 @dataclass
 class CounterRecord:
+    # The actual vaule
     value: int
-    start: typing.Optional[date] = None  # mandatory, each record should have at least a start date
-    end: typing.Optional[
-        date
-    ] = None  # otional really, if the report is for whole month then the start date (first day of the month) suffice
-    title: typing.Optional[str] = None  # name of the publication
-    title_ids: typing.Optional[
-        typing.Dict[str, str]
-    ] = None  # ISBN (books), ISSN (periodics), EISSN (same thing only for electronic version of publications)
-    dimension_data: typing.Optional[typing.Dict[str, str]] = None  # contains more details
+
+    # mandatory, each record should have at least a start date
+    start: typing.Optional[date] = None
+
+    # Optional really, if the report is for whole month then the start date (first day of the month) suffice
+    end: typing.Optional[date] = None
+
+    # name of the publication
+    title: typing.Optional[str] = None
+
+    # ISBN (books), ISSN (periodics), EISSN (same thing only for electronic version of publications)
+    title_ids: typing.Dict[str, str] = field(default_factory=dict)
+
+    # contains more details
+    dimension_data: typing.Dict[str, str] = field(default_factory=dict)
+
+    # What actually value of this record means
     metric: typing.Optional[str] = None
 
     # TODO validations
