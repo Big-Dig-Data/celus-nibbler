@@ -5,6 +5,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [2.1.0] - 2022-04-27
+
+### Changed
+- allow empty values in Dimensions data
+- make title IDs and dimensions compatible with celus
+- set default CounterRecord.title_ids and CounterRecord.dimension_data to empty dict
+- function `eat()` now accepts both str and pathlib.Path as path argument
+
+
 ## [2.0.1] - 2022-04-25
 
 ### Fixed
