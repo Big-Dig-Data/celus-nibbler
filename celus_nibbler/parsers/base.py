@@ -17,6 +17,15 @@ from celus_nibbler.utils import end_month, start_month
 logger = logging.getLogger(__name__)
 
 
+IDS = [
+    ("DOI", validators.DOI, "doi"),
+    ("ISBN", validators.ISBN, "isbn"),
+    ("Print_ISSN", validators.ISSN, "issn"),
+    ("Online_ISSN", validators.EISSN, "eissn"),
+    ("Proprietary", validators.ProprietaryID, "proprietary_id"),
+]
+
+
 class MonthDataCells:
     def __init__(self, month: datetime.date, range: CoordRange):
         self.range = range
@@ -207,12 +216,12 @@ class BaseParser(metaclass=ABCMeta):
                     )
 
                 if platform:
-                    dimension_data["platform"] = platform
+                    dimension_data["Platform"] = platform
 
                 title_ids = {}
-                for key in ["DOI", "ISBN", "ISSN", "EISSN"]:
+                for (key, validator, attr) in IDS:
                     if rng := area.title_ids_cells.get(key):
-                        value = self._parse_content(rng, idx, getattr(validators, key), key.lower())
+                        value = self._parse_content(rng, idx, validator, attr)
                         if value:
                             title_ids[key] = value
 

@@ -123,6 +123,10 @@ class EISSN(BaseModel):
     _issn_format = validator('eissn', allow_reuse=True)(issn)
 
 
+class ProprietaryID(BaseModel):
+    proprietary_id: str
+
+
 class DateInString(BaseModel):
     date: datetime.date
 

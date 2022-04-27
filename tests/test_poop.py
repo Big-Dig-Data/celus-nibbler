@@ -11,7 +11,7 @@ def test_extra_poop_info():
     assert poops and len(poops) == 1
     assert [sorted(e) for e in poops[0].metrics_and_dimensions()] == [
         ["Book Title Requests"],
-        ["Publisher", "platform"],
+        ["Platform", "Publisher"],
     ]
     assert poops[0].sheet_idx == 0
     assert poops[0].get_months() == [[date(2018, i, 1) for i in range(1, 13)]]
