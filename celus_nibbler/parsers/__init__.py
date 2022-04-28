@@ -1,5 +1,6 @@
 import collections
 import itertools
+import re
 import typing
 
 import pkg_resources
@@ -18,7 +19,7 @@ def all_parsers(
     return [
         entry_point.load()
         for entry_point in pkg_resources.iter_entry_points("nibbler_parsers")
-        if not parsers or any(entry_point.name.startswith(e) for e in parsers)
+        if not parsers or any(re.match(e, entry_point.name) for e in parsers)
     ]
 
 

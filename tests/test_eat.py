@@ -31,3 +31,7 @@ def test_eat():
     # parser startswith match
     poops = eat(file_path, "Ovid", parsers=["non-existing", "nibbler.counter4"])
     assert all(poops)
+
+    # parser regex match
+    poops = eat(file_path, "Ovid", parsers=["non-existing", r".*\.BR1"])
+    assert all(poops)
