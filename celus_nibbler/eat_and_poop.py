@@ -4,7 +4,7 @@ import typing
 from datetime import date
 
 from celus_nibbler.errors import WrongFormatError
-from celus_nibbler.parsers import BaseParser, all_parsers
+from celus_nibbler.parsers import BaseParser, filter_parsers
 from celus_nibbler.reader import CsvReader, SheetReader, TableReader, XlsxReader
 from celus_nibbler.record import CounterRecord
 from celus_nibbler.validators import Platform
@@ -58,7 +58,7 @@ def findparser(
 ) -> typing.Optional[typing.Type[BaseParser]]:
     parsers = [
         parser
-        for parser in all_parsers(parsers)
+        for parser in filter_parsers(parsers)
         if not check_platform or platform in parser.platforms
     ]
     if len(parsers) < 1:
