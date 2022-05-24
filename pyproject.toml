@@ -71,3 +71,4 @@ isort = "^5.8.0"
 
 "nibbler.counter5.DR" = "celus_nibbler.parsers.counter.c5:DR"
 "nibbler.counter5.PR" = "celus_nibbler.parsers.counter.c5:PR"
+"nibbler.counter5.TR" = "celus_nibbler.parsers.counter.c5:TR"

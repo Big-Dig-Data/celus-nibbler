@@ -13,6 +13,8 @@ from celus_nibbler import eat
         ("WebOfKnowledge", "5/DR-b.tsv", "nibbler.counter5.DR", False),
         ("MIT", "5/PR-a.tsv", "nibbler.counter5.PR", True),
         ("MIT", "5/PR-b.tsv", "nibbler.counter5.PR", False),
+        ("MIT", "5/TR-a.tsv", "nibbler.counter5.TR", True),
+        ("MIT", "5/TR-b.tsv", "nibbler.counter5.TR", False),
     ),
 )
 def test_tsv(platform, file, parser, heuristics):

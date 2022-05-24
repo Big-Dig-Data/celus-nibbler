@@ -1,0 +1,16 @@
+Title	Publisher	Publisher_ID	Platform	DOI	Proprietary_ID	ISBN	Print_ISSN	Online_ISSN	URI	Metric_Type	Reporting_Period_Total	Dec-2021	Jan-2022	Feb-2022	Mar-2022	Apr-2022
+Title1	The MIT Press		MIT Press	10.1111/mitpress/11111.111.1111	Silverchair:1111					Total_Item_Investigations	2	0	2	0	0	0
+Title1	The MIT Press		MIT Press	10.1111/mitpress/11111.111.1111	Silverchair:1111					Unique_Item_Investigations	2	0	2	0	0	0
+Title1	The MIT Press		MIT Press	10.1111/mitpress/11111.111.1111	Silverchair:1111					Unique_Title_Investigations	2	0	2	0	0	0
+Title2	The MIT Press		MIT Press	10.1111/mitpress/22222.222.2222	Silverchair:2222					Total_Item_Investigations	2	0	2	0	0	0
+Title2	The MIT Press		MIT Press	10.1111/mitpress/22222.222.2222	Silverchair:2222					Unique_Item_Investigations	2	0	2	0	0	0
+Title2	The MIT Press		MIT Press	10.1111/mitpress/22222.222.2222	Silverchair:2222					Unique_Title_Investigations	2	0	2	0	0	0
+Title3	MIT Press		MIT Press		Silverchair:5555555		5555-5555	5555-555X		Total_Item_Investigations	1	0	0	0	0	1
+Title3	MIT Press		MIT Press		Silverchair:5555555		5555-5555	5555-555X		Unique_Item_Investigations	1	0	0	0	0	1
+Title4	The MIT Press		MIT Press	10.1111/mitpress/3333333333333.333.3333	Silverchair:3333					Total_Item_Investigations	2	0	2	0	0	0
+Title4	The MIT Press		MIT Press	10.1111/mitpress/3333333333333.333.3333	Silverchair:3333					Unique_Item_Investigations	2	0	2	0	0	0
+Title4	The MIT Press		MIT Press	10.1111/mitpress/3333333333333.333.3333	Silverchair:3333					Unique_Title_Investigations	2	0	2	0	0	0
+Title5	The MIT Press		MIT Press	10.1111/mitpress/4444.444.4444	Silverchair:4444					No_License	1	0	0	0	0	1
+Title5	The MIT Press		MIT Press	10.1111/mitpress/4444.444.4444	Silverchair:4444					Total_Item_Investigations	2	0	0	0	0	2
+Title5	The MIT Press		MIT Press	10.1111/mitpress/4444.444.4444	Silverchair:4444					Unique_Item_Investigations	1	0	0	0	0	1
+Title5	The MIT Press		MIT Press	10.1111/mitpress/4444.444.4444	Silverchair:4444					Unique_Title_Investigations	1	0	0	0	0	1
