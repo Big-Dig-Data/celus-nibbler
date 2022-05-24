@@ -5,6 +5,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [3.0.0] - 2022-05-24
+
+### Changed
+- `eat()` returns list of Poop or Exception (not raised)
+
+### Added
+- C5 format parssing (csv/tsv) - DR, PR, TR
+- nibbler-eat binary args extended
+
+
 ## [2.2.0] - 2022-04-28
 
 ### Changed
