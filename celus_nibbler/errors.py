@@ -11,7 +11,7 @@ class RecordError(NibblerError):
     pass
 
 
-class WrongFormatError(NibblerError):
+class WrongFileFormatError(NibblerError):
     def __init__(self, file, file_suffix):
         super().__init__()
         self.file = file
@@ -57,3 +57,14 @@ class TableException(NibblerError):
 
     def __repr__(self):
         return str(self)
+
+
+class NoParserFound(NibblerError):
+    def __init__(self, sheet_idx, *args):
+        self.sheet_idx = sheet_idx
+
+
+class MultipleParsersFound(NibblerError):
+    def __init__(self, sheet_idx, *args):
+        self.sheet_idx = sheet_idx
+        self.parsers = args

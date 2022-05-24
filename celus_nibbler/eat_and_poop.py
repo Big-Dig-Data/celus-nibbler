@@ -3,8 +3,13 @@ import pathlib
 import typing
 from datetime import date
 
-from celus_nibbler.errors import WrongFormatError
-from celus_nibbler.parsers import BaseParser, filter_parsers
+from celus_nibbler.errors import (
+    MultipleParsersFound,
+    NibblerError,
+    NoParserFound,
+    WrongFileFormatError,
+)
+from celus_nibbler.parsers import BaseParser, get_parsers
 from celus_nibbler.reader import CsvReader, SheetReader, TableReader, XlsxReader
 from celus_nibbler.record import CounterRecord
 from celus_nibbler.validators import Platform
@@ -55,35 +60,39 @@ def findparser(
     parsers: typing.Optional[typing.List[str]] = None,
     check_platform: bool = True,
     use_heuristics: bool = True,
-) -> typing.Optional[typing.Type[BaseParser]]:
+) -> typing.Type[BaseParser]:
     parsers = [
-        parser
-        for parser in filter_parsers(parsers)
+        (name, parser)
+        for name, parser in get_parsers(parsers)
         if not check_platform or platform in parser.platforms
     ]
     if len(parsers) < 1:
         logger.warning('there is no parser which expects your platform %s', platform)
+        raise NoParserFound(sheet.sheet_idx)
     else:
         logger.info('there is %s parsers, which expects your platform %s', len(parsers), platform)
 
     if use_heuristics:
         parsers = [
-            parser for parser in parsers if parser(sheet, platform=platform).heuristic_check()
+            (name, parser)
+            for name, parser in parsers
+            if parser(sheet, platform=platform).heuristic_check()
         ]
 
     if len(parsers) < 1:
         logger.warning('no parser found')
-        return None
+        raise NoParserFound(sheet.sheet_idx)
+
     elif len(parsers) > 1:
         logger.warning('%s more than one parser found', len(parsers))
-        return None
+        raise MultipleParsersFound(sheet.sheet_idx, *(e[0] for e in parsers))
 
     logger.info(
         '%s parser, matching the heuristics in the file, has been found.',
         len(parsers),
     )
-    parser = parsers[0]
-    logger.info('Parser used: %s', parser)
+    name, parser = parsers[0]
+    logger.info('Parser used: %s', name)
     return parser
 
 
@@ -93,7 +102,7 @@ def read_file(file_path: pathlib.Path) -> TableReader:
     elif file_path.suffix.lower() == '.xlsx':
         return XlsxReader(file_path)
 
-    raise WrongFormatError(file_path, file_path.suffix)
+    raise WrongFileFormatError(file_path, file_path.suffix)
 
 
 def eat(
@@ -102,7 +111,7 @@ def eat(
     parsers: typing.Optional[typing.List[str]] = None,
     check_platform: bool = True,
     use_heuristics: bool = True,
-) -> typing.Optional[typing.List[typing.Optional[Poop]]]:
+) -> typing.List[typing.Union[Poop, NibblerError]]:
     platform = Platform(platform=platform).platform
 
     # make sure that file_path is Path instance
@@ -114,12 +123,14 @@ def eat(
     poops = []
     for sheet in reader:
         logger.info('Digesting sheet %d', sheet.sheet_idx)
-        if parser := findparser(sheet, platform, parsers, check_platform, use_heuristics):
+        try:
+            parser = findparser(sheet, platform, parsers, check_platform, use_heuristics)
             poops.append(Poop(parser(sheet, platform)))
-        else:
+        except (NoParserFound, MultipleParsersFound) as e:
             logger.warning(
                 'parser has not been chosen for sheet %s, the sheet wont be parsed',
                 sheet.sheet_idx + 1,
             )
-            poops.append(None)
+            poops.append(e)
+
     return poops

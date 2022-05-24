@@ -7,7 +7,7 @@ import sys
 import pkg_resources
 from unidecode import unidecode
 
-from celus_nibbler import eat, get_supported_platforms_count
+from celus_nibbler import Poop, eat, get_supported_platforms_count
 from celus_nibbler.parsers import available_parsers
 
 
@@ -71,7 +71,7 @@ Available Parsers:
             use_heuristics=not options.skip_heuristics,
         ):
             for poop in poops:
-                if not (poop):
+                if not isinstance(poop, Poop):
                     print("Failed to pick parser")
                     sys.exit(1)
                 for record in poop.records():
