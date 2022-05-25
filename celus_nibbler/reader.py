@@ -8,6 +8,7 @@ from collections import deque
 from io import StringIO
 from typing import IO, Optional, Sequence, Union
 
+import ijson
 import openpyxl
 from chardet import detect
 from chardet.universaldetector import UniversalDetector
@@ -28,9 +29,11 @@ class SheetReader:
         name: Optional[str],
         file: IO[str],
         window_size: int = WINDOW_SIZE,
+        suffix: Optional[str] = None,
         delimiters: Optional[str] = None,
     ):
         self.name = name
+        self.suffix = suffix
         self.sheet_idx = sheet_idx
         self.file = file
 
@@ -141,11 +144,19 @@ class CsvReader(TableReader):
             if source.suffix == ".tsv":
                 delimiters = ["\t"]
 
-            file = open(source, "r", encoding=encoding)
+            file = source.open("r", encoding=encoding)
         else:
             raise NotImplementedError()
 
-        self.sheets = [SheetReader(0, None, file, delimiters=delimiters)]
+        self.sheets = [
+            SheetReader(
+                0,
+                None,
+                file,
+                suffix=source.suffix if isinstance(source, pathlib.Path) else None,
+                delimiters=delimiters,
+            )
+        ]
 
     def __getitem__(self, item) -> SheetReader:
         return self.sheets[item]
@@ -160,7 +171,9 @@ class XlsxReader(TableReader):
     """
 
     def __init__(self, source: Union[str, pathlib.Path]):
-        with open(source, "rb") as file:
+        source = pathlib.Path(source)  # make sure that source is a Path
+
+        with source.open("rb") as file:
             workbook = openpyxl.load_workbook(
                 file, read_only=True, data_only=True, keep_links=False
             )
@@ -175,7 +188,9 @@ class XlsxReader(TableReader):
                 for row in sheet.rows:
                     writer.writerow([cell.value for cell in row])
                 f.seek(0)
-                self.sheets.append(SheetReader(idx, workbook.sheetnames[idx], f))
+                self.sheets.append(
+                    SheetReader(idx, workbook.sheetnames[idx], f, suffix=source.suffix)
+                )
 
             workbook.close()
 
@@ -184,3 +199,39 @@ class XlsxReader(TableReader):
 
     def __iter__(self):
         return self.sheets.__iter__()
+
+
+class Counter5JsonReader(TableReader):
+    """
+    Reads JSON file in counter5 format
+    """
+
+    ROOT_NODE = "Report_Items"
+
+    def __getitem__(self, item) -> SheetReader:
+        return self.sheets[item]
+
+    def __iter__(self):
+        return self.sheets.__iter__()
+
+    def __init__(self, source: Union[str, pathlib.Path]):
+        source = pathlib.Path(source)  # make sure that source is a Path
+
+        with source.open() as f:
+            items = ijson.ijson.items(f, f"{self.ROOT_NODE}.items")
+            # Read the headers
+            for item in items:
+                pass
+
+            # Store to csv file
+            f.seek(0)
+            tmp = tempfile.TemporaryFile("w+")
+            items = ijson.ijson.items(f, f"{self.ROOT_NODE}.items")
+            for item in items:
+                # TODO use headers,
+                pass
+
+        tmp.seek(0)
+        self.sheets = [
+            SheetReader(0, None, tmp, suffix=source.suffix),
+        ]
