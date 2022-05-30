@@ -1,5 +1,8 @@
-from dataclasses import dataclass
-from enum import Enum, auto
+from enum import Enum
+from json import dumps as dumps_json
+
+from pydantic.dataclasses import dataclass
+from pydantic.json import pydantic_encoder
 
 from .errors import TableException
 from .reader import SheetReader
@@ -7,14 +10,19 @@ from .reader import SheetReader
 
 class Direction(Enum):
 
-    LEFT = auto()
-    RIGHT = auto()
-    UP = auto()
-    DOWN = auto()
+    LEFT = 'left'
+    RIGHT = 'right'
+    UP = 'up'
+    DOWN = 'down'
+
+
+class JsonEncorder:
+    def json(self):
+        return dumps_json(self, default=pydantic_encoder)
 
 
 @dataclass
-class Coord:
+class Coord(JsonEncorder):
     row: int
     col: int
 
@@ -57,7 +65,7 @@ class CoordIter:
 
 
 @dataclass
-class CoordRange:
+class CoordRange(JsonEncorder):
     coord: Coord
     direction: Direction
 

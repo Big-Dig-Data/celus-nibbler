@@ -1,4 +1,5 @@
 import itertools
+import json
 
 import pytest
 
@@ -85,3 +86,15 @@ def test_getitem():
     assert CoordRange(Coord(2, 2), Direction.RIGHT)[1] == Coord(2, 3)
     assert CoordRange(Coord(2, 2), Direction.RIGHT)[2] == Coord(2, 4)
     assert CoordRange(Coord(2, 2), Direction.RIGHT)[3] == Coord(2, 5)
+
+
+def test_serialization_and_deserialization():
+    # Coord
+    coord_json = Coord(1, 2).json()
+    assert coord_json == '{"row": 1, "col": 2}'
+    assert Coord(**json.loads(coord_json)) == Coord(1, 2)
+
+    # Coord Range
+    range_json = CoordRange(Coord(2, 3), Direction.DOWN).json()
+    assert range_json == '{"coord": {"row": 2, "col": 3}, "direction": "down"}'
+    assert CoordRange(**json.loads(range_json)) == CoordRange(Coord(2, 3), Direction.DOWN)
