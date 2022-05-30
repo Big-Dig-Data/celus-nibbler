@@ -5,7 +5,17 @@ import typing
 
 import pkg_resources
 
+from celus_nibbler.definitions import Definition
+
 from .base import BaseParser
+from .dynamic import gen_parser
+
+dynamic_parsers: typing.List[typing.Tuple[str, BaseParser]] = []
+
+
+def load_parser_definitions(definitions: typing.List[Definition]):
+    global dynamic_parsers
+    dynamic_parsers = [(f"nibbler.dynamic.{e.parser_name}", gen_parser(e)) for e in definitions]
 
 
 def get_parsers(
@@ -20,6 +30,10 @@ def get_parsers(
         (entry_point.name, entry_point.load())
         for entry_point in pkg_resources.iter_entry_points("nibbler_parsers")
         if not parsers or any(re.match(e, entry_point.name) for e in parsers)
+    ] + [
+        (name, parser)
+        for (name, parser) in dynamic_parsers
+        if not parsers or any(re.match(e, name) for e in parsers)
     ]
 
 
