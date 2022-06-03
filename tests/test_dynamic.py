@@ -6,7 +6,8 @@ import pytest
 
 from celus_nibbler import eat
 from celus_nibbler.definitions import Definition
-from celus_nibbler.parsers import available_parsers, load_parser_definitions
+from celus_nibbler.parsers import available_parsers
+from celus_nibbler.parsers.dynamic import gen_parser
 
 
 @pytest.mark.parametrize(
@@ -19,14 +20,14 @@ def test_dynamic(platform, name, parser):
 
     with definition_path.open() as f:
         definition = json.load(f)
-    load_parser_definitions([Definition.parse(definition)])
+    dynamic_parsers = [gen_parser(Definition.parse(definition))]
 
     # Parser should be present among available parsers
-    assert parser in available_parsers()
+    assert parser in available_parsers(dynamic_parsers)
 
     with output_path.open() as f:
         reader = csv.reader(f)
-        poop = eat(input_path, platform, parsers=[parser])[0]
+        poop = eat(input_path, platform, parsers=[parser], dynamic_parsers=dynamic_parsers)[0]
 
         for record in poop.records():
             assert next(reader) == list(record.serialize()), "Compare lines"

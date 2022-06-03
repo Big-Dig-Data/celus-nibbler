@@ -1,15 +1,30 @@
+from abc import ABCMeta, abstractmethod
+
 from celus_nibbler.definitions import Definition
 
 from .base import BaseParser
 
 
-def gen_parser(definition: Definition):
-    """Generates a parser based on definition"""
+class DynamicParser(BaseParser, metaclass=ABCMeta):
+    """Parser generated based on a definition"""
 
-    class DynamicParser(BaseParser):
+    @classmethod
+    @abstractmethod
+    def name(cls) -> str:
+        pass
+
+    @classmethod
+    def full_name(cls):
+        return f"nibbler.dynamic.{cls.name()}"
+
+    def __str__(self):
+        return f"{self.__name__}({self.name()})"
+
+
+def gen_parser(definition: Definition):
+    class Parser(DynamicParser):
         _definition = definition
 
-        name = definition.parser_name
         platforms = definition.platforms
         metrics_to_skip = definition.metrics_to_skip
         titles_to_skip = definition.titles_to_skip
@@ -17,4 +32,8 @@ def gen_parser(definition: Definition):
         heuristics = definition.heuristics
         areas = [e.make_area() for e in definition.areas]
 
-    return DynamicParser
+        @classmethod
+        def name(cls):
+            return definition.parser_name
+
+    return Parser

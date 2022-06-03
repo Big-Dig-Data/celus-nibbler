@@ -5,21 +5,13 @@ import typing
 
 import pkg_resources
 
-from celus_nibbler.definitions import Definition
-
 from .base import BaseParser
-from .dynamic import gen_parser
-
-dynamic_parsers: typing.List[typing.Tuple[str, BaseParser]] = []
-
-
-def load_parser_definitions(definitions: typing.List[Definition]):
-    global dynamic_parsers
-    dynamic_parsers = [(f"nibbler.dynamic.{e.parser_name}", gen_parser(e)) for e in definitions]
+from .dynamic import DynamicParser
 
 
 def get_parsers(
     parsers: typing.Optional[typing.List[str]] = None,
+    dynamic_parsers: typing.List[typing.Type[DynamicParser]] = [],
 ) -> typing.List[typing.Tuple[str, typing.Type[BaseParser]]]:
     """Lists all (name, parser) tuples
 
@@ -31,14 +23,16 @@ def get_parsers(
         for entry_point in pkg_resources.iter_entry_points("nibbler_parsers")
         if not parsers or any(re.match(e, entry_point.name) for e in parsers)
     ] + [
-        (name, parser)
-        for (name, parser) in dynamic_parsers
-        if not parsers or any(re.match(e, name) for e in parsers)
+        (parser.full_name(), parser)
+        for parser in dynamic_parsers
+        if not parsers or any(re.match(e, parser.full_name()) for e in parsers)
     ]
 
 
-def available_parsers() -> typing.List[str]:
-    return [name for name, _ in get_parsers()]
+def available_parsers(
+    dynamic_parsers: typing.List[typing.Type[DynamicParser]] = [],
+) -> typing.List[str]:
+    return [name for name, _ in get_parsers(dynamic_parsers=dynamic_parsers)]
 
 
 def filter_parsers(

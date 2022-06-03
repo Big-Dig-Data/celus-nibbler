@@ -10,6 +10,7 @@ from celus_nibbler.errors import (
     WrongFileFormatError,
 )
 from celus_nibbler.parsers import BaseParser, get_parsers
+from celus_nibbler.parsers.dynamic import DynamicParser
 from celus_nibbler.reader import CsvReader, SheetReader, TableReader, XlsxReader
 from celus_nibbler.record import CounterRecord
 from celus_nibbler.validators import Platform
@@ -60,38 +61,42 @@ def findparser(
     parsers: typing.Optional[typing.List[str]] = None,
     check_platform: bool = True,
     use_heuristics: bool = True,
+    dynamic_parsers: typing.List[typing.Type[DynamicParser]] = [],
 ) -> typing.Type[BaseParser]:
-    parsers = [
+    parser_classes = [
         (name, parser)
-        for name, parser in get_parsers(parsers)
+        for name, parser in get_parsers(parsers, dynamic_parsers)
         if not check_platform or platform in parser.platforms
     ]
-    if len(parsers) < 1:
+
+    if len(parser_classes) < 1:
         logger.warning('there is no parser which expects your platform %s', platform)
         raise NoParserFound(sheet.sheet_idx)
     else:
-        logger.info('there is %s parsers, which expects your platform %s', len(parsers), platform)
+        logger.info(
+            'there is %s parsers, which expects your platform %s', len(parser_classes), platform
+        )
 
     if use_heuristics:
-        parsers = [
+        parser_classes = [
             (name, parser)
-            for name, parser in parsers
+            for name, parser in parser_classes
             if parser(sheet, platform=platform).heuristic_check()
         ]
 
-    if len(parsers) < 1:
+    if len(parser_classes) < 1:
         logger.warning('no parser found')
         raise NoParserFound(sheet.sheet_idx)
 
-    elif len(parsers) > 1:
-        logger.warning('%s more than one parser found', len(parsers))
-        raise MultipleParsersFound(sheet.sheet_idx, *(e[0] for e in parsers))
+    elif len(parser_classes) > 1:
+        logger.warning('%s more than one parser found', len(parser_classes))
+        raise MultipleParsersFound(sheet.sheet_idx, *(e[0] for e in parser_classes))
 
     logger.info(
         '%s parser, matching the heuristics in the file, has been found.',
-        len(parsers),
+        len(parser_classes),
     )
-    name, parser = parsers[0]
+    name, parser = parser_classes[0]
     logger.info('Parser used: %s', name)
     return parser
 
@@ -111,6 +116,7 @@ def eat(
     parsers: typing.Optional[typing.List[str]] = None,
     check_platform: bool = True,
     use_heuristics: bool = True,
+    dynamic_parsers: typing.List[typing.Type[DynamicParser]] = [],
 ) -> typing.List[typing.Union[Poop, NibblerError]]:
     platform = Platform(platform=platform).platform
 
@@ -124,7 +130,9 @@ def eat(
     for sheet in reader:
         logger.info('Digesting sheet %d', sheet.sheet_idx)
         try:
-            parser = findparser(sheet, platform, parsers, check_platform, use_heuristics)
+            parser = findparser(
+                sheet, platform, parsers, check_platform, use_heuristics, dynamic_parsers
+            )
             poops.append(Poop(parser(sheet, platform)))
         except (NoParserFound, MultipleParsersFound) as e:
             logger.warning(
