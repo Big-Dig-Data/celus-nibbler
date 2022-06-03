@@ -11,6 +11,8 @@ from . import CounterHeaderArea
 
 
 class BR1(BaseParser):
+    format_name = "BR1"
+
     titles_to_skip: typing.List[str] = ["Total", "Total for all titles"]
 
     platforms = [
@@ -31,6 +33,8 @@ class BR1(BaseParser):
 
 
 class BR2(BaseParser):
+    format_name = "BR2"
+
     titles_to_skip: typing.List[str] = ["Total", "Total for all titles"]
 
     platforms = [
@@ -55,6 +59,8 @@ class BR2(BaseParser):
 
 
 class BR3(BaseParser):
+    format_name = "BR3"
+
     titles_to_skip: typing.List[str] = ["Total", "Total for all titles"]
 
     platforms = [
@@ -90,6 +96,8 @@ class BR3(BaseParser):
 
 
 class DB1(BaseParser):
+    format_name = "DB1"
+
     titles_to_skip: typing.List[str] = ["Total", "Total for all databases"]
     platforms = [
         "Encyclopaedia Britannica",
@@ -123,6 +131,8 @@ class DB1(BaseParser):
 
 
 class DB2(BaseParser):
+    format_name = "DB2"
+
     titles_to_skip: typing.List[str] = ["Total", "Total for all databases"]
     platforms = [
         "ProQuest",
@@ -152,6 +162,8 @@ class DB2(BaseParser):
 
 
 class PR1(BaseParser):
+    format_name = "PR1"
+
     titles_to_skip: typing.List[str] = ["Total", "Total for all platforms"]
     platforms = [
         "ProQuest",
@@ -189,6 +201,8 @@ class PR1(BaseParser):
 
 
 class JR1(BaseParser):
+    format_name = "JR1"
+
     titles_to_skip: typing.List[str] = ["Total", "Total for all journals"]
     platforms = [
         "AACR",
@@ -247,6 +261,8 @@ class JR1(BaseParser):
 
 
 class JR1a(BaseParser):
+    format_name = "JR1a"
+
     titles_to_skip: typing.List[str] = ["Total", "Total for all journals"]
     platforms = [
         "Liebert Online",
@@ -265,6 +281,8 @@ class JR1a(BaseParser):
 
 
 class JR1GOA(BaseParser):
+    format_name = "JR1GOA"
+
     titles_to_skip: typing.List[str] = ["Total", "Total for all journals"]
     platforms = [
         "Journal of Clinical Psychiatry",
@@ -290,6 +308,8 @@ class JR1GOA(BaseParser):
 
 
 class JR2(BaseParser):
+    format_name = "JR2"
+
     titles_to_skip: typing.List[str] = ["Total", "Total for all journals"]
     heuristics = RegexCondition(re.compile(r"^Journal Report 2 \(R4\)"), Coord(0, 0))
     platforms = [
@@ -360,6 +380,8 @@ class JR2(BaseParser):
 
 
 class MR1(BaseParser):
+    format_name = "MR1"
+
     titles_to_skip: typing.List[str] = ["Total", "Total for all collections"]
     platforms = [
         "ProQuest",

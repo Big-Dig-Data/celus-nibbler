@@ -31,6 +31,8 @@ class Counter5HeaderArea(CounterHeaderArea):
 
 
 class DR(BaseParser):
+    format_name = "DR"
+
     titles_to_skip: typing.List[str] = ["Total", "All Databases"]
 
     platforms = [
@@ -62,6 +64,8 @@ class DR(BaseParser):
 
 
 class PR(BaseParser):
+    format_name = "PR"
+
     titles_to_skip: typing.List[str] = ["Total", "All Platforms"]
 
     platforms = [
@@ -120,6 +124,8 @@ class PR(BaseParser):
 
 
 class TR(BaseParser):
+    format_name = "TR"
+
     titles_to_skip: typing.List[str] = ["Total", "All Titles"]
 
     platforms = [

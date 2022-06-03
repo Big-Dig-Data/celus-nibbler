@@ -168,6 +168,7 @@ AreaDefinition = Annotated[
 class Definition(JsonEncorder):
     # name of nibbler parser
     parser_name: str
+    format_name: str
     areas: typing.List[AreaDefinition]
     platforms: typing.List[str] = field(default_factory=lambda: [])
     dimensions: typing.List[str] = field(default_factory=lambda: [])

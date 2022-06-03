@@ -111,6 +111,11 @@ class BaseParser(metaclass=ABCMeta):
 
     @property
     @abstractmethod
+    def format_name(self) -> str:
+        pass
+
+    @property
+    @abstractmethod
     def areas(self) -> typing.List[typing.Type[BaseArea]]:
         """Areas defined"""
         pass

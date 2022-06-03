@@ -155,6 +155,7 @@ def test_errors():
 def test_definition():
     init_definition = Definition(
         parser_name="Parser1",
+        format_name="Format1",
         platforms=["Platform1", "Platform2"],
         dimensions=["Dim1", "Dim2"],
         heuristics=AndCondition(
@@ -188,6 +189,7 @@ def test_definition():
 
     assert definition_dict == {
         "parser_name": "Parser1",
+        "format_name": "Format1",
         "platforms": ["Platform1", "Platform2"],
         "platforms_to_skip": [],
         "dimensions": ["Dim1", "Dim2"],

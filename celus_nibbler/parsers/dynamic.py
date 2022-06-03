@@ -25,6 +25,7 @@ def gen_parser(definition: Definition):
     class Parser(DynamicParser):
         _definition = definition
 
+        format_name = definition.format_name
         platforms = definition.platforms
         metrics_to_skip = definition.metrics_to_skip
         titles_to_skip = definition.titles_to_skip
