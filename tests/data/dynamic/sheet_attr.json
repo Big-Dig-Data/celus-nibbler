@@ -1,5 +1,5 @@
 {
-  "parser_name": "simple",
+  "parser_name": "sheet_attr",
   "format_name": "simple_format",
   "platforms": [
     "Platform1",
@@ -33,7 +33,7 @@
         "kind": "regex"
       },
       {
-        "pattern": "Platform",
+        "pattern": "YOP",
         "coord": {
           "row": 0,
           "col": 2
@@ -41,18 +41,10 @@
         "kind": "regex"
       },
       {
-        "pattern": "YOP",
-        "coord": {
-          "row": 0,
-          "col": 3
-        },
-        "kind": "regex"
-      },
-      {
         "pattern": "Metrics",
         "coord": {
           "row": 0,
-          "col": 4
+          "col": 3
         },
         "kind": "regex"
       }
@@ -66,7 +58,7 @@
         "source": {
           "coord": {
             "row": 0,
-            "col": 5
+            "col": 4
           },
           "direction": "right"
         }
@@ -84,18 +76,14 @@
         "source": {
           "coord": {
             "row": 1,
-            "col": 4
+            "col": 3
           },
           "direction": "down"
         }
       },
       "platforms": {
         "source": {
-          "coord": {
-            "row": 1,
-            "col": 2
-          },
-          "direction": "down"
+           "sheet_attr": "name"
         }
       },
       "title_ids": [
@@ -116,7 +104,7 @@
           "source": {
             "coord": {
               "row": 1,
-              "col": 3
+              "col": 2
             },
             "direction": "down"
           },

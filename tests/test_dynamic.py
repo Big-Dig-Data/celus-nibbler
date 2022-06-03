@@ -11,12 +11,18 @@ from celus_nibbler.parsers.dynamic import gen_parser
 
 
 @pytest.mark.parametrize(
-    "platform,name,parser", (("Platform1", "simple", "nibbler.dynamic.simple"),)
+    "platform,name,ext,parser",
+    (
+        ("Platform1", "simple", "csv", "nibbler.dynamic.simple"),
+        ("Platform1", "sheet_attr", "xlsx", "nibbler.dynamic.sheet_attr"),
+        ("Platform1", "coord", "csv", "nibbler.dynamic.coord"),
+        ("Platform1", "value", "csv", "nibbler.dynamic.value"),
+    ),
 )
-def test_dynamic(platform, name, parser):
+def test_dynamic(platform, name, ext, parser):
     definition_path = pathlib.Path(__file__).parent / 'data/dynamic' / f"{name}.json"
-    input_path = pathlib.Path(__file__).parent / 'data/dynamic' / f"{name}.csv"
-    output_path = pathlib.Path(__file__).parent / 'data/dynamic' / f"{name}.csv.out"
+    input_path = pathlib.Path(__file__).parent / 'data/dynamic' / f"{name}.{ext}"
+    output_path = pathlib.Path(__file__).parent / 'data/dynamic' / f"{name}.{ext}.out"
 
     with definition_path.open() as f:
         definition = json.load(f)

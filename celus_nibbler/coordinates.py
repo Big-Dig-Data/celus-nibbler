@@ -1,3 +1,4 @@
+import typing
 from enum import Enum
 
 from pydantic.dataclasses import dataclass
@@ -16,6 +17,47 @@ class Direction(str, Enum):
 
 
 @dataclass(config=PydanticConfig)
+class Value(JsonEncorder):
+    value: typing.Any
+
+    def content(self, sheet: SheetReader):
+        return self.value
+
+    def __next__(self) -> 'Value':
+        return Value(self.value)
+
+    def __getitem__(self, item: int) -> 'Value':
+        if isinstance(item, slice):
+            raise NotImplementedError("Slicing is not supported use itertools and generators")
+        if not isinstance(item, int):
+            raise ValueError("Only int are allowed as keys")
+
+        return next(self)
+
+
+@dataclass(config=PydanticConfig)
+class SheetAttr(JsonEncorder):
+    sheet_attr: str
+
+    def content(self, sheet: SheetReader):
+        return getattr(sheet, self.sheet_attr)
+
+    def __iter__(self):
+        return self
+
+    def __next__(self) -> 'SheetAttr':
+        return SheetAttr(self.sheet_attr)
+
+    def __getitem__(self, item: int) -> 'SheetAttr':
+        if isinstance(item, slice):
+            raise NotImplementedError("Slicing is not supported use itertools and generators")
+        if not isinstance(item, int):
+            raise ValueError("Only int are allowed as keys")
+
+        return next(self)
+
+
+@dataclass(config=PydanticConfig)
 class Coord(JsonEncorder):
     row: int
     col: int
@@ -31,7 +73,7 @@ class Coord(JsonEncorder):
     def __iter__(self):
         return self
 
-    def __next__(self):
+    def __next__(self) -> 'Coord':
         return Coord(self.row, self.col)
 
     def __getitem__(self, item: int) -> 'Coord':
@@ -67,7 +109,7 @@ class CoordRange(JsonEncorder):
         self.distance = 0
         return self
 
-    def __next__(self):
+    def __next__(self) -> 'Coord':
         col = self.coord.col
         row = self.coord.row
         if self.direction == Direction.LEFT:

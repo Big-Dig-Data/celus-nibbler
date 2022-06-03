@@ -8,44 +8,46 @@ from pydantic.dataclasses import dataclass
 from typing_extensions import Annotated
 
 from .conditions import Condition
-from .coordinates import Coord, CoordRange, Direction
+from .coordinates import Coord, CoordRange, Direction, SheetAttr, Value
 from .errors import TableException
 from .parsers.base import BaseArea, MonthDataCells
 from .utils import JsonEncorder, PydanticConfig
+
+Source = typing.Union[Coord, CoordRange, SheetAttr, Value]
 
 
 @dataclass(config=PydanticConfig)
 class DimensionSource(JsonEncorder):
     name: str
-    source: typing.Union[None, str, Coord, CoordRange]
+    source: Source
     required: bool = True
 
 
 @dataclass(config=PydanticConfig)
 class MetricSource(JsonEncorder):
-    source: typing.Union[str, Coord, CoordRange]
+    source: Source
 
 
 @dataclass(config=PydanticConfig)
 class TitleSource(JsonEncorder):
-    source: typing.Union[None, CoordRange]
+    source: Source
 
 
 @dataclass(config=PydanticConfig)
 class TitleIdSource(JsonEncorder):
     name: str
-    source: CoordRange
+    source: Source
 
 
 @dataclass(config=PydanticConfig)
 class DateSource(JsonEncorder):
     direction: Direction
-    source: CoordRange
+    source: Source
 
 
 @dataclass(config=PydanticConfig)
 class PlatformSource(JsonEncorder):
-    source: typing.Union[str, Coord, CoordRange]
+    source: Source
 
 
 class AreaGeneratorMixin(metaclass=ABCMeta):
@@ -117,23 +119,23 @@ class FixedAreaDefinition(AreaGeneratorMixin, JsonEncorder):
                 return res
 
             @property
-            def title_cells(self) -> typing.Optional[CoordRange]:
+            def title_cells(self) -> typing.Optional[Source]:
                 return titles.source
 
             @property
-            def title_ids_cells(self) -> typing.Dict[str, CoordRange]:
+            def title_ids_cells(self) -> typing.Dict[str, Source]:
                 return {e.name: e.source for e in title_ids}
 
             @property
-            def platform_cells(self) -> typing.Optional[CoordRange]:
+            def platform_cells(self) -> typing.Optional[Source]:
                 return platforms.source
 
             @property
-            def dimensions_cells(self) -> typing.Dict[str, CoordRange]:
+            def dimensions_cells(self) -> typing.Dict[str, Source]:
                 return {e.name: e.source for e in dimensions}
 
             @property
-            def metric_cells(self) -> typing.Dict[str, CoordRange]:
+            def metric_cells(self) -> typing.Dict[str, Source]:
                 return metrics.source
 
         return Area

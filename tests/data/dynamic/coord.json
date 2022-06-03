@@ -1,5 +1,5 @@
 {
-  "parser_name": "simple",
+  "parser_name": "coord",
   "format_name": "simple_format",
   "platforms": [
     "Platform1",
@@ -19,7 +19,7 @@
       {
         "pattern": "Title",
         "coord": {
-          "row": 0,
+          "row": 1,
           "col": 0
         },
         "kind": "regex"
@@ -27,7 +27,7 @@
       {
         "pattern": "ISSN",
         "coord": {
-          "row": 0,
+          "row": 1,
           "col": 1
         },
         "kind": "regex"
@@ -36,23 +36,23 @@
         "pattern": "Platform",
         "coord": {
           "row": 0,
-          "col": 2
+          "col": 0
         },
         "kind": "regex"
       },
       {
         "pattern": "YOP",
         "coord": {
-          "row": 0,
-          "col": 3
+          "row": 1,
+          "col": 2
         },
         "kind": "regex"
       },
       {
         "pattern": "Metrics",
         "coord": {
-          "row": 0,
-          "col": 4
+          "row": 1,
+          "col": 3
         },
         "kind": "regex"
       }
@@ -65,8 +65,8 @@
         "direction": "down",
         "source": {
           "coord": {
-            "row": 0,
-            "col": 5
+            "row": 1,
+            "col": 4
           },
           "direction": "right"
         }
@@ -74,7 +74,7 @@
       "titles": {
         "source": {
           "coord": {
-            "row": 1,
+            "row": 2,
             "col": 0
           },
           "direction": "down"
@@ -83,19 +83,16 @@
       "metrics": {
         "source": {
           "coord": {
-            "row": 1,
-            "col": 4
+            "row": 2,
+            "col": 3
           },
           "direction": "down"
         }
       },
       "platforms": {
         "source": {
-          "coord": {
-            "row": 1,
-            "col": 2
-          },
-          "direction": "down"
+          "row": 0,
+          "col": 1
         }
       },
       "title_ids": [
@@ -103,7 +100,7 @@
           "name": "Print_ISSN",
           "source": {
             "coord": {
-              "row": 1,
+              "row": 2,
               "col": 1
             },
             "direction": "down"
@@ -115,8 +112,8 @@
           "name": "YOP",
           "source": {
             "coord": {
-              "row": 1,
-              "col": 3
+              "row": 2,
+              "col": 2
             },
             "direction": "down"
           },
