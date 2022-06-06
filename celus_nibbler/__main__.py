@@ -7,8 +7,8 @@ import sys
 import pkg_resources
 from unidecode import unidecode
 
-from celus_nibbler import Poop, eat, get_supported_platforms_count
-from celus_nibbler.parsers import available_parsers
+from celus_nibbler import Poop, eat
+from celus_nibbler.parsers import available_parsers, get_supported_platforms_count
 
 
 def main():
