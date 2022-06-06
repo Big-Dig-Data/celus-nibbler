@@ -1,4 +1,5 @@
 import argparse
+import json
 import logging
 import logging.config
 import pathlib
@@ -8,7 +9,15 @@ import pkg_resources
 from unidecode import unidecode
 
 from celus_nibbler import Poop, eat
+from celus_nibbler.definitions import Definition
 from celus_nibbler.parsers import available_parsers, get_supported_platforms_count
+from celus_nibbler.parsers.dynamic import gen_parser
+
+
+def read_definition(path: str) -> Definition:
+    with pathlib.Path(path).open() as f:
+        definition_data = json.load(f)
+    return Definition.parse(definition_data)
 
 
 def main():
@@ -51,6 +60,14 @@ Available Parsers:
         default=[],
         help="limit parsers which can be used",
     )
+    parser.add_argument(
+        "-D",
+        "--definition",
+        action="append",
+        default=[],
+        help="Reads a definition of a dynamic parser from a file",
+        type=read_definition,
+    )
     parser.add_argument("platform")
     parser.add_argument("files", nargs='+')
     options = parser.parse_args()
@@ -61,6 +78,7 @@ Available Parsers:
     logger.debug("Logging is configured.")
 
     platform = unidecode(options.platform)
+    dynamic_parsers = [gen_parser(e) for e in options.definition] or None
 
     for file in options.files:
         if poops := eat(
@@ -69,6 +87,7 @@ Available Parsers:
             parsers=options.parser or None,
             check_platform=not options.ignore_platform,
             use_heuristics=not options.skip_heuristics,
+            dynamic_parsers=dynamic_parsers,
         ):
             for poop in poops:
                 if not isinstance(poop, Poop):
