@@ -5,6 +5,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [4.0.0] - 2022-05-24
+
+### Changed
+- Parser should contain a mandatory field `format_name` (unique id of output format)
+- added `dynamic_parsers` attribute to `eat()` function
+
+### Added
+- Serializable definitions
+- Serialization of Coord and CoordRange
+- DynamicParser which is able to generate a parser based of a definition
+- Value, SheetAttr classes added
+- Value, SheetAttr, Coord became feeders for output data (like CoordRange)
+- nibbler-eat() can use dynamic parser by passing parser defintion in a file (`-D`)
+
+
 ## [3.0.0] - 2022-05-24
 
 ### Changed
