@@ -229,6 +229,8 @@ class BaseParser(metaclass=ABCMeta):
                         value = self._parse_content(rng, idx, validator, attr)
                         if value:
                             title_ids[key] = value
+                        else:
+                            title_ids[key] = ""
 
                 for data in data_cells:
                     value = self._parse_content(data, idx, validators.Value, "value")

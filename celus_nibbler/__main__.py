@@ -78,7 +78,7 @@ Available Parsers:
     logger.debug("Logging is configured.")
 
     platform = unidecode(options.platform)
-    dynamic_parsers = [gen_parser(e) for e in options.definition] or None
+    dynamic_parsers = [gen_parser(e) for e in options.definition]
 
     for file in options.files:
         if poops := eat(
