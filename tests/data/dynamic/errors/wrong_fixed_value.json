@@ -1,5 +1,5 @@
 {
-  "parser_name": "date_cells_out_of_range",
+  "parser_name": "wrong_fixed_value",
   "format_name": "simple_format",
   "platforms": [
     "Platform1",
@@ -31,7 +31,7 @@
         "source": {
           "coord": {
             "row": 0,
-            "col": 5
+            "col": 1
           },
           "direction": "right"
         }
@@ -55,7 +55,14 @@
           "value": "Platform1"
         }
       },
-      "title_ids": [],
+      "title_ids": [
+        {
+          "name": "Print_ISSN",
+          "source": {
+            "value": "not_issn"
+          }
+        }
+      ],
       "dimensions": [],
       "name": "fixed"
     }

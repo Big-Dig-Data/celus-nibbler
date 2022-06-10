@@ -53,6 +53,13 @@ def test_dynamic(platform, name, ext, parser):
             "nibbler.dynamic.date_cells_out_of_range",
             TableException(sheet=0, col=5, row=0, reason="no-data-found", value=None),
         ),
+        (
+            "Platform1",
+            "wrong_fixed_value",
+            "csv",
+            "nibbler.dynamic.wrong_fixed_value",
+            TableException(sheet=0, reason="wrong-value", value="not_issn"),
+        ),
     ),
 )
 def test_dynamic_errors(platform, name, ext, parser, exception):

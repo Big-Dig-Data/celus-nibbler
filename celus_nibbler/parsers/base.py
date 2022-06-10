@@ -8,7 +8,7 @@ from pydantic import BaseModel, ValidationError
 
 from celus_nibbler import validators
 from celus_nibbler.conditions import BaseCondition
-from celus_nibbler.coordinates import Coord, CoordRange, Direction
+from celus_nibbler.coordinates import Coord, CoordRange, Direction, SheetAttr, Value
 from celus_nibbler.errors import TableException
 from celus_nibbler.reader import SheetReader
 from celus_nibbler.record import CounterRecord
@@ -141,7 +141,7 @@ class BaseParser(metaclass=ABCMeta):
 
     def _parse_content(
         self,
-        seq: typing.Union[typing.Sequence[Coord], CoordRange, MonthDataCells],
+        seq: typing.Union[typing.Sequence[Coord], CoordRange, MonthDataCells, Value, SheetAttr],
         idx: int,
         validator: typing.Type[BaseModel],
         name: str,
@@ -151,13 +151,22 @@ class BaseParser(metaclass=ABCMeta):
             content = cell.content(self.sheet)
             validated = validator(**{name: content})
         except ValidationError as e:
-            raise TableException(
-                content,
-                row=cell.row,
-                col=cell.col,
-                sheet=self.sheet.sheet_idx,
-                reason=name if content else "empty",
-            ) from e
+            if isinstance(seq, Value):
+                raise TableException(
+                    value=seq.value, sheet=self.sheet.sheet_idx, reason="wrong-value"
+                )
+            elif isinstance(seq, SheetAttr):
+                raise TableException(
+                    value=seq.sheet_attr, sheet=self.sheet.sheet_idx, reason="wrong-sheet-attr"
+                )
+            else:
+                raise TableException(
+                    content,
+                    row=cell.row,
+                    col=cell.col,
+                    sheet=self.sheet.sheet_idx,
+                    reason=name if content else "empty",
+                ) from e
         except IndexError as e:
             raise TableException(
                 row=cell.row,
