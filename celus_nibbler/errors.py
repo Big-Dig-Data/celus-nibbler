@@ -24,7 +24,12 @@ class WrongFileFormatError(NibblerError):
         return f"{self.__class__.__name__}(file={self.file},file_suffix={self.file_suffix})"
 
     def __eq__(self, other):
-        return all(getattr(self, attr) == getattr(other, attr) for attr in ["file", "file_suffix"])
+        if not isinstance(self, type(other)):
+            return False
+        return all(
+            getattr(self, attr, None) == getattr(other, attr, None)
+            for attr in ["file", "file_suffix"]
+        )
 
 
 class TableException(NibblerError):
@@ -66,8 +71,10 @@ class TableException(NibblerError):
         )
 
     def __eq__(self, other):
+        if not isinstance(self, type(other)):
+            return False
         return all(
-            getattr(self, attr) == getattr(other, attr)
+            getattr(self, attr, None) == getattr(other, attr, None)
             for attr in ["value", "row", "col", "sheet", "reason"]
         )
 
