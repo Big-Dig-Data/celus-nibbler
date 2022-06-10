@@ -6,7 +6,9 @@ from datetime import date
 from celus_nibbler.errors import (
     MultipleParsersFound,
     NibblerError,
+    NoParserForPlatformFound,
     NoParserFound,
+    NoParserMatchesHeuristics,
     WrongFileFormatError,
 )
 from celus_nibbler.parsers import BaseParser, get_parsers
@@ -71,7 +73,7 @@ def findparser(
 
     if len(parser_classes) < 1:
         logger.warning('there is no parser which expects your platform %s', platform)
-        raise NoParserFound(sheet.sheet_idx)
+        raise NoParserForPlatformFound(sheet.sheet_idx)
     else:
         logger.info(
             'there is %s parsers, which expects your platform %s', len(parser_classes), platform
@@ -86,7 +88,7 @@ def findparser(
 
     if len(parser_classes) < 1:
         logger.warning('no parser found')
-        raise NoParserFound(sheet.sheet_idx)
+        raise NoParserMatchesHeuristics(sheet.sheet_idx)
 
     elif len(parser_classes) > 1:
         logger.warning('%s more than one parser found', len(parser_classes))

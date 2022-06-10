@@ -21,7 +21,10 @@ class WrongFileFormatError(NibblerError):
         return f'file: "{self.file}" with extension "{self.file_suffix}" is not supported.'
 
     def __repr__(self):
-        return str(self)
+        return f"{self.__class__.__name__}(file={self.file},file_suffix={self.file_suffix})"
+
+    def __eq__(self, other):
+        return all(getattr(self, attr) == getattr(other, attr) for attr in ["file", "file_suffix"])
 
 
 class TableException(NibblerError):
@@ -56,12 +59,33 @@ class TableException(NibblerError):
         return f'Problem with parsing your format has occured.\nValue causing this exception: {self.value}\nLocation of this value: sheet {self.laymancount_sheet}, row {self.laymancount_row}, col {self.laymancount_col}{self.colletters_explanation}.\nReason: {self.reason}.'
 
     def __repr__(self):
-        return str(self)
+        return (
+            f"{self.__class__.__name__}"
+            f"(reason={self.reason},sheet={self.sheet},"
+            f"row={self.row},col={self.col},value={self.value})"
+        )
+
+    def __eq__(self, other):
+        return all(
+            getattr(self, attr) == getattr(other, attr)
+            for attr in ["value", "row", "col", "sheet", "reason"]
+        )
 
 
 class NoParserFound(NibblerError):
     def __init__(self, sheet_idx, *args):
         self.sheet_idx = sheet_idx
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}(sheet_idx={self.sheet_idx})"
+
+
+class NoParserForPlatformFound(NoParserFound):
+    pass
+
+
+class NoParserMatchesHeuristics(NoParserFound):
+    pass
 
 
 class MultipleParsersFound(NibblerError):

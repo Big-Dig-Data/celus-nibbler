@@ -1,7 +1,11 @@
 import pathlib
 
 from celus_nibbler import Poop, eat
-from celus_nibbler.errors import MultipleParsersFound, NoParserFound
+from celus_nibbler.errors import (
+    MultipleParsersFound,
+    NoParserForPlatformFound,
+    NoParserMatchesHeuristics,
+)
 
 
 def test_eat():
@@ -13,7 +17,7 @@ def test_eat():
 
     # Wrong platform
     poops = eat(file_path, "Unknown")
-    assert all(isinstance(e, NoParserFound) for e in poops)
+    assert all(isinstance(e, NoParserForPlatformFound) for e in poops)
 
     # Ignore platform
     poops = eat(file_path, "Unknown", check_platform=False)
@@ -21,7 +25,11 @@ def test_eat():
 
     # Non matching parsers
     poops = eat(file_path, "Unknown", check_platform=False, parsers=["non-existing"])
-    assert all(isinstance(e, NoParserFound) for e in poops)
+    assert all(isinstance(e, NoParserForPlatformFound) for e in poops)
+
+    # Parser with mismatched heuristics
+    poops = eat(file_path, "Ovid", check_platform=False, parsers=["nibbler.counter4.JR1"])
+    assert all(isinstance(e, NoParserMatchesHeuristics) for e in poops)
 
     # parser exact match
     poops = eat(

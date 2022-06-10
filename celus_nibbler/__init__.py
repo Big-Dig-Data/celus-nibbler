@@ -2,7 +2,9 @@ from .eat_and_poop import Poop, eat
 from .errors import (
     MultipleParsersFound,
     NibblerError,
+    NoParserForPlatformFound,
     NoParserFound,
+    NoParserMatchesHeuristics,
     RecordError,
     TableException,
     WrongFileFormatError,
@@ -18,6 +20,8 @@ __all__ = [
     'MultipleParsersFound',
     'NibblerError',
     'NoParserFound',
+    'NoParserForPlatformFound',
+    'NoParserMatchesHeuristics',
     'RecordError',
     'TableException',
     'WrongFileFormatError',
