@@ -180,3 +180,5 @@ class Definition(JsonEncorder):
     metric_aliases: typing.List[typing.Tuple[str, str]] = field(default_factory=lambda: [])
     dimension_aliases: typing.List[typing.Tuple[str, str]] = field(default_factory=lambda: [])
     heuristics: typing.Optional[Condition] = None
+
+    version: typing.Literal[1] = 1

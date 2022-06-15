@@ -188,6 +188,7 @@ def test_definition():
     definition_dict = json.loads(init_definition.json())
 
     assert definition_dict == {
+        "version": 1,
         "parser_name": "Parser1",
         "format_name": "Format1",
         "platforms": ["Platform1", "Platform2"],
