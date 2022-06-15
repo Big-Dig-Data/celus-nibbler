@@ -61,6 +61,13 @@ def test_dynamic(platform, name, ext, parser):
             "nibbler.dynamic.wrong_fixed_value",
             TableException(sheet=0, reason="wrong-value", value="not_issn"),
         ),
+        (
+            "Platform1",
+            "metric_number",
+            "csv",
+            "nibbler.dynamic.metric_number",
+            TableException(sheet=0, reason="metric", value="2", row=2, col=1),
+        ),
     ),
 )
 def test_dynamic_errors(platform, name, ext, parser, exception):

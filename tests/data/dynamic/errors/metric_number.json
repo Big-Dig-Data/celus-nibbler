@@ -1,0 +1,67 @@
+{
+  "parser_name": "metric_number",
+  "format_name": "simple_format",
+  "platforms": [
+    "Platform1",
+    "Platform2"
+  ],
+  "dimensions": [],
+  "metrics_to_skip": [],
+  "titles_to_skip": [],
+  "platforms_to_skip": [],
+  "metric_aliases": [],
+  "dimension_aliases": [],
+  "heuristics": {
+    "conds": [
+      {
+        "pattern": "Title",
+        "coord": {
+          "row": 0,
+          "col": 0
+        },
+        "kind": "regex"
+      }
+    ],
+    "kind": "and"
+  },
+  "areas": [
+    {
+      "dates": {
+        "direction": "down",
+        "source": {
+          "coord": {
+            "row": 0,
+            "col": 2
+          },
+          "direction": "right"
+        }
+      },
+      "titles": {
+        "source": {
+          "coord": {
+            "row": 1,
+            "col": 0
+          },
+          "direction": "down"
+        }
+      },
+      "metrics": {
+        "source": {
+          "coord": {
+            "row": 1,
+            "col": 1
+          },
+          "direction": "down"
+        }
+      },
+      "platforms": {
+        "source": {
+          "value": "Platform1"
+        }
+      },
+      "title_ids": [],
+      "dimensions": [],
+      "name": "fixed"
+    }
+  ]
+}
