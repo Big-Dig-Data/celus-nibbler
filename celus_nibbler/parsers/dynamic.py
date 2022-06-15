@@ -27,9 +27,14 @@ def gen_parser(definition: Definition):
 
         format_name = definition.format_name
         platforms = definition.platforms
+
         metrics_to_skip = definition.metrics_to_skip
         titles_to_skip = definition.titles_to_skip
         platforms_to_skip = definition.platforms_to_skip
+
+        metric_aliases = definition.metric_aliases
+        dimension_aliases = definition.dimension_aliases
+
         heuristics = definition.heuristics
         areas = [e.make_area() for e in definition.areas]
 

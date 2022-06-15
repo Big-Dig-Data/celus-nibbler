@@ -108,6 +108,8 @@ class BaseParser(metaclass=ABCMeta):
     titles_to_skip: typing.List[str] = ["Total"]
     platforms_to_skip: typing.List[str] = ["Total"]
     heuristics: typing.Optional[BaseCondition] = None
+    metric_aliases: typing.List[typing.Tuple[str, str]] = []
+    dimension_aliases: typing.List[typing.Tuple[str, str]] = []
 
     @property
     @abstractmethod
@@ -177,9 +179,22 @@ class BaseParser(metaclass=ABCMeta):
 
         return getattr(validated, name)
 
-    def parse(self) -> typing.Generator[CounterRecord, None, None]:
+    def _parse(self) -> typing.Generator[CounterRecord, None, None]:
         for area in self.get_areas():
             yield from self.parse_area(area)
+
+    def parse(self) -> typing.Generator[CounterRecord, None, None]:
+        dimension_aliases = dict(self.dimension_aliases)
+        metric_aliases = dict(self.metric_aliases)
+        for record in self._parse():
+            record.metric = (
+                metric_aliases.get(record.metric, record.metric) if record.metric else record.metric
+            )
+            record.dimension_data = {
+                dimension_aliases.get(key, key): value
+                for key, value in record.dimension_data.items()
+            }
+            yield record
 
     def get_months(self) -> typing.List[typing.List[datetime.date]]:
         return [e.get_months() for e in self.get_areas()]
