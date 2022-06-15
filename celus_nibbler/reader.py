@@ -5,6 +5,7 @@ import pathlib
 import tempfile
 from abc import ABCMeta, abstractmethod
 from collections import deque
+from functools import lru_cache
 from io import StringIO
 from typing import IO, Optional, Sequence, Union
 
@@ -65,6 +66,7 @@ class SheetReader:
                 self.window_start += 1
                 self.window.popleft()
 
+    @lru_cache(WINDOW_SIZE * 2)  # cache lines to avoid rewinding while reading the header
     def __getitem__(self, item) -> Sequence[str]:
         if isinstance(item, slice):
             raise NotImplementedError("Slicing is not supported use itertools and generators")
