@@ -20,7 +20,7 @@ testpaths = "tests/"
 
 [tool.poetry]
 name = "celus-nibbler"
-version = "4.0.2"
+version = "5.0.0"
 description = "Counter-like data reader and processor."
 authors = ["Stepan Henek <stepan@bigdigdata.com>", "Zbynek Vyhlas <zbyneksmail@gmail.com>"]
 license = "MIT"
