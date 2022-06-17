@@ -12,7 +12,6 @@ from celus_nibbler.definitions import (
     DummyAreaDefinition,
     FixedAreaDefinition,
     MetricSource,
-    PlatformSource,
     TitleIdSource,
     TitleSource,
 )
@@ -22,13 +21,13 @@ def test_fixed_area_definition():
     init_definition = FixedAreaDefinition(
         name="fixed",
         dates=DateSource(direction=Direction.DOWN, source=CoordRange(Coord(1, 5), Direction.LEFT)),
-        platforms=PlatformSource(CoordRange(Coord(2, 5), Direction.DOWN)),
         titles=TitleSource(CoordRange(Coord(2, 0), Direction.DOWN)),
         title_ids=[
             TitleIdSource(name="ISBN", source=CoordRange(Coord(2, 1), Direction.DOWN)),
         ],
         dimensions=[
             DimensionSource(name="publisher", source=CoordRange(Coord(2, 3), Direction.DOWN)),
+            DimensionSource(name="platform", source=CoordRange(Coord(2, 5), Direction.DOWN)),
         ],
         metrics=MetricSource(source=CoordRange(Coord(2, 4), Direction.DOWN)),
     )
@@ -45,11 +44,14 @@ def test_fixed_area_definition():
                 "name": "publisher",
                 "required": True,
                 "source": {"coord": {"row": 2, "col": 3}, "direction": "down"},
-            }
+            },
+            {
+                "name": "platform",
+                "required": True,
+                "source": {"coord": {"row": 2, "col": 5}, "direction": "down"},
+            },
         ],
-        "metrics": {
-            "source": {"coord": {"row": 2, "col": 4}, "direction": "down"},
-        },
+        "metrics": {"source": {"coord": {"row": 2, "col": 4}, "direction": "down"}},
         "title_ids": [
             {
                 "name": "ISBN",
@@ -57,7 +59,6 @@ def test_fixed_area_definition():
             }
         ],
         "titles": {"source": {"coord": {"row": 2, "col": 0}, "direction": "down"}},
-        "platforms": {"source": {"coord": {"row": 2, "col": 5}, "direction": "down"}},
     }
 
     converted_definition = FixedAreaDefinition.parse(definition_dict)
@@ -95,16 +96,17 @@ def test_errors():
                     "direction": "wrong",  # wrong direction
                     "source": {"coord": {"row": 1, "col": 5}, "direction": "left"},
                 },
-                "platforms": {
-                    "direction": "down",
-                    "coord": {"row": 1, "col": 5},
-                },
                 "dimensions": [
                     {
                         "name": "publisher",
                         "required": True,
                         "source": {"coord": {"row": 2, "col": 3}, "direction": "down"},
-                    }
+                    },
+                    {
+                        "name": "platform",
+                        "required": True,
+                        "source": {"coord": {"row": 1, "col": 5}, "direction": "down"},
+                    },
                 ],
                 "metrics": {
                     "source": {"coord": {"row": 2, "col": 4}, "direction": "down"},
@@ -128,16 +130,16 @@ def test_errors():
                     "direction": "down",
                     "source": {"coord": {"row": 1, "col": 6}, "direction": "left"},
                 },
-                "platforms": {
-                    "direction": "down",
-                    "coord": {"row": 1, "col": 5},
-                },
                 "dimensions": [
                     {
                         "name": "publisher",
                         "required": True,
                         "source": {"coord": {"row": 2, "col": 3}, "direction": "down"},
-                    }
+                    },
+                    {
+                        "name": "platform",
+                        "source": {"direction": "down", "coord": {"row": 1, "col": 5}},
+                    },
                 ],
                 "metrics": {
                     "source": {"coord": {"row": 2, "col": 4}, "direction": "down"},
@@ -170,7 +172,6 @@ def test_definition():
                 dates=DateSource(
                     direction=Direction.DOWN, source=CoordRange(Coord(1, 5), Direction.RIGHT)
                 ),
-                platforms=PlatformSource(CoordRange(Coord(2, 5), Direction.DOWN)),
                 titles=TitleSource(CoordRange(Coord(2, 0), Direction.DOWN)),
                 title_ids=[
                     TitleIdSource(name="ISBN", source=CoordRange(Coord(2, 1), Direction.DOWN)),
@@ -178,6 +179,9 @@ def test_definition():
                 dimensions=[
                     DimensionSource(
                         name="publisher", source=CoordRange(Coord(2, 3), Direction.DOWN)
+                    ),
+                    DimensionSource(
+                        name="platform", source=CoordRange(Coord(2, 5), Direction.DOWN)
                     ),
                 ],
                 metrics=MetricSource(source=CoordRange(Coord(2, 4), Direction.DOWN)),
@@ -192,7 +196,7 @@ def test_definition():
         "parser_name": "Parser1",
         "format_name": "Format1",
         "platforms": ["Platform1", "Platform2"],
-        "platforms_to_skip": [],
+        "dimensions_to_skip": {},
         "dimensions": ["Dim1", "Dim2"],
         "dimension_aliases": [],
         "heuristics": {
@@ -214,10 +218,14 @@ def test_definition():
                         "required": True,
                         "source": {"coord": {"col": 3, "row": 2}, "direction": "down"},
                     },
+                    {
+                        "name": "platform",
+                        "required": True,
+                        "source": {"coord": {"col": 5, "row": 2}, "direction": "down"},
+                    },
                 ],
                 "metrics": {"source": {"coord": {"col": 4, "row": 2}, "direction": "down"}},
                 "name": "fixed",
-                "platforms": {"source": {"coord": {"col": 5, "row": 2}, "direction": "down"}},
                 "titles": {"source": {"coord": {"col": 0, "row": 2}, "direction": "down"}},
                 "title_ids": [
                     {

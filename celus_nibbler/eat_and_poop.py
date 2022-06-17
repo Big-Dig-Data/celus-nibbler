@@ -120,7 +120,7 @@ def eat(
     use_heuristics: bool = True,
     dynamic_parsers: typing.List[typing.Type[DynamicParser]] = [],
 ) -> typing.List[typing.Union[Poop, NibblerError]]:
-    platform = Platform(platform=platform).platform
+    platform = Platform(value=platform).value
 
     # make sure that file_path is Path instance
     file_path = pathlib.Path(file_path)

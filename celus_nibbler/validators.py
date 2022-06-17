@@ -35,25 +35,25 @@ class Value(BaseModel):
 
 
 class Platform(BaseModel):
-    platform: str
+    value: str
 
-    _stripped_platform = validator('platform', allow_reuse=True)(stripped)
-    _non_empty_platform = validator('platform', allow_reuse=True)(non_empty)
+    _stripped_platform = validator('value', allow_reuse=True)(stripped)
+    _non_empty_platform = validator('value', allow_reuse=True)(non_empty)
 
 
 class Dimension(BaseModel):
-    dimension: str
+    value: str
 
-    _stripped_dimension = validator('dimension', allow_reuse=True)(stripped)
+    _stripped_dimension = validator('value', allow_reuse=True)(stripped)
 
 
 class Metric(BaseModel):
-    metric: str
+    value: str
 
-    _stripped_metric = validator('metric', allow_reuse=True)(stripped)
-    _non_empty_metric = validator('metric', allow_reuse=True)(non_empty)
+    _stripped_metric = validator('value', allow_reuse=True)(stripped)
+    _non_empty_metric = validator('value', allow_reuse=True)(non_empty)
 
-    @validator("metric")
+    @validator("value")
     def not_digit(cls, metric: str) -> str:
         if metric.isdigit():
             raise ValidationError("cant-be-digit")
@@ -61,9 +61,9 @@ class Metric(BaseModel):
 
 
 class Title(BaseModel):
-    title: Optional[str]
+    value: Optional[str]
 
-    @validator("title")
+    @validator("value")
     def not_digit(cls, title: str) -> str:
         if title.isdigit():
             raise ValidationError("cant-be-digit")
@@ -71,12 +71,12 @@ class Title(BaseModel):
 
 
 class Date(BaseModel):
-    date: datetime.date
+    value: datetime.date
 
-    _stripped_date = validator('date', allow_reuse=True, pre=True)(stripped)
-    _non_empty_date = validator('date', allow_reuse=True, pre=True)(non_empty)
+    _stripped_date = validator('value', allow_reuse=True, pre=True)(stripped)
+    _non_empty_date = validator('value', allow_reuse=True, pre=True)(non_empty)
 
-    @validator("date", pre=True)
+    @validator("value", pre=True)
     def to_datetime(cls, date: str) -> str:
         try:
             return datetimes_parser.parse(date)
@@ -85,9 +85,9 @@ class Date(BaseModel):
 
 
 class DOI(BaseModel):
-    doi: str
+    value: str
 
-    @validator("doi")
+    @validator("value")
     def check_doi(cls, doi: str) -> str:
         if not doi:
             return ""
@@ -98,9 +98,9 @@ class DOI(BaseModel):
 
 
 class ISBN(BaseModel):
-    isbn: str
+    value: str
 
-    @validator("isbn")
+    @validator("value")
     def check_isbn(cls, isbn: str) -> str:
         if not isbn:
             return ""
@@ -112,28 +112,28 @@ class ISBN(BaseModel):
 
 
 class ISSN(BaseModel):
-    issn: str
+    value: str
 
-    _issn_format = validator('issn', allow_reuse=True)(issn)
+    _issn_format = validator('value', allow_reuse=True)(issn)
 
 
 class EISSN(BaseModel):
-    eissn: str
+    value: str
 
-    _issn_format = validator('eissn', allow_reuse=True)(issn)
+    _issn_format = validator('value', allow_reuse=True)(issn)
 
 
 class ProprietaryID(BaseModel):
-    proprietary_id: str
+    value: str
 
 
 class DateInString(BaseModel):
-    date: datetime.date
+    value: datetime.date
 
-    _stripped_date = validator('date', allow_reuse=True, pre=True)(stripped)
-    _non_empty_date = validator('date', allow_reuse=True, pre=True)(non_empty)
+    _stripped_date = validator('value', allow_reuse=True, pre=True)(stripped)
+    _non_empty_date = validator('value', allow_reuse=True, pre=True)(non_empty)
 
-    @validator("date", pre=True)
+    @validator("value", pre=True)
     def to_datetime(cls, date: str) -> str:
         # TODO add some validation whether the date in the 'date' variable is really on the last index
         try:

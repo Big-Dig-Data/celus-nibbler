@@ -45,11 +45,6 @@ class DateSource(JsonEncorder):
     source: Source
 
 
-@dataclass(config=PydanticConfig)
-class PlatformSource(JsonEncorder):
-    source: Source
-
-
 class AreaGeneratorMixin(metaclass=ABCMeta):
     @abstractmethod
     def make_area(self) -> typing.Type[BaseArea]:
@@ -63,7 +58,6 @@ class FixedAreaDefinition(AreaGeneratorMixin, JsonEncorder):
     dates: DateSource
     titles: TitleSource
     metrics: MetricSource
-    platforms: PlatformSource
     title_ids: typing.List[TitleIdSource] = field(default_factory=lambda: [])
     dimensions: typing.List[DimensionSource] = field(default_factory=lambda: [])
 
@@ -73,7 +67,6 @@ class FixedAreaDefinition(AreaGeneratorMixin, JsonEncorder):
         dates_range = self.dates.source
         data_direction = self.dates.direction
         titles = self.titles
-        platforms = self.platforms
         title_ids = self.title_ids
         dimensions = self.dimensions
         metrics = self.metrics
@@ -127,10 +120,6 @@ class FixedAreaDefinition(AreaGeneratorMixin, JsonEncorder):
                 return {e.name: e.source for e in title_ids}
 
             @property
-            def platform_cells(self) -> typing.Optional[Source]:
-                return platforms.source
-
-            @property
             def dimensions_cells(self) -> typing.Dict[str, Source]:
                 return {e.name: e.source for e in dimensions}
 
@@ -176,7 +165,7 @@ class Definition(JsonEncorder):
     dimensions: typing.List[str] = field(default_factory=lambda: [])
     metrics_to_skip: typing.List[str] = field(default_factory=lambda: [])
     titles_to_skip: typing.List[str] = field(default_factory=lambda: [])
-    platforms_to_skip: typing.List[str] = field(default_factory=lambda: [])
+    dimensions_to_skip: typing.Dict[str, typing.List[str]] = field(default_factory=lambda: {})
     metric_aliases: typing.List[typing.Tuple[str, str]] = field(default_factory=lambda: [])
     dimension_aliases: typing.List[typing.Tuple[str, str]] = field(default_factory=lambda: [])
     heuristics: typing.Optional[Condition] = None

@@ -8,7 +8,7 @@
   "dimensions": [],
   "metrics_to_skip": [],
   "titles_to_skip": [],
-  "platforms_to_skip": [],
+  "dimensions_to_skip": [],
   "metric_aliases": [],
   "dimension_aliases": [],
   "heuristics": {
@@ -50,11 +50,6 @@
           "value": "M1"
         }
       },
-      "platforms": {
-        "source": {
-          "value": "Platform1"
-        }
-      },
       "title_ids": [
         {
           "name": "Print_ISSN",
@@ -63,7 +58,15 @@
           }
         }
       ],
-      "dimensions": [],
+      "dimensions": [
+        {
+          "name": "Platform",
+          "source": {
+            "value": "Platform1"
+          },
+          "required": true
+        }
+      ],
       "name": "fixed"
     }
   ]

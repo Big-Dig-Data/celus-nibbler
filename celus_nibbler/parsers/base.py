@@ -6,6 +6,7 @@ from abc import ABCMeta, abstractmethod
 
 from pydantic import BaseModel, ValidationError
 
+import celus_nibbler
 from celus_nibbler import validators
 from celus_nibbler.conditions import BaseCondition
 from celus_nibbler.coordinates import Coord, CoordRange, Direction, SheetAttr, Value
@@ -18,11 +19,11 @@ logger = logging.getLogger(__name__)
 
 
 IDS = [
-    ("DOI", validators.DOI, "doi"),
-    ("ISBN", validators.ISBN, "isbn"),
-    ("Print_ISSN", validators.ISSN, "issn"),
-    ("Online_ISSN", validators.EISSN, "eissn"),
-    ("Proprietary", validators.ProprietaryID, "proprietary_id"),
+    ("DOI", validators.DOI),
+    ("ISBN", validators.ISBN),
+    ("Print_ISSN", validators.ISSN),
+    ("Online_ISSN", validators.EISSN),
+    ("Proprietary", validators.ProprietaryID),
 ]
 
 
@@ -51,9 +52,8 @@ class BaseArea(metaclass=ABCMeta):
 
     title_cells: typing.Optional[CoordRange] = None
     title_ids_cells: typing.Dict[str, CoordRange] = {}
-    platform_cells: typing.Optional[CoordRange] = None
     metric_cells: typing.Optional[CoordRange] = None
-    dimensions_cells: typing.Dict[str, CoordRange] = {}
+    dimensions_cells: typing.Dict[str, 'celus_nibbler.definitions.Source'] = {}
 
     def __init__(self, sheet: SheetReader, platform: str):
         self.sheet = sheet
@@ -89,7 +89,7 @@ class BaseArea(metaclass=ABCMeta):
 
     def parse_date(self, cell: Coord) -> datetime.date:
         content = cell.content(self.sheet)
-        return validators.Date(date=content).date
+        return validators.Date(value=content).value
 
     @abstractmethod
     def find_data_cells(self) -> typing.List[MonthDataCells]:
@@ -106,7 +106,10 @@ class BaseArea(metaclass=ABCMeta):
 class BaseParser(metaclass=ABCMeta):
     metrics_to_skip: typing.List[str] = ["Total"]
     titles_to_skip: typing.List[str] = ["Total"]
-    platforms_to_skip: typing.List[str] = ["Total"]
+    dimensions_to_skip: typing.Dict[str, typing.List[str]] = {"Platform": ["Total"]}
+    dimensions_validators: typing.Dict[str, BaseModel] = {
+        "Platform": validators.Platform,
+    }
     heuristics: typing.Optional[BaseCondition] = None
     metric_aliases: typing.List[typing.Tuple[str, str]] = []
     dimension_aliases: typing.List[typing.Tuple[str, str]] = []
@@ -146,12 +149,11 @@ class BaseParser(metaclass=ABCMeta):
         seq: typing.Union[typing.Sequence[Coord], CoordRange, MonthDataCells, Value, SheetAttr],
         idx: int,
         validator: typing.Type[BaseModel],
-        name: str,
     ) -> typing.Any:
         try:
             cell = seq[idx]
             content = cell.content(self.sheet)
-            validated = validator(**{name: content})
+            res = validator(value=content).value
         except ValidationError as e:
             if isinstance(seq, Value):
                 raise TableException(
@@ -167,7 +169,7 @@ class BaseParser(metaclass=ABCMeta):
                     row=cell.row,
                     col=cell.col,
                     sheet=self.sheet.sheet_idx,
-                    reason=name if content else "empty",
+                    reason=e.model.__name__.lower() if content else "empty",
                 ) from e
         except IndexError as e:
             raise TableException(
@@ -177,7 +179,7 @@ class BaseParser(metaclass=ABCMeta):
                 reason='out-of-bounds',
             ) from e
 
-        return getattr(validated, name)
+        return res
 
     def _parse(self) -> typing.Generator[CounterRecord, None, None]:
         for area in self.get_areas():
@@ -214,50 +216,40 @@ class BaseParser(metaclass=ABCMeta):
             for idx in itertools.count(0):
                 # iterates through ranges
                 if area.metric_cells:
-                    metric = self._parse_content(
-                        area.metric_cells, idx, validators.Metric, "metric"
-                    )
+                    metric = self._parse_content(area.metric_cells, idx, validators.Metric)
                     if metric in self.metrics_to_skip:
                         continue
                 else:
                     metric = None
 
                 if area.title_cells:
-                    title = self._parse_content(area.title_cells, idx, validators.Title, "title")
+                    title = self._parse_content(area.title_cells, idx, validators.Title)
                     if title in self.titles_to_skip:
                         continue
                 else:
                     title = None
 
-                if area.platform_cells:
-                    platform = self._parse_content(
-                        area.platform_cells, idx, validators.Platform, "platform"
-                    )
-                    if platform in self.platforms_to_skip:
-                        continue
-                else:
-                    platform = None
-
                 dimension_data = {}
                 for k, rng in area.dimensions_cells.items():
                     dimension_data[k] = self._parse_content(
-                        rng, idx, validators.Dimension, "dimension"
+                        rng,
+                        idx,
+                        self.dimensions_validators.get(k, validators.Dimension),
                     )
-
-                if platform:
-                    dimension_data["Platform"] = platform
+                    if dimension_data[k] in self.dimensions_to_skip.get(k, []):
+                        continue
 
                 title_ids = {}
-                for (key, validator, attr) in IDS:
+                for (key, validator) in IDS:
                     if rng := area.title_ids_cells.get(key):
-                        value = self._parse_content(rng, idx, validator, attr)
+                        value = self._parse_content(rng, idx, validator)
                         if value:
                             title_ids[key] = value
                         else:
                             title_ids[key] = ""
 
                 for data in data_cells:
-                    value = self._parse_content(data, idx, validators.Value, "value")
+                    value = self._parse_content(data, idx, validators.Value)
                     res = area.prepare_record(
                         value=round(value),
                         date=data.month,

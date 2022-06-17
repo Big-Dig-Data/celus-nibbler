@@ -30,7 +30,7 @@ def gen_parser(definition: Definition):
 
         metrics_to_skip = definition.metrics_to_skip
         titles_to_skip = definition.titles_to_skip
-        platforms_to_skip = definition.platforms_to_skip
+        dimensions_to_skip = definition.dimensions_to_skip
 
         metric_aliases = definition.metric_aliases
         dimension_aliases = definition.dimension_aliases

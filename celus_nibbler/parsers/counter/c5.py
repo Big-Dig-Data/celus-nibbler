@@ -3,6 +3,7 @@ import typing
 
 from celus_nibbler.conditions import RegexCondition
 from celus_nibbler.coordinates import Coord, CoordRange, Direction
+from celus_nibbler.definitions import Source
 from celus_nibbler.errors import TableException
 from celus_nibbler.parsers.base import BaseParser
 
@@ -117,8 +118,10 @@ class PR(BaseParser):
             return None
 
         @property
-        def platform_cells(self) -> CoordRange:
-            return CoordRange(Coord(self.header_row[0].row + 1, 0), Direction.DOWN)
+        def dimensions_cells(self) -> typing.Dict[str, Source]:
+            return {
+                "Platform": CoordRange(Coord(self.header_row[0].row + 1, 0), Direction.DOWN),
+            }
 
     areas = [Area]
 

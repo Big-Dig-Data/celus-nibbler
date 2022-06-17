@@ -12,7 +12,7 @@
   ],
   "metrics_to_skip": [],
   "titles_to_skip": [],
-  "platforms_to_skip": [],
+  "dimensions_to_skip": {},
   "metric_aliases": [
     ["Deny", "Denied"]
   ],
@@ -94,15 +94,6 @@
           "direction": "down"
         }
       },
-      "platforms": {
-        "source": {
-          "coord": {
-            "row": 1,
-            "col": 2
-          },
-          "direction": "down"
-        }
-      },
       "title_ids": [
         {
           "name": "Print_ISSN",
@@ -122,6 +113,17 @@
             "coord": {
               "row": 1,
               "col": 3
+            },
+            "direction": "down"
+          },
+          "required": true
+        },
+        {
+          "name": "Platform",
+          "source": {
+            "coord": {
+              "row": 1,
+              "col": 2
             },
             "direction": "down"
           },

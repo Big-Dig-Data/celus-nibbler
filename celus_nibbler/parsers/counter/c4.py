@@ -177,10 +177,6 @@ class PR1(BaseParser):
             return None
 
         @property
-        def platform_cells(self) -> CoordRange:
-            return CoordRange(Coord(self.header_row[0].row + 1, 0), Direction.DOWN)
-
-        @property
         def metric_cells(self):
             for cell in self.header_row:
                 try:
