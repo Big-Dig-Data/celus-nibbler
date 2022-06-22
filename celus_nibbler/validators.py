@@ -34,6 +34,12 @@ class Value(BaseModel):
         return round(value)
 
 
+class Organization(BaseModel):
+    value: str
+
+    _stripped_organization = validator('value', allow_reuse=True)(stripped)
+
+
 class Platform(BaseModel):
     value: str
 

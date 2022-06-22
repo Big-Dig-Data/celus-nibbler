@@ -14,6 +14,7 @@ from .parsers.base import BaseArea, MonthDataCells
 from .utils import JsonEncorder, PydanticConfig
 
 Source = typing.Union[Coord, CoordRange, SheetAttr, Value]
+Content = typing.Union[Coord, SheetAttr, Value]
 
 
 @dataclass(config=PydanticConfig)
@@ -25,6 +26,11 @@ class DimensionSource(JsonEncorder):
 
 @dataclass(config=PydanticConfig)
 class MetricSource(JsonEncorder):
+    source: Source
+
+
+@dataclass(config=PydanticConfig)
+class OrganizationSource(JsonEncorder):
     source: Source
 
 
@@ -58,6 +64,7 @@ class FixedAreaDefinition(AreaGeneratorMixin, JsonEncorder):
     dates: DateSource
     titles: TitleSource
     metrics: MetricSource
+    organizations: typing.Optional[OrganizationSource] = None
     title_ids: typing.List[TitleIdSource] = field(default_factory=lambda: [])
     dimensions: typing.List[DimensionSource] = field(default_factory=lambda: [])
 
@@ -70,11 +77,19 @@ class FixedAreaDefinition(AreaGeneratorMixin, JsonEncorder):
         title_ids = self.title_ids
         dimensions = self.dimensions
         metrics = self.metrics
+        organizations = self.organizations
 
         class Area(BaseArea):
             @property
             def date_header_cells(self) -> CoordRange:
                 return dates_range
+
+            @property
+            def organization_cells(self) -> typing.Optional[Source]:
+                if organizations:
+                    return organizations.source
+                else:
+                    return None
 
             def find_data_cells(self) -> typing.List[MonthDataCells]:
                 res = []

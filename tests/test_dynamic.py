@@ -19,6 +19,7 @@ from celus_nibbler.parsers.dynamic import gen_parser
         ("Platform1", "coord", "csv", "nibbler.dynamic.coord"),
         ("Platform1", "value", "csv", "nibbler.dynamic.value"),
         ("Platform1", "aliases", "csv", "nibbler.dynamic.aliases"),
+        ("Platform1", "organization", "csv", "nibbler.dynamic.organization"),
     ),
 )
 def test_dynamic(platform, name, ext, parser):

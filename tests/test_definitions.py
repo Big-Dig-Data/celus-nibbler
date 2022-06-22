@@ -59,6 +59,7 @@ def test_fixed_area_definition():
             }
         ],
         "titles": {"source": {"coord": {"row": 2, "col": 0}, "direction": "down"}},
+        "organizations": None,
     }
 
     converted_definition = FixedAreaDefinition.parse(definition_dict)
@@ -233,6 +234,7 @@ def test_definition():
                         "source": {"coord": {"col": 1, "row": 2}, "direction": "down"},
                     },
                 ],
+                "organizations": None,
             },
         ],
         "metric_aliases": [],

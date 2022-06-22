@@ -50,9 +50,10 @@ class MonthDataCells:
 
 class BaseArea(metaclass=ABCMeta):
 
-    title_cells: typing.Optional[CoordRange] = None
-    title_ids_cells: typing.Dict[str, CoordRange] = {}
-    metric_cells: typing.Optional[CoordRange] = None
+    organization_cells: typing.Optional['celus_nibbler.definitions.Source'] = None
+    title_cells: typing.Optional['celus_nibbler.definitions.Source'] = None
+    title_ids_cells: typing.Dict[str, 'celus_nibbler.definitions.Source'] = {}
+    metric_cells: typing.Optional['celus_nibbler.definitions.Source'] = None
     dimensions_cells: typing.Dict[str, 'celus_nibbler.definitions.Source'] = {}
 
     def __init__(self, sheet: SheetReader, platform: str):
@@ -69,6 +70,7 @@ class BaseArea(metaclass=ABCMeta):
         self,
         value: int,
         date: datetime.date,
+        organization: typing.Optional[str] = None,
         title: typing.Optional[str] = None,
         metric: typing.Optional[str] = None,
         title_ids: typing.Dict[str, str] = {},
@@ -81,6 +83,7 @@ class BaseArea(metaclass=ABCMeta):
             value=value,
             start=start,
             end=end,
+            organization=organization,
             title=title,
             metric=metric,
             title_ids=title_ids,
@@ -222,6 +225,13 @@ class BaseParser(metaclass=ABCMeta):
                 else:
                     metric = None
 
+                if area.organization_cells:
+                    organization = self._parse_content(
+                        area.organization_cells, idx, validators.Organization
+                    )
+                else:
+                    organization = None
+
                 if area.title_cells:
                     title = self._parse_content(area.title_cells, idx, validators.Title)
                     if title in self.titles_to_skip:
@@ -253,6 +263,7 @@ class BaseParser(metaclass=ABCMeta):
                     res = area.prepare_record(
                         value=round(value),
                         date=data.month,
+                        organization=organization,
                         metric=metric,
                         title=title,
                         dimension_data=dimension_data,

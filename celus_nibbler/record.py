@@ -26,7 +26,8 @@ class CounterRecord:
     # What actually value of this record means
     metric: typing.Optional[str] = None
 
-    # TODO validations
+    # Entity to which are these data related
+    organization: typing.Optional[str] = None
 
     def serialize(self) -> typing.Tuple[str, ...]:
         def serialize_dict(mapping: typing.Optional[dict]) -> str:
@@ -42,6 +43,7 @@ class CounterRecord:
         return (
             format_date(self.start),
             format_date(self.end),
+            self.organization or "",
             self.title or "",
             self.metric or "",
             serialize_dict(self.dimension_data),
