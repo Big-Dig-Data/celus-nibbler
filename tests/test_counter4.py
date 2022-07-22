@@ -43,7 +43,7 @@ def test_tsv(platform, file, parser, heuristics):
         poop = eat(source_path, platform, parsers=[parser], use_heuristics=heuristics)[0]
 
         for record in poop.records():
-            assert next(reader) == list(record.serialize()), "Compare lines"
+            assert next(reader) == list(record.as_csv()), "Compare lines"
 
         with pytest.raises(StopIteration):
             assert next(reader) is None, "No more date present in the file"

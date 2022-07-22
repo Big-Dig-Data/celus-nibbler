@@ -94,7 +94,7 @@ Available Parsers:
                     print("Failed to pick parser")
                     sys.exit(1)
                 for record in poop.records():
-                    print(",".join((f'"{e}"' if e else "") for e in record.serialize()))
+                    print(",".join((f'"{e}"' if e else "") for e in record.as_csv()))
 
 
 if __name__ == "__main__":

@@ -3,6 +3,8 @@ import pathlib
 import typing
 from datetime import date
 
+from celus_nigiri import CounterRecord
+
 from celus_nibbler.errors import (
     MultipleParsersFound,
     NibblerError,
@@ -14,7 +16,6 @@ from celus_nibbler.errors import (
 from celus_nibbler.parsers import BaseParser, get_parsers
 from celus_nibbler.parsers.dynamic import DynamicParser
 from celus_nibbler.reader import CsvReader, SheetReader, TableReader, XlsxReader
-from celus_nibbler.record import CounterRecord
 from celus_nibbler.validators import Platform
 
 logger = logging.getLogger(__name__)

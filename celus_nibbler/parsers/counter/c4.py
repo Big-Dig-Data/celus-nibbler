@@ -1,11 +1,12 @@
 import re
 import typing
 
+from celus_nigiri import CounterRecord
+
 from celus_nibbler.conditions import RegexCondition
 from celus_nibbler.coordinates import Coord, CoordRange, Direction
 from celus_nibbler.errors import TableException
 from celus_nibbler.parsers.base import BaseParser
-from celus_nibbler.record import CounterRecord
 
 from . import CounterHeaderArea
 

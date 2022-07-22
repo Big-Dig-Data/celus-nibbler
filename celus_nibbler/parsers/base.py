@@ -4,6 +4,7 @@ import logging
 import typing
 from abc import ABCMeta, abstractmethod
 
+from celus_nigiri import CounterRecord
 from pydantic import BaseModel, ValidationError
 
 import celus_nibbler
@@ -12,7 +13,6 @@ from celus_nibbler.conditions import BaseCondition
 from celus_nibbler.coordinates import Coord, CoordRange, Direction, SheetAttr, Value
 from celus_nibbler.errors import TableException
 from celus_nibbler.reader import SheetReader
-from celus_nibbler.record import CounterRecord
 from celus_nibbler.utils import end_month, start_month
 
 logger = logging.getLogger(__name__)
@@ -269,7 +269,7 @@ class BaseParser(metaclass=ABCMeta):
                         dimension_data=dimension_data,
                         title_ids=title_ids,
                     )
-                    logger.debug("Parsed %s", res.serialize())
+                    logger.debug("Parsed %s", res.as_csv())
                     yield res
 
         except TableException as e:

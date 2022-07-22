@@ -10,13 +10,11 @@ from .errors import (
     WrongFileFormatError,
 )
 from .parsers import get_supported_platforms
-from .record import CounterRecord
 
 __all__ = [
     'eat',
     'get_supported_platforms',
     'Poop',
-    'CounterRecord',
     'MultipleParsersFound',
     'NibblerError',
     'NoParserFound',
