@@ -1,6 +1,6 @@
 # Celus Nibbler
 
-Non-counter data reader and processor.
+Counter-like data reader and processor.
 
 ## Developer Docs
 
