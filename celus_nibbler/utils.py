@@ -1,6 +1,5 @@
 import json
 import typing
-from dataclasses import asdict
 from datetime import date, timedelta
 
 from pydantic.json import pydantic_encoder
@@ -12,7 +11,7 @@ class PydanticConfig:
 
 class JsonEncorder:
     def dict(self):
-        return asdict(self)
+        return pydantic_encoder(self)
 
     def json(self):
         return json.dumps(self, default=pydantic_encoder)
