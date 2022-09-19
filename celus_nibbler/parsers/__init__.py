@@ -1,12 +1,24 @@
 import collections
 import itertools
 import re
+import sys
 import typing
-
-import pkg_resources
+from importlib.metadata import entry_points
 
 from .base import BaseParser
 from .dynamic import DynamicParser
+
+PYTHON_VERSION = sys.version_info
+
+if PYTHON_VERSION[0] == 3 and PYTHON_VERSION[1] < 10:
+
+    def get_entry_points():
+        return entry_points().get("nibbler_parsers", [])
+
+else:
+
+    def get_entry_points():
+        return entry_points(group="nibbler_parsers")
 
 
 def get_parsers(
@@ -20,7 +32,7 @@ def get_parsers(
     """
     return [
         (entry_point.name, entry_point.load())
-        for entry_point in pkg_resources.iter_entry_points("nibbler_parsers")
+        for entry_point in get_entry_points()
         if not parsers or any(re.match(e, entry_point.name) for e in parsers)
     ] + [
         (parser.full_name(), parser)

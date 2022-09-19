@@ -4,8 +4,8 @@ import logging
 import logging.config
 import pathlib
 import sys
+from importlib.metadata import distribution
 
-import pkg_resources
 from unidecode import unidecode
 
 from celus_nibbler import Poop, eat
@@ -21,7 +21,7 @@ def read_definition(path: str) -> Definition:
 
 
 def main():
-    dist = pkg_resources.get_distribution("celus-nibbler")
+    dist = distribution("celus-nibbler")
     version = dist.version if dist else "?"
 
     platforms_count = "\n".join(
