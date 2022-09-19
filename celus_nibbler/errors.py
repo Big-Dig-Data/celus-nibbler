@@ -4,7 +4,8 @@ from celus_nibbler.utils import colnum_to_colletters
 
 
 class NibblerError(Exception):
-    pass
+    def dict(self) -> dict:
+        return {"name": f"{self.__class__.__name__}"}
 
 
 class RecordError(NibblerError):
@@ -78,6 +79,16 @@ class TableException(NibblerError):
             for attr in ["value", "row", "col", "sheet", "reason"]
         )
 
+    def dict(self) -> dict:
+        return {
+            "name": f"{self.__class__.__name__}",
+            "reason": self.reason,
+            "sheet_idx": self.sheet,
+            "row": self.row,
+            "col": self.col,
+            "value": self.value,
+        }
+
 
 class NoParserFound(NibblerError):
     def __init__(self, sheet_idx, *args):
@@ -85,6 +96,12 @@ class NoParserFound(NibblerError):
 
     def __repr__(self):
         return f"{self.__class__.__name__}(sheet_idx={self.sheet_idx})"
+
+    def dict(self) -> dict:
+        return {
+            "name": f"{self.__class__.__name__}",
+            "sheet_idx": self.sheet_idx,
+        }
 
 
 class NoParserForPlatformFound(NoParserFound):
@@ -99,3 +116,10 @@ class MultipleParsersFound(NibblerError):
     def __init__(self, sheet_idx, *args):
         self.sheet_idx = sheet_idx
         self.parsers = args
+
+    def dict(self) -> dict:
+        return {
+            "name": f"{self.__class__.__name__}",
+            "sheet_idx": self.sheet_idx,
+            "parsers": list(self.parsers),
+        }

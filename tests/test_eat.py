@@ -18,6 +18,10 @@ def test_eat():
     # Wrong platform
     poops = eat(file_path, "Unknown")
     assert all(isinstance(e, NoParserForPlatformFound) for e in poops)
+    assert poops[0].dict() == {
+        "name": "NoParserForPlatformFound",
+        "sheet_idx": 0,
+    }
 
     # Ignore platform
     poops = eat(file_path, "Unknown", check_platform=False)
@@ -26,10 +30,18 @@ def test_eat():
     # Non matching parsers
     poops = eat(file_path, "Unknown", check_platform=False, parsers=["non-existing"])
     assert all(isinstance(e, NoParserForPlatformFound) for e in poops)
+    assert poops[0].dict() == {
+        "name": "NoParserForPlatformFound",
+        "sheet_idx": 0,
+    }
 
     # Parser with mismatched heuristics
     poops = eat(file_path, "Ovid", check_platform=False, parsers=["nibbler.counter4.JR1"])
     assert all(isinstance(e, NoParserMatchesHeuristics) for e in poops)
+    assert poops[0].dict() == {
+        "name": "NoParserMatchesHeuristics",
+        "sheet_idx": 0,
+    }
 
     # parser exact match
     poops = eat(
@@ -58,4 +70,13 @@ def test_eat():
         "nibbler.counter4.BR1",
         "nibbler.counter4.BR2",
         "nibbler.counter4.BR3",
+    }
+    assert poops[0].dict() == {
+        "name": "MultipleParsersFound",
+        "sheet_idx": 0,
+        "parsers": [
+            "nibbler.counter4.BR1",
+            "nibbler.counter4.BR2",
+            "nibbler.counter4.BR3",
+        ],
     }
