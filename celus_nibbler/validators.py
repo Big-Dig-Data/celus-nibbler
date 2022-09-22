@@ -71,7 +71,7 @@ class Title(BaseModel):
 
     @validator("value")
     def not_digit(cls, title: str) -> str:
-        if title.isdigit():
+        if title is not None and title.isdigit():
             raise ValidationError("cant-be-digit")
         return title
 

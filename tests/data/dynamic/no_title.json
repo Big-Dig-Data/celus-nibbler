@@ -1,0 +1,101 @@
+{
+  "version": 1,
+  "parser_name": "no_title",
+  "format_name": "simple_format",
+  "platforms": [
+    "Platform1",
+    "Platform2"
+  ],
+  "dimensions": [
+    "Dim1",
+    "Dim2"
+  ],
+  "metrics_to_skip": [],
+  "titles_to_skip": [],
+  "dimensions_to_skip": {},
+  "metric_aliases": [],
+  "dimension_aliases": [],
+  "heuristics": {
+    "conds": [
+      {
+        "pattern": "Platform",
+        "coord": {
+          "row": 0,
+          "col": 0
+        },
+        "kind": "regex"
+      },
+      {
+        "pattern": "YOP",
+        "coord": {
+          "row": 0,
+          "col": 1
+        },
+        "kind": "regex"
+      },
+      {
+        "pattern": "Metrics",
+        "coord": {
+          "row": 0,
+          "col": 2
+        },
+        "kind": "regex"
+      }
+    ],
+    "kind": "and"
+  },
+  "areas": [
+    {
+      "dates": {
+        "direction": "down",
+        "source": {
+          "coord": {
+            "row": 0,
+            "col": 3
+          },
+          "direction": "right"
+        }
+      },
+      "titles": {
+        "source": {
+          "value": null
+        }
+      },
+      "metrics": {
+        "source": {
+          "coord": {
+            "row": 1,
+            "col": 2
+          },
+          "direction": "down"
+        }
+      },
+      "title_ids": [],
+      "dimensions": [
+        {
+          "name": "YOP",
+          "source": {
+            "coord": {
+              "row": 1,
+              "col": 1
+            },
+            "direction": "down"
+          },
+          "required": true
+        },
+        {
+          "name": "Platform",
+          "source": {
+            "coord": {
+              "row": 1,
+              "col": 0
+            },
+            "direction": "down"
+          },
+          "required": true
+        }
+      ],
+      "name": "fixed"
+    }
+  ]
+}
