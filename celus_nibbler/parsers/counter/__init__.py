@@ -34,6 +34,7 @@ class CounterHeaderArea(VerticalArea):
     DIMENSION_NAMES_MAP = [
         ("Publisher", {"Publisher"}),
         ("Platform", {"Platform", "platform"}),
+        ("YOP", {"YOP", "Year of Publication", "year of publication"}),
     ]
 
     @property

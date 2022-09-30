@@ -15,6 +15,7 @@ from celus_nibbler import eat
         ("MIT", "5/PR-b.tsv", "nibbler.counter5.PR", False),
         ("MIT", "5/TR-a.tsv", "nibbler.counter5.TR", True),
         ("MIT", "5/TR-b.tsv", "nibbler.counter5.TR", False),
+        ("T&F ebooks", "5/TR_B1-a.xlsx", "nibbler.counter5.TR", True),
     ),
 )
 def test_tsv(platform, file, parser, heuristics):

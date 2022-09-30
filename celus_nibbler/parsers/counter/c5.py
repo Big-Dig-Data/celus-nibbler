@@ -196,9 +196,15 @@ class TR(BaseParser):
 
     heuristics = (
         RegexCondition(re.compile(r"^Report_Name$"), Coord(0, 0))
-        & RegexCondition(re.compile(r"^Title Master Report$"), Coord(0, 1))
+        & (
+            RegexCondition(re.compile(r"^Title Master Report$"), Coord(0, 1))
+            | RegexCondition(re.compile(r"^Book Requests \(Excluding OA_Gold\)$"), Coord(0, 1))
+        )
         & RegexCondition(re.compile(r"^Report_ID$"), Coord(1, 0))
-        & RegexCondition(re.compile(r"^TR$"), Coord(1, 1))
+        & (
+            RegexCondition(re.compile(r"^TR$"), Coord(1, 1))
+            | RegexCondition(re.compile(r"^TR_B1$"), Coord(1, 1))
+        )
     )
 
     class Area(Counter5HeaderArea):
