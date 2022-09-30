@@ -57,7 +57,7 @@ class OrCondition(ArithmeticsMixin, BaseCondition, JsonEncorder):
     kind: typing.Literal["or"] = "or"
 
     def check(self, sheet: SheetReader):
-        return all(e.check(sheet) for e in self.conds)
+        return any(e.check(sheet) for e in self.conds)
 
 
 @dataclass(config=PydanticConfig)
