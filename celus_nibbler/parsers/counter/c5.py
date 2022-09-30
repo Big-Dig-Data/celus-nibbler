@@ -3,7 +3,7 @@ import typing
 
 from celus_nibbler.conditions import RegexCondition
 from celus_nibbler.coordinates import Coord, CoordRange, Direction
-from celus_nibbler.definitions import Source
+from celus_nibbler.definitions.common import Source
 from celus_nibbler.errors import TableException
 from celus_nibbler.parsers.base import BaseParser
 

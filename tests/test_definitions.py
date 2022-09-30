@@ -5,12 +5,10 @@ from pydantic import ValidationError
 
 from celus_nibbler.conditions import AndCondition, RegexCondition
 from celus_nibbler.coordinates import Coord, CoordRange, Direction
-from celus_nibbler.definitions import (
+from celus_nibbler.definitions import Definition, DummyAreaDefinition, FixedAreaDefinition
+from celus_nibbler.definitions.common import (
     DateSource,
-    Definition,
     DimensionSource,
-    DummyAreaDefinition,
-    FixedAreaDefinition,
     MetricSource,
     TitleIdSource,
     TitleSource,

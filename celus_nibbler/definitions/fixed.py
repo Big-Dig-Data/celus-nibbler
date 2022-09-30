@@ -1,60 +1,23 @@
 import typing
-from abc import ABCMeta, abstractmethod
 from dataclasses import field
-from datetime import date
 
-from pydantic import Field, ValidationError
+from pydantic import ValidationError
 from pydantic.dataclasses import dataclass
-from typing_extensions import Annotated
 
-from .conditions import Condition
-from .coordinates import Coord, CoordRange, Direction, SheetAttr, Value
-from .errors import TableException
-from .parsers.base import BaseArea, MonthDataCells
-from .utils import JsonEncorder, PydanticConfig
-
-Source = typing.Union[Coord, CoordRange, SheetAttr, Value]
-Content = typing.Union[Coord, SheetAttr, Value]
-
-
-@dataclass(config=PydanticConfig)
-class DimensionSource(JsonEncorder):
-    name: str
-    source: Source
-    required: bool = True
-
-
-@dataclass(config=PydanticConfig)
-class MetricSource(JsonEncorder):
-    source: Source
-
-
-@dataclass(config=PydanticConfig)
-class OrganizationSource(JsonEncorder):
-    source: Source
-
-
-@dataclass(config=PydanticConfig)
-class TitleSource(JsonEncorder):
-    source: Source
-
-
-@dataclass(config=PydanticConfig)
-class TitleIdSource(JsonEncorder):
-    name: str
-    source: Source
-
-
-@dataclass(config=PydanticConfig)
-class DateSource(JsonEncorder):
-    direction: Direction
-    source: Source
-
-
-class AreaGeneratorMixin(metaclass=ABCMeta):
-    @abstractmethod
-    def make_area(self) -> typing.Type[BaseArea]:
-        pass
+from ..coordinates import Coord, CoordRange, Direction
+from ..errors import TableException
+from ..parsers.base import BaseArea, MonthDataCells
+from ..utils import JsonEncorder, PydanticConfig
+from .common import (
+    AreaGeneratorMixin,
+    DateSource,
+    DimensionSource,
+    MetricSource,
+    OrganizationSource,
+    Source,
+    TitleIdSource,
+    TitleSource,
+)
 
 
 @dataclass(config=PydanticConfig)
@@ -143,46 +106,3 @@ class FixedAreaDefinition(AreaGeneratorMixin, JsonEncorder):
                 return metrics.source
 
         return Area
-
-
-@dataclass(config=PydanticConfig)
-class DummyAreaDefinition(AreaGeneratorMixin, JsonEncorder):
-    """Represents a dummy area definition (for testing purposes)"""
-
-    name: typing.Literal["dummy"] = "dummy"
-
-    def make_area(self) -> typing.Type[BaseArea]:
-        class Area(BaseArea):
-            def date_header_cells(self) -> CoordRange:
-                return CoordRange(Coord(0, 0), Direction.LEFT)
-
-            def find_data_cells(self) -> typing.List[MonthDataCells]:
-                return [
-                    MonthDataCells(date(2020, 1, 1), CoordRange(Coord(1, 0), Direction.DOWN)),
-                    MonthDataCells(date(2020, 2, 1), CoordRange(Coord(1, 1), Direction.DOWN)),
-                ]
-
-        return Area
-
-
-AreaDefinition = Annotated[
-    typing.Union[FixedAreaDefinition, DummyAreaDefinition], Field(discriminator='name')
-]
-
-
-@dataclass(config=PydanticConfig)
-class Definition(JsonEncorder):
-    # name of nibbler parser
-    parser_name: str
-    format_name: str
-    areas: typing.List[AreaDefinition]
-    platforms: typing.List[str] = field(default_factory=lambda: [])
-    dimensions: typing.List[str] = field(default_factory=lambda: [])
-    metrics_to_skip: typing.List[str] = field(default_factory=lambda: [])
-    titles_to_skip: typing.List[str] = field(default_factory=lambda: [])
-    dimensions_to_skip: typing.Dict[str, typing.List[str]] = field(default_factory=lambda: {})
-    metric_aliases: typing.List[typing.Tuple[str, str]] = field(default_factory=lambda: [])
-    dimension_aliases: typing.List[typing.Tuple[str, str]] = field(default_factory=lambda: [])
-    heuristics: typing.Optional[Condition] = None
-
-    version: typing.Literal[1] = 1
