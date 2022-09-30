@@ -1,4 +1,5 @@
 {
+  "name": "fixed",
   "version": 1,
   "parser_name": "coord",
   "format_name": "simple_format",

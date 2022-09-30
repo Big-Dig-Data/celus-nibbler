@@ -1,4 +1,5 @@
 {
+  "name": "fixed",
   "parser_name": "date_cells_out_of_range",
   "format_name": "simple_format",
   "platforms": [

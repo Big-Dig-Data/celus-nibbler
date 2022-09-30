@@ -5,7 +5,7 @@ from pydantic import ValidationError
 
 from celus_nibbler.conditions import AndCondition, RegexCondition
 from celus_nibbler.coordinates import Coord, CoordRange, Direction
-from celus_nibbler.definitions import Definition, DummyAreaDefinition, FixedAreaDefinition
+from celus_nibbler.definitions import DummyAreaDefinition, FixedAreaDefinition, FixedDefinition
 from celus_nibbler.definitions.common import (
     DateSource,
     DimensionSource,
@@ -153,8 +153,8 @@ def test_errors():
         )
 
 
-def test_definition():
-    init_definition = Definition(
+def test_fixed_definition():
+    init_definition = FixedDefinition(
         parser_name="Parser1",
         format_name="Format1",
         platforms=["Platform1", "Platform2"],
@@ -191,6 +191,7 @@ def test_definition():
     definition_dict = json.loads(init_definition.json())
 
     assert definition_dict == {
+        "name": "fixed",
         "version": 1,
         "parser_name": "Parser1",
         "format_name": "Format1",

@@ -19,9 +19,15 @@ class JsonEncorder:
     @classmethod
     def parse(cls, obj: typing.Dict[str, typing.Any]):
         # triggers validations
-        pydantic_obj = cls.__pydantic_model__.parse_obj(obj)
-        # convert to original object (dataclass)
-        return cls(**pydantic_obj.dict())
+        if hasattr(cls, '__pydantic_model__'):
+            # Run for data_classes
+            pydantic_obj = cls.__pydantic_model__.parse_obj(obj)
+
+            # convert to original object (dataclass)
+            return cls(**pydantic_obj.dict())
+        else:
+            # For pydantic models
+            return cls.parse_obj(obj)
 
 
 def start_month(in_date: date) -> date:

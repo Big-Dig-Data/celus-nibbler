@@ -1,4 +1,5 @@
 {
+  "name": "fixed",
   "parser_name": "wrong_fixed_value",
   "format_name": "simple_format",
   "platforms": [

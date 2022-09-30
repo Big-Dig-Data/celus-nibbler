@@ -50,11 +50,11 @@ class MonthDataCells:
 
 class BaseArea(metaclass=ABCMeta):
 
-    organization_cells: typing.Optional['celus_nibbler.definitions.Source'] = None
-    title_cells: typing.Optional['celus_nibbler.definitions.Source'] = None
-    title_ids_cells: typing.Dict[str, 'celus_nibbler.definitions.Source'] = {}
-    metric_cells: typing.Optional['celus_nibbler.definitions.Source'] = None
-    dimensions_cells: typing.Dict[str, 'celus_nibbler.definitions.Source'] = {}
+    organization_cells: typing.Optional['celus_nibbler.definitions.common.Source'] = None
+    title_cells: typing.Optional['celus_nibbler.definitions.common.Source'] = None
+    title_ids_cells: typing.Dict[str, 'celus_nibbler.definitions.common.Source'] = {}
+    metric_cells: typing.Optional['celus_nibbler.definitions.common.Source'] = None
+    dimensions_cells: typing.Dict[str, 'celus_nibbler.definitions.common.Source'] = {}
 
     def __init__(self, sheet: SheetReader, platform: str):
         self.sheet = sheet

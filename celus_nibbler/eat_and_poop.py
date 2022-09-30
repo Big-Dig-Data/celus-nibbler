@@ -14,7 +14,7 @@ from celus_nibbler.errors import (
     WrongFileFormatError,
 )
 from celus_nibbler.parsers import BaseParser, get_parsers
-from celus_nibbler.parsers.dynamic import DynamicParser
+from celus_nibbler.parsers.dynamic import DynamicParserMixin
 from celus_nibbler.reader import CsvReader, SheetReader, TableReader, XlsxReader
 from celus_nibbler.validators import Platform
 
@@ -64,7 +64,7 @@ def findparser(
     parsers: typing.Optional[typing.List[str]] = None,
     check_platform: bool = True,
     use_heuristics: bool = True,
-    dynamic_parsers: typing.List[typing.Type[DynamicParser]] = [],
+    dynamic_parsers: typing.List[typing.Type[DynamicParserMixin]] = [],
 ) -> typing.Type[BaseParser]:
     parser_classes = [
         (name, parser)
@@ -119,7 +119,7 @@ def eat(
     parsers: typing.Optional[typing.List[str]] = None,
     check_platform: bool = True,
     use_heuristics: bool = True,
-    dynamic_parsers: typing.List[typing.Type[DynamicParser]] = [],
+    dynamic_parsers: typing.List[typing.Type[DynamicParserMixin]] = [],
 ) -> typing.List[typing.Union[Poop, NibblerError]]:
     platform = Platform(value=platform).value
 
