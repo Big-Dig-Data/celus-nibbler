@@ -1,0 +1,49 @@
+{
+  "name": "counter5.DR",
+  "version": 1,
+  "metric_column": ["User Activity"],
+  "organization_column": ["Location Name"],
+  "title_column": ["Database"],
+  "overrides": [
+    {
+      "name": "name",
+      "value": "counter5.DR_MY_CUSTOM"
+    },
+    {
+      "name": "platforms",
+      "value": ["PlatformWithCustomDR"]
+    },
+    {
+      "name": "heuristics",
+      "value": {
+        "conds": [
+          {
+            "pattern": "Report_Name",
+            "coord": {
+              "row": 0,
+              "col": 0
+            },
+            "kind": "regex"
+          },
+          {
+            "pattern": "Counter 5 Location Details - Database Report",
+            "coord": {
+              "row": 0,
+              "col": 1
+            },
+            "kind": "regex"
+          },
+          {
+            "pattern": "Institution_Name",
+            "coord": {
+              "row": 1,
+              "col": 0
+          },
+          "kind": "regex"
+        }
+      ],
+      "kind": "and"
+      }
+    }
+  ]
+}

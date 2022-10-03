@@ -1,7 +1,9 @@
 import itertools
+import typing
 
 from pydantic import ValidationError
 
+import celus_nibbler
 from celus_nibbler.coordinates import Coord, CoordRange, Direction
 from celus_nibbler.errors import TableException
 from celus_nibbler.parsers.base import VerticalArea
@@ -36,6 +38,9 @@ class CounterHeaderArea(VerticalArea):
         ("Platform", {"Platform", "platform"}),
         ("YOP", {"YOP", "Year of Publication", "year of publication"}),
     ]
+    TITLE_COLUMN_NAMES: typing.List[str] = []
+    ORGANIZATION_COLUMN_NAMES: typing.List[str] = []
+    METRIC_COLUMN_NAMES: typing.List[str] = []
 
     @property
     def header_row(self) -> CoordRange:
@@ -87,8 +92,20 @@ class CounterHeaderArea(VerticalArea):
                 continue  # doesn't match the header
 
     @property
-    def title_cells(self):
-        return CoordRange(Coord(self.header_row[0].row + 1, 0), Direction.DOWN)
+    def title_cells(self) -> typing.Optional['celus_nibbler.definitions.common.Source']:
+        if not self.TITLE_COLUMN_NAMES:
+            # Name of title column not defined -> assumed the title is in first column
+            return CoordRange(Coord(self.header_row[0].row + 1, 0), Direction.DOWN)
+
+        for cell in self.header_row:
+            try:
+                content = cell.content(self.sheet)
+            except TableException as e:
+                if e.reason in ["out-of-bounds"]:
+                    break  # last cell reached
+
+            if content.strip() in self.TITLE_COLUMN_NAMES:
+                return CoordRange(Coord(cell.row + 1, cell.col), Direction.DOWN)
 
     @property
     def title_ids_cells(self):
@@ -127,3 +144,41 @@ class CounterHeaderArea(VerticalArea):
                     dim_cells[dimension] = CoordRange(Coord(cell.row + 1, cell.col), Direction.DOWN)
 
         return dim_cells
+
+    @property
+    def organization_cells(self) -> typing.Optional['celus_nibbler.definitions.common.Source']:
+        if not self.ORGANIZATION_COLUMN_NAMES:
+            # Organization column not defined
+            return None
+
+        for cell in self.header_row:
+            try:
+                content = cell.content(self.sheet)
+            except TableException as e:
+                if e.reason in ["out-of-bounds"]:
+                    break  # last cell reached
+
+            if content.strip() in self.ORGANIZATION_COLUMN_NAMES:
+                return CoordRange(Coord(cell.row + 1, cell.col), Direction.DOWN)
+
+    @property
+    def metric_cells(self):
+        if not self.METRIC_COLUMN_NAMES:
+            return None
+
+        for cell in self.header_row:
+            try:
+                content = cell.content(self.sheet)
+                if content and content.strip().lower() in [
+                    e.lower() for e in self.METRIC_COLUMN_NAMES
+                ]:
+
+                    return CoordRange(Coord(cell.row + 1, cell.col), Direction.DOWN)
+            except TableException as e:
+                if e.reason in ["out-of-bounds"]:
+                    raise TableException(
+                        value=self.METRIC_COLUMN_NAMES,
+                        row=cell.row,
+                        sheet=self.sheet.sheet_idx,
+                        reason="missing-metric-in-header",
+                    )

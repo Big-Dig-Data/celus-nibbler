@@ -4,8 +4,7 @@ import typing
 from celus_nigiri import CounterRecord
 
 from celus_nibbler.conditions import RegexCondition
-from celus_nibbler.coordinates import Coord, CoordRange, Direction
-from celus_nibbler.errors import TableException
+from celus_nibbler.coordinates import Coord
 from celus_nibbler.parsers.base import BaseParser
 
 from . import CounterHeaderArea
@@ -76,22 +75,7 @@ class BR3(BaseParser):
     heuristics = RegexCondition(re.compile(r"^Book Report 3 \(R4\)"), Coord(0, 0))
 
     class Area(CounterHeaderArea):
-        @property
-        def metric_cells(self):
-            for cell in self.header_row:
-                try:
-                    content = cell.content(self.sheet)
-                    if content and content.strip().lower() == "Access Denied Category".lower():
-
-                        return CoordRange(Coord(cell.row + 1, cell.col), Direction.DOWN)
-                except TableException as e:
-                    if e.reason in ["out-of-bounds"]:
-                        raise TableException(
-                            value="Access Denied Category",
-                            row=cell.row,
-                            sheet=self.sheet.sheet_idx,
-                            reason="missing-metric-in-header",
-                        )
+        METRIC_COLUMN_NAMES = ["Access Denied Category"]
 
     areas = [Area]
 
@@ -111,22 +95,7 @@ class DB1(BaseParser):
     heuristics = RegexCondition(re.compile(r"^Database Report 1 \(R4\)"), Coord(0, 0))
 
     class Area(CounterHeaderArea):
-        @property
-        def metric_cells(self):
-            for cell in self.header_row:
-                try:
-                    content = cell.content(self.sheet)
-                    if content and content.strip().lower() == "User Activity".lower():
-
-                        return CoordRange(Coord(cell.row + 1, cell.col), Direction.DOWN)
-                except TableException as e:
-                    if e.reason in ["out-of-bounds"]:
-                        raise TableException(
-                            value="User Activity",
-                            row=cell.row,
-                            sheet=self.sheet.sheet_idx,
-                            reason="missing-metric-in-header",
-                        )
+        METRIC_COLUMN_NAMES = ["User Activity"]
 
     areas = [Area]
 
@@ -142,22 +111,7 @@ class DB2(BaseParser):
     heuristics = RegexCondition(re.compile(r"^Database Report 2 \(R4\)"), Coord(0, 0))
 
     class Area(CounterHeaderArea):
-        @property
-        def metric_cells(self):
-            for cell in self.header_row:
-                try:
-                    content = cell.content(self.sheet)
-                    if content and content.strip().lower() == "Access denied category".lower():
-
-                        return CoordRange(Coord(cell.row + 1, cell.col), Direction.DOWN)
-                except TableException as e:
-                    if e.reason in ["out-of-bounds"]:
-                        raise TableException(
-                            value="Access denied category",
-                            row=cell.row,
-                            sheet=self.sheet.sheet_idx,
-                            reason="missing-metric-in-header",
-                        )
+        METRIC_COLUMN_NAMES = ["Access denied category"]
 
     areas = [Area]
 
@@ -173,26 +127,11 @@ class PR1(BaseParser):
     heuristics = RegexCondition(re.compile(r"^Platform Report 1 \(R4\)"), Coord(0, 0))
 
     class Area(CounterHeaderArea):
+        METRIC_COLUMN_NAMES = ["User Activity"]
+
         @property
         def title_cells(self):
             return None
-
-        @property
-        def metric_cells(self):
-            for cell in self.header_row:
-                try:
-                    content = cell.content(self.sheet)
-                    if content and content.strip().lower() == "User Activity".lower():
-
-                        return CoordRange(Coord(cell.row + 1, cell.col), Direction.DOWN)
-                except TableException as e:
-                    if e.reason in ["out-of-bounds"]:
-                        raise TableException(
-                            value="User Activity",
-                            row=cell.row,
-                            sheet=self.sheet.sheet_idx,
-                            reason="missing-metric-in-header",
-                        )
 
     areas = [Area]
 
@@ -356,22 +295,7 @@ class JR2(BaseParser):
     ]
 
     class Area(CounterHeaderArea):
-        @property
-        def metric_cells(self):
-            for cell in self.header_row:
-                try:
-                    content = cell.content(self.sheet)
-                    if content and content.strip().lower() == "Access Denied Category".lower():
-
-                        return CoordRange(Coord(cell.row + 1, cell.col), Direction.DOWN)
-                except TableException as e:
-                    if e.reason in ["out-of-bounds"]:
-                        raise TableException(
-                            value="Access Denied Category",
-                            row=cell.row,
-                            sheet=self.sheet.sheet_idx,
-                            reason="missing-metric-in-header",
-                        )
+        METRIC_COLUMN_NAMES = ["Access Denied Category"]
 
     areas = [Area]
 

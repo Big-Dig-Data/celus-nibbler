@@ -4,7 +4,6 @@ import typing
 from celus_nibbler.conditions import RegexCondition
 from celus_nibbler.coordinates import Coord, CoordRange, Direction
 from celus_nibbler.definitions.common import Source
-from celus_nibbler.errors import TableException
 from celus_nibbler.parsers.base import BaseParser
 
 from . import CounterHeaderArea
@@ -12,23 +11,7 @@ from . import CounterHeaderArea
 
 class Counter5HeaderArea(CounterHeaderArea):
     HEADER_DATE_START = 3
-
-    @property
-    def metric_cells(self):
-        for cell in self.header_row:
-            try:
-                content = cell.content(self.sheet)
-                if content and content.strip().lower() == "Metric_Type".lower():
-
-                    return CoordRange(Coord(cell.row + 1, cell.col), Direction.DOWN)
-            except TableException as e:
-                if e.reason in ["out-of-bounds"]:
-                    raise TableException(
-                        value="Metric_Type",
-                        row=cell.row,
-                        sheet=self.sheet.sheet_idx,
-                        reason="missing-metric-in-header",
-                    )
+    METRIC_COLUMN_NAMES = ["Metric_Type"]
 
 
 class DR(BaseParser):

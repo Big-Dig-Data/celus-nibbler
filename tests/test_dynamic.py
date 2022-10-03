@@ -22,6 +22,12 @@ from celus_nibbler.parsers.dynamic import gen_parser
         ("Platform1", "organization", "csv", "nibbler.dynamic.organization"),
         ("Platform1", "no_title", "csv", "nibbler.dynamic.no_title"),
         ("MIT", "counter5.TR", "xlsx", "nibbler.dynamic.counter5.TR"),
+        (
+            "PlatformWithCustomDR",
+            "counter5.DR_MY_CUSTOM",
+            "xlsx",
+            "nibbler.dynamic.counter5.DR_MY_CUSTOM",
+        ),
     ),
 )
 def test_dynamic(platform, name, ext, parser):
