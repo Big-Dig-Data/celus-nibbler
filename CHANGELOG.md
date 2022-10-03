@@ -5,6 +5,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [6.0.0] - 2022-10-03
+
+### Fixed
+- Or condition behavior
+
+### Added
+- counter defintions for dynamic parsers
+- overrided for counter definitions (heuristics, metric column, ...)
+- support for TR_B1 files
+
+### Changed
+- definitions refactored
+- every definition needs to have name specified (currently "fixed" or "counter")
+
+
 ## [5.4.2] - 2022-09-22
 
 ### Fixed
