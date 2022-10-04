@@ -11,11 +11,13 @@ from . import counter
 from .counter import CounterDefinition
 from .dummy import DummyAreaDefinition
 from .fixed import FixedAreaDefinition
+from .metric_based import MetricBasedAreaDefinition, MetricBasedDefinition
 
 AreaDefinition = Annotated[
     typing.Union[
         FixedAreaDefinition,
         DummyAreaDefinition,
+        MetricBasedAreaDefinition,
     ],
     Field(discriminator='name'),
 ]
@@ -57,6 +59,7 @@ DefinitionAnotation = Annotated[
         counter.TRDefinition,
         counter.DRDefinition,
         counter.PRDefinition,
+        MetricBasedDefinition,
     ],
     Field(discriminator='name'),
 ]
@@ -66,4 +69,10 @@ class Definition(JsonEncorder, BaseModel):
     __root__: DefinitionAnotation
 
 
-__all__ = ['Definition', 'AreaDefinition', 'FixedAreaDefinition', 'CounterDefinition']
+__all__ = [
+    'Definition',
+    'AreaDefinition',
+    'FixedAreaDefinition',
+    'CounterDefinition',
+    'MetricBasedDefinition',
+]

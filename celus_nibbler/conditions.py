@@ -96,8 +96,30 @@ class StemmerCondition(ArithmeticsMixin, BaseCondition, JsonEncorder):
             return False
 
 
+@dataclass(config=PydanticConfig)
+class SheetNameRegexCondition(ArithmeticsMixin, BaseCondition, JsonEncorder):
+    """Compare sheet name against the regex"""
+
+    pattern: typing.Pattern
+
+    kind: typing.Literal["sheet_name"] = "sheet_name"
+
+    def check(self, sheet: SheetReader):
+        if sheet.name is not None:
+            return bool(self.pattern.match(sheet.name))
+        else:
+            return False
+
+
 Condition = Annotated[
-    typing.Union[NegCondition, OrCondition, AndCondition, RegexCondition, StemmerCondition],
+    typing.Union[
+        NegCondition,
+        OrCondition,
+        AndCondition,
+        RegexCondition,
+        StemmerCondition,
+        SheetNameRegexCondition,
+    ],
     Field(discriminator='kind'),
 ]
 

@@ -89,10 +89,11 @@ Available Parsers:
             use_heuristics=not options.skip_heuristics,
             dynamic_parsers=dynamic_parsers,
         ):
-            for poop in poops:
+            for idx, poop in enumerate(poops):
                 if not isinstance(poop, Poop):
-                    print("Failed to pick parser")
-                    sys.exit(1)
+                    print(f"Failed to pick parser for sheet {idx}", file=sys.stderr)
+                    continue
+                print(f"Parsing sheet {idx}", file=sys.stderr)
                 for record in poop.records():
                     print(",".join((f'"{e}"' if e else "") for e in record.as_csv()))
 

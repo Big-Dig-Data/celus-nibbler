@@ -74,3 +74,6 @@ isort = "~5.10.0"
 "nibbler.counter5.DR" = "celus_nibbler.parsers.counter.c5:DR"
 "nibbler.counter5.PR" = "celus_nibbler.parsers.counter.c5:PR"
 "nibbler.counter5.TR" = "celus_nibbler.parsers.counter.c5:TR"
+
+
+"nibbler.non_counter.MyMetricBased" = "celus_nibbler.parsers.non_counter.metric_based:MyMetricBasedParser"

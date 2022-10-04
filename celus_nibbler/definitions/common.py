@@ -21,6 +21,7 @@ class DimensionSource(JsonEncorder):
 @dataclass(config=PydanticConfig)
 class MetricSource(JsonEncorder):
     source: Source
+    direction: typing.Optional[Direction] = None
 
 
 @dataclass(config=PydanticConfig)
@@ -41,8 +42,8 @@ class TitleIdSource(JsonEncorder):
 
 @dataclass(config=PydanticConfig)
 class DateSource(JsonEncorder):
-    direction: Direction
     source: Source
+    direction: typing.Optional[Direction] = None
 
 
 class AreaGeneratorMixin(metaclass=ABCMeta):

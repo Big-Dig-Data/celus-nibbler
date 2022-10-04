@@ -49,7 +49,10 @@ def test_fixed_area_definition():
                 "source": {"coord": {"row": 2, "col": 5}, "direction": "down"},
             },
         ],
-        "metrics": {"source": {"coord": {"row": 2, "col": 4}, "direction": "down"}},
+        "metrics": {
+            "direction": None,
+            "source": {"coord": {"row": 2, "col": 4}, "direction": "down"},
+        },
         "title_ids": [
             {
                 "name": "ISBN",
@@ -108,6 +111,7 @@ def test_errors():
                     },
                 ],
                 "metrics": {
+                    "direction": None,
                     "source": {"coord": {"row": 2, "col": 4}, "direction": "down"},
                 },
                 "title_ids": [
@@ -141,6 +145,7 @@ def test_errors():
                     },
                 ],
                 "metrics": {
+                    "direction": None,
                     "source": {"coord": {"row": 2, "col": 4}, "direction": "down"},
                 },
                 "title_ids": [
@@ -224,7 +229,10 @@ def test_fixed_definition():
                         "source": {"coord": {"col": 5, "row": 2}, "direction": "down"},
                     },
                 ],
-                "metrics": {"source": {"coord": {"col": 4, "row": 2}, "direction": "down"}},
+                "metrics": {
+                    "direction": None,
+                    "source": {"coord": {"col": 4, "row": 2}, "direction": "down"},
+                },
                 "name": "fixed",
                 "titles": {"source": {"coord": {"col": 0, "row": 2}, "direction": "down"}},
                 "title_ids": [

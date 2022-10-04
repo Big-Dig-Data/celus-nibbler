@@ -28,6 +28,12 @@ from celus_nibbler.parsers.dynamic import gen_parser
             "xlsx",
             "nibbler.dynamic.counter5.DR_MY_CUSTOM",
         ),
+        (
+            "My Platform",
+            "non_counter/my-metric-based",
+            "xlsx",
+            "nibbler.dynamic.my-metric-based",
+        ),
     ),
 )
 def test_dynamic(platform, name, ext, parser):

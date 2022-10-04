@@ -6,7 +6,7 @@ from pydantic.dataclasses import dataclass
 
 from ..coordinates import Coord, CoordRange, Direction
 from ..errors import TableException
-from ..parsers.base import BaseArea, MonthDataCells
+from ..parsers.base import BaseArea, BaseDateArea, MonthDataCells
 from ..utils import JsonEncorder, PydanticConfig
 from .common import (
     AreaGeneratorMixin,
@@ -42,9 +42,9 @@ class FixedAreaDefinition(AreaGeneratorMixin, JsonEncorder):
         metrics = self.metrics
         organizations = self.organizations
 
-        class Area(BaseArea):
+        class Area(BaseDateArea):
             @property
-            def date_header_cells(self) -> CoordRange:
+            def header_cells(self) -> CoordRange:
                 return dates_range
 
             @property
@@ -56,7 +56,7 @@ class FixedAreaDefinition(AreaGeneratorMixin, JsonEncorder):
 
             def find_data_cells(self) -> typing.List[MonthDataCells]:
                 res = []
-                for cell in self.date_header_cells:
+                for cell in self.header_cells:
                     try:
                         date = self.parse_date(cell)
                         if data_direction == Direction.DOWN:

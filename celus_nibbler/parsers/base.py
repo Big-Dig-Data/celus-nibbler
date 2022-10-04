@@ -27,10 +27,10 @@ IDS = [
 ]
 
 
-class MonthDataCells:
-    def __init__(self, month: datetime.date, range: CoordRange):
-        self.range = range
-        self.month = month
+class DataCells:
+    record_field: str
+    range: CoordRange
+    value: typing.Any
 
     def __iter__(self):
         return self.range.__iter__()
@@ -41,29 +41,52 @@ class MonthDataCells:
     def __getitem__(self, item: int) -> Coord:
         return self.range.__getitem__(item)
 
+
+class MetricDataCells(DataCells):
+    record_field = "metric"
+    value: str
+
+    def __init__(self, metric: str, range: CoordRange):
+        self.range = range
+        self.value = metric
+
     def __str__(self):
-        return f"{self.month.strftime('%Y-%m')} - {self.range}"
+        return f"{self.value} - {self.range}"
+
+    def __repr__(self):
+        return str(self)
+
+
+class MonthDataCells(DataCells):
+    record_field = "date"
+    value: datetime.date
+
+    def __init__(self, month: datetime.date, range: CoordRange):
+        self.range = range
+        self.value = month
+
+    def __str__(self):
+        return f"{self.value.strftime('%Y-%m')} - {self.range}"
 
     def __repr__(self):
         return str(self)
 
 
 class BaseArea(metaclass=ABCMeta):
-
     organization_cells: typing.Optional['celus_nibbler.definitions.common.Source'] = None
+    date_cells: typing.Optional['celus_nibbler.definitions.common.Source'] = None
     title_cells: typing.Optional['celus_nibbler.definitions.common.Source'] = None
     title_ids_cells: typing.Dict[str, 'celus_nibbler.definitions.common.Source'] = {}
-    metric_cells: typing.Optional['celus_nibbler.definitions.common.Source'] = None
     dimensions_cells: typing.Dict[str, 'celus_nibbler.definitions.common.Source'] = {}
+    metric_cells: typing.Optional['celus_nibbler.definitions.common.Source'] = None
 
     def __init__(self, sheet: SheetReader, platform: str):
         self.sheet = sheet
         self.platform = platform
         self.setup()
 
-    @property
-    @abstractmethod
-    def date_header_cells(self) -> CoordRange:
+    def setup(self):
+        """To be overiden. It should serve to read fixed variables from the list"""
         pass
 
     def prepare_record(
@@ -95,22 +118,29 @@ class BaseArea(metaclass=ABCMeta):
         return validators.Date(value=content).value
 
     @abstractmethod
-    def find_data_cells(self) -> typing.List[MonthDataCells]:
-        pass
-
     def get_months(self) -> typing.List[datetime.date]:
-        return [e.month for e in self.find_data_cells()]
-
-    def setup(self):
-        """To be overiden. It should serve to read fixed variables from the list"""
         pass
+
+    @abstractmethod
+    def find_data_cells(self) -> typing.List[DataCells]:
+        pass
+
+    @property
+    @abstractmethod
+    def header_cells(self) -> CoordRange:
+        pass
+
+
+class BaseDateArea(BaseArea, metaclass=ABCMeta):
+    def get_months(self) -> typing.List[datetime.date]:
+        return [e.value for e in self.find_data_cells()]
 
 
 class BaseParser(metaclass=ABCMeta):
     metrics_to_skip: typing.List[str] = ["Total"]
     titles_to_skip: typing.List[str] = ["Total"]
     dimensions_to_skip: typing.Dict[str, typing.List[str]] = {"Platform": ["Total"]}
-    dimensions_validators: typing.Dict[str, BaseModel] = {
+    dimensions_validators: typing.Dict[str, typing.Type[BaseModel]] = {
         "Platform": validators.Platform,
     }
     heuristics: typing.Optional[BaseCondition] = None
@@ -149,7 +179,7 @@ class BaseParser(metaclass=ABCMeta):
 
     def _parse_content(
         self,
-        seq: typing.Union[typing.Sequence[Coord], CoordRange, MonthDataCells, Value, SheetAttr],
+        seq: typing.Union[typing.Sequence[Coord], CoordRange, DataCells, Value, SheetAttr],
         idx: int,
         validator: typing.Type[BaseModel],
     ) -> typing.Any:
@@ -207,10 +237,10 @@ class BaseParser(metaclass=ABCMeta):
     def parse_area(self, area: BaseArea) -> typing.Generator[CounterRecord, None, None]:
         data_cells = area.find_data_cells()
         if not data_cells:
-            date_cells = area.date_header_cells
+            header_cells = area.header_cells
             raise TableException(
-                row=date_cells.coord.row,
-                col=date_cells.coord.col,
+                row=header_cells.coord.row,
+                col=header_cells.coord.col,
                 sheet=self.sheet.sheet_idx,
                 reason="no-data-found",
             )
@@ -231,6 +261,11 @@ class BaseParser(metaclass=ABCMeta):
                     )
                 else:
                     organization = None
+
+                if area.date_cells:
+                    date = self._parse_content(area.date_cells, idx, validators.Date)
+                else:
+                    date = None
 
                 if area.title_cells:
                     title = self._parse_content(area.title_cells, idx, validators.Title)
@@ -258,17 +293,19 @@ class BaseParser(metaclass=ABCMeta):
                         else:
                             title_ids[key] = ""
 
-                for data in data_cells:
-                    value = self._parse_content(data, idx, validators.Value)
-                    res = area.prepare_record(
+                for data_cell in data_cells:
+                    value = self._parse_content(data_cell, idx, validators.Value)
+                    kwargs = dict(
                         value=round(value),
-                        date=data.month,
                         organization=organization,
                         metric=metric,
                         title=title,
                         dimension_data=dimension_data,
                         title_ids=title_ids,
+                        date=date,
                     )
+                    kwargs[data_cell.record_field] = data_cell.value
+                    res = area.prepare_record(**kwargs)
                     logger.debug("Parsed %s", res.as_csv())
                     yield res
 
@@ -280,10 +317,10 @@ class BaseParser(metaclass=ABCMeta):
                 raise
 
 
-class VerticalArea(BaseArea):
+class VerticalDateArea(BaseDateArea):
     def find_data_cells(self) -> typing.List[MonthDataCells]:
         res = []
-        for cell in self.date_header_cells:
+        for cell in self.header_cells:
             try:
                 date = self.parse_date(cell)
                 res.append(

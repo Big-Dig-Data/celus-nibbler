@@ -1,0 +1,83 @@
+{
+  "name": "non_counter.metric_based",
+  "version": 1,
+  "parser_name": "my-metric-based",
+  "format_name": "simple_format",
+  "platforms": [
+    "My Platform"
+  ],
+  "dimensions": [
+    "Dimension1"
+  ],
+  "metrics_to_skip": [],
+  "titles_to_skip": [],
+  "dimensions_to_skip": [],
+  "heuristics": {
+    "conds": [
+      {
+        "pattern": "^My Online Summary Usage Report$",
+        "coord": {
+          "row": 0,
+          "col": 0
+        },
+        "kind": "regex"
+      },
+      {
+        "cond": {
+            "pattern": "^ips_",
+            "kind": "sheet_name"
+        },
+        "kind": "neg"
+      }
+    ],
+    "kind": "and"
+  },
+  "areas": [
+    {
+       "metrics": {
+        "direction": "down",
+        "source": {
+          "coord": {
+            "row": 14,
+            "col": 7
+          },
+          "direction": "right"
+        }
+      },
+      "organization": {
+          "source": {
+              "coord": {
+                  "row": 15,
+                  "col": 3
+              },
+              "direction": "down"
+          }
+      },
+      "dates": {
+          "source": {
+            "coord": {
+              "row": 15,
+              "col": 1
+            },
+            "direction": "down"
+          }
+      },
+      "titles": null,
+      "title_ids": [],
+      "dimensions": [
+        {
+          "name": "Dimension1",
+          "source": {
+            "coord": {
+              "row": 15,
+              "col": 2
+            },
+            "direction": "down"
+          },
+          "required": true
+        }
+      ],
+      "name": "non_counter.metric_based"
+    }
+  ]
+}

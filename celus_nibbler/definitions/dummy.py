@@ -17,7 +17,7 @@ class DummyAreaDefinition(AreaGeneratorMixin, JsonEncorder):
 
     def make_area(self) -> typing.Type[BaseArea]:
         class Area(BaseArea):
-            def date_header_cells(self) -> CoordRange:
+            def header_cells(self) -> CoordRange:
                 return CoordRange(Coord(0, 0), Direction.LEFT)
 
             def find_data_cells(self) -> typing.List[MonthDataCells]:

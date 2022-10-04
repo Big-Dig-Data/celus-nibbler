@@ -6,10 +6,10 @@ from pydantic import ValidationError
 import celus_nibbler
 from celus_nibbler.coordinates import Coord, CoordRange, Direction
 from celus_nibbler.errors import TableException
-from celus_nibbler.parsers.base import VerticalArea
+from celus_nibbler.parsers.base import VerticalDateArea
 
 
-class CounterHeaderArea(VerticalArea):
+class CounterHeaderArea(VerticalDateArea):
     HEADER_DATE_START = 1
     MAX_HEADER_ROW = 50
     DOI_NAMES = {
@@ -81,7 +81,7 @@ class CounterHeaderArea(VerticalArea):
         )
 
     @property
-    def date_header_cells(self):
+    def header_cells(self):
         # First date which is parsed in the header
         for cell in itertools.islice(self.header_row, 1, None):
             try:

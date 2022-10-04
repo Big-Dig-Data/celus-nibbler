@@ -1,7 +1,12 @@
 import typing
 from abc import ABCMeta, abstractmethod
 
-from celus_nibbler.definitions import CounterDefinition, Definition, FixedDefinition
+from celus_nibbler.definitions import (
+    CounterDefinition,
+    Definition,
+    FixedDefinition,
+    MetricBasedDefinition,
+)
 
 from .base import BaseParser
 
@@ -52,6 +57,9 @@ def gen_parser(definition: Definition) -> typing.Type[BaseParser]:
                 return cls._definition.parser_name
 
     elif isinstance(definition.__root__, CounterDefinition):
+        return definition.__root__.make_parser()
+
+    elif isinstance(definition.__root__, MetricBasedDefinition):
         return definition.__root__.make_parser()
 
     else:
