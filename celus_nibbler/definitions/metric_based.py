@@ -11,6 +11,7 @@ from ..errors import TableException
 from ..parsers.base import MetricDataCells
 from ..parsers.non_counter.metric_based import BaseMetricArea, MetricBasedParser
 from ..utils import JsonEncorder, PydanticConfig
+from .base import BaseParserDefinition
 from .common import (
     AreaGeneratorMixin,
     DateSource,
@@ -111,7 +112,7 @@ class MetricBasedAreaDefinition(AreaGeneratorMixin, JsonEncorder):
 
 
 @dataclass(config=PydanticConfig)
-class MetricBasedDefinition(metaclass=abc.ABCMeta):
+class MetricBasedDefinition(BaseParserDefinition, metaclass=abc.ABCMeta):
     parser_name: str
     format_name: str
     areas: typing.List[MetricBasedAreaDefinition]

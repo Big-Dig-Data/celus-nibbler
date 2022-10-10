@@ -1,4 +1,3 @@
-import abc
 import typing
 from dataclasses import field
 
@@ -10,6 +9,7 @@ from ..conditions import Condition
 from ..parsers.counter.c4 import BR1, BR2, BR3, DB1, DB2, JR1, JR1GOA, JR2, MR1, PR1, JR1a
 from ..parsers.counter.c5 import DR, PR, TR
 from ..utils import JsonEncorder, PydanticConfig
+from .base import BaseParserDefinition
 
 
 @dataclass(config=PydanticConfig)
@@ -41,14 +41,7 @@ Override = Annotated[
 
 
 @dataclass(config=PydanticConfig)
-class CounterDefinition(metaclass=abc.ABCMeta):
-    @abc.abstractmethod
-    def make_parser(self):
-        pass
-
-
-@dataclass(config=PydanticConfig)
-class BR1Definition(JsonEncorder, CounterDefinition):
+class BR1Definition(JsonEncorder, BaseParserDefinition):
     name: typing.Literal["counter4.BR1"] = "counter4.BR1"
     version: typing.Literal[1] = 1
     overrides: typing.List[Override] = field(default_factory=lambda: [])
@@ -78,7 +71,7 @@ class BR1Definition(JsonEncorder, CounterDefinition):
 
 
 @dataclass(config=PydanticConfig)
-class BR2Definition(JsonEncorder, CounterDefinition):
+class BR2Definition(JsonEncorder, BaseParserDefinition):
     name: typing.Literal["counter4.BR2"] = "counter4.BR2"
     version: typing.Literal[1] = 1
     overrides: typing.List[Override] = field(default_factory=lambda: [])
@@ -107,7 +100,7 @@ class BR2Definition(JsonEncorder, CounterDefinition):
 
 
 @dataclass(config=PydanticConfig)
-class BR3Definition(JsonEncorder, CounterDefinition):
+class BR3Definition(JsonEncorder, BaseParserDefinition):
     name: typing.Literal["counter4.BR3"] = "counter4.BR3"
     version: typing.Literal[1] = 1
     overrides: typing.List[Override] = field(default_factory=lambda: [])
@@ -136,7 +129,7 @@ class BR3Definition(JsonEncorder, CounterDefinition):
 
 
 @dataclass(config=PydanticConfig)
-class DB1Definition(JsonEncorder, CounterDefinition):
+class DB1Definition(JsonEncorder, BaseParserDefinition):
     name: typing.Literal["counter4.DB1"] = "counter4.DB1"
     version: typing.Literal[1] = 1
     overrides: typing.List[Override] = field(default_factory=lambda: [])
@@ -165,7 +158,7 @@ class DB1Definition(JsonEncorder, CounterDefinition):
 
 
 @dataclass(config=PydanticConfig)
-class DB2Definition(JsonEncorder, CounterDefinition):
+class DB2Definition(JsonEncorder, BaseParserDefinition):
     name: typing.Literal["counter4.DB2"] = "counter4.DB2"
     version: typing.Literal[1] = 1
     overrides: typing.List[Override] = field(default_factory=lambda: [])
@@ -194,7 +187,7 @@ class DB2Definition(JsonEncorder, CounterDefinition):
 
 
 @dataclass(config=PydanticConfig)
-class JR1Definition(JsonEncorder, CounterDefinition):
+class JR1Definition(JsonEncorder, BaseParserDefinition):
     name: typing.Literal["counter4.JR1"] = "counter4.JR1"
     version: typing.Literal[1] = 1
     overrides: typing.List[Override] = field(default_factory=lambda: [])
@@ -223,7 +216,7 @@ class JR1Definition(JsonEncorder, CounterDefinition):
 
 
 @dataclass(config=PydanticConfig)
-class JR1aDefinition(JsonEncorder, CounterDefinition):
+class JR1aDefinition(JsonEncorder, BaseParserDefinition):
     name: typing.Literal["counter4.JR1a"] = "counter4.JR1a"
     version: typing.Literal[1] = 1
     overrides: typing.List[Override] = field(default_factory=lambda: [])
@@ -252,7 +245,7 @@ class JR1aDefinition(JsonEncorder, CounterDefinition):
 
 
 @dataclass(config=PydanticConfig)
-class JR1GOADefinition(JsonEncorder, CounterDefinition):
+class JR1GOADefinition(JsonEncorder, BaseParserDefinition):
     name: typing.Literal["counter4.JR1GOA"] = "counter4.JR1GOA"
     version: typing.Literal[1] = 1
     overrides: typing.List[Override] = field(default_factory=lambda: [])
@@ -281,7 +274,7 @@ class JR1GOADefinition(JsonEncorder, CounterDefinition):
 
 
 @dataclass(config=PydanticConfig)
-class JR2Definition(JsonEncorder, CounterDefinition):
+class JR2Definition(JsonEncorder, BaseParserDefinition):
     name: typing.Literal["counter4.JR2"] = "counter4.JR2"
     version: typing.Literal[1] = 1
     overrides: typing.List[Override] = field(default_factory=lambda: [])
@@ -310,7 +303,7 @@ class JR2Definition(JsonEncorder, CounterDefinition):
 
 
 @dataclass(config=PydanticConfig)
-class MR1Definition(JsonEncorder, CounterDefinition):
+class MR1Definition(JsonEncorder, BaseParserDefinition):
     name: typing.Literal["counter4.MR1"] = "counter4.MR1"
     version: typing.Literal[1] = 1
     overrides: typing.List[Override] = field(default_factory=lambda: [])
@@ -339,7 +332,7 @@ class MR1Definition(JsonEncorder, CounterDefinition):
 
 
 @dataclass(config=PydanticConfig)
-class PR1Definition(JsonEncorder, CounterDefinition):
+class PR1Definition(JsonEncorder, BaseParserDefinition):
     name: typing.Literal["counter4.PR1"] = "counter4.PR1"
     version: typing.Literal[1] = 1
     overrides: typing.List[Override] = field(default_factory=lambda: [])
@@ -368,7 +361,7 @@ class PR1Definition(JsonEncorder, CounterDefinition):
 
 
 @dataclass(config=PydanticConfig)
-class TRDefinition(JsonEncorder, CounterDefinition):
+class TRDefinition(JsonEncorder, BaseParserDefinition):
     name: typing.Literal["counter5.TR"] = "counter5.TR"
     version: typing.Literal[1] = 1
     overrides: typing.List[Override] = field(default_factory=lambda: [])
@@ -397,7 +390,7 @@ class TRDefinition(JsonEncorder, CounterDefinition):
 
 
 @dataclass(config=PydanticConfig)
-class DRDefinition(JsonEncorder, CounterDefinition):
+class DRDefinition(JsonEncorder, BaseParserDefinition):
     name: typing.Literal["counter5.DR"] = "counter5.DR"
     version: typing.Literal[1] = 1
     overrides: typing.List[Override] = field(default_factory=lambda: [])
@@ -426,7 +419,7 @@ class DRDefinition(JsonEncorder, CounterDefinition):
 
 
 @dataclass(config=PydanticConfig)
-class PRDefinition(JsonEncorder, CounterDefinition):
+class PRDefinition(JsonEncorder, BaseParserDefinition):
     name: typing.Literal["counter5.PR"] = "counter5.PR"
     version: typing.Literal[1] = 1
     overrides: typing.List[Override] = field(default_factory=lambda: [])

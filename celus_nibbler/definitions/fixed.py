@@ -4,10 +4,12 @@ from dataclasses import field
 from pydantic import ValidationError
 from pydantic.dataclasses import dataclass
 
+from ..conditions import Condition
 from ..coordinates import Coord, CoordRange, Direction
 from ..errors import TableException
 from ..parsers.base import BaseArea, BaseDateArea, MonthDataCells
 from ..utils import JsonEncorder, PydanticConfig
+from .base import BaseParserDefinition
 from .common import (
     AreaGeneratorMixin,
     DateSource,
@@ -106,3 +108,48 @@ class FixedAreaDefinition(AreaGeneratorMixin, JsonEncorder):
                 return metrics.source
 
         return Area
+
+
+@dataclass(config=PydanticConfig)
+class FixedDefinition(JsonEncorder, BaseParserDefinition):
+    # name of nibbler parser
+    parser_name: str
+    format_name: str
+    areas: typing.List[FixedAreaDefinition]
+    platforms: typing.List[str] = field(default_factory=lambda: [])
+    dimensions: typing.List[str] = field(default_factory=lambda: [])
+    metrics_to_skip: typing.List[str] = field(default_factory=lambda: [])
+    titles_to_skip: typing.List[str] = field(default_factory=lambda: [])
+    dimensions_to_skip: typing.Dict[str, typing.List[str]] = field(default_factory=lambda: {})
+    metric_aliases: typing.List[typing.Tuple[str, str]] = field(default_factory=lambda: [])
+    dimension_aliases: typing.List[typing.Tuple[str, str]] = field(default_factory=lambda: [])
+    heuristics: typing.Optional[Condition] = None
+
+    name: typing.Literal["fixed"] = "fixed"
+    version: typing.Literal[1] = 1
+
+    def make_parser(self):
+        from celus_nibbler.parsers import BaseParser
+        from celus_nibbler.parsers.dynamic import DynamicParserMixin
+
+        class Parser(DynamicParserMixin, BaseParser):
+            _definition = self
+
+            format_name = _definition.format_name
+            platforms = _definition.platforms
+
+            metrics_to_skip = _definition.metrics_to_skip
+            titles_to_skip = _definition.titles_to_skip
+            dimensions_to_skip = _definition.dimensions_to_skip
+
+            metric_aliases = _definition.metric_aliases
+            dimension_aliases = _definition.dimension_aliases
+
+            heuristics = _definition.heuristics
+            areas = [e.make_area() for e in _definition.areas]
+
+            @classmethod
+            def name(cls):
+                return cls._definition.parser_name
+
+        return Parser
