@@ -6,6 +6,7 @@ from abc import ABCMeta
 from pydantic import ValidationError
 
 from celus_nibbler import validators
+from celus_nibbler.aggregator import SameAggregator
 from celus_nibbler.conditions import RegexCondition, SheetNameRegexCondition
 from celus_nibbler.coordinates import Coord, CoordRange, Direction
 from celus_nibbler.errors import TableException
@@ -13,6 +14,8 @@ from celus_nibbler.parsers.base import BaseArea, BaseParser, MetricDataCells
 
 
 class BaseMetricArea(BaseArea, metaclass=ABCMeta):
+    aggregator = SameAggregator()
+
     def get_months(self) -> typing.List[datetime.date]:
         raise NotImplementedError()
 

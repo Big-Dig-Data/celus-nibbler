@@ -4,7 +4,7 @@ import pathlib
 
 import pytest
 
-from celus_nibbler import eat
+from celus_nibbler import Poop, eat
 from celus_nibbler.definitions import Definition
 from celus_nibbler.errors import TableException
 from celus_nibbler.parsers import available_parsers
@@ -12,31 +12,33 @@ from celus_nibbler.parsers.dynamic import gen_parser
 
 
 @pytest.mark.parametrize(
-    "platform,name,ext,parser",
+    "platform,name,ext,parser,aggregated",
     (
-        ("Platform1", "simple", "csv", "nibbler.dynamic.simple"),
-        ("Platform1", "sheet_attr", "xlsx", "nibbler.dynamic.sheet_attr"),
-        ("Platform1", "coord", "csv", "nibbler.dynamic.coord"),
-        ("Platform1", "value", "csv", "nibbler.dynamic.value"),
-        ("Platform1", "aliases", "csv", "nibbler.dynamic.aliases"),
-        ("Platform1", "organization", "csv", "nibbler.dynamic.organization"),
-        ("Platform1", "no_title", "csv", "nibbler.dynamic.no_title"),
-        ("MIT", "counter5.TR", "xlsx", "nibbler.dynamic.counter5.TR"),
+        ("Platform1", "simple", "csv", "nibbler.dynamic.simple", False),
+        ("Platform1", "sheet_attr", "xlsx", "nibbler.dynamic.sheet_attr", False),
+        ("Platform1", "coord", "csv", "nibbler.dynamic.coord", False),
+        ("Platform1", "value", "csv", "nibbler.dynamic.value", False),
+        ("Platform1", "aliases", "csv", "nibbler.dynamic.aliases", False),
+        ("Platform1", "organization", "csv", "nibbler.dynamic.organization", False),
+        ("Platform1", "no_title", "csv", "nibbler.dynamic.no_title", False),
+        ("MIT", "counter5.TR", "xlsx", "nibbler.dynamic.counter5.TR", False),
         (
             "PlatformWithCustomDR",
             "counter5.DR_MY_CUSTOM",
             "xlsx",
             "nibbler.dynamic.counter5.DR_MY_CUSTOM",
+            False,
         ),
         (
             "My Platform",
             "non_counter/my-metric-based",
             "xlsx",
             "nibbler.dynamic.my-metric-based",
+            True,
         ),
     ),
 )
-def test_dynamic(platform, name, ext, parser):
+def test_dynamic(platform, name, ext, parser, aggregated):
     definition_path = pathlib.Path(__file__).parent / 'data/dynamic' / f"{name}.json"
     input_path = pathlib.Path(__file__).parent / 'data/dynamic' / f"{name}.{ext}"
     output_path = pathlib.Path(__file__).parent / 'data/dynamic' / f"{name}.{ext}.out"
@@ -50,13 +52,18 @@ def test_dynamic(platform, name, ext, parser):
 
     with output_path.open() as f:
         reader = csv.reader(f)
-        poop = eat(input_path, platform, parsers=[parser], dynamic_parsers=dynamic_parsers)[0]
+        poops = eat(input_path, platform, parsers=[parser], dynamic_parsers=dynamic_parsers)
+        for poop in [poop for poop in poops if isinstance(poop, Poop)]:
+            # Aggregated records might be out of order, we need to sort it first
+            records = (
+                sorted(poop.records(), key=lambda x: x.as_csv()) if aggregated else poop.records()
+            )
 
-        for record in poop.records():
-            assert next(reader) == list(record.as_csv()), "Compare lines"
+            for record in records:
+                assert next(reader) == list(record.as_csv()), "Compare lines"
 
-        with pytest.raises(StopIteration):
-            assert next(reader) is None, "No more date present in the file"
+            with pytest.raises(StopIteration):
+                assert next(reader) is None, "No more date present in the file"
 
 
 @pytest.mark.parametrize(

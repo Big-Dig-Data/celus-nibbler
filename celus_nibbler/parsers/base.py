@@ -9,6 +9,7 @@ from pydantic import BaseModel, ValidationError
 
 import celus_nibbler
 from celus_nibbler import validators
+from celus_nibbler.aggregator import BaseAggregator, NoAggregator
 from celus_nibbler.conditions import BaseCondition
 from celus_nibbler.coordinates import Coord, CoordRange, Direction, SheetAttr, Value
 from celus_nibbler.errors import TableException
@@ -79,6 +80,7 @@ class BaseArea(metaclass=ABCMeta):
     title_ids_cells: typing.Dict[str, 'celus_nibbler.definitions.common.Source'] = {}
     dimensions_cells: typing.Dict[str, 'celus_nibbler.definitions.common.Source'] = {}
     metric_cells: typing.Optional['celus_nibbler.definitions.common.Source'] = None
+    aggregator: BaseAggregator = NoAggregator()
 
     def __init__(self, sheet: SheetReader, platform: str):
         self.sheet = sheet
@@ -235,6 +237,9 @@ class BaseParser(metaclass=ABCMeta):
         return [e.get_months() for e in self.get_areas()]
 
     def parse_area(self, area: BaseArea) -> typing.Generator[CounterRecord, None, None]:
+        return area.aggregator.aggregate(self._parse_area(area))
+
+    def _parse_area(self, area: BaseArea) -> typing.Generator[CounterRecord, None, None]:
         data_cells = area.find_data_cells()
         if not data_cells:
             header_cells = area.header_cells
