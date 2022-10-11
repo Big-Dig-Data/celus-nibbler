@@ -111,6 +111,25 @@ class SheetNameRegexCondition(ArithmeticsMixin, BaseCondition, JsonEncorder):
             return False
 
 
+@dataclass(config=PydanticConfig)
+class SheetIdxCondition(ArithmeticsMixin, BaseCondition, JsonEncorder):
+    """Limit sheet by its index"""
+
+    min: typing.Optional[int] = None
+    max: typing.Optional[int] = None
+
+    kind: typing.Literal["sheet_idx"] = "sheet_idx"
+
+    def check(self, sheet: SheetReader):
+        if self.min is not None and sheet.sheet_idx < self.min:
+            return False
+
+        if self.max is not None and sheet.sheet_idx > self.max:
+            return False
+
+        return True
+
+
 Condition = Annotated[
     typing.Union[
         NegCondition,
@@ -119,6 +138,7 @@ Condition = Annotated[
         RegexCondition,
         StemmerCondition,
         SheetNameRegexCondition,
+        SheetIdxCondition,
     ],
     Field(discriminator='kind'),
 ]
