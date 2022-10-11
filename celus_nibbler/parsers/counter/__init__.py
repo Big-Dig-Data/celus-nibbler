@@ -122,9 +122,9 @@ class CounterHeaderArea(VerticalDateArea):
             elif content.strip() in self.ISBN_NAMES:
                 ids_cells["ISBN"] = CoordRange(Coord(cell.row + 1, cell.col), Direction.DOWN)
             elif content.strip() in self.ISSN_NAMES:
-                ids_cells["Online_ISSN"] = CoordRange(Coord(cell.row + 1, cell.col), Direction.DOWN)
-            elif content.strip() in self.EISSN_NAMES:
                 ids_cells["Print_ISSN"] = CoordRange(Coord(cell.row + 1, cell.col), Direction.DOWN)
+            elif content.strip() in self.EISSN_NAMES:
+                ids_cells["Online_ISSN"] = CoordRange(Coord(cell.row + 1, cell.col), Direction.DOWN)
             elif content.strip() in self.PROPRIETARY_NAMES:
                 ids_cells["Proprietary"] = CoordRange(Coord(cell.row + 1, cell.col), Direction.DOWN)
 
