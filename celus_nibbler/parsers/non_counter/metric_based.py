@@ -17,7 +17,22 @@ class BaseMetricArea(BaseArea, metaclass=ABCMeta):
     aggregator = SameAggregator()
 
     def get_months(self) -> typing.List[datetime.date]:
-        raise NotImplementedError()
+        res = set()
+        try:
+            for cell in self.date_cells:
+                date = self.parse_date(cell)
+                res.add(date.replace(day=1))
+
+        except TableException as e:
+            if e.reason in ["out-of-bounds"]:
+                pass  # last cell reached
+            else:
+                raise
+        except ValidationError:
+            # failed to parse date => assume that input ended
+            pass
+
+        return list(res)
 
     def parse_metric(self, cell: Coord) -> str:
         content = cell.content(self.sheet)
