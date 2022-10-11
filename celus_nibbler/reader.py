@@ -30,14 +30,18 @@ class SheetReader:
         file: IO[str],
         window_size: int = WINDOW_SIZE,
         delimiters: Optional[str] = None,
+        dialect: Optional[csv.Dialect] = None,
     ):
         self.name = name
         self.sheet_idx = sheet_idx
         self.file = file
 
-        # guess dialect
-        self.dialect = csv.Sniffer().sniff(file.readline(), delimiters=delimiters)
-        self.file.seek(0)
+        if not dialect:
+            # guess dialect
+            self.dialect = csv.Sniffer().sniff(file.readline(), delimiters=delimiters)
+            self.file.seek(0)
+        else:
+            self.dialect = dialect
 
         self.csv_reader = csv.reader(file, self.dialect)
         # Load basic window
@@ -141,7 +145,7 @@ class CsvReader(TableReader):
 
             # Determine delimiters based on the source name
             if source.suffix == ".tsv":
-                delimiters = ["\t"]
+                delimiters = "\t"
 
             file = open(source, "r", encoding=encoding)
         else:
@@ -173,11 +177,13 @@ class XlsxReader(TableReader):
 
                 # write data to csv
                 f = tempfile.TemporaryFile("w+")
-                writer = csv.writer(f)
+                # unix dialect escapes all by default
+                dialect = csv.get_dialect("unix")
+                writer = csv.writer(f, dialect=dialect)
                 for row in sheet.rows:
                     writer.writerow([cell.value for cell in row])
                 f.seek(0)
-                self.sheets.append(SheetReader(idx, workbook.sheetnames[idx], f))
+                self.sheets.append(SheetReader(idx, workbook.sheetnames[idx], f, dialect=dialect))
 
             workbook.close()
 
