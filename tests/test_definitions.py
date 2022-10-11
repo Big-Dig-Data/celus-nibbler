@@ -5,7 +5,11 @@ from pydantic import ValidationError
 
 from celus_nibbler.conditions import AndCondition, RegexCondition
 from celus_nibbler.coordinates import Coord, CoordRange, Direction
-from celus_nibbler.definitions import DummyAreaDefinition, FixedAreaDefinition, FixedDefinition
+from celus_nibbler.definitions import (
+    DateBasedAreaDefinition,
+    DateBasedDefinition,
+    DummyAreaDefinition,
+)
 from celus_nibbler.definitions.common import (
     DateSource,
     DimensionSource,
@@ -15,9 +19,9 @@ from celus_nibbler.definitions.common import (
 )
 
 
-def test_fixed_area_definition():
-    init_definition = FixedAreaDefinition(
-        name="fixed",
+def test_date_based_area_definition():
+    init_definition = DateBasedAreaDefinition(
+        name="non_counter.date_based",
         dates=DateSource(direction=Direction.DOWN, source=CoordRange(Coord(1, 5), Direction.LEFT)),
         titles=TitleSource(CoordRange(Coord(2, 0), Direction.DOWN)),
         title_ids=[
@@ -32,7 +36,7 @@ def test_fixed_area_definition():
     definition_dict = json.loads(init_definition.json())
 
     assert definition_dict == {
-        "name": "fixed",
+        "name": "non_counter.date_based",
         "dates": {
             "direction": "down",
             "source": {"coord": {"row": 1, "col": 5}, "direction": "left"},
@@ -63,7 +67,7 @@ def test_fixed_area_definition():
         "organizations": None,
     }
 
-    converted_definition = FixedAreaDefinition.parse(definition_dict)
+    converted_definition = DateBasedAreaDefinition.parse(definition_dict)
     assert converted_definition.dict() == init_definition.dict()
     assert converted_definition == init_definition
 
@@ -91,9 +95,9 @@ def test_errors():
 
     # Wrong field type
     with pytest.raises(ValidationError):
-        FixedAreaDefinition.parse(
+        DateBasedAreaDefinition.parse(
             {
-                "name": "fixed",
+                "name": "non_counter.date_based",
                 "dates": {
                     "direction": "wrong",  # wrong direction
                     "source": {"coord": {"row": 1, "col": 5}, "direction": "left"},
@@ -126,9 +130,9 @@ def test_errors():
 
     # Missing field
     with pytest.raises(ValidationError):
-        FixedAreaDefinition.parse(
+        DateBasedAreaDefinition.parse(
             {
-                "name": "fixed",
+                "name": "non_counter.date_based",
                 "dates": {
                     "direction": "down",
                     "source": {"coord": {"row": 1, "col": 6}, "direction": "left"},
@@ -158,8 +162,8 @@ def test_errors():
         )
 
 
-def test_fixed_definition():
-    init_definition = FixedDefinition(
+def test_date_based_definition():
+    init_definition = DateBasedDefinition(
         parser_name="Parser1",
         format_name="Format1",
         platforms=["Platform1", "Platform2"],
@@ -171,8 +175,8 @@ def test_fixed_definition():
             ]
         ),
         areas=[
-            FixedAreaDefinition(
-                name="fixed",
+            DateBasedAreaDefinition(
+                name="non_counter.date_based",
                 dates=DateSource(
                     direction=Direction.DOWN, source=CoordRange(Coord(1, 5), Direction.RIGHT)
                 ),
@@ -196,7 +200,7 @@ def test_fixed_definition():
     definition_dict = json.loads(init_definition.json())
 
     assert definition_dict == {
-        "name": "fixed",
+        "name": "non_counter.date_based",
         "version": 1,
         "parser_name": "Parser1",
         "format_name": "Format1",
@@ -233,7 +237,7 @@ def test_fixed_definition():
                     "direction": None,
                     "source": {"coord": {"col": 4, "row": 2}, "direction": "down"},
                 },
-                "name": "fixed",
+                "name": "non_counter.date_based",
                 "titles": {"source": {"coord": {"col": 0, "row": 2}, "direction": "down"}},
                 "title_ids": [
                     {

@@ -1,5 +1,5 @@
 {
-  "name": "fixed",
+  "name": "non_counter.date_based",
   "parser_name": "date_cells_out_of_range",
   "format_name": "simple_format",
   "platforms": [
@@ -61,7 +61,7 @@
           "required": true
         }
       ],
-      "name": "fixed"
+      "name": "non_counter.date_based"
     }
   ]
 }

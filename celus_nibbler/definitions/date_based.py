@@ -23,8 +23,7 @@ from .common import (
 
 
 @dataclass(config=PydanticConfig)
-class FixedAreaDefinition(AreaGeneratorMixin, JsonEncorder):
-    """All cell are fixed to particular position"""
+class DateBasedAreaDefinition(AreaGeneratorMixin, JsonEncorder):
 
     dates: DateSource
     titles: TitleSource
@@ -33,7 +32,7 @@ class FixedAreaDefinition(AreaGeneratorMixin, JsonEncorder):
     title_ids: typing.List[TitleIdSource] = field(default_factory=lambda: [])
     dimensions: typing.List[DimensionSource] = field(default_factory=lambda: [])
 
-    name: typing.Literal["fixed"] = "fixed"
+    name: typing.Literal["non_counter.date_based"] = "non_counter.date_based"
 
     def make_area(self) -> typing.Type[BaseArea]:
         dates_range = self.dates.source
@@ -111,11 +110,11 @@ class FixedAreaDefinition(AreaGeneratorMixin, JsonEncorder):
 
 
 @dataclass(config=PydanticConfig)
-class FixedDefinition(JsonEncorder, BaseParserDefinition):
+class DateBasedDefinition(JsonEncorder, BaseParserDefinition):
     # name of nibbler parser
     parser_name: str
     format_name: str
-    areas: typing.List[FixedAreaDefinition]
+    areas: typing.List[DateBasedAreaDefinition]
     platforms: typing.List[str] = field(default_factory=lambda: [])
     dimensions: typing.List[str] = field(default_factory=lambda: [])
     metrics_to_skip: typing.List[str] = field(default_factory=lambda: [])
@@ -125,7 +124,7 @@ class FixedDefinition(JsonEncorder, BaseParserDefinition):
     dimension_aliases: typing.List[typing.Tuple[str, str]] = field(default_factory=lambda: [])
     heuristics: typing.Optional[Condition] = None
 
-    name: typing.Literal["fixed"] = "fixed"
+    name: typing.Literal["non_counter.date_based"] = "non_counter.date_based"
     version: typing.Literal[1] = 1
 
     def make_parser(self):

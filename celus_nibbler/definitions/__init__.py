@@ -6,13 +6,13 @@ from typing_extensions import Annotated
 from ..utils import JsonEncorder
 from . import counter
 from .base import BaseParserDefinition
+from .date_based import DateBasedAreaDefinition, DateBasedDefinition
 from .dummy import DummyAreaDefinition
-from .fixed import FixedAreaDefinition, FixedDefinition
 from .metric_based import MetricBasedAreaDefinition, MetricBasedDefinition
 
 AreaDefinition = Annotated[
     typing.Union[
-        FixedAreaDefinition,
+        DateBasedAreaDefinition,
         DummyAreaDefinition,
         MetricBasedAreaDefinition,
     ],
@@ -22,7 +22,7 @@ AreaDefinition = Annotated[
 
 DefinitionAnotation = Annotated[
     typing.Union[
-        FixedDefinition,
+        DateBasedDefinition,
         counter.BR1Definition,
         counter.BR2Definition,
         counter.BR3Definition,
@@ -48,9 +48,12 @@ class Definition(JsonEncorder, BaseModel):
 
 
 __all__ = [
+    'AreaDefinition',
     'Definition',
     'AreaDefinition',
-    'FixedAreaDefinition',
+    'DateBasedAreaDefinition',
+    'DateBasedDefinition',
+    'MetricBasedAreaDefinition',
     'MetricBasedDefinition',
     'BaseParserDefinition',
 ]

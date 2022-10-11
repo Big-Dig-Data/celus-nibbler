@@ -1,5 +1,5 @@
 {
-  "name": "fixed",
+  "name": "non_counter.date_based",
   "version": 1,
   "parser_name": "sheet_attr",
   "format_name": "simple_format",
@@ -115,7 +115,7 @@
           "required": true
         }
       ],
-      "name": "fixed"
+      "name": "non_counter.date_based"
     }
   ]
 }
