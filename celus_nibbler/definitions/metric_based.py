@@ -6,7 +6,7 @@ from pydantic import ValidationError
 from pydantic.dataclasses import dataclass
 
 from ..conditions import Condition
-from ..coordinates import Coord, CoordRange, Direction
+from ..coordinates import CoordRange
 from ..errors import TableException
 from ..parsers.base import MetricDataCells
 from ..parsers.non_counter.metric_based import BaseMetricArea, MetricBasedParser
@@ -59,17 +59,7 @@ class MetricBasedAreaDefinition(AreaGeneratorMixin, JsonEncorder):
                 for cell in self.header_cells:
                     try:
                         metric = self.parse_metric(cell)
-                        if data_direction == Direction.DOWN:
-                            range = CoordRange(Coord(cell.row + 1, cell.col), data_direction)
-                        elif data_direction == Direction.LEFT:
-                            range = CoordRange(Coord(cell.row, cell.col - 1), data_direction)
-                        elif data_direction == Direction.RIGHT:
-                            range = CoordRange(Coord(cell.row, cell.col + 1), data_direction)
-                        elif data_direction == Direction.UP:
-                            range = CoordRange(Coord(cell.row - 1, cell.col), data_direction)
-                        else:
-                            raise NotImplementedError()
-
+                        range = CoordRange(cell, data_direction).skip(1)
                         res.append(
                             MetricDataCells(
                                 metric,

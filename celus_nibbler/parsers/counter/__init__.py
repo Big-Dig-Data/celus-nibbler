@@ -6,7 +6,7 @@ from pydantic import ValidationError
 import celus_nibbler
 from celus_nibbler.coordinates import Coord, CoordRange, Direction
 from celus_nibbler.errors import TableException
-from celus_nibbler.parsers.base import VerticalDateArea
+from celus_nibbler.parsers.non_counter.date_based import VerticalDateArea
 
 
 class CounterHeaderArea(VerticalDateArea):

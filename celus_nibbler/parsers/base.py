@@ -11,7 +11,7 @@ import celus_nibbler
 from celus_nibbler import validators
 from celus_nibbler.aggregator import BaseAggregator, NoAggregator
 from celus_nibbler.conditions import BaseCondition
-from celus_nibbler.coordinates import Coord, CoordRange, Direction, SheetAttr, Value
+from celus_nibbler.coordinates import Coord, CoordRange, SheetAttr, Value
 from celus_nibbler.errors import TableException
 from celus_nibbler.reader import SheetReader
 from celus_nibbler.utils import end_month, start_month
@@ -29,9 +29,9 @@ IDS = [
 
 
 class DataCells:
-    record_field: str
+    record_fields: typing.List[str]
     range: CoordRange
-    value: typing.Any
+    values: typing.List[typing.Any]
 
     def __iter__(self):
         return self.range.__iter__()
@@ -44,30 +44,45 @@ class DataCells:
 
 
 class MetricDataCells(DataCells):
-    record_field = "metric"
-    value: str
+    record_fields = ["metric"]
+    values: typing.List[str]
 
     def __init__(self, metric: str, range: CoordRange):
         self.range = range
-        self.value = metric
+        self.values = [metric]
 
     def __str__(self):
-        return f"{self.value} - {self.range}"
+        return f"{self.values[0]} - {self.range}"
 
     def __repr__(self):
         return str(self)
 
 
 class MonthDataCells(DataCells):
-    record_field = "date"
-    value: datetime.date
+    record_fields = ["date"]
+    values: typing.List[datetime.date]
 
     def __init__(self, month: datetime.date, range: CoordRange):
         self.range = range
-        self.value = month
+        self.values = [month]
 
     def __str__(self):
-        return f"{self.value.strftime('%Y-%m')} - {self.range}"
+        return f"{self.values[0].strftime('%Y-%m')} - {self.range}"
+
+    def __repr__(self):
+        return str(self)
+
+
+class MonthMetricDataCells(DataCells):
+    record_fields = ["date", "metric"]
+    values: typing.List[typing.Union[datetime.date, str]]
+
+    def __init__(self, month_and_metric: typing.Tuple[datetime.date, str], range: CoordRange):
+        self.range = range
+        self.values = [month_and_metric[0], month_and_metric[1]]
+
+    def __str__(self):
+        return f"{self.values[0].strftime('%Y-%m')}|{self.values[1]} - {self.range}"
 
     def __repr__(self):
         return str(self)
@@ -131,11 +146,6 @@ class BaseArea(metaclass=ABCMeta):
     @abstractmethod
     def header_cells(self) -> CoordRange:
         pass
-
-
-class BaseDateArea(BaseArea, metaclass=ABCMeta):
-    def get_months(self) -> typing.List[datetime.date]:
-        return [e.value for e in self.find_data_cells()]
 
 
 class BaseParser(metaclass=ABCMeta):
@@ -309,7 +319,8 @@ class BaseParser(metaclass=ABCMeta):
                         title_ids=title_ids,
                         date=date,
                     )
-                    kwargs[data_cell.record_field] = data_cell.value
+                    for field, value in zip(data_cell.record_fields, data_cell.values):
+                        kwargs[field] = value
                     res = area.prepare_record(**kwargs)
                     logger.debug("Parsed %s", res.as_csv())
                     yield res
@@ -320,30 +331,3 @@ class BaseParser(metaclass=ABCMeta):
                 pass
             else:
                 raise
-
-
-class VerticalDateArea(BaseDateArea):
-    def find_data_cells(self) -> typing.List[MonthDataCells]:
-        res = []
-        for cell in self.header_cells:
-            try:
-                date = self.parse_date(cell)
-                res.append(
-                    MonthDataCells(
-                        date.replace(day=1),
-                        CoordRange(Coord(cell.row + 1, cell.col), Direction.DOWN),
-                    )
-                )
-
-            except TableException as e:
-                if e.reason == "out-of-bounds":
-                    # We reached the end of row
-                    break
-                raise
-            except ValidationError:
-                # Found a content which can't be parse e.g. "Total"
-                # We can exit here
-                break
-
-        logger.debug(f"Found data cells: {res}")
-        return res

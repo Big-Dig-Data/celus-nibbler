@@ -1,6 +1,6 @@
 import datetime
 import re
-from typing import Optional, Union
+from typing import Any, Optional, Union
 
 from dateutil import parser as datetimes_parser
 from pydantic import BaseModel, ValidationError, validator
@@ -14,6 +14,12 @@ def non_empty(name: str) -> str:
 
 def stripped(name: str) -> str:
     return name.strip()
+
+
+def not_none(value: Any) -> Any:
+    if value is None:
+        raise ValidationError("cant-be-none")
+    return value
 
 
 def issn(issn: str) -> str:
@@ -56,6 +62,7 @@ class Dimension(BaseModel):
 class Metric(BaseModel):
     value: str
 
+    _not_none_metic = validator('value', allow_reuse=True)(not_none)
     _stripped_metric = validator('value', allow_reuse=True)(stripped)
     _non_empty_metric = validator('value', allow_reuse=True)(non_empty)
 
@@ -79,6 +86,7 @@ class Title(BaseModel):
 class Date(BaseModel):
     value: datetime.date
 
+    _not_none_date = validator('value', allow_reuse=True, pre=True)(not_none)
     _stripped_date = validator('value', allow_reuse=True, pre=True)(stripped)
     _non_empty_date = validator('value', allow_reuse=True, pre=True)(non_empty)
 

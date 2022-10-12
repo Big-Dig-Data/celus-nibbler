@@ -84,6 +84,9 @@ class Coord(JsonEncorder):
 
         return next(self)
 
+    def __add__(self, other) -> 'Coord':
+        return Coord(self.row + other.row, self.col + other.col)
+
 
 @dataclass(config=PydanticConfig)
 class CoordRange(JsonEncorder):
@@ -139,3 +142,6 @@ class CoordRange(JsonEncorder):
             return next(self)
         except StopIteration:
             raise IndexError(f"{item} is not in range of {self}")
+
+    def skip(self, count: int) -> 'CoordRange':
+        return CoordRange(self[count], self.direction)

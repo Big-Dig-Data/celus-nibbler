@@ -45,11 +45,7 @@ class VerticalMetricArea(BaseMetricArea):
         for cell in self.header_cells:
             try:
                 metric = self.parse_metric(cell)
-                res.append(
-                    MetricDataCells(
-                        metric, CoordRange(Coord(cell.row + 1, cell.col), Direction.DOWN)
-                    )
-                )
+                res.append(MetricDataCells(metric, CoordRange(cell, Direction.DOWN).skip(1)))
             except TableException as e:
                 if e.reason == "out-of-bounds":
                     # We reached the end of row

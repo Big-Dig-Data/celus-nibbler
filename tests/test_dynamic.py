@@ -36,6 +36,13 @@ from celus_nibbler.parsers.dynamic import gen_parser
             "nibbler.dynamic.my-metric-based",
             True,
         ),
+        (
+            "My Platform",
+            "non_counter/my-date-metric-based",
+            "xlsx",
+            "nibbler.dynamic.my-date-metric-based",
+            False,
+        ),
     ),
 )
 def test_dynamic(platform, name, ext, parser, aggregated):

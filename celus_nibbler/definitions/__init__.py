@@ -7,12 +7,14 @@ from ..utils import JsonEncorder
 from . import counter
 from .base import BaseParserDefinition
 from .date_based import DateBasedAreaDefinition, DateBasedDefinition
+from .date_metric_based import DateMetricBasedAreaDefinition, DateMetricBasedDefinition
 from .dummy import DummyAreaDefinition
 from .metric_based import MetricBasedAreaDefinition, MetricBasedDefinition
 
 AreaDefinition = Annotated[
     typing.Union[
         DateBasedAreaDefinition,
+        DateMetricBasedAreaDefinition,
         DummyAreaDefinition,
         MetricBasedAreaDefinition,
     ],
@@ -23,6 +25,7 @@ AreaDefinition = Annotated[
 DefinitionAnotation = Annotated[
     typing.Union[
         DateBasedDefinition,
+        DateMetricBasedDefinition,
         counter.BR1Definition,
         counter.BR2Definition,
         counter.BR3Definition,
@@ -53,6 +56,8 @@ __all__ = [
     'AreaDefinition',
     'DateBasedAreaDefinition',
     'DateBasedDefinition',
+    'DateMetricBasedAreaDefinition',
+    'DateMetricBasedDefinition',
     'MetricBasedAreaDefinition',
     'MetricBasedDefinition',
     'BaseParserDefinition',

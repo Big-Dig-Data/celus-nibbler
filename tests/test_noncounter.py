@@ -16,7 +16,15 @@ from celus_nibbler import Poop, eat
             [True, False, False, False],
             True,
             True,
-        )
+        ),
+        (
+            "My Platform",
+            "my-date-metric-based.xlsx",
+            "nibbler.non_counter.MyDateMetricBased",
+            [True, False],
+            True,
+            False,
+        ),
     ],
 )
 def test_non_counter(platform, file, parser, poops_presence, heuristics, aggregated):

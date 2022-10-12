@@ -1,21 +1,17 @@
 import typing
 from dataclasses import field
 
-from pydantic import ValidationError
 from pydantic.dataclasses import dataclass
 
 from ..conditions import Condition
-from ..coordinates import CoordRange
-from ..errors import TableException
+from ..coordinates import Coord, CoordRange, Direction
 from ..parsers.base import BaseArea, MonthDataCells
-from ..parsers.non_counter.date_based import BaseDateArea
+from ..parsers.non_counter.date_metric_based import BaseDateMetricArea
 from ..utils import JsonEncorder, PydanticConfig
 from .base import BaseParserDefinition
 from .common import (
     AreaGeneratorMixin,
-    DateSource,
     DimensionSource,
-    MetricSource,
     OrganizationSource,
     Source,
     TitleIdSource,
@@ -24,66 +20,66 @@ from .common import (
 
 
 @dataclass(config=PydanticConfig)
-class DateBasedAreaDefinition(AreaGeneratorMixin, JsonEncorder):
+class DatesAndMetrics(JsonEncorder):
+    range: CoordRange
+    data_direction: Direction
+    dates_offset: Coord = Coord(0, 0)
+    dates_regex: typing.Optional[typing.Pattern] = None
+    metrics_offset: Coord = Coord(0, 0)
+    metrics_regex: typing.Optional[typing.Pattern] = None
+    data_skip: int = 1
 
-    dates: DateSource
-    titles: TitleSource
-    metrics: MetricSource
-    organizations: typing.Optional[OrganizationSource] = None
+
+@dataclass(config=PydanticConfig)
+class DateMetricBasedAreaDefinition(AreaGeneratorMixin, JsonEncorder):
+    dates_and_metrics: DatesAndMetrics
+    titles: typing.Optional[TitleSource]
+    organization: typing.Optional[OrganizationSource] = None
     title_ids: typing.List[TitleIdSource] = field(default_factory=lambda: [])
     dimensions: typing.List[DimensionSource] = field(default_factory=lambda: [])
 
-    name: typing.Literal["non_counter.date_based"] = "non_counter.date_based"
+    name: typing.Literal["non_counter.date_metric_based"] = "non_counter.date_metric_based"
 
     def make_area(self) -> typing.Type[BaseArea]:
-        dates_range = self.dates.source
-        data_direction = self.dates.direction
         titles = self.titles
         title_ids = self.title_ids
         dimensions = self.dimensions
-        metrics = self.metrics
-        organizations = self.organizations
+        organization = self.organization
+        data_direction = self.dates_and_metrics.data_direction
+        header_range = self.dates_and_metrics.range
+        dates_regex = self.dates_and_metrics.dates_regex
+        dates_offset = self.dates_and_metrics.dates_offset
+        metrics_regex = self.dates_and_metrics.metrics_regex
+        metrics_offset = self.dates_and_metrics.metrics_offset
+        data_skip = self.dates_and_metrics.data_skip
 
-        class Area(BaseDateArea):
+        class Area(BaseDateMetricArea):
+            data_header_month_offset = dates_offset
+            data_header_month_regex = dates_regex
+            data_header_metric_offset = metrics_offset
+            data_header_metric_regex = metrics_regex
+            data_header_data_skip = data_skip
+
             @property
             def header_cells(self) -> CoordRange:
-                return dates_range
+                return header_range
 
             @property
             def organization_cells(self) -> typing.Optional[Source]:
-                if organizations:
-                    return organizations.source
+                if organization:
+                    return organization.source
                 else:
                     return None
 
             def find_data_cells(self) -> typing.List[MonthDataCells]:
-                res = []
-                for cell in self.header_cells:
-                    try:
-                        date = self.parse_date(cell)
-                        range = CoordRange(cell, data_direction).skip(1)
-                        res.append(
-                            MonthDataCells(
-                                date.replace(day=1),
-                                range,
-                            )
-                        )
-
-                    except TableException as e:
-                        if e.reason == "out-of-bounds":
-                            # We reached the end of row
-                            break
-                        raise
-                    except ValidationError:
-                        # Found a content which can't be parse e.g. "Total"
-                        # We can exit here
-                        break
-
-                return res
+                return self.find_data_cells_in_direction(data_direction)
 
             @property
             def title_cells(self) -> typing.Optional[Source]:
-                return titles.source
+                if titles:
+                    return titles.source
+                else:
+                    return None
 
             @property
             def title_ids_cells(self) -> typing.Dict[str, Source]:
@@ -93,19 +89,15 @@ class DateBasedAreaDefinition(AreaGeneratorMixin, JsonEncorder):
             def dimensions_cells(self) -> typing.Dict[str, Source]:
                 return {e.name: e.source for e in dimensions}
 
-            @property
-            def metric_cells(self) -> typing.Dict[str, Source]:
-                return metrics.source
-
         return Area
 
 
 @dataclass(config=PydanticConfig)
-class DateBasedDefinition(JsonEncorder, BaseParserDefinition):
+class DateMetricBasedDefinition(JsonEncorder, BaseParserDefinition):
     # name of nibbler parser
     parser_name: str
     format_name: str
-    areas: typing.List[DateBasedAreaDefinition]
+    areas: typing.List[DateMetricBasedAreaDefinition]
     platforms: typing.List[str] = field(default_factory=lambda: [])
     dimensions: typing.List[str] = field(default_factory=lambda: [])
     metrics_to_skip: typing.List[str] = field(default_factory=lambda: [])
@@ -115,7 +107,7 @@ class DateBasedDefinition(JsonEncorder, BaseParserDefinition):
     dimension_aliases: typing.List[typing.Tuple[str, str]] = field(default_factory=lambda: [])
     heuristics: typing.Optional[Condition] = None
 
-    name: typing.Literal["non_counter.date_based"] = "non_counter.date_based"
+    name: typing.Literal["non_counter.date_metric_based"] = "non_counter.date_metric_based"
     version: typing.Literal[1] = 1
 
     def make_parser(self):

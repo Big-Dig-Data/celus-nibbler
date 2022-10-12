@@ -1,0 +1,78 @@
+{
+  "name": "non_counter.date_metric_based",
+  "version": 1,
+  "parser_name": "my-date-metric-based",
+  "format_name": "simple_format",
+  "platforms": [
+    "My Platform"
+  ],
+  "dimensions": [
+    "Extra"
+  ],
+  "metrics_to_skip": [],
+  "titles_to_skip": [],
+  "dimensions_to_skip": [],
+  "heuristics": {
+    "conds": [
+      {
+        "pattern": "^Extra$",
+        "coord": {
+          "row": 0,
+          "col": 0
+        },
+        "kind": "regex"
+      },
+      {
+        "max": 0,
+        "kind": "sheet_idx"
+      }
+    ],
+    "kind": "and"
+  },
+  "areas": [
+    {
+      "dates_and_metrics": {
+          "range": {
+            "coord": {
+                "row": 0,
+                "col": 2
+            },
+            "direction": "right"
+          },
+          "data_direction": "down",
+          "dates_offset": {
+            "row": 0,
+            "col": 0
+          },
+          "dates_regex": "in (\\d+\\/\\d+)$",
+          "metrics_regex": "^([^ ]+.+[^ ]+) in",
+          "data_skip": 1
+      },
+      "organization": {
+          "source": {
+              "coord": {
+                  "row": 1,
+                  "col": 1
+              },
+              "direction": "down"
+          }
+      },
+      "titles": null,
+      "title_ids": [],
+      "dimensions": [
+        {
+          "name": "Extra",
+          "source": {
+            "coord": {
+              "row": 1,
+              "col": 0
+            },
+            "direction": "down"
+          },
+          "required": true
+        }
+      ],
+      "name": "non_counter.date_metric_based"
+    }
+  ]
+}
