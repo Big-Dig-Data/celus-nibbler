@@ -8,13 +8,13 @@ from abc import ABCMeta, abstractmethod
 from celus_nigiri import CounterRecord
 from pydantic import BaseModel, ValidationError
 
-import celus_nibbler
 from celus_nibbler import validators
 from celus_nibbler.aggregator import BaseAggregator, NoAggregator
 from celus_nibbler.conditions import BaseCondition
 from celus_nibbler.coordinates import Coord, CoordRange, SheetAttr, Value
 from celus_nibbler.errors import TableException
 from celus_nibbler.reader import SheetReader
+from celus_nibbler.sources import OrganizationSource, Source
 from celus_nibbler.utils import end_month, start_month
 
 logger = logging.getLogger(__name__)
@@ -90,14 +90,12 @@ class MonthMetricDataCells(DataCells):
 
 
 class BaseArea(metaclass=ABCMeta):
-    organization_source: typing.Optional[
-        'celus_nibbler.definitions.common.OrganizationSource'
-    ] = None
-    date_cells: typing.Optional['celus_nibbler.definitions.common.Source'] = None
-    title_cells: typing.Optional['celus_nibbler.definitions.common.Source'] = None
-    title_ids_cells: typing.Dict[str, 'celus_nibbler.definitions.common.Source'] = {}
-    dimensions_cells: typing.Dict[str, 'celus_nibbler.definitions.common.Source'] = {}
-    metric_cells: typing.Optional['celus_nibbler.definitions.common.Source'] = None
+    organization_source: typing.Optional[OrganizationSource] = None
+    date_cells: typing.Optional[Source] = None
+    title_cells: typing.Optional[Source] = None
+    title_ids_cells: typing.Dict[str, Source] = {}
+    dimensions_cells: typing.Dict[str, Source] = {}
+    metric_cells: typing.Optional[Source] = None
     aggregator: BaseAggregator = NoAggregator()
 
     def __init__(self, sheet: SheetReader, platform: str):

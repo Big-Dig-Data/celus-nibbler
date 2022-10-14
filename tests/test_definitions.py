@@ -10,7 +10,7 @@ from celus_nibbler.definitions import (
     DateBasedDefinition,
     DummyAreaDefinition,
 )
-from celus_nibbler.definitions.common import (
+from celus_nibbler.sources import (
     DateSource,
     DimensionSource,
     MetricSource,

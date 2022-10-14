@@ -3,20 +3,21 @@ from dataclasses import field
 
 from pydantic.dataclasses import dataclass
 
-from ..conditions import Condition
-from ..coordinates import Coord, CoordRange, Direction
-from ..parsers.base import BaseArea, MonthDataCells
-from ..parsers.non_counter.date_metric_based import BaseDateMetricArea
-from ..utils import JsonEncorder, PydanticConfig
-from .base import BaseParserDefinition
-from .common import (
-    AreaGeneratorMixin,
+from celus_nibbler.conditions import Condition
+from celus_nibbler.coordinates import Coord, CoordRange, Direction
+from celus_nibbler.parsers.base import BaseArea, MonthDataCells
+from celus_nibbler.parsers.non_counter.date_metric_based import BaseDateMetricArea
+from celus_nibbler.sources import (
     DimensionSource,
     OrganizationSource,
     Source,
     TitleIdSource,
     TitleSource,
 )
+from celus_nibbler.utils import JsonEncorder, PydanticConfig
+
+from .base import BaseParserDefinition
+from .common import AreaGeneratorMixin
 
 
 @dataclass(config=PydanticConfig)

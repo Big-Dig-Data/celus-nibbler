@@ -9,9 +9,9 @@ from pydantic import ValidationError
 from celus_nibbler import validators
 from celus_nibbler.conditions import RegexCondition, SheetIdxCondition
 from celus_nibbler.coordinates import Coord, CoordRange, Direction
-from celus_nibbler.definitions.common import OrganizationSource
 from celus_nibbler.errors import TableException
 from celus_nibbler.parsers.base import BaseArea, BaseParser, MonthMetricDataCells
+from celus_nibbler.sources import OrganizationSource
 
 logger = logging.getLogger(__name__)
 

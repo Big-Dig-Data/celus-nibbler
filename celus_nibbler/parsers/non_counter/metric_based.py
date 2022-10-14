@@ -9,9 +9,9 @@ from celus_nibbler import validators
 from celus_nibbler.aggregator import SameAggregator
 from celus_nibbler.conditions import RegexCondition, SheetNameRegexCondition
 from celus_nibbler.coordinates import Coord, CoordRange, Direction
-from celus_nibbler.definitions.common import OrganizationSource
 from celus_nibbler.errors import TableException
 from celus_nibbler.parsers.base import BaseArea, BaseParser, MetricDataCells
+from celus_nibbler.sources import OrganizationSource
 
 
 class BaseMetricArea(BaseArea, metaclass=ABCMeta):

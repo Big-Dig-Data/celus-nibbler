@@ -5,15 +5,12 @@ from dataclasses import field
 from pydantic import ValidationError
 from pydantic.dataclasses import dataclass
 
-from ..conditions import Condition
-from ..coordinates import CoordRange
-from ..errors import TableException
-from ..parsers.base import MetricDataCells
-from ..parsers.non_counter.metric_based import BaseMetricArea, MetricBasedParser
-from ..utils import JsonEncorder, PydanticConfig
-from .base import BaseParserDefinition
-from .common import (
-    AreaGeneratorMixin,
+from celus_nibbler.conditions import Condition
+from celus_nibbler.coordinates import CoordRange
+from celus_nibbler.errors import TableException
+from celus_nibbler.parsers.base import MetricDataCells
+from celus_nibbler.parsers.non_counter.metric_based import BaseMetricArea, MetricBasedParser
+from celus_nibbler.sources import (
     DateSource,
     DimensionSource,
     MetricSource,
@@ -22,6 +19,10 @@ from .common import (
     TitleIdSource,
     TitleSource,
 )
+from celus_nibbler.utils import JsonEncorder, PydanticConfig
+
+from .base import BaseParserDefinition
+from .common import AreaGeneratorMixin
 
 
 @dataclass(config=PydanticConfig)
