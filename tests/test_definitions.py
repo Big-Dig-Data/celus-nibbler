@@ -5,15 +5,17 @@ from pydantic import ValidationError
 
 from celus_nibbler.conditions import AndCondition, RegexCondition
 from celus_nibbler.coordinates import Coord, CoordRange, Direction
+from celus_nibbler.data_headers import DataHeaders
 from celus_nibbler.definitions import (
     DateBasedAreaDefinition,
     DateBasedDefinition,
-    DummyAreaDefinition,
+    MetricBasedAreaDefinition,
 )
 from celus_nibbler.sources import (
     DateSource,
     DimensionSource,
     MetricSource,
+    Role,
     TitleIdSource,
     TitleSource,
 )
@@ -22,7 +24,15 @@ from celus_nibbler.sources import (
 def test_date_based_area_definition():
     init_definition = DateBasedAreaDefinition(
         name="non_counter.date_based",
-        dates=DateSource(direction=Direction.DOWN, source=CoordRange(Coord(1, 5), Direction.LEFT)),
+        data_headers=DataHeaders(
+            roles=[
+                DateSource(
+                    direction=Direction.DOWN, source=CoordRange(Coord(1, 5), Direction.LEFT)
+                ),
+            ],
+            data_cells=CoordRange(Coord(2, 5), Direction.LEFT),
+            data_direction=Direction.DOWN,
+        ),
         titles=TitleSource(CoordRange(Coord(2, 0), Direction.DOWN)),
         title_ids=[
             TitleIdSource(name="ISBN", source=CoordRange(Coord(2, 1), Direction.DOWN)),
@@ -37,10 +47,20 @@ def test_date_based_area_definition():
 
     assert definition_dict == {
         "name": "non_counter.date_based",
-        "dates": {
-            "direction": "down",
-            "source": {"coord": {"row": 1, "col": 5}, "direction": "left"},
-            "regex": None,
+        "data_headers": {
+            "roles": [
+                {
+                    "direction": "down",
+                    "source": {"coord": {"row": 1, "col": 5}, "direction": "left"},
+                    "regex": None,
+                    "role": Role.DATE,
+                }
+            ],
+            "data_direction": "down",
+            "data_cells": {
+                "coord": {"col": 5, "row": 2},
+                "direction": "left",
+            },
         },
         "dimensions": [
             {
@@ -48,27 +68,35 @@ def test_date_based_area_definition():
                 "required": True,
                 "source": {"coord": {"row": 2, "col": 3}, "direction": "down"},
                 "regex": None,
+                "role": Role.DIMENSION,
             },
             {
                 "name": "platform",
                 "required": True,
                 "source": {"coord": {"row": 2, "col": 5}, "direction": "down"},
                 "regex": None,
+                "role": Role.DIMENSION,
             },
         ],
         "metrics": {
             "direction": None,
             "source": {"coord": {"row": 2, "col": 4}, "direction": "down"},
             "regex": None,
+            "role": Role.METRIC,
         },
         "title_ids": [
             {
                 "name": "ISBN",
                 "source": {"coord": {"row": 2, "col": 1}, "direction": "down"},
                 "regex": None,
+                "role": Role.TITLE_ID,
             }
         ],
-        "titles": {"source": {"coord": {"row": 2, "col": 0}, "direction": "down"}, "regex": None},
+        "titles": {
+            "source": {"coord": {"row": 2, "col": 0}, "direction": "down"},
+            "regex": None,
+            "role": Role.TITLE,
+        },
         "organizations": None,
     }
 
@@ -77,26 +105,15 @@ def test_date_based_area_definition():
     assert converted_definition == init_definition
 
 
-def test_dummy_area_definition():
-    init_definition = DummyAreaDefinition()
-    definition_dict = json.loads(init_definition.json())
-    assert definition_dict == {
-        "name": "dummy",
-    }
-    converted_definition = DummyAreaDefinition.parse(definition_dict)
-    assert converted_definition.dict() == init_definition.dict()
-    assert converted_definition == init_definition
-
-
 def test_errors():
 
     # Unknown definition
     with pytest.raises(ValidationError):
-        DummyAreaDefinition.parse({"name": "unknown"})
+        MetricBasedAreaDefinition.parse({"name": "unknown"})
 
     # Extra field
     with pytest.raises(ValidationError):
-        DummyAreaDefinition.parse({"name": "dummy", "extra": 3})
+        MetricBasedAreaDefinition.parse({"name": "dummy", "extra": 3})
 
     # Wrong field type
     with pytest.raises(ValidationError):
@@ -106,6 +123,7 @@ def test_errors():
                 "dates": {
                     "direction": "wrong",  # wrong direction
                     "source": {"coord": {"row": 1, "col": 5}, "direction": "left"},
+                    "role": Role.DATE,
                 },
                 "dimensions": [
                     {
@@ -113,29 +131,32 @@ def test_errors():
                         "required": True,
                         "source": {"coord": {"row": 2, "col": 3}, "direction": "down"},
                         "regex": None,
+                        "role": Role.DIMENSION,
                     },
                     {
                         "name": "platform",
                         "required": True,
                         "source": {"coord": {"row": 1, "col": 5}, "direction": "down"},
-                        "regex": None,
+                        "role": Role.DIMENSION,
                     },
                 ],
                 "metrics": {
                     "direction": None,
                     "source": {"coord": {"row": 2, "col": 4}, "direction": "down"},
-                    "regex": None,
+                    "role": Role.METRIC,
                 },
                 "title_ids": [
                     {
                         "name": "ISBN",
                         "source": {"coord": {"row": 2, "col": 1}, "direction": "down"},
                         "regex": None,
+                        "role": Role.TITLE_ID,
                     }
                 ],
                 "titles": {
                     "source": {"coord": {"row": 2, "col": 0}, "direction": "down"},
                     "regex": None,
+                    "role": Role.TITLE,
                 },
             }
         )
@@ -148,6 +169,7 @@ def test_errors():
                 "dates": {
                     "direction": "down",
                     "source": {"coord": {"row": 1, "col": 6}, "direction": "left"},
+                    "role": Role.DATE,
                 },
                 "dimensions": [
                     {
@@ -155,23 +177,27 @@ def test_errors():
                         "required": True,
                         "source": {"coord": {"row": 2, "col": 3}, "direction": "down"},
                         "regex": None,
+                        "role": Role.DIMENSION,
                     },
                     {
                         "name": "platform",
                         "source": {"direction": "down", "coord": {"row": 1, "col": 5}},
                         "regex": None,
+                        "role": Role.DIMENSION,
                     },
                 ],
                 "metrics": {
                     "direction": None,
                     "source": {"coord": {"row": 2, "col": 4}, "direction": "down"},
                     "regex": None,
+                    "role": Role.METRIC,
                 },
                 "title_ids": [
                     {
                         "name": "ISBN",
                         "source": {"coord": {"row": 2, "col": 1}, "direction": "down"},
                         "regex": None,
+                        "role": Role.TITLE_ID,
                     }
                 ],
             }
@@ -193,8 +219,15 @@ def test_date_based_definition():
         areas=[
             DateBasedAreaDefinition(
                 name="non_counter.date_based",
-                dates=DateSource(
-                    direction=Direction.DOWN, source=CoordRange(Coord(1, 5), Direction.RIGHT)
+                data_headers=DataHeaders(
+                    roles=[
+                        DateSource(
+                            direction=Direction.DOWN,
+                            source=CoordRange(Coord(1, 5), Direction.RIGHT),
+                        ),
+                    ],
+                    data_cells=CoordRange(Coord(2, 5), Direction.RIGHT),
+                    data_direction=Direction.DOWN,
                 ),
                 titles=TitleSource(CoordRange(Coord(2, 0), Direction.DOWN)),
                 title_ids=[
@@ -233,10 +266,20 @@ def test_date_based_definition():
         },
         "areas": [
             {
-                "dates": {
-                    "direction": "down",
-                    "source": {"direction": "right", "coord": {"col": 5, "row": 1}},
-                    "regex": None,
+                "data_headers": {
+                    "roles": [
+                        {
+                            "direction": "down",
+                            "source": {"direction": "right", "coord": {"col": 5, "row": 1}},
+                            "regex": None,
+                            "role": Role.DATE,
+                        }
+                    ],
+                    "data_direction": Direction.DOWN,
+                    "data_cells": {
+                        "coord": {"col": 5, "row": 2},
+                        "direction": "right",
+                    },
                 },
                 "dimensions": [
                     {
@@ -244,29 +287,34 @@ def test_date_based_definition():
                         "required": True,
                         "source": {"coord": {"col": 3, "row": 2}, "direction": "down"},
                         "regex": None,
+                        "role": Role.DIMENSION,
                     },
                     {
                         "name": "platform",
                         "required": True,
                         "source": {"coord": {"col": 5, "row": 2}, "direction": "down"},
                         "regex": None,
+                        "role": Role.DIMENSION,
                     },
                 ],
                 "metrics": {
                     "direction": None,
                     "source": {"coord": {"col": 4, "row": 2}, "direction": "down"},
                     "regex": None,
+                    "role": Role.METRIC,
                 },
                 "name": "non_counter.date_based",
                 "titles": {
                     "source": {"coord": {"col": 0, "row": 2}, "direction": "down"},
                     "regex": None,
+                    "role": Role.TITLE,
                 },
                 "title_ids": [
                     {
                         "name": "ISBN",
                         "source": {"coord": {"col": 1, "row": 2}, "direction": "down"},
                         "regex": None,
+                        "role": Role.TITLE_ID,
                     },
                 ],
                 "organizations": None,

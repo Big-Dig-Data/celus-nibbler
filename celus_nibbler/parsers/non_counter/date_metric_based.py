@@ -4,87 +4,18 @@ import re
 import typing
 from abc import ABCMeta
 
-from pydantic import ValidationError
-
-from celus_nibbler import validators
 from celus_nibbler.conditions import RegexCondition, SheetIdxCondition
 from celus_nibbler.coordinates import Coord, CoordRange, Direction
-from celus_nibbler.errors import TableException
-from celus_nibbler.parsers.base import BaseArea, BaseParser, MonthMetricDataCells
-from celus_nibbler.sources import DimensionSource, OrganizationSource
+from celus_nibbler.data_headers import DataHeaders
+from celus_nibbler.parsers.base import BaseHeaderArea, BaseParser
+from celus_nibbler.sources import DateSource, DimensionSource, MetricSource, OrganizationSource
 
 logger = logging.getLogger(__name__)
 
 
-class BaseDateMetricArea(BaseArea, metaclass=ABCMeta):
-    data_header_metric_offset: Coord = Coord(0, 0)
-    data_header_metric_regex: typing.Optional[typing.Pattern] = None
-    data_header_month_offset: Coord = Coord(0, 0)
-    data_header_month_regex: typing.Optional[typing.Pattern] = None
-    data_header_data_skip: int = 1
-
-    def _parse_with_regex(
-        self, cell: Coord, regex: typing.Optional[typing.Pattern] = None
-    ) -> typing.Optional[str]:
-        content = cell.content(self.sheet)
-        if regex:
-            if found := regex.search(content):
-                return found.group(1)
-            else:
-                return None
-        return content
-
+class BaseDateMetricArea(BaseHeaderArea, metaclass=ABCMeta):
     def get_months(self) -> typing.List[datetime.date]:
-        return [e.values[0] for e in self.find_data_cells()]
-
-    def parse_metric(self, cell: Coord, regex: typing.Optional[typing.Pattern] = None) -> str:
-        content = self._parse_with_regex(cell, regex)
-        return validators.Metric(value=content).value
-
-    def parse_date(
-        self, cell: Coord, regex: typing.Optional[typing.Pattern] = None
-    ) -> datetime.date:
-        content = self._parse_with_regex(cell, regex)
-        return validators.Date(value=content).value
-
-    def find_data_cells_in_direction(
-        self, direction: Direction
-    ) -> typing.List[MonthMetricDataCells]:
-        res = []
-        try:
-            for cell in self.header_cells:
-                # parse metric
-                metric_coord = cell + self.data_header_metric_offset
-                metric = self.parse_metric(metric_coord, self.data_header_metric_regex)
-
-                # parse date
-                date_coord = cell + self.data_header_month_offset
-                date = self.parse_date(date_coord, self.data_header_month_regex)
-                date = date.replace(day=1)
-
-                res.append(
-                    MonthMetricDataCells(
-                        (date, metric),
-                        CoordRange(cell, direction).skip(self.data_header_data_skip),
-                    )
-                )
-
-        except TableException as e:
-            if e.reason in ["out-of-bounds"]:
-                pass  # last cell reached
-            else:
-                raise
-        except ValidationError:
-            # failed to parse date or metric => assume that input ended
-            pass
-
-        logger.debug(f"Found data cells: {res}")
-        return res
-
-
-class VerticalDateMetricArea(BaseDateMetricArea):
-    def find_data_cells(self) -> typing.List[MonthMetricDataCells]:
-        return self.find_data_cells_in_direction(Direction.DOWN)
+        return [e.header_data.start for e in self.find_data_cells()]
 
 
 class DateMetricBasedParser(BaseParser):
@@ -97,10 +28,7 @@ class DateMetricBasedParser(BaseParser):
     heuristics = None
 
 
-class MyDateMetricArea(VerticalDateMetricArea):
-    data_header_month_regex = re.compile(r"in (\d+\/\d+)$")
-    data_header_metric_regex = re.compile(r"^([^ ]+.+[^ ]+) in")
-
+class MyDateMetricArea(BaseDateMetricArea):
     dimensions_sources = {
         "Extra": DimensionSource("Extra", CoordRange(Coord(1, 0), Direction.DOWN)),
     }
@@ -108,7 +36,21 @@ class MyDateMetricArea(VerticalDateMetricArea):
         CoordRange(Coord(1, 1), Direction.DOWN),
         re.compile(r"^MYCONS - (.*)$"),
     )
-    header_cells = CoordRange(Coord(0, 2), Direction.RIGHT)
+
+    data_headers = DataHeaders(
+        roles=[
+            DateSource(
+                CoordRange(Coord(0, 2), Direction.RIGHT),
+                regex=re.compile(r"in (\d+\/\d+)$"),
+            ),
+            MetricSource(
+                CoordRange(Coord(0, 2), Direction.RIGHT),
+                regex=re.compile(r"^([^ ]+.+[^ ]+) in"),
+            ),
+        ],
+        data_cells=CoordRange(Coord(1, 2), Direction.RIGHT),
+        data_direction=Direction.DOWN,
+    )
 
 
 class MyDateMetricBasedParser(DateMetricBasedParser):

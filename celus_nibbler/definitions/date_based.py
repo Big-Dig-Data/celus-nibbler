@@ -1,16 +1,13 @@
 import typing
 from dataclasses import field
 
-from pydantic import ValidationError
 from pydantic.dataclasses import dataclass
 
 from celus_nibbler.conditions import Condition
-from celus_nibbler.coordinates import CoordRange
-from celus_nibbler.errors import TableException
-from celus_nibbler.parsers.base import BaseArea, MonthDataCells
+from celus_nibbler.data_headers import DataHeaders
+from celus_nibbler.parsers.base import BaseArea
 from celus_nibbler.parsers.non_counter.date_based import BaseDateArea
 from celus_nibbler.sources import (
-    DateSource,
     DimensionSource,
     MetricSource,
     OrganizationSource,
@@ -27,7 +24,7 @@ from .common import AreaGeneratorMixin
 @dataclass(config=PydanticConfig)
 class DateBasedAreaDefinition(AreaGeneratorMixin, JsonEncorder):
 
-    dates: DateSource
+    data_headers: DataHeaders
     titles: TitleSource
     metrics: MetricSource
     organizations: typing.Optional[OrganizationSource] = None
@@ -37,8 +34,7 @@ class DateBasedAreaDefinition(AreaGeneratorMixin, JsonEncorder):
     name: typing.Literal["non_counter.date_based"] = "non_counter.date_based"
 
     def make_area(self) -> typing.Type[BaseArea]:
-        dates_range = self.dates.source
-        data_direction = self.dates.direction
+        headers = self.data_headers
         titles = self.titles
         title_ids = self.title_ids
         dimensions = self.dimensions
@@ -46,37 +42,8 @@ class DateBasedAreaDefinition(AreaGeneratorMixin, JsonEncorder):
         organizations = self.organizations
 
         class Area(BaseDateArea):
-            @property
-            def header_cells(self) -> CoordRange:
-                return dates_range
-
+            data_headers = headers
             organization_source = organizations
-
-            def find_data_cells(self) -> typing.List[MonthDataCells]:
-                res = []
-                for cell in self.header_cells:
-                    try:
-                        date = self.parse_date(cell)
-                        range = CoordRange(cell, data_direction).skip(1)
-                        res.append(
-                            MonthDataCells(
-                                date.replace(day=1),
-                                range,
-                            )
-                        )
-
-                    except TableException as e:
-                        if e.reason == "out-of-bounds":
-                            # We reached the end of row
-                            break
-                        raise
-                    except ValidationError:
-                        # Found a content which can't be parse e.g. "Total"
-                        # We can exit here
-                        break
-
-                return res
-
             title_source = titles
             metric_source = metrics
 

@@ -81,7 +81,7 @@ def test_dynamic(platform, name, ext, parser, aggregated):
             "date_cells_out_of_range",
             "csv",
             "nibbler.dynamic.date_cells_out_of_range",
-            TableException(sheet=0, col=5, row=0, reason="no-data-found", value=None),
+            TableException(sheet=0, col=5, row=1, reason="no-header-data-found", value=None),
         ),
         (
             "Platform1",

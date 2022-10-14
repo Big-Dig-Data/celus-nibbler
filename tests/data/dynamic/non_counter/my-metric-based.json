@@ -34,15 +34,27 @@
   },
   "areas": [
     {
-       "metrics": {
-        "direction": "down",
-        "source": {
-          "coord": {
-            "row": 14,
-            "col": 7
-          },
-          "direction": "right"
-        }
+       "data_headers": {
+           "roles": [
+               {
+                   "role": "metric",
+                   "source": {
+                       "coord": {
+                           "col": 7,
+                           "row": 14
+                        },
+                        "direction": "right"
+                   }
+               }
+           ],
+           "data_cells": {
+               "coord": {
+                   "row": 15,
+                   "col": 7
+               },
+               "direction": "right"
+           },
+           "data_direction": "down"
       },
       "organizations": {
           "source": {

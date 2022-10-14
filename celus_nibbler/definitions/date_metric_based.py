@@ -4,8 +4,8 @@ from dataclasses import field
 from pydantic.dataclasses import dataclass
 
 from celus_nibbler.conditions import Condition
-from celus_nibbler.coordinates import Coord, CoordRange, Direction
-from celus_nibbler.parsers.base import BaseArea, MonthDataCells
+from celus_nibbler.data_headers import DataHeaders
+from celus_nibbler.parsers.base import BaseArea
 from celus_nibbler.parsers.non_counter.date_metric_based import BaseDateMetricArea
 from celus_nibbler.sources import DimensionSource, OrganizationSource, TitleIdSource, TitleSource
 from celus_nibbler.utils import JsonEncorder, PydanticConfig
@@ -15,19 +15,8 @@ from .common import AreaGeneratorMixin
 
 
 @dataclass(config=PydanticConfig)
-class DatesAndMetrics(JsonEncorder):
-    range: CoordRange
-    data_direction: Direction
-    dates_offset: Coord = Coord(0, 0)
-    dates_regex: typing.Optional[typing.Pattern] = None
-    metrics_offset: Coord = Coord(0, 0)
-    metrics_regex: typing.Optional[typing.Pattern] = None
-    data_skip: int = 1
-
-
-@dataclass(config=PydanticConfig)
 class DateMetricBasedAreaDefinition(AreaGeneratorMixin, JsonEncorder):
-    dates_and_metrics: DatesAndMetrics
+    data_headers: DataHeaders
     titles: typing.Optional[TitleSource]
     organizations: typing.Optional[OrganizationSource] = None
     title_ids: typing.List[TitleIdSource] = field(default_factory=lambda: [])
@@ -36,34 +25,16 @@ class DateMetricBasedAreaDefinition(AreaGeneratorMixin, JsonEncorder):
     name: typing.Literal["non_counter.date_metric_based"] = "non_counter.date_metric_based"
 
     def make_area(self) -> typing.Type[BaseArea]:
+        headers = self.data_headers
         titles = self.titles
         title_ids = self.title_ids
         dimensions = self.dimensions
         organizations = self.organizations
-        data_direction = self.dates_and_metrics.data_direction
-        header_range = self.dates_and_metrics.range
-        dates_regex = self.dates_and_metrics.dates_regex
-        dates_offset = self.dates_and_metrics.dates_offset
-        metrics_regex = self.dates_and_metrics.metrics_regex
-        metrics_offset = self.dates_and_metrics.metrics_offset
-        data_skip = self.dates_and_metrics.data_skip
 
         class Area(BaseDateMetricArea):
-            data_header_month_offset = dates_offset
-            data_header_month_regex = dates_regex
-            data_header_metric_offset = metrics_offset
-            data_header_metric_regex = metrics_regex
-            data_header_data_skip = data_skip
-
-            @property
-            def header_cells(self) -> CoordRange:
-                return header_range
-
+            data_headers = headers
             organization_source = organizations
             title_source = titles
-
-            def find_data_cells(self) -> typing.List[MonthDataCells]:
-                return self.find_data_cells_in_direction(data_direction)
 
             @property
             def title_ids_sources(self) -> typing.Dict[str, TitleIdSource]:

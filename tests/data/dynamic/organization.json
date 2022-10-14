@@ -68,11 +68,23 @@
           "value": "MyOrg"
         }
       },
-      "dates": {
-        "direction": "down",
-        "source": {
+      "data_headers": {
+        "roles": [
+            {
+                "source": {
+                    "coord": {
+                      "row": 0,
+                      "col": 5
+                    },
+                    "direction": "right"
+                },
+                "role": "date"
+            }
+        ],
+        "data_direction": "down",
+        "data_cells": {
           "coord": {
-            "row": 0,
+            "row": 1,
             "col": 5
           },
           "direction": "right"

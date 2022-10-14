@@ -31,22 +31,39 @@
   },
   "areas": [
     {
-      "dates_and_metrics": {
-          "range": {
-            "coord": {
-                "row": 0,
-                "col": 2
-            },
-            "direction": "right"
-          },
-          "data_direction": "down",
-          "dates_offset": {
-            "row": 0,
-            "col": 0
-          },
-          "dates_regex": "in (\\d+\\/\\d+)$",
-          "metrics_regex": "^([^ ]+.+[^ ]+) in",
-          "data_skip": 1
+       "data_headers": {
+           "roles": [
+               {
+                   "role": "metric",
+                   "source": {
+                       "coord": {
+                           "col": 2,
+                           "row": 0 
+                        },
+                        "direction": "right"
+                   },
+                   "regex": "^([^ ]+.+[^ ]+) in"
+               },
+               {
+                   "role": "date",
+                   "source": {
+                       "coord": {
+                           "col": 2,
+                           "row": 0
+                        },
+                        "direction": "right"
+                   },
+                   "regex": "in (\\d+\\/\\d+)$"
+               }
+           ],
+           "data_cells": {
+               "coord": {
+                   "row": 1,
+                   "col": 2
+               },
+               "direction": "right"
+           },
+           "data_direction": "down"
       },
       "organizations": {
           "source": {

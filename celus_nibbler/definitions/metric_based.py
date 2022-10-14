@@ -2,18 +2,14 @@ import abc
 import typing
 from dataclasses import field
 
-from pydantic import ValidationError
 from pydantic.dataclasses import dataclass
 
 from celus_nibbler.conditions import Condition
-from celus_nibbler.coordinates import CoordRange
-from celus_nibbler.errors import TableException
-from celus_nibbler.parsers.base import MetricDataCells
+from celus_nibbler.data_headers import DataHeaders
 from celus_nibbler.parsers.non_counter.metric_based import BaseMetricArea, MetricBasedParser
 from celus_nibbler.sources import (
     DateSource,
     DimensionSource,
-    MetricSource,
     OrganizationSource,
     TitleIdSource,
     TitleSource,
@@ -26,8 +22,8 @@ from .common import AreaGeneratorMixin
 
 @dataclass(config=PydanticConfig)
 class MetricBasedAreaDefinition(AreaGeneratorMixin, JsonEncorder):
+    data_headers: DataHeaders
     dates: DateSource
-    metrics: MetricSource
     titles: typing.Optional[TitleSource] = None
     title_ids: typing.List[TitleIdSource] = field(default_factory=lambda: [])
     dimensions: typing.List[DimensionSource] = field(default_factory=lambda: [])
@@ -36,44 +32,16 @@ class MetricBasedAreaDefinition(AreaGeneratorMixin, JsonEncorder):
     name: typing.Literal["non_counter.metric_based"] = "non_counter.metric_based"
 
     def make_area(self):
+        headers = self.data_headers
         dates = self.dates
         titles = self.titles
         title_ids = self.title_ids
         dimensions = self.dimensions
-        metrics_range = self.metrics.source
         organizations = self.organizations
-        data_direction = self.metrics.direction
 
         class Area(BaseMetricArea):
-            header_cells = metrics_range
-
+            data_headers = headers
             organization_source = organizations
-
-            def find_data_cells(self) -> typing.List[MetricDataCells]:
-                res = []
-                for cell in self.header_cells:
-                    try:
-                        metric = self.parse_metric(cell)
-                        range = CoordRange(cell, data_direction).skip(1)
-                        res.append(
-                            MetricDataCells(
-                                metric,
-                                range,
-                            )
-                        )
-
-                    except TableException as e:
-                        if e.reason == "out-of-bounds":
-                            # We reached the end of row
-                            break
-                        raise
-                    except ValidationError:
-                        # Found a content which can't be parse e.g. "Total"
-                        # We can exit here
-                        break
-
-                return res
-
             date_source = dates
             title_source = titles
 

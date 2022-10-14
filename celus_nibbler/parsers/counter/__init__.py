@@ -5,9 +5,11 @@ import typing
 from pydantic import ValidationError
 
 from celus_nibbler.coordinates import Coord, CoordRange, Direction
+from celus_nibbler.data_headers import DataHeaders
 from celus_nibbler.errors import TableException
-from celus_nibbler.parsers.non_counter.date_based import VerticalDateArea
+from celus_nibbler.parsers.non_counter.date_based import BaseDateArea
 from celus_nibbler.sources import (
+    DateSource,
     DimensionSource,
     MetricSource,
     OrganizationSource,
@@ -18,7 +20,7 @@ from celus_nibbler.sources import (
 logger = logging.getLogger(__name__)
 
 
-class CounterHeaderArea(VerticalDateArea):
+class CounterHeaderArea(BaseDateArea):
     HEADER_DATE_START = 1
     MAX_HEADER_ROW = 50
     DOI_NAMES = {
@@ -91,13 +93,18 @@ class CounterHeaderArea(VerticalDateArea):
         )
 
     @property
-    def header_cells(self):
+    def data_headers(self):
         # First date which is parsed in the header
         for cell in itertools.islice(self.header_row, 1, None):
             try:
                 # Throws exception when it is not a date
                 self.parse_date(cell)
-                return CoordRange(cell, Direction.RIGHT)
+                first_data_cell = CoordRange(cell, Direction.DOWN)[1]
+                return DataHeaders(
+                    roles=[DateSource(CoordRange(cell, Direction.RIGHT))],
+                    data_cells=CoordRange(first_data_cell, Direction.RIGHT),
+                    data_direction=Direction.DOWN,
+                )
             except ValidationError:
                 continue  # doesn't match the header
 

@@ -10,7 +10,8 @@ from pydantic import BaseModel
 from celus_nibbler import validators
 from celus_nibbler.aggregator import BaseAggregator, NoAggregator
 from celus_nibbler.conditions import BaseCondition
-from celus_nibbler.coordinates import Coord, CoordRange
+from celus_nibbler.coordinates import Coord
+from celus_nibbler.data_headers import DataCells, DataHeaders
 from celus_nibbler.errors import TableException
 from celus_nibbler.reader import SheetReader
 from celus_nibbler.sources import (
@@ -36,66 +37,6 @@ IDS = {
 }
 
 
-class DataCells:
-    record_fields: typing.List[str]
-    range: CoordRange
-    values: typing.List[typing.Any]
-
-    def __iter__(self):
-        return self.range.__iter__()
-
-    def __next__(self):
-        return self.range.__next__()
-
-    def __getitem__(self, item: int) -> Coord:
-        return self.range.__getitem__(item)
-
-
-class MetricDataCells(DataCells):
-    record_fields = ["metric"]
-    values: typing.List[str]
-
-    def __init__(self, metric: str, range: CoordRange):
-        self.range = range
-        self.values = [metric]
-
-    def __str__(self):
-        return f"{self.values[0]} - {self.range}"
-
-    def __repr__(self):
-        return str(self)
-
-
-class MonthDataCells(DataCells):
-    record_fields = ["date"]
-    values: typing.List[datetime.date]
-
-    def __init__(self, month: datetime.date, range: CoordRange):
-        self.range = range
-        self.values = [month]
-
-    def __str__(self):
-        return f"{self.values[0].strftime('%Y-%m')} - {self.range}"
-
-    def __repr__(self):
-        return str(self)
-
-
-class MonthMetricDataCells(DataCells):
-    record_fields = ["date", "metric"]
-    values: typing.List[typing.Union[datetime.date, str]]
-
-    def __init__(self, month_and_metric: typing.Tuple[datetime.date, str], range: CoordRange):
-        self.range = range
-        self.values = [month_and_metric[0], month_and_metric[1]]
-
-    def __str__(self):
-        return f"{self.values[0].strftime('%Y-%m')}|{self.values[1]} - {self.range}"
-
-    def __repr__(self):
-        return str(self)
-
-
 class BaseArea(metaclass=ABCMeta):
     organization_source: typing.Optional[OrganizationSource] = None
     date_source: typing.Optional[DateSource] = None
@@ -116,27 +57,9 @@ class BaseArea(metaclass=ABCMeta):
 
     def prepare_record(
         self,
-        value: int,
-        date: datetime.date,
-        organization: typing.Optional[str] = None,
-        title: typing.Optional[str] = None,
-        metric: typing.Optional[str] = None,
-        title_ids: typing.Dict[str, str] = {},
-        dimension_data: typing.Dict[str, str] = {},
+        record: CounterRecord,
     ) -> CounterRecord:
-        start = start_month(date)
-        end = end_month(date)
-        # We need to fill at least the vaue
-        return CounterRecord(
-            value=value,
-            start=start,
-            end=end,
-            organization=organization,
-            title=title,
-            metric=metric,
-            title_ids=title_ids,
-            dimension_data=dimension_data,
-        )
+        return record
 
     def parse_date(self, cell: Coord) -> datetime.date:
         content = cell.content(self.sheet)
@@ -150,10 +73,15 @@ class BaseArea(metaclass=ABCMeta):
     def find_data_cells(self) -> typing.List[DataCells]:
         pass
 
+
+class BaseHeaderArea(BaseArea, metaclass=ABCMeta):
     @property
     @abstractmethod
-    def header_cells(self) -> CoordRange:
+    def data_headers(self) -> DataHeaders:
         pass
+
+    def find_data_cells(self) -> typing.List[DataCells]:
+        return self.data_headers.find_data_cells(self.sheet)
 
 
 class BaseParser(metaclass=ABCMeta):
@@ -222,15 +150,6 @@ class BaseParser(metaclass=ABCMeta):
 
     def _parse_area(self, area: BaseArea) -> typing.Generator[CounterRecord, None, None]:
         data_cells = area.find_data_cells()
-        if not data_cells:
-            header_cells = area.header_cells
-            raise TableException(
-                row=header_cells.coord.row,
-                col=header_cells.coord.col,
-                sheet=self.sheet.sheet_idx,
-                reason="no-data-found",
-            )
-
         try:
             for idx in itertools.count(0):
                 # iterates through ranges
@@ -278,20 +197,20 @@ class BaseParser(metaclass=ABCMeta):
 
                 for data_cell in data_cells:
                     value = ValueSource(data_cell.range).extract(self.sheet, idx)
-                    kwargs = dict(
+                    record = CounterRecord(
                         value=round(value),
                         organization=organization,
                         metric=metric,
                         title=title,
                         dimension_data=dimension_data,
                         title_ids=title_ids,
-                        date=date,
+                        start=start_month(date) if date else None,
+                        end=end_month(date) if date else None,
                     )
-                    for field, value in zip(data_cell.record_fields, data_cell.values):
-                        kwargs[field] = value
-                    res = area.prepare_record(**kwargs)
-                    logger.debug("Parsed %s", res.as_csv())
-                    yield res
+                    record = data_cell.merge_into_record(record)
+                    record = area.prepare_record(record)
+                    logger.debug("Parsed %s", record.as_csv())
+                    yield record
 
         except TableException as e:
             if e.reason in ["out-of-bounds", "empty"]:

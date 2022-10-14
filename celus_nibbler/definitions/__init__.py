@@ -8,14 +8,12 @@ from . import counter
 from .base import BaseParserDefinition
 from .date_based import DateBasedAreaDefinition, DateBasedDefinition
 from .date_metric_based import DateMetricBasedAreaDefinition, DateMetricBasedDefinition
-from .dummy import DummyAreaDefinition
 from .metric_based import MetricBasedAreaDefinition, MetricBasedDefinition
 
 AreaDefinition = Annotated[
     typing.Union[
         DateBasedAreaDefinition,
         DateMetricBasedAreaDefinition,
-        DummyAreaDefinition,
         MetricBasedAreaDefinition,
     ],
     Field(discriminator='name'),

@@ -63,11 +63,23 @@
   },
   "areas": [
     {
-      "dates": {
-        "direction": "down",
-        "source": {
+      "data_headers": {
+        "roles": [
+            {
+                "source": {
+                    "coord": {
+                      "row": 1,
+                      "col": 4
+                    },
+                    "direction": "right"
+                },
+                "role": "date"
+            }
+        ],
+        "data_direction": "down",
+        "data_cells": {
           "coord": {
-            "row": 1,
+            "row": 2,
             "col": 4
           },
           "direction": "right"

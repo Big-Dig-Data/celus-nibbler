@@ -5,16 +5,16 @@ from abc import ABCMeta
 
 from pydantic import ValidationError
 
-from celus_nibbler import validators
 from celus_nibbler.aggregator import SameAggregator
 from celus_nibbler.conditions import RegexCondition, SheetNameRegexCondition
 from celus_nibbler.coordinates import Coord, CoordRange, Direction
+from celus_nibbler.data_headers import DataHeaders
 from celus_nibbler.errors import TableException
-from celus_nibbler.parsers.base import BaseArea, BaseParser, MetricDataCells
-from celus_nibbler.sources import DateSource, DimensionSource, OrganizationSource
+from celus_nibbler.parsers.base import BaseHeaderArea, BaseParser
+from celus_nibbler.sources import DateSource, DimensionSource, MetricSource, OrganizationSource
 
 
-class BaseMetricArea(BaseArea, metaclass=ABCMeta):
+class BaseMetricArea(BaseHeaderArea, metaclass=ABCMeta):
     aggregator = SameAggregator()
 
     def get_months(self) -> typing.List[datetime.date]:
@@ -35,30 +35,6 @@ class BaseMetricArea(BaseArea, metaclass=ABCMeta):
 
         return list(res)
 
-    def parse_metric(self, cell: Coord) -> str:
-        content = cell.content(self.sheet)
-        return validators.Metric(value=content).value
-
-
-class VerticalMetricArea(BaseMetricArea):
-    def find_data_cells(self) -> typing.List[MetricDataCells]:
-        res = []
-        for cell in self.header_cells:
-            try:
-                metric = self.parse_metric(cell)
-                res.append(MetricDataCells(metric, CoordRange(cell, Direction.DOWN).skip(1)))
-            except TableException as e:
-                if e.reason == "out-of-bounds":
-                    # We reached the end of row
-                    break
-                raise
-            except ValidationError:
-                # Found a content which can't be parsed
-                # We can exit here
-                break
-
-        return res
-
 
 class MetricBasedParser(BaseParser):
     format_name = "non_counter.metric_based"
@@ -70,14 +46,22 @@ class MetricBasedParser(BaseParser):
     heuristics = None
 
 
-class MyMetricArea(VerticalMetricArea):
+class MyMetricArea(BaseMetricArea):
     date_source = DateSource(CoordRange(Coord(15, 1), Direction.DOWN))
     dimensions_sources = {
         "Dimension1": DimensionSource("Dimension1", CoordRange(Coord(15, 2), Direction.DOWN)),
     }
     organization_source = OrganizationSource(CoordRange(Coord(15, 3), Direction.DOWN))
 
-    header_cells = CoordRange(Coord(14, 7), Direction.RIGHT)
+    data_headers = DataHeaders(
+        roles=[
+            MetricSource(
+                CoordRange(Coord(14, 7), Direction.RIGHT),
+            )
+        ],
+        data_cells=CoordRange(Coord(15, 7), Direction.RIGHT),
+        data_direction=Direction.DOWN,
+    )
 
 
 class MyMetricBasedParser(MetricBasedParser):

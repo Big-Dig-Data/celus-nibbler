@@ -1,4 +1,5 @@
 import typing
+from enum import Enum
 
 from pydantic import BaseModel, ValidationError
 from pydantic.dataclasses import dataclass
@@ -20,9 +21,20 @@ IDS_VALIDATORS = {
 }
 
 
+class Role(str, Enum):
+    VALUE = "value"
+    DATE = "date"
+    TITLE = "title"
+    TITLE_ID = "title_id"
+    DIMENSION = "dimension"
+    METRIC = "metric"
+    ORGANIZATION = "organization"
+
+
 class ContentExtractorMixin:
     source: Source
     regex: typing.Optional[typing.Pattern]
+    role: Role
 
     def content(self, sheet: SheetReader, idx: int) -> typing.Any:
         content = self.source[idx].content(sheet)
@@ -91,6 +103,7 @@ class DimensionSource(JsonEncorder, ContentExtractorMixin):
     source: Source
     required: bool = True
     regex: typing.Optional[typing.Pattern] = None
+    role: typing.Literal[Role.DIMENSION] = Role.DIMENSION
 
     @property
     def validator(self) -> typing.Optional[typing.Type[BaseModel]]:
@@ -102,6 +115,7 @@ class MetricSource(JsonEncorder, ContentExtractorMixin):
     source: Source
     direction: typing.Optional[Direction] = None
     regex: typing.Optional[typing.Pattern] = None
+    role: typing.Literal[Role.METRIC] = Role.METRIC
 
     @property
     def validator(self) -> typing.Optional[typing.Type[BaseModel]]:
@@ -112,6 +126,7 @@ class MetricSource(JsonEncorder, ContentExtractorMixin):
 class OrganizationSource(JsonEncorder, ContentExtractorMixin):
     source: Source
     regex: typing.Optional[typing.Pattern] = None
+    role: typing.Literal[Role.ORGANIZATION] = Role.ORGANIZATION
 
     @property
     def validator(self) -> typing.Optional[typing.Type[BaseModel]]:
@@ -122,6 +137,7 @@ class OrganizationSource(JsonEncorder, ContentExtractorMixin):
 class TitleSource(JsonEncorder, ContentExtractorMixin):
     source: Source
     regex: typing.Optional[typing.Pattern] = None
+    role: typing.Literal[Role.TITLE] = Role.TITLE
 
     @property
     def validator(self) -> typing.Optional[typing.Type[BaseModel]]:
@@ -133,6 +149,7 @@ class TitleIdSource(JsonEncorder, ContentExtractorMixin):
     name: str
     source: Source
     regex: typing.Optional[typing.Pattern] = None
+    role: typing.Literal[Role.TITLE_ID] = Role.TITLE_ID
 
     @property
     def validator(self) -> typing.Optional[typing.Type[BaseModel]]:
@@ -144,6 +161,7 @@ class DateSource(JsonEncorder, ContentExtractorMixin):
     source: Source
     direction: typing.Optional[Direction] = None
     regex: typing.Optional[typing.Pattern] = None
+    role: typing.Literal[Role.DATE] = Role.DATE
 
     @property
     def validator(self) -> typing.Optional[typing.Type[BaseModel]]:
@@ -154,6 +172,7 @@ class DateSource(JsonEncorder, ContentExtractorMixin):
 class ValueSource(JsonEncorder, ContentExtractorMixin):
     source: Source
     regex: typing.Optional[typing.Pattern] = None
+    role: typing.Literal[Role.VALUE] = Role.VALUE
 
     @property
     def validator(self) -> typing.Optional[typing.Type[BaseModel]]:
