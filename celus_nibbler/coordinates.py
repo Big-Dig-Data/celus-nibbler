@@ -1,3 +1,4 @@
+import abc
 import typing
 from enum import Enum
 
@@ -16,8 +17,14 @@ class Direction(str, Enum):
     DOWN = 'down'
 
 
+class Content(metaclass=abc.ABCMeta):
+    @abc.abstractmethod
+    def content(self, sheet: SheetReader):
+        pass
+
+
 @dataclass(config=PydanticConfig)
-class Value(JsonEncorder):
+class Value(JsonEncorder, Content):
     value: typing.Any
 
     def content(self, sheet: SheetReader):
@@ -36,7 +43,7 @@ class Value(JsonEncorder):
 
 
 @dataclass(config=PydanticConfig)
-class SheetAttr(JsonEncorder):
+class SheetAttr(JsonEncorder, Content):
     sheet_attr: str
 
     def content(self, sheet: SheetReader):
@@ -58,7 +65,7 @@ class SheetAttr(JsonEncorder):
 
 
 @dataclass(config=PydanticConfig)
-class Coord(JsonEncorder):
+class Coord(JsonEncorder, Content):
     row: int
     col: int
 
@@ -89,9 +96,12 @@ class Coord(JsonEncorder):
 
 
 @dataclass(config=PydanticConfig)
-class CoordRange(JsonEncorder):
+class CoordRange(JsonEncorder, Content):
     coord: Coord
     direction: Direction
+
+    def content(self, sheet: SheetReader):
+        return self[self.distance].content(sheet)
 
     def __contains__(self, item: Coord) -> bool:
         if not isinstance(item, Coord):

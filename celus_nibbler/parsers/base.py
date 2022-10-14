@@ -1,17 +1,16 @@
 import datetime
 import itertools
 import logging
-import re
 import typing
 from abc import ABCMeta, abstractmethod
 
 from celus_nigiri import CounterRecord
-from pydantic import BaseModel, ValidationError
+from pydantic import BaseModel
 
 from celus_nibbler import validators
 from celus_nibbler.aggregator import BaseAggregator, NoAggregator
 from celus_nibbler.conditions import BaseCondition
-from celus_nibbler.coordinates import Coord, CoordRange, SheetAttr, Value
+from celus_nibbler.coordinates import Coord, CoordRange
 from celus_nibbler.errors import TableException
 from celus_nibbler.reader import SheetReader
 from celus_nibbler.sources import (
@@ -19,22 +18,22 @@ from celus_nibbler.sources import (
     DimensionSource,
     MetricSource,
     OrganizationSource,
-    Source,
     TitleIdSource,
     TitleSource,
+    ValueSource,
 )
 from celus_nibbler.utils import end_month, start_month
 
 logger = logging.getLogger(__name__)
 
 
-IDS = [
-    ("DOI", validators.DOI),
-    ("ISBN", validators.ISBN),
-    ("Print_ISSN", validators.ISSN),
-    ("Online_ISSN", validators.EISSN),
-    ("Proprietary", validators.ProprietaryID),
-]
+IDS = {
+    "DOI",
+    "ISBN",
+    "Print_ISSN",
+    "Online_ISSN",
+    "Proprietary",
+}
 
 
 class DataCells:
@@ -198,50 +197,6 @@ class BaseParser(metaclass=ABCMeta):
         """List of available platforms (used for validation)"""
         pass
 
-    def _parse_content(
-        self,
-        seq: Source,
-        idx: int,
-        validator: typing.Type[BaseModel],
-        regex: typing.Optional[typing.Pattern] = None,
-    ) -> typing.Any:
-        try:
-            cell = seq[idx]
-            content = cell.content(self.sheet)
-            if regex:
-                if extacted := re.search(regex, content):
-                    content = extacted.group(1)  # regex needs to contain a group
-                else:
-                    # Unable to extract data
-                    return None
-            res = validator(value=content).value
-        except ValidationError as e:
-            if isinstance(seq, Value):
-                raise TableException(
-                    value=seq.value, sheet=self.sheet.sheet_idx, reason="wrong-value"
-                )
-            elif isinstance(seq, SheetAttr):
-                raise TableException(
-                    value=seq.sheet_attr, sheet=self.sheet.sheet_idx, reason="wrong-sheet-attr"
-                )
-            else:
-                raise TableException(
-                    content,
-                    row=cell.row if isinstance(cell, Coord) else None,
-                    col=cell.col if isinstance(cell, Coord) else None,
-                    sheet=self.sheet.sheet_idx,
-                    reason=e.model.__name__.lower() if content else "empty",
-                ) from e
-        except IndexError as e:
-            raise TableException(
-                row=cell.row if isinstance(cell, Coord) else None,
-                col=cell.col if isinstance(cell, Coord) else None,
-                sheet=self.sheet.sheet_idx,
-                reason='out-of-bounds',
-            ) from e
-
-        return res
-
     def _parse(self) -> typing.Generator[CounterRecord, None, None]:
         for area in self.get_areas():
             yield from self.parse_area(area)
@@ -280,62 +235,49 @@ class BaseParser(metaclass=ABCMeta):
             for idx in itertools.count(0):
                 # iterates through ranges
                 if area.metric_source:
-                    metric = self._parse_content(
-                        area.metric_source.source, idx, validators.Metric, area.metric_source.regex
-                    )
+                    metric = area.metric_source.extract(self.sheet, idx)
                     if metric in self.metrics_to_skip:
                         continue
                 else:
                     metric = None
 
                 if area.organization_source:
-                    organization = self._parse_content(
-                        area.organization_source.source,
-                        idx,
-                        validators.Organization,
-                        area.organization_source.regex,
-                    )
+                    organization = area.organization_source.extract(self.sheet, idx)
                 else:
                     organization = None
 
                 if area.date_source:
-                    date = self._parse_content(
-                        area.date_source.source, idx, validators.Date, area.date_source.regex
-                    )
+                    date = area.date_source.extract(self.sheet, idx)
                 else:
                     date = None
 
                 if area.title_source:
-                    title = self._parse_content(
-                        area.title_source.source, idx, validators.Title, area.title_source.regex
-                    )
+                    title = area.title_source.extract(self.sheet, idx)
                     if title in self.titles_to_skip:
                         continue
                 else:
                     title = None
 
                 dimension_data = {}
-                for k, source in area.dimensions_sources.items():
-                    dimension_data[k] = self._parse_content(
-                        source.source,
-                        idx,
-                        self.dimensions_validators.get(k, validators.Dimension),
-                        source.regex,
+                for k, dimension_source in area.dimensions_sources.items():
+                    dimension_data[k] = dimension_source.extract(
+                        self.sheet, idx, self.dimensions_validators.get(k)
                     )
                     if dimension_data[k] in self.dimensions_to_skip.get(k, []):
                         continue
 
                 title_ids = {}
-                for (key, validator) in IDS:
-                    if source := area.title_ids_sources.get(key):
-                        value = self._parse_content(source.source, idx, validator, source.regex)
+                for key in IDS:
+                    if title_source := area.title_ids_sources.get(key):
+                        value = title_source.extract(self.sheet, idx)
+
                         if value:
                             title_ids[key] = value
                         else:
                             title_ids[key] = ""
 
                 for data_cell in data_cells:
-                    value = self._parse_content(data_cell, idx, validators.Value)
+                    value = ValueSource(data_cell.range).extract(self.sheet, idx)
                     kwargs = dict(
                         value=round(value),
                         organization=organization,
