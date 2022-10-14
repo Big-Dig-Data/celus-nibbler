@@ -9,6 +9,7 @@ from pydantic import ValidationError
 from celus_nibbler import validators
 from celus_nibbler.conditions import RegexCondition, SheetIdxCondition
 from celus_nibbler.coordinates import Coord, CoordRange, Direction
+from celus_nibbler.definitions.common import OrganizationSource
 from celus_nibbler.errors import TableException
 from celus_nibbler.parsers.base import BaseArea, BaseParser, MonthMetricDataCells
 
@@ -103,7 +104,10 @@ class MyDateMetricArea(VerticalDateMetricArea):
     dimensions_cells = {
         "Extra": CoordRange(Coord(1, 0), Direction.DOWN),
     }
-    organization_cells = CoordRange(Coord(1, 1), Direction.DOWN)
+    organization_source = OrganizationSource(
+        CoordRange(Coord(1, 1), Direction.DOWN),
+        re.compile(r"^MYCONS - (.*)$"),
+    )
     header_cells = CoordRange(Coord(0, 2), Direction.RIGHT)
 
 

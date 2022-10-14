@@ -34,7 +34,7 @@ class DatesAndMetrics(JsonEncorder):
 class DateMetricBasedAreaDefinition(AreaGeneratorMixin, JsonEncorder):
     dates_and_metrics: DatesAndMetrics
     titles: typing.Optional[TitleSource]
-    organization: typing.Optional[OrganizationSource] = None
+    organizations: typing.Optional[OrganizationSource] = None
     title_ids: typing.List[TitleIdSource] = field(default_factory=lambda: [])
     dimensions: typing.List[DimensionSource] = field(default_factory=lambda: [])
 
@@ -44,7 +44,7 @@ class DateMetricBasedAreaDefinition(AreaGeneratorMixin, JsonEncorder):
         titles = self.titles
         title_ids = self.title_ids
         dimensions = self.dimensions
-        organization = self.organization
+        organizations = self.organizations
         data_direction = self.dates_and_metrics.data_direction
         header_range = self.dates_and_metrics.range
         dates_regex = self.dates_and_metrics.dates_regex
@@ -64,12 +64,7 @@ class DateMetricBasedAreaDefinition(AreaGeneratorMixin, JsonEncorder):
             def header_cells(self) -> CoordRange:
                 return header_range
 
-            @property
-            def organization_cells(self) -> typing.Optional[Source]:
-                if organization:
-                    return organization.source
-                else:
-                    return None
+            organization_source = organizations
 
             def find_data_cells(self) -> typing.List[MonthDataCells]:
                 return self.find_data_cells_in_direction(data_direction)

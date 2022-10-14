@@ -9,6 +9,7 @@ from celus_nibbler import validators
 from celus_nibbler.aggregator import SameAggregator
 from celus_nibbler.conditions import RegexCondition, SheetNameRegexCondition
 from celus_nibbler.coordinates import Coord, CoordRange, Direction
+from celus_nibbler.definitions.common import OrganizationSource
 from celus_nibbler.errors import TableException
 from celus_nibbler.parsers.base import BaseArea, BaseParser, MetricDataCells
 
@@ -74,7 +75,7 @@ class MyMetricArea(VerticalMetricArea):
     dimensions_cells = {
         "Dimension1": CoordRange(Coord(15, 2), Direction.DOWN),
     }
-    organization_cells = CoordRange(Coord(15, 3), Direction.DOWN)
+    organization_source = OrganizationSource(CoordRange(Coord(15, 3), Direction.DOWN))
 
     header_cells = CoordRange(Coord(14, 7), Direction.RIGHT)
 

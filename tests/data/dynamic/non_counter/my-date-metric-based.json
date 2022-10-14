@@ -48,14 +48,15 @@
           "metrics_regex": "^([^ ]+.+[^ ]+) in",
           "data_skip": 1
       },
-      "organization": {
+      "organizations": {
           "source": {
               "coord": {
                   "row": 1,
                   "col": 1
               },
               "direction": "down"
-          }
+          },
+          "regex": "^MYCONS - (.*)$"
       },
       "titles": null,
       "title_ids": [],

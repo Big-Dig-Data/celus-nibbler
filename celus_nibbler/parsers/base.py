@@ -1,6 +1,7 @@
 import datetime
 import itertools
 import logging
+import re
 import typing
 from abc import ABCMeta, abstractmethod
 
@@ -89,7 +90,9 @@ class MonthMetricDataCells(DataCells):
 
 
 class BaseArea(metaclass=ABCMeta):
-    organization_cells: typing.Optional['celus_nibbler.definitions.common.Source'] = None
+    organization_source: typing.Optional[
+        'celus_nibbler.definitions.common.OrganizationSource'
+    ] = None
     date_cells: typing.Optional['celus_nibbler.definitions.common.Source'] = None
     title_cells: typing.Optional['celus_nibbler.definitions.common.Source'] = None
     title_ids_cells: typing.Dict[str, 'celus_nibbler.definitions.common.Source'] = {}
@@ -194,10 +197,17 @@ class BaseParser(metaclass=ABCMeta):
         seq: typing.Union[typing.Sequence[Coord], CoordRange, DataCells, Value, SheetAttr],
         idx: int,
         validator: typing.Type[BaseModel],
+        regex: typing.Optional[typing.Pattern] = None,
     ) -> typing.Any:
         try:
             cell = seq[idx]
             content = cell.content(self.sheet)
+            if regex:
+                if extacted := re.search(regex, content):
+                    content = extacted.group(1)  # regex needs to contain a group
+                else:
+                    # Unable to extract data
+                    return None
             res = validator(value=content).value
         except ValidationError as e:
             if isinstance(seq, Value):
@@ -211,15 +221,15 @@ class BaseParser(metaclass=ABCMeta):
             else:
                 raise TableException(
                     content,
-                    row=cell.row,
-                    col=cell.col,
+                    row=cell.row if isinstance(cell, Coord) else None,
+                    col=cell.col if isinstance(cell, Coord) else None,
                     sheet=self.sheet.sheet_idx,
                     reason=e.model.__name__.lower() if content else "empty",
                 ) from e
         except IndexError as e:
             raise TableException(
-                row=cell.row,
-                col=cell.col,
+                row=cell.row if isinstance(cell, Coord) else None,
+                col=cell.col if isinstance(cell, Coord) else None,
                 sheet=self.sheet.sheet_idx,
                 reason='out-of-bounds',
             ) from e
@@ -270,9 +280,12 @@ class BaseParser(metaclass=ABCMeta):
                 else:
                     metric = None
 
-                if area.organization_cells:
+                if area.organization_source:
                     organization = self._parse_content(
-                        area.organization_cells, idx, validators.Organization
+                        area.organization_source.source,
+                        idx,
+                        validators.Organization,
+                        area.organization_source.regex,
                     )
                 else:
                     organization = None

@@ -8,7 +8,6 @@ from ..parsers.base import BaseArea
 from ..utils import JsonEncorder, PydanticConfig
 
 Source = typing.Union[Coord, CoordRange, SheetAttr, Value]
-Content = typing.Union[Coord, SheetAttr, Value]
 
 
 @dataclass(config=PydanticConfig)
@@ -27,6 +26,7 @@ class MetricSource(JsonEncorder):
 @dataclass(config=PydanticConfig)
 class OrganizationSource(JsonEncorder):
     source: Source
+    regex: typing.Optional[typing.Pattern] = None
 
 
 @dataclass(config=PydanticConfig)

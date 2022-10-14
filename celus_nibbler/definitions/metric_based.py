@@ -31,7 +31,7 @@ class MetricBasedAreaDefinition(AreaGeneratorMixin, JsonEncorder):
     titles: typing.Optional[TitleSource] = None
     title_ids: typing.List[TitleIdSource] = field(default_factory=lambda: [])
     dimensions: typing.List[DimensionSource] = field(default_factory=lambda: [])
-    organization: typing.Optional[OrganizationSource] = None
+    organizations: typing.Optional[OrganizationSource] = None
 
     name: typing.Literal["non_counter.metric_based"] = "non_counter.metric_based"
 
@@ -41,18 +41,13 @@ class MetricBasedAreaDefinition(AreaGeneratorMixin, JsonEncorder):
         title_ids = self.title_ids
         dimensions = self.dimensions
         metrics_range = self.metrics.source
-        organization = self.organization
+        organizations = self.organizations
         data_direction = self.metrics.direction
 
         class Area(BaseMetricArea):
             header_cells = metrics_range
 
-            @property
-            def organization_cells(self) -> typing.Optional[Source]:
-                if organization:
-                    return organization.source
-                else:
-                    return None
+            organization_source = organizations
 
             def find_data_cells(self) -> typing.List[MetricDataCells]:
                 res = []

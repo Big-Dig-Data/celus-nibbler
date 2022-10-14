@@ -5,6 +5,7 @@ from pydantic import ValidationError
 
 import celus_nibbler
 from celus_nibbler.coordinates import Coord, CoordRange, Direction
+from celus_nibbler.definitions.common import OrganizationSource
 from celus_nibbler.errors import TableException
 from celus_nibbler.parsers.non_counter.date_based import VerticalDateArea
 
@@ -40,6 +41,7 @@ class CounterHeaderArea(VerticalDateArea):
     ]
     TITLE_COLUMN_NAMES: typing.List[str] = []
     ORGANIZATION_COLUMN_NAMES: typing.List[str] = []
+    ORGANIZATION_COLUMN_EXTRACTION_REGEX: typing.Optional[typing.Pattern] = None
     METRIC_COLUMN_NAMES: typing.List[str] = []
 
     @property
@@ -146,7 +148,7 @@ class CounterHeaderArea(VerticalDateArea):
         return dim_cells
 
     @property
-    def organization_cells(self) -> typing.Optional['celus_nibbler.definitions.common.Source']:
+    def organization_source(self) -> typing.Optional['celus_nibbler.definitions.common.Source']:
         if not self.ORGANIZATION_COLUMN_NAMES:
             # Organization column not defined
             return None
@@ -159,7 +161,10 @@ class CounterHeaderArea(VerticalDateArea):
                     break  # last cell reached
 
             if content.strip() in self.ORGANIZATION_COLUMN_NAMES:
-                return CoordRange(Coord(cell.row + 1, cell.col), Direction.DOWN)
+                return OrganizationSource(
+                    CoordRange(cell, Direction.DOWN).skip(1),
+                    self.ORGANIZATION_COLUMN_EXTRACTION_REGEX,
+                )
 
     @property
     def metric_cells(self):
@@ -173,7 +178,7 @@ class CounterHeaderArea(VerticalDateArea):
                     e.lower() for e in self.METRIC_COLUMN_NAMES
                 ]:
 
-                    return CoordRange(Coord(cell.row + 1, cell.col), Direction.DOWN)
+                    return CoordRange(cell, Direction.DOWN).skip(1)
             except TableException as e:
                 if e.reason in ["out-of-bounds"]:
                     raise TableException(

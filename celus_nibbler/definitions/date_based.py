@@ -49,12 +49,7 @@ class DateBasedAreaDefinition(AreaGeneratorMixin, JsonEncorder):
             def header_cells(self) -> CoordRange:
                 return dates_range
 
-            @property
-            def organization_cells(self) -> typing.Optional[Source]:
-                if organizations:
-                    return organizations.source
-                else:
-                    return None
+            organization_source = organizations
 
             def find_data_cells(self) -> typing.List[MonthDataCells]:
                 res = []
