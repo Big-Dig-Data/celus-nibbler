@@ -1,13 +1,21 @@
 import itertools
+import logging
 import typing
 
 from pydantic import ValidationError
 
-import celus_nibbler
 from celus_nibbler.coordinates import Coord, CoordRange, Direction
 from celus_nibbler.errors import TableException
 from celus_nibbler.parsers.non_counter.date_based import VerticalDateArea
-from celus_nibbler.sources import OrganizationSource
+from celus_nibbler.sources import (
+    DimensionSource,
+    MetricSource,
+    OrganizationSource,
+    TitleIdSource,
+    TitleSource,
+)
+
+logger = logging.getLogger(__name__)
 
 
 class CounterHeaderArea(VerticalDateArea):
@@ -94,10 +102,10 @@ class CounterHeaderArea(VerticalDateArea):
                 continue  # doesn't match the header
 
     @property
-    def title_cells(self) -> typing.Optional['celus_nibbler.definitions.common.Source']:
+    def title_source(self) -> typing.Optional[TitleSource]:
         if not self.TITLE_COLUMN_NAMES:
             # Name of title column not defined -> assumed the title is in first column
-            return CoordRange(Coord(self.header_row[0].row + 1, 0), Direction.DOWN)
+            return TitleSource(CoordRange(self.header_row[0], Direction.DOWN).skip(1))
 
         for cell in self.header_row:
             try:
@@ -107,11 +115,11 @@ class CounterHeaderArea(VerticalDateArea):
                     break  # last cell reached
 
             if content.strip() in self.TITLE_COLUMN_NAMES:
-                return CoordRange(Coord(cell.row + 1, cell.col), Direction.DOWN)
+                return TitleSource(CoordRange(cell, Direction.DOWN).skip(1))
 
     @property
-    def title_ids_cells(self):
-        ids_cells = {}
+    def title_ids_sources(self) -> typing.Dict[str, TitleIdSource]:
+        ids_sources = {}
         for cell in self.header_row:
             try:
                 content = cell.content(self.sheet)
@@ -119,36 +127,49 @@ class CounterHeaderArea(VerticalDateArea):
                 if e.reason in ["out-of-bounds"]:
                     break  # last cell reached
 
-            if content.strip() in self.DOI_NAMES:
-                ids_cells["DOI"] = CoordRange(Coord(cell.row + 1, cell.col), Direction.DOWN)
-            elif content.strip() in self.ISBN_NAMES:
-                ids_cells["ISBN"] = CoordRange(Coord(cell.row + 1, cell.col), Direction.DOWN)
+            # Validate name
+            content = content.strip()
+
+            if content in self.DOI_NAMES:
+                name = "DOI"
+            elif content in self.ISBN_NAMES:
+                name = "ISBN"
             elif content.strip() in self.ISSN_NAMES:
-                ids_cells["Print_ISSN"] = CoordRange(Coord(cell.row + 1, cell.col), Direction.DOWN)
+                name = "Print_ISSN"
             elif content.strip() in self.EISSN_NAMES:
-                ids_cells["Online_ISSN"] = CoordRange(Coord(cell.row + 1, cell.col), Direction.DOWN)
+                name = "Online_ISSN"
             elif content.strip() in self.PROPRIETARY_NAMES:
-                ids_cells["Proprietary"] = CoordRange(Coord(cell.row + 1, cell.col), Direction.DOWN)
+                name = "Proprietary"
+            else:
+                # empty or other field
+                continue
 
-        return ids_cells
+            source = TitleIdSource(name, CoordRange(cell, Direction.DOWN).skip(1))
+            ids_sources[name] = source
+
+        return ids_sources
 
     @property
-    def dimensions_cells(self):
-        dim_cells = {}
+    def dimensions_sources(self) -> typing.Dict[str, DimensionSource]:
+        dim_sources = {}
         for cell in self.header_row:
             try:
                 content = cell.content(self.sheet)
             except TableException as e:
                 if e.reason in ["out-of-bounds"]:
                     break  # last cell reached
-            for dimension, names in self.DIMENSION_NAMES_MAP:
-                if content.strip() in names:
-                    dim_cells[dimension] = CoordRange(Coord(cell.row + 1, cell.col), Direction.DOWN)
 
-        return dim_cells
+            content = content.strip()
+            for dimension, names in self.DIMENSION_NAMES_MAP:
+                if content in names:
+                    dim_sources[dimension] = DimensionSource(
+                        content, CoordRange(Coord(cell.row + 1, cell.col), Direction.DOWN)
+                    )
+
+        return dim_sources
 
     @property
-    def organization_source(self) -> typing.Optional['celus_nibbler.definitions.common.Source']:
+    def organization_source(self) -> typing.Optional[OrganizationSource]:
         if not self.ORGANIZATION_COLUMN_NAMES:
             # Organization column not defined
             return None
@@ -166,8 +187,10 @@ class CounterHeaderArea(VerticalDateArea):
                     self.ORGANIZATION_COLUMN_EXTRACTION_REGEX,
                 )
 
+        return None
+
     @property
-    def metric_cells(self):
+    def metric_source(self) -> typing.Optional[MetricSource]:
         if not self.METRIC_COLUMN_NAMES:
             return None
 
@@ -178,7 +201,7 @@ class CounterHeaderArea(VerticalDateArea):
                     e.lower() for e in self.METRIC_COLUMN_NAMES
                 ]:
 
-                    return CoordRange(cell, Direction.DOWN).skip(1)
+                    return MetricSource(CoordRange(cell, Direction.DOWN).skip(1))
             except TableException as e:
                 if e.reason in ["out-of-bounds"]:
                     raise TableException(
@@ -187,3 +210,5 @@ class CounterHeaderArea(VerticalDateArea):
                         sheet=self.sheet.sheet_idx,
                         reason="missing-metric-in-header",
                     )
+
+        return None

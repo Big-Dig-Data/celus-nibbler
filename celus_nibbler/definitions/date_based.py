@@ -77,21 +77,16 @@ class DateBasedAreaDefinition(AreaGeneratorMixin, JsonEncorder):
 
                 return res
 
-            @property
-            def title_cells(self) -> typing.Optional[Source]:
-                return titles.source
+            title_source = titles
+            metric_source = metrics
 
             @property
-            def title_ids_cells(self) -> typing.Dict[str, Source]:
-                return {e.name: e.source for e in title_ids}
+            def title_ids_sources(self) -> typing.Dict[str, Source]:
+                return {e.name: e for e in title_ids}
 
             @property
-            def dimensions_cells(self) -> typing.Dict[str, Source]:
-                return {e.name: e.source for e in dimensions}
-
-            @property
-            def metric_cells(self) -> typing.Dict[str, Source]:
-                return metrics.source
+            def dimensions_sources(self) -> typing.Dict[str, Source]:
+                return {e.name: e for e in dimensions}
 
         return Area
 

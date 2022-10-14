@@ -4,7 +4,7 @@ import typing
 from celus_nibbler.conditions import RegexCondition
 from celus_nibbler.coordinates import Coord, CoordRange, Direction
 from celus_nibbler.parsers.base import BaseParser
-from celus_nibbler.sources import Source
+from celus_nibbler.sources import DimensionSource
 
 from . import CounterHeaderArea
 
@@ -96,14 +96,14 @@ class PR(BaseParser):
     )
 
     class Area(Counter5HeaderArea):
-        @property
-        def title_cells(self):
-            return None
+        title_source = None
 
         @property
-        def dimensions_cells(self) -> typing.Dict[str, Source]:
+        def dimensions_sources(self) -> typing.Dict[str, DimensionSource]:
             return {
-                "Platform": CoordRange(Coord(self.header_row[0].row + 1, 0), Direction.DOWN),
+                "Platform": DimensionSource(
+                    "Platform", CoordRange(Coord(self.header_row[0].row + 1, 0), Direction.DOWN)
+                ),
             }
 
     areas = [Area]

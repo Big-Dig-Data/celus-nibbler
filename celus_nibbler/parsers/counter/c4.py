@@ -130,7 +130,7 @@ class PR1(BaseParser):
         METRIC_COLUMN_NAMES = ["User Activity"]
 
         @property
-        def title_cells(self):
+        def title_source(self):
             return None
 
     areas = [Area]

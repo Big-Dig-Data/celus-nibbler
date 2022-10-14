@@ -14,7 +14,15 @@ from celus_nibbler.conditions import BaseCondition
 from celus_nibbler.coordinates import Coord, CoordRange, SheetAttr, Value
 from celus_nibbler.errors import TableException
 from celus_nibbler.reader import SheetReader
-from celus_nibbler.sources import OrganizationSource, Source
+from celus_nibbler.sources import (
+    DateSource,
+    DimensionSource,
+    MetricSource,
+    OrganizationSource,
+    Source,
+    TitleIdSource,
+    TitleSource,
+)
 from celus_nibbler.utils import end_month, start_month
 
 logger = logging.getLogger(__name__)
@@ -91,11 +99,11 @@ class MonthMetricDataCells(DataCells):
 
 class BaseArea(metaclass=ABCMeta):
     organization_source: typing.Optional[OrganizationSource] = None
-    date_cells: typing.Optional[Source] = None
-    title_cells: typing.Optional[Source] = None
-    title_ids_cells: typing.Dict[str, Source] = {}
-    dimensions_cells: typing.Dict[str, Source] = {}
-    metric_cells: typing.Optional[Source] = None
+    date_source: typing.Optional[DateSource] = None
+    title_source: typing.Optional[TitleSource] = None
+    title_ids_sources: typing.Dict[str, TitleIdSource] = {}
+    dimensions_sources: typing.Dict[str, DimensionSource] = {}
+    metric_source: typing.Optional[MetricSource] = None
     aggregator: BaseAggregator = NoAggregator()
 
     def __init__(self, sheet: SheetReader, platform: str):
@@ -192,7 +200,7 @@ class BaseParser(metaclass=ABCMeta):
 
     def _parse_content(
         self,
-        seq: typing.Union[typing.Sequence[Coord], CoordRange, DataCells, Value, SheetAttr],
+        seq: Source,
         idx: int,
         validator: typing.Type[BaseModel],
         regex: typing.Optional[typing.Pattern] = None,
@@ -271,8 +279,10 @@ class BaseParser(metaclass=ABCMeta):
         try:
             for idx in itertools.count(0):
                 # iterates through ranges
-                if area.metric_cells:
-                    metric = self._parse_content(area.metric_cells, idx, validators.Metric)
+                if area.metric_source:
+                    metric = self._parse_content(
+                        area.metric_source.source, idx, validators.Metric, area.metric_source.regex
+                    )
                     if metric in self.metrics_to_skip:
                         continue
                 else:
@@ -288,32 +298,37 @@ class BaseParser(metaclass=ABCMeta):
                 else:
                     organization = None
 
-                if area.date_cells:
-                    date = self._parse_content(area.date_cells, idx, validators.Date)
+                if area.date_source:
+                    date = self._parse_content(
+                        area.date_source.source, idx, validators.Date, area.date_source.regex
+                    )
                 else:
                     date = None
 
-                if area.title_cells:
-                    title = self._parse_content(area.title_cells, idx, validators.Title)
+                if area.title_source:
+                    title = self._parse_content(
+                        area.title_source.source, idx, validators.Title, area.title_source.regex
+                    )
                     if title in self.titles_to_skip:
                         continue
                 else:
                     title = None
 
                 dimension_data = {}
-                for k, rng in area.dimensions_cells.items():
+                for k, source in area.dimensions_sources.items():
                     dimension_data[k] = self._parse_content(
-                        rng,
+                        source.source,
                         idx,
                         self.dimensions_validators.get(k, validators.Dimension),
+                        source.regex,
                     )
                     if dimension_data[k] in self.dimensions_to_skip.get(k, []):
                         continue
 
                 title_ids = {}
                 for (key, validator) in IDS:
-                    if rng := area.title_ids_cells.get(key):
-                        value = self._parse_content(rng, idx, validator)
+                    if source := area.title_ids_sources.get(key):
+                        value = self._parse_content(source.source, idx, validator, source.regex)
                         if value:
                             title_ids[key] = value
                         else:

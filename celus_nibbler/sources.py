@@ -13,12 +13,14 @@ class DimensionSource(JsonEncorder):
     name: str
     source: Source
     required: bool = True
+    regex: typing.Optional[typing.Pattern] = None
 
 
 @dataclass(config=PydanticConfig)
 class MetricSource(JsonEncorder):
     source: Source
     direction: typing.Optional[Direction] = None
+    regex: typing.Optional[typing.Pattern] = None
 
 
 @dataclass(config=PydanticConfig)
@@ -30,15 +32,18 @@ class OrganizationSource(JsonEncorder):
 @dataclass(config=PydanticConfig)
 class TitleSource(JsonEncorder):
     source: Source
+    regex: typing.Optional[typing.Pattern] = None
 
 
 @dataclass(config=PydanticConfig)
 class TitleIdSource(JsonEncorder):
     name: str
     source: Source
+    regex: typing.Optional[typing.Pattern] = None
 
 
 @dataclass(config=PydanticConfig)
 class DateSource(JsonEncorder):
     source: Source
     direction: typing.Optional[Direction] = None
+    regex: typing.Optional[typing.Pattern] = None

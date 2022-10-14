@@ -7,13 +7,7 @@ from celus_nibbler.conditions import Condition
 from celus_nibbler.coordinates import Coord, CoordRange, Direction
 from celus_nibbler.parsers.base import BaseArea, MonthDataCells
 from celus_nibbler.parsers.non_counter.date_metric_based import BaseDateMetricArea
-from celus_nibbler.sources import (
-    DimensionSource,
-    OrganizationSource,
-    Source,
-    TitleIdSource,
-    TitleSource,
-)
+from celus_nibbler.sources import DimensionSource, OrganizationSource, TitleIdSource, TitleSource
 from celus_nibbler.utils import JsonEncorder, PydanticConfig
 
 from .base import BaseParserDefinition
@@ -66,24 +60,18 @@ class DateMetricBasedAreaDefinition(AreaGeneratorMixin, JsonEncorder):
                 return header_range
 
             organization_source = organizations
+            title_source = titles
 
             def find_data_cells(self) -> typing.List[MonthDataCells]:
                 return self.find_data_cells_in_direction(data_direction)
 
             @property
-            def title_cells(self) -> typing.Optional[Source]:
-                if titles:
-                    return titles.source
-                else:
-                    return None
+            def title_ids_sources(self) -> typing.Dict[str, TitleIdSource]:
+                return {e.name: e for e in title_ids}
 
             @property
-            def title_ids_cells(self) -> typing.Dict[str, Source]:
-                return {e.name: e.source for e in title_ids}
-
-            @property
-            def dimensions_cells(self) -> typing.Dict[str, Source]:
-                return {e.name: e.source for e in dimensions}
+            def dimensions_sources(self) -> typing.Dict[str, DimensionSource]:
+                return {e.name: e for e in dimensions}
 
         return Area
 

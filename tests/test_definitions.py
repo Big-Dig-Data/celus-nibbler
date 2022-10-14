@@ -40,30 +40,35 @@ def test_date_based_area_definition():
         "dates": {
             "direction": "down",
             "source": {"coord": {"row": 1, "col": 5}, "direction": "left"},
+            "regex": None,
         },
         "dimensions": [
             {
                 "name": "publisher",
                 "required": True,
                 "source": {"coord": {"row": 2, "col": 3}, "direction": "down"},
+                "regex": None,
             },
             {
                 "name": "platform",
                 "required": True,
                 "source": {"coord": {"row": 2, "col": 5}, "direction": "down"},
+                "regex": None,
             },
         ],
         "metrics": {
             "direction": None,
             "source": {"coord": {"row": 2, "col": 4}, "direction": "down"},
+            "regex": None,
         },
         "title_ids": [
             {
                 "name": "ISBN",
                 "source": {"coord": {"row": 2, "col": 1}, "direction": "down"},
+                "regex": None,
             }
         ],
-        "titles": {"source": {"coord": {"row": 2, "col": 0}, "direction": "down"}},
+        "titles": {"source": {"coord": {"row": 2, "col": 0}, "direction": "down"}, "regex": None},
         "organizations": None,
     }
 
@@ -107,24 +112,31 @@ def test_errors():
                         "name": "publisher",
                         "required": True,
                         "source": {"coord": {"row": 2, "col": 3}, "direction": "down"},
+                        "regex": None,
                     },
                     {
                         "name": "platform",
                         "required": True,
                         "source": {"coord": {"row": 1, "col": 5}, "direction": "down"},
+                        "regex": None,
                     },
                 ],
                 "metrics": {
                     "direction": None,
                     "source": {"coord": {"row": 2, "col": 4}, "direction": "down"},
+                    "regex": None,
                 },
                 "title_ids": [
                     {
                         "name": "ISBN",
                         "source": {"coord": {"row": 2, "col": 1}, "direction": "down"},
+                        "regex": None,
                     }
                 ],
-                "titles": {"source": {"coord": {"row": 2, "col": 0}, "direction": "down"}},
+                "titles": {
+                    "source": {"coord": {"row": 2, "col": 0}, "direction": "down"},
+                    "regex": None,
+                },
             }
         )
 
@@ -142,20 +154,24 @@ def test_errors():
                         "name": "publisher",
                         "required": True,
                         "source": {"coord": {"row": 2, "col": 3}, "direction": "down"},
+                        "regex": None,
                     },
                     {
                         "name": "platform",
                         "source": {"direction": "down", "coord": {"row": 1, "col": 5}},
+                        "regex": None,
                     },
                 ],
                 "metrics": {
                     "direction": None,
                     "source": {"coord": {"row": 2, "col": 4}, "direction": "down"},
+                    "regex": None,
                 },
                 "title_ids": [
                     {
                         "name": "ISBN",
                         "source": {"coord": {"row": 2, "col": 1}, "direction": "down"},
+                        "regex": None,
                     }
                 ],
             }
@@ -220,29 +236,37 @@ def test_date_based_definition():
                 "dates": {
                     "direction": "down",
                     "source": {"direction": "right", "coord": {"col": 5, "row": 1}},
+                    "regex": None,
                 },
                 "dimensions": [
                     {
                         "name": "publisher",
                         "required": True,
                         "source": {"coord": {"col": 3, "row": 2}, "direction": "down"},
+                        "regex": None,
                     },
                     {
                         "name": "platform",
                         "required": True,
                         "source": {"coord": {"col": 5, "row": 2}, "direction": "down"},
+                        "regex": None,
                     },
                 ],
                 "metrics": {
                     "direction": None,
                     "source": {"coord": {"col": 4, "row": 2}, "direction": "down"},
+                    "regex": None,
                 },
                 "name": "non_counter.date_based",
-                "titles": {"source": {"coord": {"col": 0, "row": 2}, "direction": "down"}},
+                "titles": {
+                    "source": {"coord": {"col": 0, "row": 2}, "direction": "down"},
+                    "regex": None,
+                },
                 "title_ids": [
                     {
                         "name": "ISBN",
                         "source": {"coord": {"col": 1, "row": 2}, "direction": "down"},
+                        "regex": None,
                     },
                 ],
                 "organizations": None,

@@ -11,7 +11,7 @@ from celus_nibbler.conditions import RegexCondition, SheetNameRegexCondition
 from celus_nibbler.coordinates import Coord, CoordRange, Direction
 from celus_nibbler.errors import TableException
 from celus_nibbler.parsers.base import BaseArea, BaseParser, MetricDataCells
-from celus_nibbler.sources import OrganizationSource
+from celus_nibbler.sources import DateSource, DimensionSource, OrganizationSource
 
 
 class BaseMetricArea(BaseArea, metaclass=ABCMeta):
@@ -20,7 +20,7 @@ class BaseMetricArea(BaseArea, metaclass=ABCMeta):
     def get_months(self) -> typing.List[datetime.date]:
         res = set()
         try:
-            for cell in self.date_cells:
+            for cell in self.date_source.source:
                 date = self.parse_date(cell)
                 res.add(date.replace(day=1))
 
@@ -71,9 +71,9 @@ class MetricBasedParser(BaseParser):
 
 
 class MyMetricArea(VerticalMetricArea):
-    date_cells = CoordRange(Coord(15, 1), Direction.DOWN)
-    dimensions_cells = {
-        "Dimension1": CoordRange(Coord(15, 2), Direction.DOWN),
+    date_source = DateSource(CoordRange(Coord(15, 1), Direction.DOWN))
+    dimensions_sources = {
+        "Dimension1": DimensionSource("Dimension1", CoordRange(Coord(15, 2), Direction.DOWN)),
     }
     organization_source = OrganizationSource(CoordRange(Coord(15, 3), Direction.DOWN))
 

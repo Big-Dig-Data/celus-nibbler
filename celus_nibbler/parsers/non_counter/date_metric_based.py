@@ -11,7 +11,7 @@ from celus_nibbler.conditions import RegexCondition, SheetIdxCondition
 from celus_nibbler.coordinates import Coord, CoordRange, Direction
 from celus_nibbler.errors import TableException
 from celus_nibbler.parsers.base import BaseArea, BaseParser, MonthMetricDataCells
-from celus_nibbler.sources import OrganizationSource
+from celus_nibbler.sources import DimensionSource, OrganizationSource
 
 logger = logging.getLogger(__name__)
 
@@ -101,8 +101,8 @@ class MyDateMetricArea(VerticalDateMetricArea):
     data_header_month_regex = re.compile(r"in (\d+\/\d+)$")
     data_header_metric_regex = re.compile(r"^([^ ]+.+[^ ]+) in")
 
-    dimensions_cells = {
-        "Extra": CoordRange(Coord(1, 0), Direction.DOWN),
+    dimensions_sources = {
+        "Extra": DimensionSource("Extra", CoordRange(Coord(1, 0), Direction.DOWN)),
     }
     organization_source = OrganizationSource(
         CoordRange(Coord(1, 1), Direction.DOWN),

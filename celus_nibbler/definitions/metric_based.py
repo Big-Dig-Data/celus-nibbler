@@ -15,7 +15,6 @@ from celus_nibbler.sources import (
     DimensionSource,
     MetricSource,
     OrganizationSource,
-    Source,
     TitleIdSource,
     TitleSource,
 )
@@ -75,24 +74,16 @@ class MetricBasedAreaDefinition(AreaGeneratorMixin, JsonEncorder):
 
                 return res
 
-            @property
-            def date_cells(self) -> typing.Optional[Source]:
-                return dates.source
+            date_source = dates
+            title_source = titles
 
             @property
-            def title_cells(self) -> typing.Optional[Source]:
-                if titles:
-                    return titles.source
-                else:
-                    return None
+            def title_ids_sources(self) -> typing.Dict[str, TitleIdSource]:
+                return {e.name: e for e in title_ids}
 
             @property
-            def title_ids_cells(self) -> typing.Dict[str, Source]:
-                return {e.name: e.source for e in title_ids}
-
-            @property
-            def dimensions_cells(self) -> typing.Dict[str, Source]:
-                return {e.name: e.source for e in dimensions}
+            def dimensions_sources(self) -> typing.Dict[str, DimensionSource]:
+                return {e.name: e for e in dimensions}
 
         return Area
 
