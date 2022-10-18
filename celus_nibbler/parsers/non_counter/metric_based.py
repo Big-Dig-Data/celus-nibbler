@@ -8,7 +8,7 @@ from pydantic import ValidationError
 from celus_nibbler.aggregator import SameAggregator
 from celus_nibbler.conditions import RegexCondition, SheetNameRegexCondition
 from celus_nibbler.coordinates import Coord, CoordRange, Direction
-from celus_nibbler.data_headers import DataHeaders
+from celus_nibbler.data_headers import DataFormatDefinition, DataHeaders
 from celus_nibbler.errors import TableException
 from celus_nibbler.parsers.base import BaseHeaderArea, BaseParser
 from celus_nibbler.sources import DateSource, DimensionSource, MetricSource, OrganizationSource
@@ -37,7 +37,7 @@ class BaseMetricArea(BaseHeaderArea, metaclass=ABCMeta):
 
 
 class MetricBasedParser(BaseParser):
-    format_name = "non_counter.metric_based"
+    data_format = DataFormatDefinition(name="non_counter.metric_based")
     platforms: typing.List[str] = []
     metrics_to_skip: typing.List[str] = []
     titles_to_skip: typing.List[str] = []

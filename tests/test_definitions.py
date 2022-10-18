@@ -5,7 +5,7 @@ from pydantic import ValidationError
 
 from celus_nibbler.conditions import AndCondition, RegexCondition
 from celus_nibbler.coordinates import Coord, CoordRange, Direction
-from celus_nibbler.data_headers import DataHeaders
+from celus_nibbler.data_headers import DataFormatDefinition, DataHeaders
 from celus_nibbler.definitions import (
     DateBasedAreaDefinition,
     DateBasedDefinition,
@@ -200,7 +200,7 @@ def test_errors():
 def test_date_based_definition():
     init_definition = DateBasedDefinition(
         parser_name="Parser1",
-        format_name="Format1",
+        data_format=DataFormatDefinition(name="Format1"),
         platforms=["Platform1", "Platform2"],
         dimensions=["Dim1", "Dim2"],
         heuristics=AndCondition(
@@ -244,7 +244,7 @@ def test_date_based_definition():
         "kind": "non_counter.date_based",
         "version": 1,
         "parser_name": "Parser1",
-        "format_name": "Format1",
+        "data_format": {"name": "Format1", "id": None},
         "platforms": ["Platform1", "Platform2"],
         "dimensions_to_skip": {},
         "dimensions": ["Dim1", "Dim2"],

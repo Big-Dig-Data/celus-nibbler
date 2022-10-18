@@ -11,7 +11,7 @@ from celus_nibbler import validators
 from celus_nibbler.aggregator import BaseAggregator, NoAggregator
 from celus_nibbler.conditions import BaseCondition
 from celus_nibbler.coordinates import Coord
-from celus_nibbler.data_headers import DataCells, DataHeaders
+from celus_nibbler.data_headers import DataCells, DataFormatDefinition, DataHeaders
 from celus_nibbler.errors import TableException
 from celus_nibbler.reader import SheetReader
 from celus_nibbler.sources import (
@@ -97,7 +97,7 @@ class BaseParser(metaclass=ABCMeta):
 
     @property
     @abstractmethod
-    def format_name(self) -> str:
+    def data_format(self) -> DataFormatDefinition:
         pass
 
     @property

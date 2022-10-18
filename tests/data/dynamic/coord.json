@@ -2,7 +2,9 @@
   "kind": "non_counter.date_based",
   "version": 1,
   "parser_name": "coord",
-  "format_name": "simple_format",
+  "data_format": {
+    "name":"simple_format"
+  },
   "platforms": [
     "Platform1",
     "Platform2"

@@ -2,7 +2,9 @@
   "kind": "non_counter.date_metric_based",
   "version": 1,
   "parser_name": "my-date-metric-based",
-  "format_name": "simple_format",
+  "data_format": {
+    "name":"simple_format"
+  },
   "platforms": [
     "My Platform"
   ],

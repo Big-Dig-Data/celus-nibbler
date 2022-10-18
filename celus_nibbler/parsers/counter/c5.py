@@ -3,6 +3,7 @@ import typing
 
 from celus_nibbler.conditions import RegexCondition
 from celus_nibbler.coordinates import Coord, CoordRange, Direction
+from celus_nibbler.data_headers import DataFormatDefinition
 from celus_nibbler.parsers.base import BaseParser
 from celus_nibbler.sources import DimensionSource
 
@@ -15,7 +16,7 @@ class Counter5HeaderArea(CounterHeaderArea):
 
 
 class DR(BaseParser):
-    format_name = "DR"
+    data_format = DataFormatDefinition(name="DR")
 
     titles_to_skip: typing.List[str] = ["Total", "All Databases"]
 
@@ -48,7 +49,7 @@ class DR(BaseParser):
 
 
 class PR(BaseParser):
-    format_name = "PR"
+    data_format = DataFormatDefinition(name="PR")
 
     titles_to_skip: typing.List[str] = ["Total", "All Platforms"]
 
@@ -110,7 +111,7 @@ class PR(BaseParser):
 
 
 class TR(BaseParser):
-    format_name = "TR"
+    data_format = DataFormatDefinition(name="TR")
 
     titles_to_skip: typing.List[str] = ["Total", "All Titles"]
 

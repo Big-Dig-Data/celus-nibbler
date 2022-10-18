@@ -1,7 +1,9 @@
 {
   "kind": "non_counter.date_based",
   "parser_name": "date_cells_out_of_range",
-  "format_name": "simple_format",
+  "data_format": {
+    "name":"simple_format"
+  },
   "platforms": [
     "Platform1",
     "Platform2"

@@ -2,7 +2,9 @@
   "kind": "non_counter.date_based",
   "version": 1,
   "parser_name": "organization",
-  "format_name": "organization_format",
+  "data_format": {
+    "name":"organization_format"
+  },
   "platforms": [
     "Platform1",
     "Platform2"

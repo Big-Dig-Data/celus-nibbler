@@ -127,3 +127,9 @@ class DataCells:
             record_dict["title_ids"] = title_ids
 
         return CounterRecord(**record_dict)
+
+
+@pydantic_dataclass(config=PydanticConfig)
+class DataFormatDefinition(JsonEncorder):
+    name: str
+    id: typing.Optional[int] = None

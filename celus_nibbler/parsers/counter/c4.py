@@ -5,13 +5,14 @@ from celus_nigiri import CounterRecord
 
 from celus_nibbler.conditions import RegexCondition
 from celus_nibbler.coordinates import Coord
+from celus_nibbler.data_headers import DataFormatDefinition
 from celus_nibbler.parsers.base import BaseParser
 
 from . import CounterHeaderArea
 
 
 class BR1(BaseParser):
-    format_name = "BR1"
+    data_format = DataFormatDefinition(name="BR1")
 
     titles_to_skip: typing.List[str] = ["Total", "Total for all titles"]
 
@@ -33,7 +34,7 @@ class BR1(BaseParser):
 
 
 class BR2(BaseParser):
-    format_name = "BR2"
+    data_format = DataFormatDefinition(name="BR2")
 
     titles_to_skip: typing.List[str] = ["Total", "Total for all titles"]
 
@@ -59,7 +60,7 @@ class BR2(BaseParser):
 
 
 class BR3(BaseParser):
-    format_name = "BR3"
+    data_format = DataFormatDefinition(name="BR3")
 
     titles_to_skip: typing.List[str] = ["Total", "Total for all titles"]
 
@@ -81,7 +82,7 @@ class BR3(BaseParser):
 
 
 class DB1(BaseParser):
-    format_name = "DB1"
+    data_format = DataFormatDefinition(name="DB1")
 
     titles_to_skip: typing.List[str] = ["Total", "Total for all databases"]
     platforms = [
@@ -101,7 +102,7 @@ class DB1(BaseParser):
 
 
 class DB2(BaseParser):
-    format_name = "DB2"
+    data_format = DataFormatDefinition(name="DB2")
 
     titles_to_skip: typing.List[str] = ["Total", "Total for all databases"]
     platforms = [
@@ -117,7 +118,7 @@ class DB2(BaseParser):
 
 
 class PR1(BaseParser):
-    format_name = "PR1"
+    data_format = DataFormatDefinition(name="PR1")
 
     titles_to_skip: typing.List[str] = ["Total", "Total for all platforms"]
     platforms = [
@@ -137,7 +138,7 @@ class PR1(BaseParser):
 
 
 class JR1(BaseParser):
-    format_name = "JR1"
+    data_format = DataFormatDefinition(name="JR1")
 
     titles_to_skip: typing.List[str] = ["Total", "Total for all journals"]
     platforms = [
@@ -197,7 +198,7 @@ class JR1(BaseParser):
 
 
 class JR1a(BaseParser):
-    format_name = "JR1a"
+    data_format = DataFormatDefinition(name="JR1a")
 
     titles_to_skip: typing.List[str] = ["Total", "Total for all journals"]
     platforms = [
@@ -217,7 +218,7 @@ class JR1a(BaseParser):
 
 
 class JR1GOA(BaseParser):
-    format_name = "JR1GOA"
+    data_format = DataFormatDefinition(name="JR1GOA")
 
     titles_to_skip: typing.List[str] = ["Total", "Total for all journals"]
     platforms = [
@@ -244,7 +245,7 @@ class JR1GOA(BaseParser):
 
 
 class JR2(BaseParser):
-    format_name = "JR2"
+    data_format = DataFormatDefinition(name="JR2")
 
     titles_to_skip: typing.List[str] = ["Total", "Total for all journals"]
     heuristics = RegexCondition(re.compile(r"^Journal Report 2 \(R4\)"), Coord(0, 0))
@@ -301,7 +302,7 @@ class JR2(BaseParser):
 
 
 class MR1(BaseParser):
-    format_name = "MR1"
+    data_format = DataFormatDefinition(name="MR1")
 
     titles_to_skip: typing.List[str] = ["Total", "Total for all collections"]
     platforms = [

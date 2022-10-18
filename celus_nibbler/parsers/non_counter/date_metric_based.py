@@ -6,7 +6,7 @@ from abc import ABCMeta
 
 from celus_nibbler.conditions import RegexCondition, SheetIdxCondition
 from celus_nibbler.coordinates import Coord, CoordRange, Direction
-from celus_nibbler.data_headers import DataHeaders
+from celus_nibbler.data_headers import DataFormatDefinition, DataHeaders
 from celus_nibbler.parsers.base import BaseHeaderArea, BaseParser
 from celus_nibbler.sources import DateSource, DimensionSource, MetricSource, OrganizationSource
 
@@ -19,7 +19,7 @@ class BaseDateMetricArea(BaseHeaderArea, metaclass=ABCMeta):
 
 
 class DateMetricBasedParser(BaseParser):
-    format_name = "non_counter.date_metric_based"
+    data_format = DataFormatDefinition(name="non_counter.date_metric_based")
     platforms: typing.List[str] = []
     metrics_to_skip: typing.List[str] = []
     titles_to_skip: typing.List[str] = []

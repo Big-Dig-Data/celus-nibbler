@@ -4,7 +4,7 @@ from dataclasses import field
 from pydantic.dataclasses import dataclass
 
 from celus_nibbler.conditions import Condition
-from celus_nibbler.data_headers import DataHeaders
+from celus_nibbler.data_headers import DataFormatDefinition, DataHeaders
 from celus_nibbler.parsers.base import BaseArea
 from celus_nibbler.parsers.non_counter.date_based import BaseDateArea
 from celus_nibbler.sources import (
@@ -61,8 +61,8 @@ class DateBasedAreaDefinition(JsonEncorder, BaseAreaDefinition):
 class DateBasedDefinition(JsonEncorder, BaseParserDefinition):
     # name of nibbler parser
     parser_name: str
-    format_name: str
     areas: typing.List[DateBasedAreaDefinition]
+    data_format: DataFormatDefinition
     platforms: typing.List[str] = field(default_factory=lambda: [])
     dimensions: typing.List[str] = field(default_factory=lambda: [])
     metrics_to_skip: typing.List[str] = field(default_factory=lambda: [])
@@ -82,7 +82,7 @@ class DateBasedDefinition(JsonEncorder, BaseParserDefinition):
         class Parser(DynamicParserMixin, BaseParser):
             _definition = self
 
-            format_name = _definition.format_name
+            data_format = _definition.data_format
             platforms = _definition.platforms
 
             metrics_to_skip = _definition.metrics_to_skip
