@@ -1,5 +1,5 @@
 {
-  "name": "non_counter.date_based",
+  "kind": "non_counter.date_based",
   "version": 1,
   "parser_name": "coord",
   "format_name": "simple_format",
@@ -136,7 +136,7 @@
           "required": true
         }
       ],
-      "name": "non_counter.date_based"
+      "kind": "non_counter.date_based"
     }
   ]
 }

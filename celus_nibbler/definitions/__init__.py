@@ -16,7 +16,7 @@ AreaDefinition = Annotated[
         DateMetricBasedAreaDefinition,
         MetricBasedAreaDefinition,
     ],
-    Field(discriminator='name'),
+    Field(discriminator='kind'),
 ]
 
 
@@ -40,7 +40,7 @@ DefinitionAnotation = Annotated[
         counter.PRDefinition,
         MetricBasedDefinition,
     ],
-    Field(discriminator='name'),
+    Field(discriminator='kind'),
 ]
 
 

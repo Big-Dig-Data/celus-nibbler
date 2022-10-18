@@ -42,7 +42,7 @@ Override = Annotated[
 
 @dataclass(config=PydanticConfig)
 class BR1Definition(JsonEncorder, BaseParserDefinition):
-    name: typing.Literal["counter4.BR1"] = "counter4.BR1"
+    kind: typing.Literal["counter4.BR1"] = "counter4.BR1"
     version: typing.Literal[1] = 1
     overrides: typing.List[Override] = field(default_factory=lambda: [])
     organization_column: typing.Optional[typing.List[str]] = None
@@ -61,7 +61,7 @@ class BR1Definition(JsonEncorder, BaseParserDefinition):
                 TITLE_COLUMN_NAMES = self.title_column
 
         class Parser(DynamicParserMixin, BR1):
-            name = self.name
+            name = self.kind
             for override in self.overrides:
                 locals()[override.name] = override.value
 
@@ -72,7 +72,7 @@ class BR1Definition(JsonEncorder, BaseParserDefinition):
 
 @dataclass(config=PydanticConfig)
 class BR2Definition(JsonEncorder, BaseParserDefinition):
-    name: typing.Literal["counter4.BR2"] = "counter4.BR2"
+    kind: typing.Literal["counter4.BR2"] = "counter4.BR2"
     version: typing.Literal[1] = 1
     overrides: typing.List[Override] = field(default_factory=lambda: [])
     organization_column: typing.Optional[typing.List[str]] = None
@@ -91,7 +91,7 @@ class BR2Definition(JsonEncorder, BaseParserDefinition):
                 TITLE_COLUMN_NAMES = self.title_column
 
         class Parser(DynamicParserMixin, BR2):
-            name = self.name
+            name = self.kind
             for override in self.overrides:
                 locals()[override.name] = override.value
             areas = [Area]
@@ -101,7 +101,7 @@ class BR2Definition(JsonEncorder, BaseParserDefinition):
 
 @dataclass(config=PydanticConfig)
 class BR3Definition(JsonEncorder, BaseParserDefinition):
-    name: typing.Literal["counter4.BR3"] = "counter4.BR3"
+    kind: typing.Literal["counter4.BR3"] = "counter4.BR3"
     version: typing.Literal[1] = 1
     overrides: typing.List[Override] = field(default_factory=lambda: [])
     organization_column: typing.Optional[typing.List[str]] = None
@@ -120,7 +120,7 @@ class BR3Definition(JsonEncorder, BaseParserDefinition):
                 TITLE_COLUMN_NAMES = self.title_column
 
         class Parser(DynamicParserMixin, BR3):
-            name = self.name
+            name = self.kind
             for override in self.overrides:
                 locals()[override.name] = override.value
             areas = [Area]
@@ -130,7 +130,7 @@ class BR3Definition(JsonEncorder, BaseParserDefinition):
 
 @dataclass(config=PydanticConfig)
 class DB1Definition(JsonEncorder, BaseParserDefinition):
-    name: typing.Literal["counter4.DB1"] = "counter4.DB1"
+    kind: typing.Literal["counter4.DB1"] = "counter4.DB1"
     version: typing.Literal[1] = 1
     overrides: typing.List[Override] = field(default_factory=lambda: [])
     organization_column: typing.Optional[typing.List[str]] = None
@@ -149,7 +149,7 @@ class DB1Definition(JsonEncorder, BaseParserDefinition):
                 TITLE_COLUMN_NAMES = self.title_column
 
         class Parser(DynamicParserMixin, DB1):
-            name = self.name
+            name = self.kind
             for override in self.overrides:
                 locals()[override.name] = override.value
             areas = [Area]
@@ -159,7 +159,7 @@ class DB1Definition(JsonEncorder, BaseParserDefinition):
 
 @dataclass(config=PydanticConfig)
 class DB2Definition(JsonEncorder, BaseParserDefinition):
-    name: typing.Literal["counter4.DB2"] = "counter4.DB2"
+    kind: typing.Literal["counter4.DB2"] = "counter4.DB2"
     version: typing.Literal[1] = 1
     overrides: typing.List[Override] = field(default_factory=lambda: [])
     organization_column: typing.Optional[typing.List[str]] = None
@@ -178,7 +178,7 @@ class DB2Definition(JsonEncorder, BaseParserDefinition):
                 TITLE_COLUMN_NAMES = self.title_column
 
         class Parser(DynamicParserMixin, DB2):
-            name = self.name
+            name = self.kind
             for override in self.overrides:
                 locals()[override.name] = override.value
             areas = [Area]
@@ -188,7 +188,7 @@ class DB2Definition(JsonEncorder, BaseParserDefinition):
 
 @dataclass(config=PydanticConfig)
 class JR1Definition(JsonEncorder, BaseParserDefinition):
-    name: typing.Literal["counter4.JR1"] = "counter4.JR1"
+    kind: typing.Literal["counter4.JR1"] = "counter4.JR1"
     version: typing.Literal[1] = 1
     overrides: typing.List[Override] = field(default_factory=lambda: [])
     organization_column: typing.Optional[typing.List[str]] = None
@@ -207,7 +207,7 @@ class JR1Definition(JsonEncorder, BaseParserDefinition):
                 TITLE_COLUMN_NAMES = self.title_column
 
         class Parser(DynamicParserMixin, JR1):
-            name = self.name
+            name = self.kind
             for override in self.overrides:
                 locals()[override.name] = override.value
             areas = [Area]
@@ -217,7 +217,7 @@ class JR1Definition(JsonEncorder, BaseParserDefinition):
 
 @dataclass(config=PydanticConfig)
 class JR1aDefinition(JsonEncorder, BaseParserDefinition):
-    name: typing.Literal["counter4.JR1a"] = "counter4.JR1a"
+    kind: typing.Literal["counter4.JR1a"] = "counter4.JR1a"
     version: typing.Literal[1] = 1
     overrides: typing.List[Override] = field(default_factory=lambda: [])
     organization_column: typing.Optional[typing.List[str]] = None
@@ -236,7 +236,7 @@ class JR1aDefinition(JsonEncorder, BaseParserDefinition):
                 TITLE_COLUMN_NAMES = self.title_column
 
         class Parser(DynamicParserMixin, JR1a):
-            name = self.name
+            name = self.kind
             for override in self.overrides:
                 locals()[override.name] = override.value
             areas = [Area]
@@ -246,7 +246,7 @@ class JR1aDefinition(JsonEncorder, BaseParserDefinition):
 
 @dataclass(config=PydanticConfig)
 class JR1GOADefinition(JsonEncorder, BaseParserDefinition):
-    name: typing.Literal["counter4.JR1GOA"] = "counter4.JR1GOA"
+    kind: typing.Literal["counter4.JR1GOA"] = "counter4.JR1GOA"
     version: typing.Literal[1] = 1
     overrides: typing.List[Override] = field(default_factory=lambda: [])
     organization_column: typing.Optional[typing.List[str]] = None
@@ -265,7 +265,7 @@ class JR1GOADefinition(JsonEncorder, BaseParserDefinition):
                 TITLE_COLUMN_NAMES = self.title_column
 
         class Parser(DynamicParserMixin, JR1GOA):
-            name = self.name
+            name = self.kind
             for override in self.overrides:
                 locals()[override.name] = override.value
             areas = [Area]
@@ -275,7 +275,7 @@ class JR1GOADefinition(JsonEncorder, BaseParserDefinition):
 
 @dataclass(config=PydanticConfig)
 class JR2Definition(JsonEncorder, BaseParserDefinition):
-    name: typing.Literal["counter4.JR2"] = "counter4.JR2"
+    kind: typing.Literal["counter4.JR2"] = "counter4.JR2"
     version: typing.Literal[1] = 1
     overrides: typing.List[Override] = field(default_factory=lambda: [])
     organization_column: typing.Optional[typing.List[str]] = None
@@ -294,7 +294,7 @@ class JR2Definition(JsonEncorder, BaseParserDefinition):
                 TITLE_COLUMN_NAMES = self.title_column
 
         class Parser(DynamicParserMixin, JR2):
-            name = self.name
+            name = self.kind
             for override in self.overrides:
                 locals()[override.name] = override.value
             areas = [Area]
@@ -304,7 +304,7 @@ class JR2Definition(JsonEncorder, BaseParserDefinition):
 
 @dataclass(config=PydanticConfig)
 class MR1Definition(JsonEncorder, BaseParserDefinition):
-    name: typing.Literal["counter4.MR1"] = "counter4.MR1"
+    kind: typing.Literal["counter4.MR1"] = "counter4.MR1"
     version: typing.Literal[1] = 1
     overrides: typing.List[Override] = field(default_factory=lambda: [])
     organization_column: typing.Optional[typing.List[str]] = None
@@ -323,7 +323,7 @@ class MR1Definition(JsonEncorder, BaseParserDefinition):
                 TITLE_COLUMN_NAMES = self.title_column
 
         class Parser(DynamicParserMixin, MR1):
-            name = self.name
+            name = self.kind
             for override in self.overrides:
                 locals()[override.name] = override.value
             areas = [Area]
@@ -333,7 +333,7 @@ class MR1Definition(JsonEncorder, BaseParserDefinition):
 
 @dataclass(config=PydanticConfig)
 class PR1Definition(JsonEncorder, BaseParserDefinition):
-    name: typing.Literal["counter4.PR1"] = "counter4.PR1"
+    kind: typing.Literal["counter4.PR1"] = "counter4.PR1"
     version: typing.Literal[1] = 1
     overrides: typing.List[Override] = field(default_factory=lambda: [])
     organization_column: typing.Optional[typing.List[str]] = None
@@ -352,7 +352,7 @@ class PR1Definition(JsonEncorder, BaseParserDefinition):
                 TITLE_COLUMN_NAMES = self.title_column
 
         class Parser(DynamicParserMixin, PR1):
-            name = self.name
+            name = self.kind
             for override in self.overrides:
                 locals()[override.name] = override.value
             areas = [Area]
@@ -362,7 +362,7 @@ class PR1Definition(JsonEncorder, BaseParserDefinition):
 
 @dataclass(config=PydanticConfig)
 class TRDefinition(JsonEncorder, BaseParserDefinition):
-    name: typing.Literal["counter5.TR"] = "counter5.TR"
+    kind: typing.Literal["counter5.TR"] = "counter5.TR"
     version: typing.Literal[1] = 1
     overrides: typing.List[Override] = field(default_factory=lambda: [])
     organization_column: typing.Optional[typing.List[str]] = None
@@ -381,7 +381,7 @@ class TRDefinition(JsonEncorder, BaseParserDefinition):
                 TITLE_COLUMN_NAMES = self.title_column
 
         class Parser(DynamicParserMixin, TR):
-            name = self.name
+            name = self.kind
             for override in self.overrides:
                 locals()[override.name] = override.value
             areas = [Area]
@@ -391,7 +391,7 @@ class TRDefinition(JsonEncorder, BaseParserDefinition):
 
 @dataclass(config=PydanticConfig)
 class DRDefinition(JsonEncorder, BaseParserDefinition):
-    name: typing.Literal["counter5.DR"] = "counter5.DR"
+    kind: typing.Literal["counter5.DR"] = "counter5.DR"
     version: typing.Literal[1] = 1
     overrides: typing.List[Override] = field(default_factory=lambda: [])
     organization_column: typing.Optional[typing.List[str]] = None
@@ -410,7 +410,7 @@ class DRDefinition(JsonEncorder, BaseParserDefinition):
                 TITLE_COLUMN_NAMES = self.title_column
 
         class Parser(DynamicParserMixin, DR):
-            name = self.name
+            name = self.kind
             for override in self.overrides:
                 locals()[override.name] = override.value
             areas = [Area]
@@ -420,7 +420,7 @@ class DRDefinition(JsonEncorder, BaseParserDefinition):
 
 @dataclass(config=PydanticConfig)
 class PRDefinition(JsonEncorder, BaseParserDefinition):
-    name: typing.Literal["counter5.PR"] = "counter5.PR"
+    kind: typing.Literal["counter5.PR"] = "counter5.PR"
     version: typing.Literal[1] = 1
     overrides: typing.List[Override] = field(default_factory=lambda: [])
     organization_column: typing.Optional[typing.List[str]] = None
@@ -439,7 +439,7 @@ class PRDefinition(JsonEncorder, BaseParserDefinition):
                 TITLE_COLUMN_NAMES = self.title_column
 
         class Parser(DynamicParserMixin, PR):
-            name = self.name
+            name = self.kind
             for override in self.overrides:
                 locals()[override.name] = override.value
             areas = [Area]

@@ -16,12 +16,11 @@ from celus_nibbler.sources import (
 )
 from celus_nibbler.utils import JsonEncorder, PydanticConfig
 
-from .base import BaseParserDefinition
-from .common import AreaGeneratorMixin
+from .base import BaseAreaDefinition, BaseParserDefinition
 
 
 @dataclass(config=PydanticConfig)
-class MetricBasedAreaDefinition(AreaGeneratorMixin, JsonEncorder):
+class MetricBasedAreaDefinition(JsonEncorder, BaseAreaDefinition):
     data_headers: DataHeaders
     dates: DateSource
     titles: typing.Optional[TitleSource] = None
@@ -29,7 +28,7 @@ class MetricBasedAreaDefinition(AreaGeneratorMixin, JsonEncorder):
     dimensions: typing.List[DimensionSource] = field(default_factory=lambda: [])
     organizations: typing.Optional[OrganizationSource] = None
 
-    name: typing.Literal["non_counter.metric_based"] = "non_counter.metric_based"
+    kind: typing.Literal["non_counter.metric_based"] = "non_counter.metric_based"
 
     def make_area(self):
         headers = self.data_headers
@@ -70,13 +69,15 @@ class MetricBasedDefinition(BaseParserDefinition, metaclass=abc.ABCMeta):
     dimension_aliases: typing.List[typing.Tuple[str, str]] = field(default_factory=lambda: [])
     heuristics: typing.Optional[Condition] = None
 
-    name: typing.Literal["non_counter.metric_based"] = "non_counter.metric_based"
+    kind: typing.Literal["non_counter.metric_based"] = "non_counter.metric_based"
     version: typing.Literal[1] = 1
 
     def make_parser(self):
         from ..parsers.dynamic import DynamicParserMixin
 
         class Parser(DynamicParserMixin, MetricBasedParser):
+            _definition = self
+
             name = self.parser_name
             format_name = self.format_name
             platforms = self.platforms
@@ -91,5 +92,9 @@ class MetricBasedDefinition(BaseParserDefinition, metaclass=abc.ABCMeta):
             heuristics = self.heuristics
 
             areas = [e.make_area() for e in self.areas]
+
+            @classmethod
+            def name(cls):
+                return f"{cls._definition.kind}.{cls._definition.parser_name}"
 
         return Parser

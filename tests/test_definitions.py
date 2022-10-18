@@ -23,7 +23,7 @@ from celus_nibbler.sources import (
 
 def test_date_based_area_definition():
     init_definition = DateBasedAreaDefinition(
-        name="non_counter.date_based",
+        kind="non_counter.date_based",
         data_headers=DataHeaders(
             roles=[
                 DateSource(
@@ -46,7 +46,7 @@ def test_date_based_area_definition():
     definition_dict = json.loads(init_definition.json())
 
     assert definition_dict == {
-        "name": "non_counter.date_based",
+        "kind": "non_counter.date_based",
         "data_headers": {
             "roles": [
                 {
@@ -119,7 +119,7 @@ def test_errors():
     with pytest.raises(ValidationError):
         DateBasedAreaDefinition.parse(
             {
-                "name": "non_counter.date_based",
+                "kind": "non_counter.date_based",
                 "dates": {
                     "direction": "wrong",  # wrong direction
                     "source": {"coord": {"row": 1, "col": 5}, "direction": "left"},
@@ -165,7 +165,7 @@ def test_errors():
     with pytest.raises(ValidationError):
         DateBasedAreaDefinition.parse(
             {
-                "name": "non_counter.date_based",
+                "kind": "non_counter.date_based",
                 "dates": {
                     "direction": "down",
                     "source": {"coord": {"row": 1, "col": 6}, "direction": "left"},
@@ -218,7 +218,7 @@ def test_date_based_definition():
         ),
         areas=[
             DateBasedAreaDefinition(
-                name="non_counter.date_based",
+                kind="non_counter.date_based",
                 data_headers=DataHeaders(
                     roles=[
                         DateSource(
@@ -249,7 +249,7 @@ def test_date_based_definition():
     definition_dict = json.loads(init_definition.json())
 
     assert definition_dict == {
-        "name": "non_counter.date_based",
+        "kind": "non_counter.date_based",
         "version": 1,
         "parser_name": "Parser1",
         "format_name": "Format1",
@@ -266,6 +266,7 @@ def test_date_based_definition():
         },
         "areas": [
             {
+                "kind": "non_counter.date_based",
                 "data_headers": {
                     "roles": [
                         {
@@ -303,7 +304,6 @@ def test_date_based_definition():
                     "regex": None,
                     "role": Role.METRIC,
                 },
-                "name": "non_counter.date_based",
                 "titles": {
                     "source": {"coord": {"col": 0, "row": 2}, "direction": "down"},
                     "regex": None,

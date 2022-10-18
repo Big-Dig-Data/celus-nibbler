@@ -17,12 +17,11 @@ from celus_nibbler.sources import (
 )
 from celus_nibbler.utils import JsonEncorder, PydanticConfig
 
-from .base import BaseParserDefinition
-from .common import AreaGeneratorMixin
+from .base import BaseAreaDefinition, BaseParserDefinition
 
 
 @dataclass(config=PydanticConfig)
-class DateBasedAreaDefinition(AreaGeneratorMixin, JsonEncorder):
+class DateBasedAreaDefinition(JsonEncorder, BaseAreaDefinition):
 
     data_headers: DataHeaders
     titles: TitleSource
@@ -31,7 +30,7 @@ class DateBasedAreaDefinition(AreaGeneratorMixin, JsonEncorder):
     title_ids: typing.List[TitleIdSource] = field(default_factory=lambda: [])
     dimensions: typing.List[DimensionSource] = field(default_factory=lambda: [])
 
-    name: typing.Literal["non_counter.date_based"] = "non_counter.date_based"
+    kind: typing.Literal["non_counter.date_based"] = "non_counter.date_based"
 
     def make_area(self) -> typing.Type[BaseArea]:
         headers = self.data_headers
@@ -73,7 +72,7 @@ class DateBasedDefinition(JsonEncorder, BaseParserDefinition):
     dimension_aliases: typing.List[typing.Tuple[str, str]] = field(default_factory=lambda: [])
     heuristics: typing.Optional[Condition] = None
 
-    name: typing.Literal["non_counter.date_based"] = "non_counter.date_based"
+    kind: typing.Literal["non_counter.date_based"] = "non_counter.date_based"
     version: typing.Literal[1] = 1
 
     def make_parser(self):
@@ -98,6 +97,6 @@ class DateBasedDefinition(JsonEncorder, BaseParserDefinition):
 
             @classmethod
             def name(cls):
-                return cls._definition.parser_name
+                return f"{cls._definition.kind}.{cls._definition.parser_name}"
 
         return Parser

@@ -1,5 +1,5 @@
 {
-  "name": "non_counter.metric_based",
+  "kind": "non_counter.metric_based",
   "version": 1,
   "parser_name": "my-metric-based",
   "format_name": "simple_format",
@@ -89,7 +89,7 @@
           "required": true
         }
       ],
-      "name": "non_counter.metric_based"
+      "kind": "non_counter.metric_based"
     }
   ]
 }

@@ -1,5 +1,5 @@
 {
-  "name": "counter5.DR",
+  "kind": "counter5.DR",
   "version": 1,
   "metric_column": ["User Activity"],
   "organization_column": ["Location Name"],
