@@ -5,7 +5,7 @@ from pydantic import BaseModel, ValidationError
 from pydantic.dataclasses import dataclass
 
 from celus_nibbler import validators
-from celus_nibbler.coordinates import Coord, CoordRange, Direction, SheetAttr, Value
+from celus_nibbler.coordinates import Coord, CoordRange, SheetAttr, Value
 from celus_nibbler.errors import TableException
 from celus_nibbler.reader import SheetReader
 from celus_nibbler.utils import JsonEncorder, PydanticConfig
@@ -113,7 +113,6 @@ class DimensionSource(JsonEncorder, ContentExtractorMixin):
 @dataclass(config=PydanticConfig)
 class MetricSource(JsonEncorder, ContentExtractorMixin):
     source: Source
-    direction: typing.Optional[Direction] = None
     regex: typing.Optional[typing.Pattern] = None
     role: typing.Literal[Role.METRIC] = Role.METRIC
 
@@ -159,7 +158,6 @@ class TitleIdSource(JsonEncorder, ContentExtractorMixin):
 @dataclass(config=PydanticConfig)
 class DateSource(JsonEncorder, ContentExtractorMixin):
     source: Source
-    direction: typing.Optional[Direction] = None
     regex: typing.Optional[typing.Pattern] = None
     role: typing.Literal[Role.DATE] = Role.DATE
 

@@ -26,9 +26,7 @@ def test_date_based_area_definition():
         kind="non_counter.date_based",
         data_headers=DataHeaders(
             roles=[
-                DateSource(
-                    direction=Direction.DOWN, source=CoordRange(Coord(1, 5), Direction.LEFT)
-                ),
+                DateSource(source=CoordRange(Coord(1, 5), Direction.LEFT)),
             ],
             data_cells=CoordRange(Coord(2, 5), Direction.LEFT),
             data_direction=Direction.DOWN,
@@ -50,7 +48,6 @@ def test_date_based_area_definition():
         "data_headers": {
             "roles": [
                 {
-                    "direction": "down",
                     "source": {"coord": {"row": 1, "col": 5}, "direction": "left"},
                     "regex": None,
                     "role": Role.DATE,
@@ -79,7 +76,6 @@ def test_date_based_area_definition():
             },
         ],
         "metrics": {
-            "direction": None,
             "source": {"coord": {"row": 2, "col": 4}, "direction": "down"},
             "regex": None,
             "role": Role.METRIC,
@@ -141,7 +137,6 @@ def test_errors():
                     },
                 ],
                 "metrics": {
-                    "direction": None,
                     "source": {"coord": {"row": 2, "col": 4}, "direction": "down"},
                     "role": Role.METRIC,
                 },
@@ -167,7 +162,6 @@ def test_errors():
             {
                 "kind": "non_counter.date_based",
                 "dates": {
-                    "direction": "down",
                     "source": {"coord": {"row": 1, "col": 6}, "direction": "left"},
                     "role": Role.DATE,
                 },
@@ -187,7 +181,6 @@ def test_errors():
                     },
                 ],
                 "metrics": {
-                    "direction": None,
                     "source": {"coord": {"row": 2, "col": 4}, "direction": "down"},
                     "regex": None,
                     "role": Role.METRIC,
@@ -222,7 +215,6 @@ def test_date_based_definition():
                 data_headers=DataHeaders(
                     roles=[
                         DateSource(
-                            direction=Direction.DOWN,
                             source=CoordRange(Coord(1, 5), Direction.RIGHT),
                         ),
                     ],
@@ -270,7 +262,6 @@ def test_date_based_definition():
                 "data_headers": {
                     "roles": [
                         {
-                            "direction": "down",
                             "source": {"direction": "right", "coord": {"col": 5, "row": 1}},
                             "regex": None,
                             "role": Role.DATE,
@@ -299,7 +290,6 @@ def test_date_based_definition():
                     },
                 ],
                 "metrics": {
-                    "direction": None,
                     "source": {"coord": {"col": 4, "row": 2}, "direction": "down"},
                     "regex": None,
                     "role": Role.METRIC,
