@@ -57,7 +57,7 @@ class DataHeaders(JsonEncorder):
                         setattr(record, role.role, value)
                 res.append(DataCells(record, CoordRange(cell, self.data_direction)))
         except TableException as e:
-            if e.reason == "out-of-bounds":
+            if e.reason in ["out-of-bounds", "empty"]:
                 # We reached the end of row
                 pass
             else:
