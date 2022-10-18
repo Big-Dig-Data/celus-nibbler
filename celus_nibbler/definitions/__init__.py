@@ -44,6 +44,10 @@ DefinitionAnotation = Annotated[
 ]
 
 
+def get_all_definitions() -> typing.List[BaseParserDefinition]:
+    return list(DefinitionAnotation.__origin__.__args__)
+
+
 class Definition(JsonEncorder, BaseModel):
     __root__: DefinitionAnotation
 
