@@ -24,8 +24,8 @@ from .base import BaseAreaDefinition, BaseParserDefinition
 class DateBasedAreaDefinition(JsonEncorder, BaseAreaDefinition):
 
     data_headers: DataHeaders
-    titles: TitleSource
     metrics: MetricSource
+    titles: typing.Optional[TitleSource] = None
     organizations: typing.Optional[OrganizationSource] = None
     title_ids: typing.List[TitleIdSource] = field(default_factory=lambda: [])
     dimensions: typing.List[DimensionSource] = field(default_factory=lambda: [])
