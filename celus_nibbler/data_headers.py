@@ -1,8 +1,9 @@
+import logging
 import typing
 from dataclasses import asdict, dataclass
 
 from celus_nigiri import CounterRecord
-from pydantic import Field, ValidationError
+from pydantic import Field
 from pydantic.dataclasses import dataclass as pydantic_dataclass
 from typing_extensions import Annotated
 
@@ -32,6 +33,9 @@ Role = Annotated[
 ]
 
 
+logger = logging.getLogger(__name__)
+
+
 @pydantic_dataclass(config=PydanticConfig)
 class DataHeaders(JsonEncorder):
     roles: typing.List[Role]
@@ -57,16 +61,9 @@ class DataHeaders(JsonEncorder):
                         setattr(record, role.role, value)
                 res.append(DataCells(record, CoordRange(cell, self.data_direction)))
         except TableException as e:
-            if e.reason in ["out-of-bounds", "empty"]:
-                # We reached the end of row
-                pass
-            else:
-                raise
-
-        except ValidationError:
-            # Found a content which can't be parsed e.g. "Total"
-            # We can exit here
-            # TODO perhaps we might want to skip instead of terminating
+            # Stop processing when an exception occurs
+            # (index out of bounds or unable to parse next field)
+            logger.debug("Header parsing terminated: %s", e)
             pass
 
         if not res:
