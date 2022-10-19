@@ -58,6 +58,7 @@ def test_date_based_area_definition():
                 "coord": {"col": 5, "row": 2},
                 "direction": "left",
             },
+            "data_default_zero": False,
         },
         "dimensions": [
             {
@@ -272,6 +273,7 @@ def test_date_based_definition():
                         "coord": {"col": 5, "row": 2},
                         "direction": "right",
                     },
+                    "data_default_zero": False,
                 },
                 "dimensions": [
                     {

@@ -34,10 +34,25 @@ class Value(BaseModel):
     value: Union[int, float]
 
     @validator("value")
-    def non_negative(cls, value: Union[int, float]) -> int:
+    def non_negative(cls, value: Union[int, float]) -> Union[int, float]:
         if value < 0:
             raise ValidationError("cant-be-negative")
         return round(value)
+
+
+class DefaultZeroValue(BaseModel):
+    value: Union[int, float, str, None]
+
+    @validator("value")
+    def default_zero(cls, value: Union[int, float, str, None]) -> Union[int, float]:
+        if isinstance(value, (int, float)):
+            # Use ordinary value validator
+            return Value(value=value).value
+        else:
+            if value in (None, ""):
+                return 0
+            else:
+                raise ValidationError("not-a-value")
 
 
 class Organization(BaseModel):

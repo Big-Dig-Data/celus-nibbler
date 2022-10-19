@@ -17,6 +17,7 @@ from celus_nibbler.sources import (
     OrganizationSource,
     TitleIdSource,
     TitleSource,
+    ValueSource,
 )
 from celus_nibbler.utils import JsonEncorder, PydanticConfig, end_month, start_month
 
@@ -41,6 +42,7 @@ class DataHeaders(JsonEncorder):
     roles: typing.List[Role]
     data_cells: CoordRange  # first data after the header
     data_direction: Direction  # perpendicular to data_cells
+    data_default_zero: bool = False
 
     def find_data_cells(self, sheet: SheetReader) -> typing.List['DataCells']:
         res = []
@@ -59,7 +61,15 @@ class DataHeaders(JsonEncorder):
                         record.end = end_month(value)
                     else:
                         setattr(record, role.role, value)
-                res.append(DataCells(record, CoordRange(cell, self.data_direction)))
+                res.append(
+                    DataCells(
+                        record,
+                        ValueSource(
+                            source=CoordRange(cell, self.data_direction),
+                            default_zero=self.data_default_zero,
+                        ),
+                    )
+                )
         except TableException as e:
             # Stop processing when an exception occurs
             # (index out of bounds or unable to parse next field)
@@ -80,20 +90,23 @@ class DataHeaders(JsonEncorder):
 @dataclass
 class DataCells:
     header_data: CounterRecord
-    range: CoordRange
+    value_source: ValueSource
 
     def __iter__(self):
-        return self.range.__iter__()
+        return self.value_source.source.__iter__()
 
     def __next__(self):
-        return self.range.__next__()
+        return self.value_source.source.__next__()
 
     def __getitem__(self, item: int) -> Coord:
-        return self.range.__getitem__(item)
+        if isinstance(self.value_source.source, CoordRange):
+            return self.value_source.source.__getitem__(item)
+        else:
+            raise TypeError()
 
     def __str__(self):
         records = {f"({k}={v})" for k, v in asdict(self.header_data).items() if v}
-        return f"{'|'.join(records)} - {self.range}"
+        return f"{'|'.join(records)} - {self.value_source}"
 
     def __repr__(self):
         return str(self)

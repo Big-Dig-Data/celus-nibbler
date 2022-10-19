@@ -169,9 +169,13 @@ class DateSource(JsonEncorder, ContentExtractorMixin):
 @dataclass(config=PydanticConfig)
 class ValueSource(JsonEncorder, ContentExtractorMixin):
     source: Source
+    default_zero: bool = False
     regex: typing.Optional[typing.Pattern] = None
     role: typing.Literal[Role.VALUE] = Role.VALUE
 
     @property
     def validator(self) -> typing.Optional[typing.Type[BaseModel]]:
-        return validators.Value
+        if self.default_zero:
+            return validators.DefaultZeroValue
+        else:
+            return validators.Value

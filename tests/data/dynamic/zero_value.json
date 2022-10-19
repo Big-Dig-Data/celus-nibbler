@@ -1,0 +1,148 @@
+{
+  "kind": "non_counter.date_based",
+  "version": 1,
+  "parser_name": "zero_value",
+  "data_format": {
+    "name": "simple_format"
+  },
+  "platforms": [
+    "Platform1",
+    "Platform2"
+  ],
+  "dimensions": [
+    "Dim1",
+    "Dim2"
+  ],
+  "metrics_to_skip": [],
+  "titles_to_skip": [],
+  "dimensions_to_skip": {},
+  "metric_aliases": [],
+  "dimension_aliases": [],
+  "heuristics": {
+    "conds": [
+      {
+        "pattern": "Title",
+        "coord": {
+          "row": 0,
+          "col": 0
+        },
+        "kind": "regex"
+      },
+      {
+        "pattern": "ISSN",
+        "coord": {
+          "row": 0,
+          "col": 1
+        },
+        "kind": "regex"
+      },
+      {
+        "pattern": "Platform",
+        "coord": {
+          "row": 0,
+          "col": 2
+        },
+        "kind": "regex"
+      },
+      {
+        "pattern": "YOP",
+        "coord": {
+          "row": 0,
+          "col": 3
+        },
+        "kind": "regex"
+      },
+      {
+        "pattern": "Metrics",
+        "coord": {
+          "row": 0,
+          "col": 4
+        },
+        "kind": "regex"
+      }
+    ],
+    "kind": "and"
+  },
+  "areas": [
+    {
+      "data_headers": {
+        "roles": [
+            {
+                "source": {
+                    "coord": {
+                      "row": 0,
+                      "col": 5
+                    },
+                    "direction": "right"
+                },
+                "role": "date"
+            }
+        ],
+        "data_direction": "down",
+        "data_cells": {
+          "coord": {
+            "row": 1,
+            "col": 5
+          },
+          "direction": "right"
+        },
+        "data_default_zero": true
+      },
+      "titles": {
+        "source": {
+          "coord": {
+            "row": 1,
+            "col": 0
+          },
+          "direction": "down"
+        }
+      },
+      "metrics": {
+        "source": {
+          "coord": {
+            "row": 1,
+            "col": 4
+          },
+          "direction": "down"
+        }
+      },
+      "title_ids": [
+        {
+          "name": "Print_ISSN",
+          "source": {
+            "coord": {
+              "row": 1,
+              "col": 1
+            },
+            "direction": "down"
+          }
+        }
+      ],
+      "dimensions": [
+        {
+          "name": "YOP",
+          "source": {
+            "coord": {
+              "row": 1,
+              "col": 3
+            },
+            "direction": "down"
+          },
+          "required": true
+        },
+        {
+          "name": "Platform",
+          "source": {
+            "coord": {
+              "row": 1,
+              "col": 2
+            },
+            "direction": "down"
+          },
+          "required": true
+        }
+      ],
+      "kind": "non_counter.date_based"
+    }
+  ]
+}

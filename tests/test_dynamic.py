@@ -33,6 +33,13 @@ from celus_nibbler.parsers.dynamic import gen_parser
             False,
         ),
         ("Platform1", "no_title", "csv", "nibbler.dynamic.non_counter.date_based.no_title", False),
+        (
+            "Platform1",
+            "zero_value",
+            "csv",
+            "nibbler.dynamic.non_counter.date_based.zero_value",
+            False,
+        ),
         ("MIT", "counter5.TR", "xlsx", "nibbler.dynamic.counter5.TR", False),
         (
             "PlatformWithCustomDR",

@@ -21,7 +21,6 @@ from celus_nibbler.sources import (
     OrganizationSource,
     TitleIdSource,
     TitleSource,
-    ValueSource,
 )
 from celus_nibbler.utils import end_month, start_month
 
@@ -196,7 +195,7 @@ class BaseParser(metaclass=ABCMeta):
                             title_ids[key] = ""
 
                 for data_cell in data_cells:
-                    value = ValueSource(data_cell.range).extract(self.sheet, idx)
+                    value = data_cell.value_source.extract(self.sheet, idx)
                     record = CounterRecord(
                         value=round(value),
                         organization=organization,
