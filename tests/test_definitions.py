@@ -50,6 +50,8 @@ def test_date_based_area_definition():
                 {
                     "source": {"coord": {"row": 1, "col": 5}, "direction": "left"},
                     "regex": None,
+                    "default": None,
+                    "last_value_as_default": False,
                     "role": Role.DATE,
                 }
             ],
@@ -58,7 +60,7 @@ def test_date_based_area_definition():
                 "coord": {"col": 5, "row": 2},
                 "direction": "left",
             },
-            "data_default_zero": False,
+            "data_default": None,
         },
         "dimensions": [
             {
@@ -66,6 +68,8 @@ def test_date_based_area_definition():
                 "required": True,
                 "source": {"coord": {"row": 2, "col": 3}, "direction": "down"},
                 "regex": None,
+                "default": None,
+                "last_value_as_default": False,
                 "role": Role.DIMENSION,
             },
             {
@@ -73,12 +77,16 @@ def test_date_based_area_definition():
                 "required": True,
                 "source": {"coord": {"row": 2, "col": 5}, "direction": "down"},
                 "regex": None,
+                "default": None,
+                "last_value_as_default": False,
                 "role": Role.DIMENSION,
             },
         ],
         "metrics": {
             "source": {"coord": {"row": 2, "col": 4}, "direction": "down"},
             "regex": None,
+            "default": None,
+            "last_value_as_default": False,
             "role": Role.METRIC,
         },
         "title_ids": [
@@ -86,12 +94,16 @@ def test_date_based_area_definition():
                 "name": "ISBN",
                 "source": {"coord": {"row": 2, "col": 1}, "direction": "down"},
                 "regex": None,
+                "default": None,
+                "last_value_as_default": False,
                 "role": Role.TITLE_ID,
             }
         ],
         "titles": {
             "source": {"coord": {"row": 2, "col": 0}, "direction": "down"},
             "regex": None,
+            "default": None,
+            "last_value_as_default": False,
             "role": Role.TITLE,
         },
         "organizations": None,
@@ -128,6 +140,8 @@ def test_errors():
                         "required": True,
                         "source": {"coord": {"row": 2, "col": 3}, "direction": "down"},
                         "regex": None,
+                        "default": None,
+                        "last_value_as_default": False,
                         "role": Role.DIMENSION,
                     },
                     {
@@ -146,12 +160,16 @@ def test_errors():
                         "name": "ISBN",
                         "source": {"coord": {"row": 2, "col": 1}, "direction": "down"},
                         "regex": None,
+                        "default": None,
+                        "last_value_as_default": False,
                         "role": Role.TITLE_ID,
                     }
                 ],
                 "titles": {
                     "source": {"coord": {"row": 2, "col": 0}, "direction": "down"},
                     "regex": None,
+                    "default": None,
+                    "last_value_as_default": False,
                     "role": Role.TITLE,
                 },
             }
@@ -172,18 +190,24 @@ def test_errors():
                         "required": True,
                         "source": {"coord": {"row": 2, "col": 3}, "direction": "down"},
                         "regex": None,
+                        "default": None,
+                        "last_value_as_default": False,
                         "role": Role.DIMENSION,
                     },
                     {
                         "name": "platform",
                         "source": {"direction": "down", "coord": {"row": 1, "col": 5}},
                         "regex": None,
+                        "default": None,
+                        "last_value_as_default": False,
                         "role": Role.DIMENSION,
                     },
                 ],
                 "metrics": {
                     "source": {"coord": {"row": 2, "col": 4}, "direction": "down"},
                     "regex": None,
+                    "default": None,
+                    "last_value_as_default": False,
                     "role": Role.METRIC,
                 },
                 "title_ids": [
@@ -191,6 +215,8 @@ def test_errors():
                         "name": "ISBN",
                         "source": {"coord": {"row": 2, "col": 1}, "direction": "down"},
                         "regex": None,
+                        "default": None,
+                        "last_value_as_default": False,
                         "role": Role.TITLE_ID,
                     }
                 ],
@@ -265,6 +291,8 @@ def test_date_based_definition():
                         {
                             "source": {"direction": "right", "coord": {"col": 5, "row": 1}},
                             "regex": None,
+                            "default": None,
+                            "last_value_as_default": False,
                             "role": Role.DATE,
                         }
                     ],
@@ -273,7 +301,7 @@ def test_date_based_definition():
                         "coord": {"col": 5, "row": 2},
                         "direction": "right",
                     },
-                    "data_default_zero": False,
+                    "data_default": None,
                 },
                 "dimensions": [
                     {
@@ -281,6 +309,8 @@ def test_date_based_definition():
                         "required": True,
                         "source": {"coord": {"col": 3, "row": 2}, "direction": "down"},
                         "regex": None,
+                        "default": None,
+                        "last_value_as_default": False,
                         "role": Role.DIMENSION,
                     },
                     {
@@ -288,17 +318,23 @@ def test_date_based_definition():
                         "required": True,
                         "source": {"coord": {"col": 5, "row": 2}, "direction": "down"},
                         "regex": None,
+                        "default": None,
+                        "last_value_as_default": False,
                         "role": Role.DIMENSION,
                     },
                 ],
                 "metrics": {
                     "source": {"coord": {"col": 4, "row": 2}, "direction": "down"},
                     "regex": None,
+                    "default": None,
+                    "last_value_as_default": False,
                     "role": Role.METRIC,
                 },
                 "titles": {
                     "source": {"coord": {"col": 0, "row": 2}, "direction": "down"},
                     "regex": None,
+                    "default": None,
+                    "last_value_as_default": False,
                     "role": Role.TITLE,
                 },
                 "title_ids": [
@@ -306,6 +342,8 @@ def test_date_based_definition():
                         "name": "ISBN",
                         "source": {"coord": {"col": 1, "row": 2}, "direction": "down"},
                         "regex": None,
+                        "default": None,
+                        "last_value_as_default": False,
                         "role": Role.TITLE_ID,
                     },
                 ],

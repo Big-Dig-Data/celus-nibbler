@@ -40,6 +40,13 @@ from celus_nibbler.parsers.dynamic import gen_parser
             "nibbler.dynamic.non_counter.date_based.zero_value",
             False,
         ),
+        (
+            "Platform1",
+            "last_as_default",
+            "csv",
+            "nibbler.dynamic.non_counter.date_based.last_as_default",
+            False,
+        ),
         ("MIT", "counter5.TR", "xlsx", "nibbler.dynamic.counter5.TR", False),
         (
             "PlatformWithCustomDR",

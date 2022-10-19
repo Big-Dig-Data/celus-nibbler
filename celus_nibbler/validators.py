@@ -1,9 +1,13 @@
 import datetime
 import re
-from typing import Any, Optional, Union
+from typing import Any, Optional, Type, Union
 
 from dateutil import parser as datetimes_parser
 from pydantic import BaseModel, ValidationError, validator
+
+
+class BaseValueModel(BaseModel):
+    value: Any
 
 
 def non_empty(name: str) -> str:
@@ -30,7 +34,7 @@ def issn(issn: str) -> str:
     return issn
 
 
-class Value(BaseModel):
+class Value(BaseValueModel):
     value: Union[int, float]
 
     @validator("value")
@@ -40,22 +44,23 @@ class Value(BaseModel):
         return round(value)
 
 
-class DefaultZeroValue(BaseModel):
-    value: Union[int, float, str, None]
+def gen_default_validator(
+    orig_validator: Type[BaseValueModel], default_value: Any
+) -> Type[BaseValueModel]:
+    class Validator(BaseValueModel):
+        value: Any
 
-    @validator("value")
-    def default_zero(cls, value: Union[int, float, str, None]) -> Union[int, float]:
-        if isinstance(value, (int, float)):
-            # Use ordinary value validator
-            return Value(value=value).value
-        else:
+        @validator("value", allow_reuse=True)
+        def default(cls, value: Any) -> Any:
             if value in (None, ""):
-                return 0
+                return default_value
             else:
-                raise ValidationError("not-a-value")
+                return orig_validator(value=value).value
+
+    return Validator
 
 
-class Organization(BaseModel):
+class Organization(BaseValueModel):
     value: str
 
     _not_none_organization = validator('value', allow_reuse=True)(not_none)
@@ -63,20 +68,20 @@ class Organization(BaseModel):
     _non_empty_organization = validator('value', allow_reuse=True)(non_empty)
 
 
-class Platform(BaseModel):
+class Platform(BaseValueModel):
     value: str
 
     _stripped_platform = validator('value', allow_reuse=True)(stripped)
     _non_empty_platform = validator('value', allow_reuse=True)(non_empty)
 
 
-class Dimension(BaseModel):
+class Dimension(BaseValueModel):
     value: str
 
     _stripped_dimension = validator('value', allow_reuse=True)(stripped)
 
 
-class Metric(BaseModel):
+class Metric(BaseValueModel):
     value: str
 
     _not_none_metic = validator('value', allow_reuse=True)(not_none)
@@ -90,7 +95,7 @@ class Metric(BaseModel):
         return metric
 
 
-class Title(BaseModel):
+class Title(BaseValueModel):
     value: Optional[str]
 
     @validator("value")
@@ -100,7 +105,7 @@ class Title(BaseModel):
         return title
 
 
-class Date(BaseModel):
+class Date(BaseValueModel):
     value: datetime.date
 
     _not_none_date = validator('value', allow_reuse=True, pre=True)(not_none)
@@ -115,7 +120,7 @@ class Date(BaseModel):
             raise ValidationError("cant-parse-date")
 
 
-class DOI(BaseModel):
+class DOI(BaseValueModel):
     value: str
 
     @validator("value")
@@ -128,7 +133,7 @@ class DOI(BaseModel):
         return doi
 
 
-class ISBN(BaseModel):
+class ISBN(BaseValueModel):
     value: str
 
     @validator("value")
@@ -142,23 +147,23 @@ class ISBN(BaseModel):
         return isbn
 
 
-class ISSN(BaseModel):
+class ISSN(BaseValueModel):
     value: str
 
     _issn_format = validator('value', allow_reuse=True)(issn)
 
 
-class EISSN(BaseModel):
+class EISSN(BaseValueModel):
     value: str
 
     _issn_format = validator('value', allow_reuse=True)(issn)
 
 
-class ProprietaryID(BaseModel):
+class ProprietaryID(BaseValueModel):
     value: str
 
 
-class DateInString(BaseModel):
+class DateInString(BaseValueModel):
     value: datetime.date
 
     _stripped_date = validator('value', allow_reuse=True, pre=True)(stripped)

@@ -42,7 +42,7 @@ class DataHeaders(JsonEncorder):
     roles: typing.List[Role]
     data_cells: CoordRange  # first data after the header
     data_direction: Direction  # perpendicular to data_cells
-    data_default_zero: bool = False
+    data_default: typing.Optional[int] = None
 
     def find_data_cells(self, sheet: SheetReader) -> typing.List['DataCells']:
         res = []
@@ -66,7 +66,7 @@ class DataHeaders(JsonEncorder):
                         record,
                         ValueSource(
                             source=CoordRange(cell, self.data_direction),
-                            default_zero=self.data_default_zero,
+                            default=self.data_default,
                         ),
                     )
                 )

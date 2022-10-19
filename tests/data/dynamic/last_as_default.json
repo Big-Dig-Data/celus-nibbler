@@ -1,7 +1,7 @@
 {
   "kind": "non_counter.date_based",
   "version": 1,
-  "parser_name": "zero_value",
+  "parser_name": "last_as_default",
   "data_format": {
     "name": "simple_format"
   },
@@ -85,8 +85,7 @@
             "col": 5
           },
           "direction": "right"
-        },
-        "data_default": 0
+        }
       },
       "titles": {
         "source": {
@@ -95,7 +94,8 @@
             "col": 0
           },
           "direction": "down"
-        }
+        },
+        "last_value_as_default": true
       },
       "metrics": {
         "source": {
