@@ -7,8 +7,10 @@ from abc import ABCMeta
 from celus_nibbler.conditions import RegexCondition, SheetIdxCondition
 from celus_nibbler.coordinates import Coord, CoordRange, Direction
 from celus_nibbler.data_headers import DataFormatDefinition, DataHeaders
-from celus_nibbler.parsers.base import BaseHeaderArea, BaseParser
+from celus_nibbler.parsers.base import BaseHeaderArea
 from celus_nibbler.sources import DateSource, DimensionSource, MetricSource, OrganizationSource
+
+from .base import BaseNonCounterParser
 
 logger = logging.getLogger(__name__)
 
@@ -18,8 +20,7 @@ class BaseDateMetricArea(BaseHeaderArea, metaclass=ABCMeta):
         return [e.header_data.start for e in self.find_data_cells()]
 
 
-class DateMetricBasedParser(BaseParser):
-    data_format = DataFormatDefinition(name="non_counter.date_metric_based")
+class DateMetricBasedParser(BaseNonCounterParser):
     platforms: typing.List[str] = []
     metrics_to_skip: typing.List[str] = []
     titles_to_skip: typing.List[str] = []
@@ -54,6 +55,7 @@ class MyDateMetricArea(BaseDateMetricArea):
 
 
 class MyDateMetricBasedParser(DateMetricBasedParser):
+    data_format = DataFormatDefinition(name="MY")
     platforms = ["My Platform"]
     heuristics = (
         RegexCondition(re.compile(r"^Extra$"), Coord(0, 0))

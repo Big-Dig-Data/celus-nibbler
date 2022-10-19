@@ -5,7 +5,7 @@ from pydantic.dataclasses import dataclass
 
 from celus_nibbler.conditions import Condition
 from celus_nibbler.data_headers import DataFormatDefinition, DataHeaders
-from celus_nibbler.parsers.base import BaseArea
+from celus_nibbler.parsers.base import BaseArea, BaseParser
 from celus_nibbler.parsers.non_counter.date_based import BaseDateArea
 from celus_nibbler.sources import (
     DimensionSource,
@@ -17,7 +17,7 @@ from celus_nibbler.sources import (
 )
 from celus_nibbler.utils import JsonEncorder, PydanticConfig
 
-from .base import BaseAreaDefinition, BaseParserDefinition
+from .base import BaseAreaDefinition, BaseNonCounterParserDefinition
 
 
 @dataclass(config=PydanticConfig)
@@ -58,11 +58,12 @@ class DateBasedAreaDefinition(JsonEncorder, BaseAreaDefinition):
 
 
 @dataclass(config=PydanticConfig)
-class DateBasedDefinition(JsonEncorder, BaseParserDefinition):
-    # name of nibbler parser
+class DateBasedDefinition(JsonEncorder, BaseNonCounterParserDefinition):
+
     parser_name: str
-    areas: typing.List[DateBasedAreaDefinition]
     data_format: DataFormatDefinition
+
+    areas: typing.List[DateBasedAreaDefinition] = field(default_factory=lambda: [])
     platforms: typing.List[str] = field(default_factory=lambda: [])
     dimensions: typing.List[str] = field(default_factory=lambda: [])
     metrics_to_skip: typing.List[str] = field(default_factory=lambda: [])
@@ -76,14 +77,12 @@ class DateBasedDefinition(JsonEncorder, BaseParserDefinition):
     version: typing.Literal[1] = 1
 
     def make_parser(self):
-        from celus_nibbler.parsers import BaseParser
-        from celus_nibbler.parsers.dynamic import DynamicParserMixin
-
-        class Parser(DynamicParserMixin, BaseParser):
+        class Parser(BaseParser):
             _definition = self
 
             data_format = _definition.data_format
             platforms = _definition.platforms
+            name = f"dynamic.{_definition.group}.{_definition.data_format.name}.{_definition.parser_name}"
 
             metrics_to_skip = _definition.metrics_to_skip
             titles_to_skip = _definition.titles_to_skip
@@ -94,9 +93,5 @@ class DateBasedDefinition(JsonEncorder, BaseParserDefinition):
 
             heuristics = _definition.heuristics
             areas = [e.make_area() for e in _definition.areas]
-
-            @classmethod
-            def name(cls):
-                return f"{cls._definition.kind}.{cls._definition.parser_name}"
 
         return Parser

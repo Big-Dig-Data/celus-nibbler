@@ -36,7 +36,7 @@ def test_eat():
     }
 
     # Parser with mismatched heuristics
-    poops = eat(file_path, "Ovid", check_platform=False, parsers=["nibbler.counter4.JR1"])
+    poops = eat(file_path, "Ovid", check_platform=False, parsers=["static.counter4.JR1.Tabular"])
     assert all(isinstance(e, NoParserMatchesHeuristics) for e in poops)
     assert poops[0].dict() == {
         "name": "NoParserMatchesHeuristics",
@@ -45,12 +45,15 @@ def test_eat():
 
     # parser exact match
     poops = eat(
-        file_path, "Unknown", check_platform=False, parsers=["non-existing", "nibbler.counter4.BR1"]
+        file_path,
+        "Unknown",
+        check_platform=False,
+        parsers=["non-existing", "static.counter4.BR1.Tabular"],
     )
     assert all(isinstance(e, Poop) for e in poops)
 
     # parser startswith match
-    poops = eat(file_path, "Ovid", parsers=["non-existing", "nibbler.counter4"])
+    poops = eat(file_path, "Ovid", parsers=["non-existing", "static.counter4"])
     assert all(isinstance(e, Poop) for e in poops)
 
     # parser regex match
@@ -61,22 +64,22 @@ def test_eat():
     poops = eat(
         file_path,
         "Ovid",
-        parsers=["non-existing", "nibbler.counter4.BR"],
+        parsers=["non-existing", "static.counter4.BR"],
         check_platform=False,
         use_heuristics=False,
     )
     assert all(isinstance(e, MultipleParsersFound) for e in poops)
     assert set(poops[0].parsers) == {
-        "nibbler.counter4.BR1",
-        "nibbler.counter4.BR2",
-        "nibbler.counter4.BR3",
+        "static.counter4.BR1.Tabular",
+        "static.counter4.BR2.Tabular",
+        "static.counter4.BR3.Tabular",
     }
     assert poops[0].dict() == {
         "name": "MultipleParsersFound",
         "sheet_idx": 0,
         "parsers": [
-            "nibbler.counter4.BR1",
-            "nibbler.counter4.BR2",
-            "nibbler.counter4.BR3",
+            "static.counter4.BR1.Tabular",
+            "static.counter4.BR2.Tabular",
+            "static.counter4.BR3.Tabular",
         ],
     }

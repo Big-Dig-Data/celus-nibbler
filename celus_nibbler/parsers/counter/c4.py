@@ -11,7 +11,13 @@ from celus_nibbler.parsers.base import BaseParser
 from . import CounterHeaderArea
 
 
-class BR1(BaseParser):
+class BaseCounter4Parser(BaseParser):
+    @property
+    def name(self):
+        return f"counter4.{self.data_format.name}"
+
+
+class BR1(BaseCounter4Parser):
     data_format = DataFormatDefinition(name="BR1")
 
     titles_to_skip: typing.List[str] = ["Total", "Total for all titles"]
@@ -33,7 +39,7 @@ class BR1(BaseParser):
     areas = [Area]
 
 
-class BR2(BaseParser):
+class BR2(BaseCounter4Parser):
     data_format = DataFormatDefinition(name="BR2")
 
     titles_to_skip: typing.List[str] = ["Total", "Total for all titles"]
@@ -59,7 +65,7 @@ class BR2(BaseParser):
     areas = [Area]
 
 
-class BR3(BaseParser):
+class BR3(BaseCounter4Parser):
     data_format = DataFormatDefinition(name="BR3")
 
     titles_to_skip: typing.List[str] = ["Total", "Total for all titles"]
@@ -81,7 +87,7 @@ class BR3(BaseParser):
     areas = [Area]
 
 
-class DB1(BaseParser):
+class DB1(BaseCounter4Parser):
     data_format = DataFormatDefinition(name="DB1")
 
     titles_to_skip: typing.List[str] = ["Total", "Total for all databases"]
@@ -101,7 +107,7 @@ class DB1(BaseParser):
     areas = [Area]
 
 
-class DB2(BaseParser):
+class DB2(BaseCounter4Parser):
     data_format = DataFormatDefinition(name="DB2")
 
     titles_to_skip: typing.List[str] = ["Total", "Total for all databases"]
@@ -117,7 +123,7 @@ class DB2(BaseParser):
     areas = [Area]
 
 
-class PR1(BaseParser):
+class PR1(BaseCounter4Parser):
     data_format = DataFormatDefinition(name="PR1")
 
     titles_to_skip: typing.List[str] = ["Total", "Total for all platforms"]
@@ -137,7 +143,7 @@ class PR1(BaseParser):
     areas = [Area]
 
 
-class JR1(BaseParser):
+class JR1(BaseCounter4Parser):
     data_format = DataFormatDefinition(name="JR1")
 
     titles_to_skip: typing.List[str] = ["Total", "Total for all journals"]
@@ -197,7 +203,7 @@ class JR1(BaseParser):
     areas = [Area]
 
 
-class JR1a(BaseParser):
+class JR1a(BaseCounter4Parser):
     data_format = DataFormatDefinition(name="JR1a")
 
     titles_to_skip: typing.List[str] = ["Total", "Total for all journals"]
@@ -217,7 +223,7 @@ class JR1a(BaseParser):
     areas = [Area]
 
 
-class JR1GOA(BaseParser):
+class JR1GOA(BaseCounter4Parser):
     data_format = DataFormatDefinition(name="JR1GOA")
 
     titles_to_skip: typing.List[str] = ["Total", "Total for all journals"]
@@ -244,7 +250,7 @@ class JR1GOA(BaseParser):
     areas = [Area]
 
 
-class JR2(BaseParser):
+class JR2(BaseCounter4Parser):
     data_format = DataFormatDefinition(name="JR2")
 
     titles_to_skip: typing.List[str] = ["Total", "Total for all journals"]
@@ -301,7 +307,7 @@ class JR2(BaseParser):
     areas = [Area]
 
 
-class MR1(BaseParser):
+class MR1(BaseCounter4Parser):
     data_format = DataFormatDefinition(name="MR1")
 
     titles_to_skip: typing.List[str] = ["Total", "Total for all collections"]

@@ -12,69 +12,75 @@ from celus_nibbler.parsers.dynamic import gen_parser
 
 
 @pytest.mark.parametrize(
-    "platform,name,ext,parser,aggregated",
+    "platform,filename,ext,parser,aggregated",
     (
-        ("Platform1", "simple", "csv", "nibbler.dynamic.non_counter.date_based.simple", False),
+        ("Platform1", "simple", "csv", "dynamic.non_counter.simple_format.simple", False),
         (
             "Platform1",
             "sheet_attr",
             "xlsx",
-            "nibbler.dynamic.non_counter.date_based.sheet_attr",
+            "dynamic.non_counter.simple_format.sheet_attr",
             False,
         ),
-        ("Platform1", "coord", "csv", "nibbler.dynamic.non_counter.date_based.coord", False),
-        ("Platform1", "value", "csv", "nibbler.dynamic.non_counter.date_based.value", False),
-        ("Platform1", "aliases", "csv", "nibbler.dynamic.non_counter.date_based.aliases", False),
+        ("Platform1", "coord", "csv", "dynamic.non_counter.simple_format.coord", False),
+        ("Platform1", "value", "csv", "dynamic.non_counter.simple_format.value", False),
+        ("Platform1", "aliases", "csv", "dynamic.non_counter.simple_format.aliases", False),
         (
             "Platform1",
             "organization",
             "csv",
-            "nibbler.dynamic.non_counter.date_based.organization",
+            "dynamic.non_counter.organization_format.organization",
             False,
         ),
-        ("Platform1", "no_title", "csv", "nibbler.dynamic.non_counter.date_based.no_title", False),
+        (
+            "Platform1",
+            "no_title",
+            "csv",
+            "dynamic.non_counter.simple_format.no_title",
+            False,
+        ),
         (
             "Platform1",
             "zero_value",
             "csv",
-            "nibbler.dynamic.non_counter.date_based.zero_value",
+            "dynamic.non_counter.simple_format.zero_value",
             False,
         ),
         (
             "Platform1",
             "last_as_default",
             "csv",
-            "nibbler.dynamic.non_counter.date_based.last_as_default",
+            "dynamic.non_counter.simple_format.last_as_default",
             False,
         ),
-        ("MIT", "counter5.TR", "xlsx", "nibbler.dynamic.counter5.TR", False),
+        ("MIT", "counter5.TR", "xlsx", "dynamic.counter5.TR.MY_TR_CUSTOM", False),
         (
             "PlatformWithCustomDR",
             "counter5.DR_MY_CUSTOM",
             "xlsx",
-            "nibbler.dynamic.counter5.DR_MY_CUSTOM",
+            "dynamic.counter5.MY_DR.DR_MY_CUSTOM",
             False,
         ),
         (
             "My Platform",
             "non_counter/my-metric-based",
             "xlsx",
-            "nibbler.dynamic.non_counter.metric_based.my-metric-based",
+            "dynamic.non_counter.simple_format.my-metric-based",
             True,
         ),
         (
             "My Platform",
             "non_counter/my-date-metric-based",
             "xlsx",
-            "nibbler.dynamic.non_counter.date_metric_based.my-date-metric-based",
+            "dynamic.non_counter.simple_format.my-date-metric-based",
             False,
         ),
     ),
 )
-def test_dynamic(platform, name, ext, parser, aggregated):
-    definition_path = pathlib.Path(__file__).parent / 'data/dynamic' / f"{name}.json"
-    input_path = pathlib.Path(__file__).parent / 'data/dynamic' / f"{name}.{ext}"
-    output_path = pathlib.Path(__file__).parent / 'data/dynamic' / f"{name}.{ext}.out"
+def test_dynamic(platform, filename, ext, parser, aggregated):
+    definition_path = pathlib.Path(__file__).parent / 'data/dynamic' / f"{filename}.json"
+    input_path = pathlib.Path(__file__).parent / 'data/dynamic' / f"{filename}.{ext}"
+    output_path = pathlib.Path(__file__).parent / 'data/dynamic' / f"{filename}.{ext}.out"
 
     with definition_path.open() as f:
         definition = json.load(f)
@@ -106,21 +112,21 @@ def test_dynamic(platform, name, ext, parser, aggregated):
             "Platform1",
             "date_cells_out_of_range",
             "csv",
-            "nibbler.dynamic.non_counter.date_based.date_cells_out_of_range",
+            "dynamic.non_counter.simple_format.date_cells_out_of_range",
             TableException(sheet=0, col=5, row=1, reason="no-header-data-found", value=None),
         ),
         (
             "Platform1",
             "wrong_fixed_value",
             "csv",
-            "nibbler.dynamic.non_counter.date_based.wrong_fixed_value",
+            "dynamic.non_counter.simple_format.wrong_fixed_value",
             TableException(sheet=0, reason="wrong-value", value="not_issn"),
         ),
         (
             "Platform1",
             "metric_number",
             "csv",
-            "nibbler.dynamic.non_counter.date_based.metric_number",
+            "dynamic.non_counter.simple_format.metric_number",
             TableException(sheet=0, reason="metric", value="2", row=2, col=1),
         ),
     ),

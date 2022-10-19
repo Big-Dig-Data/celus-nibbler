@@ -10,8 +10,10 @@ from celus_nibbler.conditions import RegexCondition, SheetNameRegexCondition
 from celus_nibbler.coordinates import Coord, CoordRange, Direction
 from celus_nibbler.data_headers import DataFormatDefinition, DataHeaders
 from celus_nibbler.errors import TableException
-from celus_nibbler.parsers.base import BaseHeaderArea, BaseParser
+from celus_nibbler.parsers.base import BaseHeaderArea
 from celus_nibbler.sources import DateSource, DimensionSource, MetricSource, OrganizationSource
+
+from .base import BaseNonCounterParser
 
 
 class BaseMetricArea(BaseHeaderArea, metaclass=ABCMeta):
@@ -36,8 +38,7 @@ class BaseMetricArea(BaseHeaderArea, metaclass=ABCMeta):
         return list(res)
 
 
-class MetricBasedParser(BaseParser):
-    data_format = DataFormatDefinition(name="non_counter.metric_based")
+class MetricBasedParser(BaseNonCounterParser):
     platforms: typing.List[str] = []
     metrics_to_skip: typing.List[str] = []
     titles_to_skip: typing.List[str] = []
@@ -65,6 +66,7 @@ class MyMetricArea(BaseMetricArea):
 
 
 class MyMetricBasedParser(MetricBasedParser):
+    data_format = DataFormatDefinition(name="MY")
     platforms = ["My Platform"]
     heuristics = (
         RegexCondition(re.compile(r"^My Online Summary Usage Report$"), Coord(0, 0))

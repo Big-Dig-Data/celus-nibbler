@@ -15,7 +15,13 @@ class Counter5HeaderArea(CounterHeaderArea):
     METRIC_COLUMN_NAMES = ["Metric_Type"]
 
 
-class DR(BaseParser):
+class BaseCounter5Parser(BaseParser):
+    @property
+    def name(self):
+        return f"counter5.{self.data_format.name}"
+
+
+class DR(BaseCounter5Parser):
     data_format = DataFormatDefinition(name="DR")
 
     titles_to_skip: typing.List[str] = ["Total", "All Databases"]
@@ -48,7 +54,7 @@ class DR(BaseParser):
     areas = [Area]
 
 
-class PR(BaseParser):
+class PR(BaseCounter5Parser):
     data_format = DataFormatDefinition(name="PR")
 
     titles_to_skip: typing.List[str] = ["Total", "All Platforms"]
@@ -110,7 +116,7 @@ class PR(BaseParser):
     areas = [Area]
 
 
-class TR(BaseParser):
+class TR(BaseCounter5Parser):
     data_format = DataFormatDefinition(name="TR")
 
     titles_to_skip: typing.List[str] = ["Total", "All Titles"]

@@ -96,6 +96,11 @@ class BaseParser(metaclass=ABCMeta):
 
     @property
     @abstractmethod
+    def name(self) -> str:
+        pass
+
+    @property
+    @abstractmethod
     def data_format(self) -> DataFormatDefinition:
         pass
 

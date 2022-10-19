@@ -12,7 +12,7 @@ from celus_nibbler import Poop, eat
         (
             "My Platform",
             "my-metric-based.xlsx",
-            "nibbler.non_counter.MyMetricBased",
+            "static.non_counter.MY.MyMetricBased",
             [True, False, False, False],
             True,
             True,
@@ -20,7 +20,7 @@ from celus_nibbler import Poop, eat
         (
             "My Platform",
             "my-date-metric-based.xlsx",
-            "nibbler.non_counter.MyDateMetricBased",
+            "static.non_counter.MY.MyDateMetricBased",
             [True, False],
             True,
             False,

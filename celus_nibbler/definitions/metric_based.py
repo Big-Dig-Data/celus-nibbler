@@ -16,7 +16,7 @@ from celus_nibbler.sources import (
 )
 from celus_nibbler.utils import JsonEncorder, PydanticConfig
 
-from .base import BaseAreaDefinition, BaseParserDefinition
+from .base import BaseAreaDefinition, BaseNonCounterParserDefinition
 
 
 @dataclass(config=PydanticConfig)
@@ -56,10 +56,11 @@ class MetricBasedAreaDefinition(JsonEncorder, BaseAreaDefinition):
 
 
 @dataclass(config=PydanticConfig)
-class MetricBasedDefinition(BaseParserDefinition, metaclass=abc.ABCMeta):
+class MetricBasedDefinition(BaseNonCounterParserDefinition, metaclass=abc.ABCMeta):
     parser_name: str
-    areas: typing.List[MetricBasedAreaDefinition]
     data_format: DataFormatDefinition
+
+    areas: typing.List[MetricBasedAreaDefinition]
     platforms: typing.List[str] = field(default_factory=lambda: [])
     dimensions: typing.List[str] = field(default_factory=lambda: [])
     metrics_to_skip: typing.List[str] = field(default_factory=lambda: [])
@@ -73,13 +74,11 @@ class MetricBasedDefinition(BaseParserDefinition, metaclass=abc.ABCMeta):
     version: typing.Literal[1] = 1
 
     def make_parser(self):
-        from ..parsers.dynamic import DynamicParserMixin
-
-        class Parser(DynamicParserMixin, MetricBasedParser):
+        class Parser(MetricBasedParser):
             _definition = self
 
-            name = self.parser_name
             data_format = _definition.data_format
+            name = f"dynamic.{_definition.group}.{_definition.data_format.name}.{_definition.parser_name}"
             platforms = self.platforms
 
             metrics_to_skip = self.metrics_to_skip
@@ -92,9 +91,5 @@ class MetricBasedDefinition(BaseParserDefinition, metaclass=abc.ABCMeta):
             heuristics = self.heuristics
 
             areas = [e.make_area() for e in self.areas]
-
-            @classmethod
-            def name(cls):
-                return f"{cls._definition.kind}.{cls._definition.parser_name}"
 
         return Parser

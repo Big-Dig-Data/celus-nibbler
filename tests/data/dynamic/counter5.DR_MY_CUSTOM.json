@@ -1,14 +1,14 @@
 {
   "kind": "counter5.DR",
+  "parser_name": "DR_MY_CUSTOM",
+  "data_format": {
+	  "name": "MY_DR"
+  },
   "version": 1,
   "metric_column": ["User Activity"],
   "organization_column": ["Location Name"],
   "title_column": ["Database"],
   "overrides": [
-    {
-      "name": "name",
-      "value": "counter5.DR_MY_CUSTOM"
-    },
     {
       "name": "platforms",
       "value": ["PlatformWithCustomDR"]

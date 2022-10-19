@@ -6,7 +6,6 @@ import typing
 from importlib.metadata import entry_points
 
 from .base import BaseParser
-from .dynamic import DynamicParserMixin
 
 PYTHON_VERSION = sys.version_info
 
@@ -23,7 +22,7 @@ else:
 
 def get_parsers(
     parsers: typing.Optional[typing.List[str]] = None,
-    dynamic_parsers: typing.List[typing.Type[DynamicParserMixin]] = [],
+    dynamic_parsers: typing.List[typing.Type[BaseParser]] = [],
 ) -> typing.List[typing.Tuple[str, typing.Type[BaseParser]]]:
     """Lists all (name, parser) tuples
 
@@ -35,14 +34,14 @@ def get_parsers(
         for entry_point in get_entry_points()
         if not parsers or any(re.match(e, entry_point.name) for e in parsers)
     ] + [
-        (parser.full_name(), parser)
+        (parser.name, parser)
         for parser in dynamic_parsers
-        if not parsers or any(re.match(e, parser.full_name()) for e in parsers)
+        if not parsers or any(re.match(e, parser.name) for e in parsers)
     ]
 
 
 def available_parsers(
-    dynamic_parsers: typing.List[typing.Type[DynamicParserMixin]] = [],
+    dynamic_parsers: typing.List[typing.Type[BaseParser]] = [],
 ) -> typing.List[str]:
     return [name for name, _ in get_parsers(dynamic_parsers=dynamic_parsers)]
 
