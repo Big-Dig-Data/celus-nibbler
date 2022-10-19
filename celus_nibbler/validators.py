@@ -58,7 +58,9 @@ class DefaultZeroValue(BaseModel):
 class Organization(BaseModel):
     value: str
 
+    _not_none_organization = validator('value', allow_reuse=True)(not_none)
     _stripped_organization = validator('value', allow_reuse=True)(stripped)
+    _non_empty_organization = validator('value', allow_reuse=True)(non_empty)
 
 
 class Platform(BaseModel):
