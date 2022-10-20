@@ -126,8 +126,7 @@
               "col": 3
             },
             "direction": "down"
-          },
-          "required": true
+          }
         },
         {
           "name": "Platform",
@@ -137,8 +136,7 @@
               "col": 2
             },
             "direction": "down"
-          },
-          "required": true
+          }
         }
       ],
       "kind": "non_counter.date_based"

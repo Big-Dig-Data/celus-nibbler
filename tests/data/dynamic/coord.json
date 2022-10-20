@@ -122,16 +122,14 @@
               "col": 2
             },
             "direction": "down"
-          },
-          "required": true
+          }
         },
         {
           "name": "Platform",
           "source": {
             "row": 0,
             "col": 1
-          },
-          "required": true
+          }
         }
       ],
       "kind": "non_counter.date_based"

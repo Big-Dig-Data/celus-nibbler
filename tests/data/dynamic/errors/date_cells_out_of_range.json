@@ -70,8 +70,7 @@
           "name": "Platform",
           "source": {
             "value": "Platform1"
-          },
-          "required": true
+          }
         }
       ],
       "kind": "non_counter.date_based"

@@ -65,7 +65,6 @@ def test_date_based_area_definition():
         "dimensions": [
             {
                 "name": "publisher",
-                "required": True,
                 "source": {"coord": {"row": 2, "col": 3}, "direction": "down"},
                 "regex": None,
                 "default": None,
@@ -74,7 +73,6 @@ def test_date_based_area_definition():
             },
             {
                 "name": "platform",
-                "required": True,
                 "source": {"coord": {"row": 2, "col": 5}, "direction": "down"},
                 "regex": None,
                 "default": None,
@@ -137,7 +135,6 @@ def test_errors():
                 "dimensions": [
                     {
                         "name": "publisher",
-                        "required": True,
                         "source": {"coord": {"row": 2, "col": 3}, "direction": "down"},
                         "regex": None,
                         "default": None,
@@ -146,7 +143,6 @@ def test_errors():
                     },
                     {
                         "name": "platform",
-                        "required": True,
                         "source": {"coord": {"row": 1, "col": 5}, "direction": "down"},
                         "role": Role.DIMENSION,
                     },
@@ -187,7 +183,6 @@ def test_errors():
                 "dimensions": [
                     {
                         "name": "publisher",
-                        "required": True,
                         "source": {"coord": {"row": 2, "col": 3}, "direction": "down"},
                         "regex": None,
                         "default": None,
@@ -304,7 +299,6 @@ def test_date_based_definition():
                 "dimensions": [
                     {
                         "name": "publisher",
-                        "required": True,
                         "source": {"coord": {"col": 3, "row": 2}, "direction": "down"},
                         "regex": None,
                         "default": None,
@@ -313,7 +307,6 @@ def test_date_based_definition():
                     },
                     {
                         "name": "platform",
-                        "required": True,
                         "source": {"coord": {"col": 5, "row": 2}, "direction": "down"},
                         "regex": None,
                         "default": None,

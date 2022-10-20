@@ -125,7 +125,6 @@ class ContentExtractorMixin:
 class DimensionSource(JsonEncorder, ContentExtractorMixin):
     name: str
     source: Source
-    required: bool = True
     regex: typing.Optional[typing.Pattern] = None
     default: typing.Optional[str] = None
     last_value_as_default: bool = False

@@ -114,15 +114,13 @@
               "col": 2
             },
             "direction": "down"
-          },
-          "required": true
+          }
         },
         {
           "name": "Platform",
           "source": {
             "value": "P1"
-          },
-          "required": true
+          }
         }
       ],
       "kind": "non_counter.date_based"

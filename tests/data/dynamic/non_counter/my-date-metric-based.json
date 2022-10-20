@@ -85,8 +85,7 @@
               "col": 0
             },
             "direction": "down"
-          },
-          "required": true
+          }
         }
       ],
       "kind": "non_counter.date_metric_based"
