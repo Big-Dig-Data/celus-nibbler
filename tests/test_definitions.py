@@ -229,7 +229,6 @@ def test_date_based_definition():
         parser_name="Parser1",
         data_format=DataFormatDefinition(name="Format1"),
         platforms=["Platform1", "Platform2"],
-        dimensions=["Dim1", "Dim2"],
         heuristics=AndCondition(
             conds=[
                 RegexCondition("AAA", Coord(1, 1)),
@@ -274,7 +273,6 @@ def test_date_based_definition():
         "data_format": {"name": "Format1", "id": None},
         "platforms": ["Platform1", "Platform2"],
         "dimensions_to_skip": {},
-        "dimensions": ["Dim1", "Dim2"],
         "dimension_aliases": [],
         "heuristics": {
             "conds": [

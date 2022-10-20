@@ -62,7 +62,6 @@ class MetricBasedDefinition(BaseNonCounterParserDefinition, metaclass=abc.ABCMet
 
     areas: typing.List[MetricBasedAreaDefinition]
     platforms: typing.List[str] = field(default_factory=lambda: [])
-    dimensions: typing.List[str] = field(default_factory=lambda: [])
     metrics_to_skip: typing.List[str] = field(default_factory=lambda: [])
     titles_to_skip: typing.List[str] = field(default_factory=lambda: [])
     dimensions_to_skip: typing.Dict[str, typing.List[str]] = field(default_factory=lambda: {})

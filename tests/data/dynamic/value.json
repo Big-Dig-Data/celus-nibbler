@@ -9,10 +9,6 @@
     "Platform1",
     "Platform2"
   ],
-  "dimensions": [
-    "Dim1",
-    "Dim2"
-  ],
   "metrics_to_skip": [],
   "titles_to_skip": [],
   "dimensions_to_skip": [],
