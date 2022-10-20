@@ -3,7 +3,7 @@ import re
 from typing import Any, Optional, Type, Union
 
 from dateutil import parser as datetimes_parser
-from pydantic import BaseModel, ValidationError, validator
+from pydantic import BaseModel, validator
 
 
 class BaseValueModel(BaseModel):
@@ -12,7 +12,7 @@ class BaseValueModel(BaseModel):
 
 def non_empty(name: str) -> str:
     if not name:
-        raise ValidationError("cant-be-empty")
+        raise ValueError("cant-be-empty")
     return name
 
 
@@ -22,7 +22,7 @@ def stripped(name: str) -> str:
 
 def not_none(value: Any) -> Any:
     if value is None:
-        raise ValidationError("cant-be-none")
+        raise ValueError("cant-be-none")
     return value
 
 
@@ -30,7 +30,7 @@ def issn(issn: str) -> str:
     if not issn:
         return ""
     if not re.match(r"^[0-9]{4}-[0-9]{3}[0-9X]$", issn):
-        raise ValidationError("not-issn")
+        raise ValueError("not-issn")
     return issn
 
 
@@ -40,7 +40,7 @@ class Value(BaseValueModel):
     @validator("value")
     def non_negative(cls, value: Union[int, float]) -> Union[int, float]:
         if value < 0:
-            raise ValidationError("cant-be-negative")
+            raise ValueError("cant-be-negative")
         return round(value)
 
 
@@ -91,7 +91,7 @@ class Metric(BaseValueModel):
     @validator("value")
     def not_digit(cls, metric: str) -> str:
         if metric.isdigit():
-            raise ValidationError("cant-be-digit")
+            raise ValueError("cant-be-digit")
         return metric
 
 
@@ -101,7 +101,7 @@ class Title(BaseValueModel):
     @validator("value")
     def not_digit(cls, title: str) -> str:
         if title is not None and title.isdigit():
-            raise ValidationError("cant-be-digit")
+            raise ValueError("cant-be-digit")
         return title
 
 
@@ -117,7 +117,7 @@ class Date(BaseValueModel):
         try:
             return datetimes_parser.parse(date)
         except datetimes_parser.ParserError:
-            raise ValidationError("cant-parse-date")
+            raise ValueError("cant-parse-date")
 
 
 class DOI(BaseValueModel):
@@ -128,7 +128,7 @@ class DOI(BaseValueModel):
         if not doi:
             return ""
         if not re.match(r"^10\.[\d\.]+\/[^\s]+$", doi):
-            raise ValidationError("not-doi")
+            raise ValueError("not-doi")
 
         return doi
 
@@ -142,7 +142,7 @@ class ISBN(BaseValueModel):
             return ""
 
         if not re.match(r"^[0-9\-]{9,}$", isbn):
-            raise ValidationError("not-isbn")
+            raise ValueError("not-isbn")
 
         return isbn
 
@@ -175,4 +175,4 @@ class DateInString(BaseValueModel):
         try:
             return datetimes_parser.parse(date.split(' ')[-1])
         except datetimes_parser.ParserError:
-            raise ValidationError("cant-parse-date")
+            raise ValueError("cant-parse-date")
