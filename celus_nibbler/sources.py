@@ -1,5 +1,5 @@
-import datetime
 import typing
+from dataclasses import field
 from enum import Enum
 
 from pydantic import ValidationError
@@ -32,17 +32,23 @@ class Role(str, Enum):
     ORGANIZATION = "organization"
 
 
+@dataclass(config=PydanticConfig)
+class ExtractParams(JsonEncorder):
+    regex: typing.Optional[typing.Pattern] = None
+    default: typing.Optional[typing.Any] = None
+    last_value_as_default: bool = False
+    blank_values: typing.List[typing.Any] = field(default_factory=lambda: [None, ""])
+
+
 class ContentExtractorMixin:
     source: Source
-    regex: typing.Optional[typing.Pattern]
-    default: typing.Optional[typing.Any]
-    last_value_as_default: bool
+    extract_params: ExtractParams
     role: Role
 
     def content(self, sheet: SheetReader, idx: int) -> typing.Any:
         content = self.source[idx].content(sheet)
-        if self.regex:
-            if extracted := self.regex.search(content):
+        if regex := self.extract_params.regex:
+            if extracted := regex.search(content):
                 return extracted.group(1)
             else:
                 # Unable to extract data
@@ -70,16 +76,16 @@ class ContentExtractorMixin:
             content = self.content(sheet, idx)
             validator = validator or self.validator
             if validator:
-                if self.default is not None:
-                    return validators.gen_default_validator(validator, self.default)(
-                        value=content
-                    ).value
-                elif self.last_value_as_default:
+                if self.extract_params.default is not None:
+                    return validators.gen_default_validator(
+                        validator, self.extract_params.default, self.extract_params.blank_values
+                    )(value=content).value
+                elif self.extract_params.last_value_as_default:
                     last_value = getattr(self, 'last_value', None)
                     if last_value:
-                        return validators.gen_default_validator(validator, last_value)(
-                            value=content
-                        ).value
+                        return validators.gen_default_validator(
+                            validator, last_value, self.extract_params.blank_values
+                        )(value=content).value
 
                 return validator(value=content).value
             else:
@@ -125,9 +131,7 @@ class ContentExtractorMixin:
 class DimensionSource(JsonEncorder, ContentExtractorMixin):
     name: str
     source: Source
-    regex: typing.Optional[typing.Pattern] = None
-    default: typing.Optional[str] = None
-    last_value_as_default: bool = False
+    extract_params: ExtractParams = ExtractParams()
     role: typing.Literal[Role.DIMENSION] = Role.DIMENSION
 
     @property
@@ -138,9 +142,7 @@ class DimensionSource(JsonEncorder, ContentExtractorMixin):
 @dataclass(config=PydanticConfig)
 class MetricSource(JsonEncorder, ContentExtractorMixin):
     source: Source
-    regex: typing.Optional[typing.Pattern] = None
-    default: typing.Optional[str] = None
-    last_value_as_default: bool = False
+    extract_params: ExtractParams = ExtractParams()
     role: typing.Literal[Role.METRIC] = Role.METRIC
 
     @property
@@ -151,9 +153,7 @@ class MetricSource(JsonEncorder, ContentExtractorMixin):
 @dataclass(config=PydanticConfig)
 class OrganizationSource(JsonEncorder, ContentExtractorMixin):
     source: Source
-    regex: typing.Optional[typing.Pattern] = None
-    default: typing.Optional[str] = None
-    last_value_as_default: bool = False
+    extract_params: ExtractParams = ExtractParams()
     role: typing.Literal[Role.ORGANIZATION] = Role.ORGANIZATION
 
     @property
@@ -164,9 +164,7 @@ class OrganizationSource(JsonEncorder, ContentExtractorMixin):
 @dataclass(config=PydanticConfig)
 class TitleSource(JsonEncorder, ContentExtractorMixin):
     source: Source
-    regex: typing.Optional[typing.Pattern] = None
-    default: typing.Optional[str] = None
-    last_value_as_default: bool = False
+    extract_params: ExtractParams = ExtractParams()
     role: typing.Literal[Role.TITLE] = Role.TITLE
 
     @property
@@ -178,9 +176,7 @@ class TitleSource(JsonEncorder, ContentExtractorMixin):
 class TitleIdSource(JsonEncorder, ContentExtractorMixin):
     name: str
     source: Source
-    regex: typing.Optional[typing.Pattern] = None
-    default: typing.Optional[str] = None
-    last_value_as_default: bool = False
+    extract_params: ExtractParams = ExtractParams()
     role: typing.Literal[Role.TITLE_ID] = Role.TITLE_ID
 
     @property
@@ -191,9 +187,7 @@ class TitleIdSource(JsonEncorder, ContentExtractorMixin):
 @dataclass(config=PydanticConfig)
 class DateSource(JsonEncorder, ContentExtractorMixin):
     source: Source
-    regex: typing.Optional[typing.Pattern] = None
-    default: typing.Optional[datetime.date] = None
-    last_value_as_default: bool = False
+    extract_params: ExtractParams = ExtractParams()
     role: typing.Literal[Role.DATE] = Role.DATE
 
     @property
@@ -204,9 +198,7 @@ class DateSource(JsonEncorder, ContentExtractorMixin):
 @dataclass(config=PydanticConfig)
 class ValueSource(JsonEncorder, ContentExtractorMixin):
     source: Source
-    regex: typing.Optional[typing.Pattern] = None
-    default: typing.Optional[int] = None
-    last_value_as_default: bool = False
+    extract_params: ExtractParams = ExtractParams()
     role: typing.Literal[Role.VALUE] = Role.VALUE
 
     @property

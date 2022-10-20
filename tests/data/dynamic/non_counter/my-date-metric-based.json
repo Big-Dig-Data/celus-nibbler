@@ -41,7 +41,9 @@
                         },
                         "direction": "right"
                    },
-                   "regex": "^([^ ]+.+[^ ]+) in"
+                   "extract_params": {
+                     "regex": "^([^ ]+.+[^ ]+) in"
+                   }
                },
                {
                    "role": "date",
@@ -52,7 +54,9 @@
                         },
                         "direction": "right"
                    },
-                   "regex": "in (\\d+\\/\\d+)$"
+                   "extract_params": {
+                     "regex": "in (\\d+\\/\\d+)$"
+                   }
                }
            ],
            "data_cells": {
@@ -72,7 +76,9 @@
               },
               "direction": "down"
           },
-          "regex": "^MYCONS - (.*)$"
+          "extract_params": {
+            "regex": "^MYCONS - (.*)$"
+          }
       },
       "titles": null,
       "title_ids": [],

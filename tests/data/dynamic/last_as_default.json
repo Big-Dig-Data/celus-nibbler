@@ -91,7 +91,9 @@
           },
           "direction": "down"
         },
-        "last_value_as_default": true
+        "extract_params": {
+          "last_value_as_default": true
+        }
       },
       "metrics": {
         "source": {

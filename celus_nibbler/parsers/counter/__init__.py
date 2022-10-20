@@ -11,6 +11,7 @@ from celus_nibbler.parsers.non_counter.date_based import BaseDateArea
 from celus_nibbler.sources import (
     DateSource,
     DimensionSource,
+    ExtractParams,
     MetricSource,
     OrganizationSource,
     TitleIdSource,
@@ -48,10 +49,18 @@ class CounterHeaderArea(BaseDateArea):
         ("Publisher", {"Publisher"}),
         ("Platform", {"Platform", "platform"}),
     ]
+
     TITLE_COLUMN_NAMES: typing.List[str] = []
     ORGANIZATION_COLUMN_NAMES: typing.List[str] = []
-    ORGANIZATION_COLUMN_EXTRACTION_REGEX: typing.Optional[typing.Pattern] = None
     METRIC_COLUMN_NAMES: typing.List[str] = []
+
+    ORGANIZATION_EXTRACT_PARAMS: ExtractParams = ExtractParams()
+    METRIC_EXTRACT_PARAMS: ExtractParams = ExtractParams()
+    DATE_EXTRACT_PARAMS: ExtractParams = ExtractParams()
+    DATA_EXTRACT_PARAMS: ExtractParams = ExtractParams()
+    TITLE_EXTRACT_PARAMS: ExtractParams = ExtractParams()
+    TITLE_IDS_EXTRACT_PARAMS: typing.Dict[str, ExtractParams] = {}
+    DIMENSIONS_EXTRACT_PARAMS: typing.Dict[str, ExtractParams] = {}
 
     @classmethod
     def dimensions(cls) -> typing.List[str]:
@@ -104,9 +113,15 @@ class CounterHeaderArea(BaseDateArea):
                 self.parse_date(cell)
                 first_data_cell = CoordRange(cell, Direction.DOWN)[1]
                 return DataHeaders(
-                    roles=[DateSource(CoordRange(cell, Direction.RIGHT))],
+                    roles=[
+                        DateSource(
+                            source=CoordRange(cell, Direction.RIGHT),
+                            extract_params=self.DATE_EXTRACT_PARAMS,
+                        ),
+                    ],
                     data_cells=CoordRange(first_data_cell, Direction.RIGHT),
                     data_direction=Direction.DOWN,
+                    data_extract_params=self.DATA_EXTRACT_PARAMS,
                 )
             except ValidationError:
                 continue  # doesn't match the header
@@ -115,7 +130,10 @@ class CounterHeaderArea(BaseDateArea):
     def title_source(self) -> typing.Optional[TitleSource]:
         if not self.TITLE_COLUMN_NAMES:
             # Name of title column not defined -> assumed the title is in first column
-            return TitleSource(CoordRange(self.header_row[0], Direction.DOWN).skip(1))
+            return TitleSource(
+                CoordRange(self.header_row[0], Direction.DOWN).skip(1),
+                extract_params=self.TITLE_EXTRACT_PARAMS,
+            )
 
         for cell in self.header_row:
             try:
@@ -125,7 +143,10 @@ class CounterHeaderArea(BaseDateArea):
                     break  # last cell reached
 
             if content.strip() in self.TITLE_COLUMN_NAMES:
-                return TitleSource(CoordRange(cell, Direction.DOWN).skip(1))
+                return TitleSource(
+                    CoordRange(cell, Direction.DOWN).skip(1),
+                    extract_params=self.TITLE_EXTRACT_PARAMS,
+                )
 
     @property
     def title_ids_sources(self) -> typing.Dict[str, TitleIdSource]:
@@ -154,7 +175,11 @@ class CounterHeaderArea(BaseDateArea):
                 # empty or other field
                 continue
 
-            source = TitleIdSource(name, CoordRange(cell, Direction.DOWN).skip(1))
+            source = TitleIdSource(
+                name,
+                CoordRange(cell, Direction.DOWN).skip(1),
+                extract_params=self.TITLE_IDS_EXTRACT_PARAMS.get(name, ExtractParams()),
+            )
             ids_sources[name] = source
 
         return ids_sources
@@ -173,7 +198,11 @@ class CounterHeaderArea(BaseDateArea):
             for dimension, names in self.DIMENSION_NAMES_MAP:
                 if content in names:
                     dim_sources[dimension] = DimensionSource(
-                        content, CoordRange(Coord(cell.row + 1, cell.col), Direction.DOWN)
+                        content,
+                        CoordRange(Coord(cell.row + 1, cell.col), Direction.DOWN),
+                        extract_params=self.DIMENSIONS_EXTRACT_PARAMS.get(
+                            dimension, ExtractParams()
+                        ),
                     )
 
         return dim_sources
@@ -194,7 +223,7 @@ class CounterHeaderArea(BaseDateArea):
             if content.strip() in self.ORGANIZATION_COLUMN_NAMES:
                 return OrganizationSource(
                     CoordRange(cell, Direction.DOWN).skip(1),
-                    self.ORGANIZATION_COLUMN_EXTRACTION_REGEX,
+                    extract_params=self.ORGANIZATION_EXTRACT_PARAMS,
                 )
 
         return None
@@ -211,7 +240,10 @@ class CounterHeaderArea(BaseDateArea):
                     e.lower() for e in self.METRIC_COLUMN_NAMES
                 ]:
 
-                    return MetricSource(CoordRange(cell, Direction.DOWN).skip(1))
+                    return MetricSource(
+                        CoordRange(cell, Direction.DOWN).skip(1),
+                        extract_params=self.METRIC_EXTRACT_PARAMS,
+                    )
             except TableException as e:
                 if e.reason in ["out-of-bounds"]:
                     raise TableException(

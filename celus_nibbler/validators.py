@@ -1,6 +1,6 @@
 import datetime
 import re
-from typing import Any, Optional, Type, Union
+from typing import Any, List, Optional, Type, Union
 
 from dateutil import parser as datetimes_parser
 from pydantic import BaseModel, validator
@@ -45,14 +45,16 @@ class Value(BaseValueModel):
 
 
 def gen_default_validator(
-    orig_validator: Type[BaseValueModel], default_value: Any
+    orig_validator: Type[BaseValueModel],
+    default_value: Any,
+    blank_values: List[Any],
 ) -> Type[BaseValueModel]:
     class Validator(BaseValueModel):
         value: Any
 
         @validator("value", allow_reuse=True)
         def default(cls, value: Any) -> Any:
-            if value in (None, ""):
+            if value in blank_values:
                 return default_value
             else:
                 return orig_validator(value=value).value

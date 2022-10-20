@@ -13,6 +13,7 @@ from celus_nibbler.reader import SheetReader
 from celus_nibbler.sources import (
     DateSource,
     DimensionSource,
+    ExtractParams,
     MetricSource,
     OrganizationSource,
     TitleIdSource,
@@ -42,7 +43,7 @@ class DataHeaders(JsonEncorder):
     roles: typing.List[Role]
     data_cells: CoordRange  # first data after the header
     data_direction: Direction  # perpendicular to data_cells
-    data_default: typing.Optional[int] = None
+    data_extract_params: ExtractParams = ExtractParams()
 
     def find_data_cells(self, sheet: SheetReader) -> typing.List['DataCells']:
         res = []
@@ -66,7 +67,7 @@ class DataHeaders(JsonEncorder):
                         record,
                         ValueSource(
                             source=CoordRange(cell, self.data_direction),
-                            default=self.data_default,
+                            extract_params=self.data_extract_params,
                         ),
                     )
                 )

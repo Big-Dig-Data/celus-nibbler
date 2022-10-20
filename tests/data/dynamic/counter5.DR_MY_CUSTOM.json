@@ -40,6 +40,10 @@
       "metric_column": ["User Activity"],
       "organization_column": ["Location Name"],
       "title_column": ["Database"],
+      "data_extract_params": {
+        "default": 0,
+        "blank_values": [null, "", "zero"]
+      },
       "kind": "counter5.DR"
     }
   ]

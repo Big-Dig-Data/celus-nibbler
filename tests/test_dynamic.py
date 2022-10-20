@@ -53,6 +53,7 @@ from celus_nibbler.parsers.dynamic import gen_parser
             "dynamic.non_counter.simple_format.last_as_default",
             False,
         ),
+        ("Platform1", "blank", "csv", "dynamic.non_counter.simple_format.blank", False),
         ("MIT", "counter5.TR", "xlsx", "dynamic.counter5.TR.MY_TR_CUSTOM", False),
         (
             "PlatformWithCustomDR",

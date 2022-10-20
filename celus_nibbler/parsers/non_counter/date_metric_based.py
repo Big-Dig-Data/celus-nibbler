@@ -8,7 +8,13 @@ from celus_nibbler.conditions import RegexCondition, SheetIdxCondition
 from celus_nibbler.coordinates import Coord, CoordRange, Direction
 from celus_nibbler.data_headers import DataFormatDefinition, DataHeaders
 from celus_nibbler.parsers.base import BaseHeaderArea
-from celus_nibbler.sources import DateSource, DimensionSource, MetricSource, OrganizationSource
+from celus_nibbler.sources import (
+    DateSource,
+    DimensionSource,
+    ExtractParams,
+    MetricSource,
+    OrganizationSource,
+)
 
 from .base import BaseNonCounterParser
 
@@ -35,18 +41,18 @@ class MyDateMetricArea(BaseDateMetricArea):
     }
     organization_source = OrganizationSource(
         CoordRange(Coord(1, 1), Direction.DOWN),
-        re.compile(r"^MYCONS - (.*)$"),
+        ExtractParams(regex=re.compile(r"^MYCONS - (.*)$")),
     )
 
     data_headers = DataHeaders(
         roles=[
             DateSource(
                 CoordRange(Coord(0, 2), Direction.RIGHT),
-                regex=re.compile(r"in (\d+\/\d+)$"),
+                ExtractParams(regex=re.compile(r"in (\d+\/\d+)$")),
             ),
             MetricSource(
                 CoordRange(Coord(0, 2), Direction.RIGHT),
-                regex=re.compile(r"^([^ ]+.+[^ ]+) in"),
+                ExtractParams(regex=re.compile(r"^([^ ]+.+[^ ]+) in")),
             ),
         ],
         data_cells=CoordRange(Coord(1, 2), Direction.RIGHT),
