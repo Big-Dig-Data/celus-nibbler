@@ -54,6 +54,10 @@ class CounterHeaderArea(BaseDateArea):
     ORGANIZATION_COLUMN_EXTRACTION_REGEX: typing.Optional[typing.Pattern] = None
     METRIC_COLUMN_NAMES: typing.List[str] = []
 
+    @classmethod
+    def dimensions(cls) -> typing.List[str]:
+        return [e[0] for e in cls.DIMENSION_NAMES_MAP]
+
     @property
     def header_row(self) -> CoordRange:
         """Find the line where counter header is"""

@@ -52,6 +52,10 @@ class MetricBasedAreaDefinition(JsonEncorder, BaseAreaDefinition):
             def dimensions_sources(self) -> typing.Dict[str, DimensionSource]:
                 return {e.name: e for e in dimensions}
 
+            @classmethod
+            def dimensions(cls) -> typing.List[str]:
+                return list([e.name for e in dimensions])
+
         return Area
 
 

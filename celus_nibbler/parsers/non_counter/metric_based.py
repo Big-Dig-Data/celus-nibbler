@@ -64,6 +64,10 @@ class MyMetricArea(BaseMetricArea):
         data_direction=Direction.DOWN,
     )
 
+    @classmethod
+    def dimensions(cls) -> typing.List[str]:
+        return list(cls.dimensions_sources.keys())
+
 
 class MyMetricBasedParser(MetricBasedParser):
     data_format = DataFormatDefinition(name="MY")

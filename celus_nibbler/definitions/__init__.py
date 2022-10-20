@@ -55,7 +55,6 @@ class Definition(JsonEncorder, BaseModel):
 __all__ = [
     'AreaDefinition',
     'Definition',
-    'AreaDefinition',
     'DateBasedAreaDefinition',
     'DateBasedDefinition',
     'DateMetricBasedAreaDefinition',

@@ -11,7 +11,6 @@ from celus_nibbler.sources import (
     DimensionSource,
     MetricSource,
     OrganizationSource,
-    Source,
     TitleIdSource,
     TitleSource,
 )
@@ -47,12 +46,16 @@ class DateBasedAreaDefinition(JsonEncorder, BaseAreaDefinition):
             metric_source = metrics
 
             @property
-            def title_ids_sources(self) -> typing.Dict[str, Source]:
+            def title_ids_sources(self) -> typing.Dict[str, TitleIdSource]:
                 return {e.name: e for e in title_ids}
 
             @property
-            def dimensions_sources(self) -> typing.Dict[str, Source]:
+            def dimensions_sources(self) -> typing.Dict[str, DimensionSource]:
                 return {e.name: e for e in dimensions}
+
+            @classmethod
+            def dimensions(cls) -> typing.List[str]:
+                return list([e.name for e in dimensions])
 
         return Area
 
