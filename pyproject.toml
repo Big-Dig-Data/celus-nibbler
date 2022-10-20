@@ -15,6 +15,9 @@ force_grid_wrap = 0
 use_parentheses = true
 ensure_newline_before_comments = true
 
+[tool.mypy]
+plugins = "pydantic.mypy"
+
 [tool.pytest.ini_options]
 testpaths = "tests/"
 
@@ -55,6 +58,7 @@ tox = "~3.25.0"
 flake8 = "~4.0.1"
 build = "~0.8.0"
 isort = "~5.10.0"
+mypy = "^0.982"
 
 [tool.poetry.plugins]
 
