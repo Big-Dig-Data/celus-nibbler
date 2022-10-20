@@ -1,49 +1,46 @@
 {
   "kind": "counter5.DR",
   "parser_name": "DR_MY_CUSTOM",
+  "platforms": ["PlatformWithCustomDR"],
   "data_format": {
 	  "name": "MY_DR"
   },
-  "version": 1,
-  "metric_column": ["User Activity"],
-  "organization_column": ["Location Name"],
-  "title_column": ["Database"],
-  "overrides": [
-    {
-      "name": "platforms",
-      "value": ["PlatformWithCustomDR"]
-    },
-    {
-      "name": "heuristics",
-      "value": {
-        "conds": [
-          {
-            "pattern": "Report_Name",
-            "coord": {
-              "row": 0,
-              "col": 0
-            },
-            "kind": "regex"
-          },
-          {
-            "pattern": "Counter 5 Location Details - Database Report",
-            "coord": {
-              "row": 0,
-              "col": 1
-            },
-            "kind": "regex"
-          },
-          {
-            "pattern": "Institution_Name",
-            "coord": {
-              "row": 1,
-              "col": 0
-          },
-          "kind": "regex"
-        }
-      ],
-      "kind": "and"
+  "heuristics": {
+    "conds": [
+      {
+        "pattern": "Report_Name",
+        "coord": {
+          "row": 0,
+          "col": 0
+        },
+        "kind": "regex"
+      },
+      {
+        "pattern": "Counter 5 Location Details - Database Report",
+        "coord": {
+          "row": 0,
+          "col": 1
+        },
+        "kind": "regex"
+      },
+      {
+        "pattern": "Institution_Name",
+        "coord": {
+          "row": 1,
+          "col": 0
+        },
+        "kind": "regex"
       }
+    ],
+    "kind": "and"
+  },
+  "version": 1,
+  "areas": [
+    {
+      "metric_column": ["User Activity"],
+      "organization_column": ["Location Name"],
+      "title_column": ["Database"],
+      "kind": "counter5.DR"
     }
   ]
 }

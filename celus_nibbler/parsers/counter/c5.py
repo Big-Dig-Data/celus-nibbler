@@ -16,6 +16,8 @@ class Counter5HeaderArea(CounterHeaderArea):
 
 
 class BaseCounter5Parser(BaseParser):
+    Area: typing.Type[CounterHeaderArea]
+
     @property
     def name(self):
         return f"counter5.{self.data_format.name}"

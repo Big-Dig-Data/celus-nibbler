@@ -12,6 +12,8 @@ from . import CounterHeaderArea
 
 
 class BaseCounter4Parser(BaseParser):
+    Area: typing.Type[CounterHeaderArea]
+
     @property
     def name(self):
         return f"counter4.{self.data_format.name}"

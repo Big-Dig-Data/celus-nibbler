@@ -1,6 +1,7 @@
 import abc
 import typing
 
+from celus_nibbler.conditions import Condition
 from celus_nibbler.data_headers import DataFormatDefinition
 from celus_nibbler.parsers.base import BaseArea, BaseParser
 
@@ -17,6 +18,7 @@ class BaseNonCounterParserDefinition(BaseParserDefinition):
     parser_name: str
     data_format: DataFormatDefinition
     group: str = "non_counter"
+    heuristics: typing.Optional[Condition] = None
 
 
 class BaseAreaDefinition(metaclass=abc.ABCMeta):
