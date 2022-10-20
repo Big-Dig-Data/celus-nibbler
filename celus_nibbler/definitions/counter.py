@@ -199,6 +199,11 @@ class BaseCounterParserDefinition(BaseParserDefinition, metaclass=abc.ABCMeta):
     areas: typing.List[CounterAreaDefinition] = field(
         default_factory=lambda: [], metadata={"min_items": 1, "max_items": 1}
     )
+    metrics_to_skip: typing.List[str] = field(default_factory=lambda: [])
+    titles_to_skip: typing.List[str] = field(default_factory=lambda: [])
+    dimensions_to_skip: typing.Dict[str, typing.List[str]] = field(default_factory=lambda: {})
+    metric_aliases: typing.List[typing.Tuple[str, str]] = field(default_factory=lambda: [])
+    dimension_aliases: typing.List[typing.Tuple[str, str]] = field(default_factory=lambda: [])
 
 
 @dataclass(config=PydanticConfig)
@@ -222,6 +227,11 @@ def gen_parser(
         name = f"dynamic.{definition.group}.{data_format.name}.{definition.parser_name}"
         platforms = definition.platforms or base.platforms
         heuristics = definition.heuristics or base.heuristics
+        metrics_to_skip = definition.metrics_to_skip or base.metrics_to_skip
+        titles_to_skip = definition.titles_to_skip or base.titles_to_skip
+        dimensions_to_skip = definition.dimensions_to_skip or base.dimensions_to_skip
+        metric_aliases = definition.metric_aliases or base.metric_aliases
+        dimension_aliases = definition.dimension_aliases or base.dimension_aliases
 
         areas = [definition.areas[0].make_area()]
 

@@ -19,6 +19,11 @@ class BaseNonCounterParserDefinition(BaseParserDefinition):
     data_format: DataFormatDefinition
     group: str = "non_counter"
     heuristics: typing.Optional[Condition] = None
+    metrics_to_skip: typing.List[str] = []
+    titles_to_skip: typing.List[str] = []
+    dimensions_to_skip: typing.Dict[str, typing.List[str]] = {}
+    metric_aliases: typing.List[typing.Tuple[str, str]] = []
+    dimension_aliases: typing.List[typing.Tuple[str, str]] = []
 
 
 class BaseAreaDefinition(metaclass=abc.ABCMeta):
