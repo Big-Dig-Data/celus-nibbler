@@ -51,7 +51,12 @@ class DR(BaseCounter5Parser):
     )
 
     class Area(Counter5HeaderArea):
-        pass
+        DIMENSION_NAMES_MAP = [
+            ("Access_Method", {"Access_Method", "Access Method"}),
+            ("Data_Type", {"Data Type", "Data_Type"}),
+            ("Platform", {"Platform", "platform"}),
+            ("Publisher", {"Publisher"}),
+        ]
 
     areas = [Area]
 
@@ -106,6 +111,11 @@ class PR(BaseCounter5Parser):
 
     class Area(Counter5HeaderArea):
         title_source = None
+        DIMENSION_NAMES_MAP = [
+            ("Access_Method", {"Access_Method", "Access Method"}),
+            ("Data_Type", {"Data Type", "Data_Type"}),
+            ("Platform", {"Platform", "platform"}),
+        ]
 
         @property
         def dimensions_sources(self) -> typing.Dict[str, DimensionSource]:
@@ -200,6 +210,14 @@ class TR(BaseCounter5Parser):
     )
 
     class Area(Counter5HeaderArea):
-        pass
+        DIMENSION_NAMES_MAP = [
+            ("Access_Type", {"Access Type", "Access_Type"}),
+            ("Access_Method", {"Access_Method", "Access Method"}),
+            ("Data_Type", {"Data Type", "Data_Type"}),
+            ("Section_Type", {"Section Type", "Section_Type"}),
+            ("YOP", {"YOP", "Year of Publication", "year of publication"}),
+            ("Publisher", {"Publisher"}),
+            ("Platform", {"Platform", "platform"}),
+        ]
 
     areas = [Area]

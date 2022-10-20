@@ -47,7 +47,6 @@ class CounterHeaderArea(BaseDateArea):
     DIMENSION_NAMES_MAP = [
         ("Publisher", {"Publisher"}),
         ("Platform", {"Platform", "platform"}),
-        ("YOP", {"YOP", "Year of Publication", "year of publication"}),
     ]
     TITLE_COLUMN_NAMES: typing.List[str] = []
     ORGANIZATION_COLUMN_NAMES: typing.List[str] = []
