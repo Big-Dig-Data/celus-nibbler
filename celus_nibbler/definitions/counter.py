@@ -24,7 +24,7 @@ from celus_nibbler.parsers.counter.c4 import (
     BaseCounter4Parser,
     JR1a,
 )
-from celus_nibbler.parsers.counter.c5 import DR, PR, TR, BaseCounter5Parser
+from celus_nibbler.parsers.counter.c5 import DR, IR_M1, PR, TR, BaseCounter5Parser
 from celus_nibbler.sources import ExtractParams
 from celus_nibbler.utils import JsonEncorder, PydanticConfig
 
@@ -178,6 +178,14 @@ class TRAreaDefinition(BaseCounterAreaDefinition):
 
 
 @dataclass(config=PydanticConfig)
+class IR_M1AreaDefinition(BaseCounterAreaDefinition):
+    kind: typing.Literal["counter5.IR_M1"] = "counter5.IR_M1"
+
+    def make_area(self) -> typing.Type[CounterHeaderArea]:
+        return gen_area(IR_M1.Area, self)
+
+
+@dataclass(config=PydanticConfig)
 class DRAreaDefinition(BaseCounterAreaDefinition):
     kind: typing.Literal["counter5.DR"] = "counter5.DR"
 
@@ -209,6 +217,7 @@ CounterAreaDefinition = Annotated[
         DRAreaDefinition,
         PRAreaDefinition,
         TRAreaDefinition,
+        IR_M1AreaDefinition,
     ],
     Field(discriminator='kind'),
 ]
@@ -402,3 +411,13 @@ class PRDefinition(JsonEncorder, BaseCounter5ParserDefinition):
 
     def make_parser(self):
         return gen_parser(PR, self)
+
+
+@dataclass(config=PydanticConfig)
+class IR_M1Definition(JsonEncorder, BaseCounter5ParserDefinition):
+    kind: typing.Literal["counter5.IR_M1"] = "counter5.IR_M1"
+    data_format: typing.Optional[DataFormatDefinition] = None
+    version: typing.Literal[1] = 1
+
+    def make_parser(self):
+        return gen_parser(IR_M1, self)

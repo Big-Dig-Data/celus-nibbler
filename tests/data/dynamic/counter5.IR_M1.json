@@ -1,0 +1,10 @@
+{
+  "kind": "counter5.IR_M1",
+  "parser_name": "MY_IR_M1_CUSTOM",
+  "version": 1,
+  "areas": [
+     {
+        "kind": "counter5.IR_M1"
+     }
+  ]
+}

@@ -221,3 +221,37 @@ class TR(BaseCounter5Parser):
         ]
 
     areas = [Area]
+
+
+class IR_M1(BaseCounter5Parser):
+    data_format = DataFormatDefinition(name="IR_M1")
+
+    titles_to_skip: typing.List[str] = ["Total", "All"]
+
+    platforms = [
+        "Access Medicine",
+        "Adam Matthew Digital",
+        "AlexanderStreet",
+        "Artstor",
+        "Bloomsbury",
+        "Drama Online",
+        "Films on Demand",
+        "HistoryMakers",
+        "Infobase",
+        "JSTOR",
+        "ProQuest",
+    ]
+    heuristics = (
+        RegexCondition(re.compile(r"^Report_Name$"), Coord(0, 0))
+        & RegexCondition(re.compile(r"^Multimedia Item Requests$"), Coord(0, 1))
+        & RegexCondition(re.compile(r"^Report_ID$"), Coord(1, 0))
+        & RegexCondition(re.compile(r"^IR_M1$"), Coord(1, 1))
+    )
+
+    class Area(Counter5HeaderArea):
+        DIMENSION_NAMES_MAP = [
+            ("Platform", {"Platform", "platform"}),
+            ("Publisher", {"Publisher"}),
+        ]
+
+    areas = [Area]

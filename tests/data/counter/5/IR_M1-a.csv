@@ -1,0 +1,17 @@
+Report_Name,Multimedia Item Requests,,,,,,,,,,,,,,,,
+Report_ID,IR_M1,,,,,,,,,,,,,,,,
+Release,5,,,,,,,,,,,,,,,,
+Institution_Name,My Institution,,,,,,,,,,,,,,,,
+Institution_ID,,,,,,,,,,,,,,,,,
+Metric_Types,Total_Item_Requests,,,,,,,,,,,,,,,,
+Report_Filters,Data_Type=Multimedia; Access_Method=Regular,,,,,,,,,,,,,,,,
+Report_Attributes,,,,,,,,,,,,,,,,,
+Exceptions,,,,,,,,,,,,,,,,,
+Reporting_Period,2021-07-01 to 2022-06-30,,,,,,,,,,,,,,,,
+Created,2022-10-01,,,,,,,,,,,,,,,,
+Created_By,My Platform,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,
+Item,Publisher,Publisher_ID,Platform,Metric_Type,Reporting_Period_Total,Jul-2022,Aug-2022,Sep-2022,Oct-2022,Nov-2022,Dec-2022,Jan-2023,Feb-2023,Mar-2023,Apr-2023,May-2023,Jun-2023
+All,All,All,My Platform,TOTAL,3,5,7,9,11,13,15,17,9,1,3,5,7
+T1,My Publisher,1111111,My Platform,Total_Item_Requests,1,2,3,4,5,6,7,8,9,0,1,2,3
+T2,My Publisher,2222222,My Platform,Total_Item_Requests,2,3,4,5,6,7,8,9,0,1,2,3,4

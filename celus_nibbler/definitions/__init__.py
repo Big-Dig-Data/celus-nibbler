@@ -38,6 +38,7 @@ DefinitionAnotation = Annotated[
         counter.TRDefinition,
         counter.DRDefinition,
         counter.PRDefinition,
+        counter.IR_M1Definition,
         MetricBasedDefinition,
     ],
     Field(discriminator='kind'),

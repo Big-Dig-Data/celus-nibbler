@@ -55,6 +55,7 @@ from celus_nibbler.parsers.dynamic import gen_parser
         ),
         ("Platform1", "blank", "csv", "dynamic.non_counter.simple_format.blank", False),
         ("MIT", "counter5.TR", "xlsx", "dynamic.counter5.TR.MY_TR_CUSTOM", False),
+        ("JSTOR", "counter5.IR_M1", "csv", "dynamic.counter5.IR_M1.MY_IR_M1_CUSTOM", False),
         (
             "PlatformWithCustomDR",
             "counter5.DR_MY_CUSTOM",
