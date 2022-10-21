@@ -38,6 +38,7 @@ class ExtractParams(JsonEncorder):
     default: typing.Optional[typing.Any] = None
     last_value_as_default: bool = False
     blank_values: typing.List[typing.Any] = field(default_factory=lambda: [None, ""])
+    skip_validation: bool = False
 
 
 class ContentExtractorMixin:
@@ -86,8 +87,10 @@ class ContentExtractorMixin:
                         return validators.gen_default_validator(
                             validator, last_value, self.extract_params.blank_values
                         )(value=content).value
-
-                return validator(value=content).value
+                if self.extract_params.skip_validation:
+                    return (content or "").strip()
+                else:
+                    return validator(value=content).value
             else:
                 return content
         except ValidationError as e:
