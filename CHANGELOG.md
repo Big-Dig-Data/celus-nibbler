@@ -5,6 +5,38 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.0.0] - 2022-21-03
+
+### Fixed
+- should not csv dialect when parsing XLSX files
+- Print_ISSN and Online_ISSN were swapped
+- exception logic
+- dimensions in counter parsers
+
+### Added
+- metric_based parser and definition
+- aggregators (now it aggregates the same records)
+- date_metric_based parser and definition
+- sheet_idx condition
+- extraction logic (ExtractParams - regex, default, skip_validation, ...)
+- function to list all definitions (kind attr distinguishes different definitions)
+- mandatory function dimensions to Area (returns dimensions names as list)
+- parsing of IR_M1 tabular counter format
+
+### Removed
+- DummyParser definition (no longer required since more defintion exists now)
+- some unused fields from Sources
+
+### Changed
+- more defintion refactored
+- code moved to separate files to avoid cicrular deps
+- fixed definition renamed to non_counter.date_based
+- counter parsers and definition redone
+- reduced some repetitive parts of the code
+- instead of format_name data_format field (of DataFormat class) is used
+- parsers names unified
+
+
 ## [6.0.0] - 2022-10-03
 
 ### Fixed
