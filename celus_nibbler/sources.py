@@ -63,7 +63,8 @@ class ContentExtractorMixin:
         validator: typing.Optional[typing.Type[validators.BaseValueModel]] = None,
     ) -> typing.Any:
         value = self._extract(sheet, idx, validator)
-        self.last_value = value
+        if self.extract_params.last_value_as_default:
+            self.extract_params.default = value
         return value
 
     def _extract(
@@ -81,12 +82,6 @@ class ContentExtractorMixin:
                     return validators.gen_default_validator(
                         validator, self.extract_params.default, self.extract_params.blank_values
                     )(value=content).value
-                elif self.extract_params.last_value_as_default:
-                    last_value = getattr(self, 'last_value', None)
-                    if last_value:
-                        return validators.gen_default_validator(
-                            validator, last_value, self.extract_params.blank_values
-                        )(value=content).value
                 if self.extract_params.skip_validation:
                     return (content or "").strip()
                 else:
