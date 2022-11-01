@@ -48,24 +48,26 @@ def available_parsers(
 
 def filter_parsers(
     parsers: typing.Optional[typing.List[str]] = None,
+    dynamic_parsers: typing.List[typing.Type[BaseParser]] = [],
 ) -> typing.List[typing.Type[BaseParser]]:
     """Lists all available parsers
 
     :param parsers: use only parsers which names are on this list
     :returns: List of parser classes
     """
-    return [entry_point for _, entry_point in get_parsers(parsers)]
+    return [entry_point for _, entry_point in get_parsers(parsers, dynamic_parsers)]
 
 
 def get_supported_platforms(
     parsers: typing.Optional[typing.List[str]] = None,
+    dynamic_parsers: typing.List[typing.Type[BaseParser]] = [],
 ) -> typing.List[str]:
     """Lists all supported platforms"""
     return sorted(
         list(
             set(
                 itertools.chain.from_iterable(
-                    parser.platforms for parser in filter_parsers(parsers)
+                    parser.platforms for parser in filter_parsers(parsers, dynamic_parsers)
                 )
             )
         )
@@ -74,9 +76,10 @@ def get_supported_platforms(
 
 def get_supported_platforms_count(
     parsers: typing.Optional[typing.List[str]] = None,
+    dynamic_parsers: typing.List[typing.Type[BaseParser]] = [],
 ) -> typing.List[typing.Tuple[str, int]]:
     counter: typing.Dict[str, int] = collections.Counter()
-    for parser in filter_parsers(parsers):
+    for parser in filter_parsers(parsers, dynamic_parsers):
         for platform in parser.platforms:
             counter[platform] += 1
 

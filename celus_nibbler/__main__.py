@@ -4,6 +4,7 @@ import logging
 import logging.config
 import pathlib
 import sys
+import typing
 from importlib.metadata import distribution
 
 from unidecode import unidecode
@@ -20,21 +21,28 @@ def read_definition(path: str) -> Definition:
     return Definition.parse(definition_data)
 
 
-def main():
-    dist = distribution("celus-nibbler")
-    version = dist.version if dist else "?"
-
+def gen_description(
+    platforms_count_list: typing.List[typing.Tuple[str, int]], parsers: typing.List[str]
+) -> str:
     platforms_count = "\n".join(
-        [f"  {platform}({count})" for platform, count in get_supported_platforms_count()]
+        [f"  {platform}({count})" for platform, count in platforms_count_list]
     )
-    parsers_list = "\n".join([f"  {e}" for e in available_parsers()])
+    parsers_list = "\n".join([f"  {e}" for e in parsers])
 
-    description = f"""Supported platforms
+    return f"""Supported platforms
 {platforms_count}
 
 Available Parsers:
 {parsers_list}
 """
+
+
+def gen_argument_parser(
+    platforms_count_list: typing.List[typing.Tuple[str, int]], parsers: typing.List[str]
+) -> argparse.ArgumentParser:
+    dist = distribution("celus-nibbler")
+    version = dist.version if dist else "?"
+    description = gen_description(platforms_count_list, parsers)
     parser = argparse.ArgumentParser(
         prog="nibbler-eat",
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -69,7 +77,12 @@ Available Parsers:
         type=read_definition,
     )
     parser.add_argument("platform")
-    parser.add_argument("files", nargs='+')
+    parser.add_argument("file", nargs='*')
+    return parser
+
+
+def main():
+    parser = gen_argument_parser(get_supported_platforms_count(), available_parsers())
     options = parser.parse_args()
 
     # init logging
@@ -80,7 +93,18 @@ Available Parsers:
     platform = unidecode(options.platform)
     dynamic_parsers = [gen_parser(e) for e in options.definition]
 
-    for file in options.files:
+    if not options.file:
+        # Just print help if not parsers specified
+        parsers = options.parser
+        # Enrich with dynamic parsers
+        parser = gen_argument_parser(
+            get_supported_platforms_count(parsers, dynamic_parsers),
+            available_parsers(dynamic_parsers),
+        )
+        parser.print_help()
+        return
+
+    for file in options.file:
         if poops := eat(
             pathlib.Path(file),
             platform,
