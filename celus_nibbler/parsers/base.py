@@ -72,9 +72,9 @@ class BaseArea(metaclass=ABCMeta):
     def find_data_cells(self) -> typing.List[DataCells]:
         pass
 
-    @classmethod
+    @property
     @abstractmethod
-    def dimensions(cls) -> typing.List[str]:
+    def dimensions(self) -> typing.List[str]:
         pass
 
 

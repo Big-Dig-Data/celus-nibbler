@@ -62,9 +62,9 @@ class CounterHeaderArea(BaseDateArea):
     TITLE_IDS_EXTRACT_PARAMS: typing.Dict[str, ExtractParams] = {}
     DIMENSIONS_EXTRACT_PARAMS: typing.Dict[str, ExtractParams] = {}
 
-    @classmethod
-    def dimensions(cls) -> typing.List[str]:
-        return [e[0] for e in cls.DIMENSION_NAMES_MAP]
+    @property
+    def dimensions(self) -> typing.List[str]:
+        return [e[0] for e in self.DIMENSION_NAMES_MAP]
 
     @property
     def header_row(self) -> CoordRange:
