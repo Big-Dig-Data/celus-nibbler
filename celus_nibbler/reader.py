@@ -6,22 +6,55 @@ import tempfile
 from abc import ABCMeta, abstractmethod
 from collections import deque
 from functools import lru_cache
-from io import StringIO
+from io import BytesIO, StringIO
 from typing import IO, Optional, Sequence, Union
 
 import openpyxl
+from celus_nigiri.counter5 import Counter5ReportBase
 from chardet import detect
 from chardet.universaldetector import UniversalDetector
 
 logger = logging.getLogger(__name__)
 
 
-class SheetReader:
+class SheetReader(metaclass=ABCMeta):
+    @property
+    @abstractmethod
+    def sheet_idx(self) -> int:
+        pass
+
+    @property
+    @abstractmethod
+    def name(self) -> Optional[str]:
+        pass
+
+    @property
+    @abstractmethod
+    def extra(self) -> Optional[dict]:
+        pass
+
+    @abstractmethod
+    def __getitem__(self, item):
+        pass
+
+    @abstractmethod
+    def __len__(self):
+        pass
+
+    @abstractmethod
+    def __next__(self):
+        pass
+
+
+class CsvSheetReader(SheetReader):
     """
     Class representing a single table
     """
 
     WINDOW_SIZE = 1000  # number of lines to be cached
+    sheet_idx = 0
+    name = None
+    extra = None
 
     def __init__(
         self,
@@ -103,6 +136,85 @@ class SheetReader:
         return res
 
 
+class JsonCounter5SheetReader(SheetReader):
+
+    WINDOW_SIZE = 1000  # number of lines to be cached
+    sheet_idx = 0
+    name = None
+    extra = None
+
+    def reset(self):
+        report = Counter5ReportBase()
+
+        self.file.seek(0)
+
+        header, items = report.fd_to_dicts(self.file)
+
+        self.items = items
+        self.extra = header
+
+    def __init__(
+        self,
+        file: IO[bytes],
+        window_size: int = WINDOW_SIZE,
+    ):
+        self.file = file
+
+        self.window_start = 0
+        self.window_size = window_size
+        self.update_window(0)
+
+    def update_window(self, window_start: int):
+        self.reset()
+        self.window_start = window_start
+        self.window = deque(
+            itertools.islice(self.items, self.window_start, self.window_start + self.window_size),
+            self.window_size,
+        )
+
+    def inc_window(self):
+        try:
+            next_dict = next(self.items)
+            self.window_start += 1
+            self.window.append(next_dict)
+        except StopIteration:
+            if len(self.window):
+                self.window_start += 1
+                self.window.popleft()
+
+    @lru_cache(WINDOW_SIZE * 2)  # cache lines to avoid rewinding while reading the header
+    def __getitem__(self, item) -> Sequence[dict]:
+        if isinstance(item, slice):
+            raise NotImplementedError("Slicing is not supported use itertools and generators")
+
+        # in current window
+        if self.window_start <= item < (self.window_start + self.window_size):
+            if self.window_start + len(self.window) < item:
+                raise IndexError(f"{item} is out of range")
+            return self.window[item - self.window_start]
+
+        # Set window
+        self.update_window(item)
+        if len(self.window) < 1:
+            raise IndexError(f"{item} is out of range")
+        return self.window[0]
+
+    def __next__(self):
+        if len(self.window) > 0:
+            item_dict = self.window[0]
+            self.inc_window()
+            return item_dict
+        else:
+            raise StopIteration
+
+    def __len__(self):
+        res = 0
+        while self.window:
+            res += len(self.window)
+            self.update_window(self.window_start + self.window_size)
+        return res
+
+
 class TableReader(metaclass=ABCMeta):
     """
     Abstract reader for tabular data - defines the API to be used by parsers when reading input data
@@ -151,7 +263,7 @@ class CsvReader(TableReader):
         else:
             raise NotImplementedError()
 
-        self.sheets = [SheetReader(0, None, file, delimiters=delimiters)]
+        self.sheets = [CsvSheetReader(0, None, file, delimiters=delimiters)]
 
     def __getitem__(self, item) -> SheetReader:
         return self.sheets[item]
@@ -183,9 +295,43 @@ class XlsxReader(TableReader):
                 for row in sheet.rows:
                     writer.writerow([cell.value for cell in row])
                 f.seek(0)
-                self.sheets.append(SheetReader(idx, workbook.sheetnames[idx], f, dialect=dialect))
+                self.sheets.append(
+                    CsvSheetReader(idx, workbook.sheetnames[idx], f, dialect=dialect)
+                )
 
             workbook.close()
+
+    def __getitem__(self, item) -> SheetReader:
+        return self.sheets[item]
+
+    def __iter__(self):
+        return self.sheets.__iter__()
+
+
+class JsonCounter5Reader(TableReader):
+    """Reads JSON file (in Counter 5 format) in stream mode"""
+
+    def reset(self):
+        report = Counter5ReportBase()
+
+        with open(self.source, "rb") as file:
+            header, items = report.fd_to_dicts(file)
+
+        self.items = items
+        self.header = header
+
+    def __init__(self, source: Union[str, pathlib.Path, bytes]):
+
+        file: IO[bytes]
+        if isinstance(source, bytes):
+            file = BytesIO(source)
+        elif isinstance(source, (str, pathlib.Path)):
+            source = pathlib.Path(source)  # make user that source is Path
+            file = open(source, "rb")
+        else:
+            raise ValueError('source')
+
+        self.sheets = [JsonCounter5SheetReader(file)]
 
     def __getitem__(self, item) -> SheetReader:
         return self.sheets[item]

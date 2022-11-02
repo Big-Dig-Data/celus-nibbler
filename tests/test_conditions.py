@@ -4,85 +4,91 @@ from celus_nibbler.conditions import RegexCondition, StemmerCondition
 from celus_nibbler.coordinates import Coord
 
 
-def test_regex(sheet):
-    assert RegexCondition("^Name$", Coord(0, 0)).check(sheet) is True
-    assert RegexCondition("^3$", Coord(3, 1)).check(sheet) is True
-    assert RegexCondition("no match", Coord(0, 1)).check(sheet) is False
+def test_regex(csv_sheet_reader):
+    assert RegexCondition("^Name$", Coord(0, 0)).check(csv_sheet_reader) is True
+    assert RegexCondition("^3$", Coord(3, 1)).check(csv_sheet_reader) is True
+    assert RegexCondition("no match", Coord(0, 1)).check(csv_sheet_reader) is False
 
-    assert RegexCondition("insufficient cols", Coord(0, 3)).check(sheet) is False
-    assert RegexCondition("insufficient rows", Coord(5, 0)).check(sheet) is False
-    assert RegexCondition("insufficient rows and cols", Coord(5, 3)).check(sheet) is False
+    assert RegexCondition("insufficient cols", Coord(0, 3)).check(csv_sheet_reader) is False
+    assert RegexCondition("insufficient rows", Coord(5, 0)).check(csv_sheet_reader) is False
+    assert (
+        RegexCondition("insufficient rows and cols", Coord(5, 3)).check(csv_sheet_reader) is False
+    )
 
 
-def test_and(sheet):
+def test_and(csv_sheet_reader):
     all_pass = (
-        RegexCondition("^Name$", Coord(0, 0)).check(sheet)
-        & RegexCondition("^Values$", Coord(0, 1)).check(sheet)
-        & RegexCondition("^First$", Coord(1, 0)).check(sheet)
+        RegexCondition("^Name$", Coord(0, 0)).check(csv_sheet_reader)
+        & RegexCondition("^Values$", Coord(0, 1)).check(csv_sheet_reader)
+        & RegexCondition("^First$", Coord(1, 0)).check(csv_sheet_reader)
     )
     assert all_pass is True
 
     one_fail = (
-        RegexCondition("^Name$", Coord(0, 0)).check(sheet)
-        & RegexCondition("^doesn't match$", Coord(0, 1)).check(sheet)
-        & RegexCondition("^First$", Coord(1, 0)).check(sheet)
+        RegexCondition("^Name$", Coord(0, 0)).check(csv_sheet_reader)
+        & RegexCondition("^doesn't match$", Coord(0, 1)).check(csv_sheet_reader)
+        & RegexCondition("^First$", Coord(1, 0)).check(csv_sheet_reader)
     )
     assert one_fail is False
 
     one_pass = (
-        RegexCondition("^doesn't match$", Coord(0, 0)).check(sheet)
-        & RegexCondition("^doesn't match$", Coord(0, 1)).check(sheet)
-        & RegexCondition("^First$", Coord(1, 0)).check(sheet)
+        RegexCondition("^doesn't match$", Coord(0, 0)).check(csv_sheet_reader)
+        & RegexCondition("^doesn't match$", Coord(0, 1)).check(csv_sheet_reader)
+        & RegexCondition("^First$", Coord(1, 0)).check(csv_sheet_reader)
     )
     assert one_pass is False
 
     all_fail = (
-        RegexCondition("^doesn't match$", Coord(0, 0)).check(sheet)
-        & RegexCondition("^doesn't match$", Coord(0, 1)).check(sheet)
-        & RegexCondition("^doesn't match$", Coord(1, 0)).check(sheet)
+        RegexCondition("^doesn't match$", Coord(0, 0)).check(csv_sheet_reader)
+        & RegexCondition("^doesn't match$", Coord(0, 1)).check(csv_sheet_reader)
+        & RegexCondition("^doesn't match$", Coord(1, 0)).check(csv_sheet_reader)
     )
     assert all_fail is False
 
 
-def test_or(sheet):
+def test_or(csv_sheet_reader):
     all_pass = (
-        RegexCondition("^Name$", Coord(0, 0)).check(sheet)
-        | RegexCondition("^Values$", Coord(0, 1)).check(sheet)
-        | RegexCondition("^First$", Coord(1, 0)).check(sheet)
+        RegexCondition("^Name$", Coord(0, 0)).check(csv_sheet_reader)
+        | RegexCondition("^Values$", Coord(0, 1)).check(csv_sheet_reader)
+        | RegexCondition("^First$", Coord(1, 0)).check(csv_sheet_reader)
     )
     assert all_pass is True
 
     one_fail = (
-        RegexCondition("^Name$", Coord(0, 0)).check(sheet)
-        | RegexCondition("^doesn't match$", Coord(0, 1)).check(sheet)
-        | RegexCondition("^First$", Coord(1, 0)).check(sheet)
+        RegexCondition("^Name$", Coord(0, 0)).check(csv_sheet_reader)
+        | RegexCondition("^doesn't match$", Coord(0, 1)).check(csv_sheet_reader)
+        | RegexCondition("^First$", Coord(1, 0)).check(csv_sheet_reader)
     )
     assert one_fail is True
 
     one_pass = (
-        RegexCondition("^doesn't match$", Coord(0, 0)).check(sheet)
-        | RegexCondition("^doesn't match$", Coord(0, 1)).check(sheet)
-        | RegexCondition("^First$", Coord(1, 0)).check(sheet)
+        RegexCondition("^doesn't match$", Coord(0, 0)).check(csv_sheet_reader)
+        | RegexCondition("^doesn't match$", Coord(0, 1)).check(csv_sheet_reader)
+        | RegexCondition("^First$", Coord(1, 0)).check(csv_sheet_reader)
     )
     assert one_pass is True
 
     all_fail = (
-        RegexCondition("^doesn't match$", Coord(0, 0)).check(sheet)
-        | RegexCondition("^doesn't match$", Coord(0, 1)).check(sheet)
-        | RegexCondition("^doesn't match$", Coord(1, 0)).check(sheet)
+        RegexCondition("^doesn't match$", Coord(0, 0)).check(csv_sheet_reader)
+        | RegexCondition("^doesn't match$", Coord(0, 1)).check(csv_sheet_reader)
+        | RegexCondition("^doesn't match$", Coord(1, 0)).check(csv_sheet_reader)
     )
     assert all_fail is False
 
 
-def test_neg(sheet):
-    assert (~RegexCondition("^Name$", Coord(0, 0))).check(sheet) is False
-    assert (~RegexCondition("^3$", Coord(3, 1))).check(sheet) is False
-    assert (~RegexCondition("no match", Coord(0, 1))).check(sheet) is True
+def test_neg(csv_sheet_reader):
+    assert (~RegexCondition("^Name$", Coord(0, 0))).check(csv_sheet_reader) is False
+    assert (~RegexCondition("^3$", Coord(3, 1))).check(csv_sheet_reader) is False
+    assert (~RegexCondition("no match", Coord(0, 1))).check(csv_sheet_reader) is True
 
 
-def test_stemmer(sheet):
-    assert StemmerCondition("Names", Coord(0, 0)).check(sheet) is True, "Names should match Name"
-    assert StemmerCondition("Value", Coord(0, 1)).check(sheet) is True, "Value should match Values"
+def test_stemmer(csv_sheet_reader):
+    assert (
+        StemmerCondition("Names", Coord(0, 0)).check(csv_sheet_reader) is True
+    ), "Names should match Name"
+    assert (
+        StemmerCondition("Value", Coord(0, 1)).check(csv_sheet_reader) is True
+    ), "Value should match Values"
 
 
 def test_serialization():
