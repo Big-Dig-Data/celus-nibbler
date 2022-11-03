@@ -13,7 +13,7 @@ from celus_nibbler.conditions import BaseCondition
 from celus_nibbler.coordinates import Coord
 from celus_nibbler.data_headers import DataCells, DataFormatDefinition, DataHeaders
 from celus_nibbler.errors import TableException
-from celus_nibbler.reader import SheetReader
+from celus_nibbler.reader import CsvSheetReader, JsonCounter5SheetReader, SheetReader
 from celus_nibbler.sources import (
     DateSource,
     DimensionSource,
@@ -37,12 +37,6 @@ IDS = {
 
 
 class BaseArea(metaclass=ABCMeta):
-    organization_source: typing.Optional[OrganizationSource] = None
-    date_source: typing.Optional[DateSource] = None
-    title_source: typing.Optional[TitleSource] = None
-    title_ids_sources: typing.Dict[str, TitleIdSource] = {}
-    dimensions_sources: typing.Dict[str, DimensionSource] = {}
-    metric_source: typing.Optional[MetricSource] = None
     aggregator: BaseAggregator = NoAggregator()
 
     def __init__(self, sheet: SheetReader, platform: str):
@@ -60,16 +54,8 @@ class BaseArea(metaclass=ABCMeta):
     ) -> CounterRecord:
         return record
 
-    def parse_date(self, cell: Coord) -> datetime.date:
-        content = cell.content(self.sheet)
-        return validators.Date(value=content).value
-
     @abstractmethod
     def get_months(self) -> typing.List[datetime.date]:
-        pass
-
-    @abstractmethod
-    def find_data_cells(self) -> typing.List[DataCells]:
         pass
 
     @property
@@ -78,7 +64,28 @@ class BaseArea(metaclass=ABCMeta):
         pass
 
 
-class BaseHeaderArea(BaseArea, metaclass=ABCMeta):
+class BaseJsonArea(BaseArea):
+    pass
+
+
+class BaseTabularArea(BaseArea):
+    organization_source: typing.Optional[OrganizationSource] = None
+    date_source: typing.Optional[DateSource] = None
+    title_source: typing.Optional[TitleSource] = None
+    title_ids_sources: typing.Dict[str, TitleIdSource] = {}
+    dimensions_sources: typing.Dict[str, DimensionSource] = {}
+    metric_source: typing.Optional[MetricSource] = None
+
+    def parse_date(self, cell: Coord) -> datetime.date:
+        content = cell.content(self.sheet)
+        return validators.Date(value=content).value
+
+    @abstractmethod
+    def find_data_cells(self) -> typing.List[DataCells]:
+        pass
+
+
+class BaseHeaderArea(BaseTabularArea):
     @property
     @abstractmethod
     def data_headers(self) -> DataHeaders:
@@ -92,12 +99,14 @@ class BaseParser(metaclass=ABCMeta):
     metrics_to_skip: typing.List[str] = ["Total"]
     titles_to_skip: typing.List[str] = ["Total"]
     dimensions_to_skip: typing.Dict[str, typing.List[str]] = {"Platform": ["Total"]}
-    dimensions_validators: typing.Dict[str, typing.Type[BaseModel]] = {
-        "Platform": validators.Platform,
-    }
     heuristics: typing.Optional[BaseCondition] = None
     metric_aliases: typing.List[typing.Tuple[str, str]] = []
     dimension_aliases: typing.List[typing.Tuple[str, str]] = []
+
+    @classmethod
+    @abstractmethod
+    def sheet_reader_classes(cls) -> typing.List[typing.Type[SheetReader]]:
+        pass
 
     @property
     @abstractmethod
@@ -151,13 +160,33 @@ class BaseParser(metaclass=ABCMeta):
             }
             yield record
 
+    def parse_area(self, area) -> typing.Generator[CounterRecord, None, None]:
+        return area.aggregator.aggregate(self._parse_area(area))
+
+    @abstractmethod
+    def _parse_area(self, area: BaseArea) -> typing.Generator[CounterRecord, None, None]:
+        pass
+
     def get_months(self) -> typing.List[typing.List[datetime.date]]:
         return [e.get_months() for e in self.get_areas()]
 
-    def parse_area(self, area: BaseArea) -> typing.Generator[CounterRecord, None, None]:
-        return area.aggregator.aggregate(self._parse_area(area))
 
-    def _parse_area(self, area: BaseArea) -> typing.Generator[CounterRecord, None, None]:
+class BaseJsonParser(BaseParser):
+    @classmethod
+    def sheet_reader_classes(cls):
+        return [JsonCounter5SheetReader]
+
+
+class BaseTabularParser(BaseParser):
+    dimensions_validators: typing.Dict[str, typing.Type[BaseModel]] = {
+        "Platform": validators.Platform,
+    }
+
+    @classmethod
+    def sheet_reader_classes(cls):
+        return [CsvSheetReader]
+
+    def _parse_area(self, area: BaseTabularArea) -> typing.Generator[CounterRecord, None, None]:
         data_cells = area.find_data_cells()
         try:
             for idx in itertools.count(0):

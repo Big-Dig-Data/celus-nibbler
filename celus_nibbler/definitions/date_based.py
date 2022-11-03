@@ -5,7 +5,7 @@ from pydantic.dataclasses import dataclass
 
 from celus_nibbler.conditions import Condition
 from celus_nibbler.data_headers import DataFormatDefinition, DataHeaders
-from celus_nibbler.parsers.base import BaseArea, BaseParser
+from celus_nibbler.parsers.base import BaseArea, BaseTabularParser
 from celus_nibbler.parsers.non_counter.date_based import BaseDateArea
 from celus_nibbler.sources import (
     DimensionSource,
@@ -79,7 +79,7 @@ class DateBasedDefinition(JsonEncorder, BaseNonCounterParserDefinition):
     version: typing.Literal[1] = 1
 
     def make_parser(self):
-        class Parser(BaseParser):
+        class Parser(BaseTabularParser):
             _definition = self
 
             data_format = _definition.data_format

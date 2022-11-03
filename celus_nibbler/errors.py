@@ -33,9 +33,26 @@ class WrongFileFormatError(NibblerError):
         )
 
 
+class JsonException(NibblerError):
+    """
+    Error while parsing JSON format
+    """
+
+    def __init__(self, reason: str):
+        self.reason = reason
+        pass
+
+    def __str__(self):
+        return f'json format error: {self.reason}'
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}(reason={self.reason})"
+
+
 class TableException(NibblerError):
     """
     General exception informing about position in which the exception occured
+    while parsing tabular format
     """
 
     def __init__(
@@ -109,6 +126,10 @@ class NoParserForPlatformFound(NoParserFound):
 
 
 class NoParserMatchesHeuristics(NoParserFound):
+    pass
+
+
+class NoParserForFileTypeFound(NoParserFound):
     pass
 
 

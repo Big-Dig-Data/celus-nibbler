@@ -18,6 +18,10 @@ from celus_nibbler import eat
         ("T&F ebooks", "5/TR_B1-a.xlsx", "static.counter5.TR.Tabular", True),
         ("JSTOR", "5/IR_M1-a.csv", "static.counter5.IR_M1.Tabular", True),
         ("JSTOR", "5/IR_M1-b.csv", "static.counter5.IR_M1.Tabular", False),
+        ("WebOfKnowledge", "5/DR-c.json", "static.counter5.DR.Json", True),
+        ("MIT", "5/PR-c.json", "static.counter5.PR.Json", True),
+        ("MIT", "5/TR-c.json", "static.counter5.TR.Json", True),
+        ("JSTOR", "5/IR_M1-c.json", "static.counter5.IR_M1.Json", True),
     ),
 )
 def test_tsv(platform, file, parser, heuristics):

@@ -1,0 +1,170 @@
+{
+  "Report_Header": {
+    "Created": "2022-11-01T00:00:00Z",
+    "Created_By": "MyProvider",
+    "Customer_ID": "11111",
+    "Report_ID": "IR_M1",
+    "Release": "5",
+    "Report_Name": "Multimedia Item Requests",
+    "Institution_Name": "MyUniversity",
+    "Institution_ID": [
+      {
+        "Type": "Proprietary",
+        "Value": "MyProvider:11111"
+      }
+    ],
+    "Report_Filters": [
+      {
+        "Name": "Platform",
+        "Value": "MyPlatform"
+      },
+      {
+        "Name": "Begin_Date",
+        "Value": "2022-10-01"
+      },
+      {
+        "Name": "End_Date",
+        "Value": "2022-10-31"
+      },
+      {
+        "Name": "Metric_Type",
+        "Value": "Total_Item_Requests"
+      },
+      {
+        "Name": "Data_Type",
+        "Value": "Multimedia"
+      },
+      {
+        "Name": "Access_Method",
+        "Value": "Regular"
+      }
+    ]
+  },
+  "Report_Items": [
+    {
+      "Item": "Item1",
+      "Item_ID": [
+        {
+          "Type": "Proprietary",
+          "Value": "MyProvider:1111111111"
+        }
+      ],
+      "Platform": "MyPlatform",
+      "Publisher": "MyPublisher",
+      "Performance": [
+        {
+          "Period": {
+            "Begin_Date": "2022-10-01",
+            "End_Date": "2022-10-31"
+          },
+          "Instance": [
+            {
+              "Metric_Type": "Total_Item_Requests",
+              "Count": 16
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Item": "Item2",
+      "Item_ID": [
+        {
+          "Type": "Proprietary",
+          "Value": "MyProvider:2222222222"
+        }
+      ],
+      "Platform": "MyPlatform",
+      "Publisher": "MyPublisher",
+      "Performance": [
+        {
+          "Period": {
+            "Begin_Date": "2022-10-01",
+            "End_Date": "2022-10-31"
+          },
+          "Instance": [
+            {
+              "Metric_Type": "Total_Item_Requests",
+              "Count": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Item": "Item3",
+      "Item_ID": [
+        {
+          "Type": "Proprietary",
+          "Value": "MyProvider:3333333333"
+        }
+      ],
+      "Platform": "MyPlatform",
+      "Publisher": "MyPublisher",
+      "Performance": [
+        {
+          "Period": {
+            "Begin_Date": "2022-10-01",
+            "End_Date": "2022-10-31"
+          },
+          "Instance": [
+            {
+              "Metric_Type": "Total_Item_Requests",
+              "Count": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Item": "Item4",
+      "Item_ID": [
+        {
+          "Type": "Proprietary",
+          "Value": "MyProvider:4444444444"
+        }
+      ],
+      "Platform": "MyPlatform",
+      "Publisher": "MyPublisher",
+      "Performance": [
+        {
+          "Period": {
+            "Begin_Date": "2022-10-01",
+            "End_Date": "2022-10-31"
+          },
+          "Instance": [
+            {
+              "Metric_Type": "Total_Item_Requests",
+              "Count": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Item": "Item5",
+      "Item_ID": [
+        {
+          "Type": "Proprietary",
+          "Value": "MyProvider:5555555555"
+        }
+      ],
+      "Platform": "MyPlatform",
+      "Publisher": "MyPublisher",
+      "Performance": [
+        {
+          "Period": {
+            "Begin_Date": "2022-10-01",
+            "End_Date": "2022-10-31"
+          },
+          "Instance": [
+            {
+              "Metric_Type": "Total_Item_Requests",
+              "Count": 1
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

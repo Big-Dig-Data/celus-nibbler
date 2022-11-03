@@ -6,12 +6,12 @@ from celus_nigiri import CounterRecord
 from celus_nibbler.conditions import RegexCondition
 from celus_nibbler.coordinates import Coord
 from celus_nibbler.data_headers import DataFormatDefinition
-from celus_nibbler.parsers.base import BaseParser
+from celus_nibbler.parsers.base import BaseTabularParser
 
 from . import CounterHeaderArea
 
 
-class BaseCounter4Parser(BaseParser):
+class BaseCounter4Parser(BaseTabularParser):
     Area: typing.Type[CounterHeaderArea]
 
     @property

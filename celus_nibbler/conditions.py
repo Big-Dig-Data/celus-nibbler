@@ -143,6 +143,25 @@ Condition = Annotated[
     Field(discriminator='kind'),
 ]
 
+
+@dataclass(config=PydanticConfig)
+class SheetExtraCondition(ArithmeticsMixin, BaseCondition, JsonEncorder):
+    """Checks whether sheet extra attribute matches"""
+
+    field_name: str
+    value: typing.Any
+
+    kind: typing.Literal["sheet_extra"] = "sheet_extra"
+
+    def check(self, sheet: SheetReader) -> bool:
+        if sheet.extra is None:
+            return False
+        if self.field_name in sheet.extra:
+            return sheet.extra[self.field_name] == self.value
+        else:
+            return False
+
+
 # Need to update forward refs
 NegCondition.__pydantic_model__.update_forward_refs()
 AndCondition.__pydantic_model__.update_forward_refs()

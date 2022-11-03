@@ -4,7 +4,7 @@ import typing
 from celus_nibbler.conditions import RegexCondition
 from celus_nibbler.coordinates import Coord, CoordRange, Direction
 from celus_nibbler.data_headers import DataFormatDefinition
-from celus_nibbler.parsers.base import BaseParser
+from celus_nibbler.parsers.base import BaseTabularParser
 from celus_nibbler.sources import DimensionSource
 
 from . import CounterHeaderArea
@@ -15,7 +15,7 @@ class Counter5HeaderArea(CounterHeaderArea):
     METRIC_COLUMN_NAMES = ["Metric_Type"]
 
 
-class BaseCounter5Parser(BaseParser):
+class BaseCounter5Parser(BaseTabularParser):
     Area: typing.Type[CounterHeaderArea]
 
     @property

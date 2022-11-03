@@ -1,0 +1,7 @@
+"2020-01-01","2020-01-31",,"Database1","Searches_Regular","Access_Method:Regular|Data_Type:Database|Platform:MyPlatform|Publisher:MyPublisher","Proprietary:IIIIIIIII:000","5"
+"2020-01-01","2020-01-31",,"Database2","Total_Item_Investigations","Access_Method:Regular|Data_Type:Book|Platform:MyPlatform|Publisher:MyPublisher","Proprietary:IIIIIIIII:111","25"
+"2020-01-01","2020-01-31",,"Database2","Total_Item_Requests","Access_Method:Regular|Data_Type:Book|Platform:MyPlatform|Publisher:MyPublisher","Proprietary:IIIIIIIII:111","13"
+"2020-01-01","2020-01-31",,"Database2","Unique_Item_Investigations","Access_Method:Regular|Data_Type:Book|Platform:MyPlatform|Publisher:MyPublisher","Proprietary:IIIIIIIII:111","14"
+"2020-01-01","2020-01-31",,"Database2","Unique_Item_Requests","Access_Method:Regular|Data_Type:Book|Platform:MyPlatform|Publisher:MyPublisher","Proprietary:IIIIIIIII:111","11"
+"2020-01-01","2020-01-31",,"Database2","Unique_Title_Investigations","Access_Method:Regular|Data_Type:Book|Platform:MyPlatform|Publisher:MyPublisher","Proprietary:IIIIIIIII:111","13"
+"2020-01-01","2020-01-31",,"Database2","Unique_Title_Requests","Access_Method:Regular|Data_Type:Book|Platform:MyPlatform|Publisher:MyPublisher","Proprietary:IIIIIIIII:111","11"

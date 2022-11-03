@@ -7,7 +7,7 @@ from abc import ABCMeta, abstractmethod
 from collections import deque
 from functools import lru_cache
 from io import BytesIO, StringIO
-from typing import IO, Optional, Sequence, Union
+from typing import IO, Any, Dict, Optional, Sequence, Union
 
 import openpyxl
 from celus_nigiri.counter5 import Counter5ReportBase
@@ -30,7 +30,7 @@ class SheetReader(metaclass=ABCMeta):
 
     @property
     @abstractmethod
-    def extra(self) -> Optional[dict]:
+    def extra(self) -> Optional[Dict[str, Any]]:
         pass
 
     @abstractmethod

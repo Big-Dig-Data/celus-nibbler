@@ -1,7 +1,7 @@
-from celus_nibbler.parsers.base import BaseParser
+from celus_nibbler.parsers.base import BaseTabularParser
 
 
-class BaseNonCounterParser(BaseParser):
+class BaseNonCounterParser(BaseTabularParser):
     @property
     def name(self):
         return f"non_counter.{self.data_format.name}"

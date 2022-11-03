@@ -8,13 +8,14 @@ from celus_nigiri import CounterRecord
 from celus_nibbler.errors import (
     MultipleParsersFound,
     NibblerError,
+    NoParserForFileTypeFound,
     NoParserForPlatformFound,
     NoParserFound,
     NoParserMatchesHeuristics,
     WrongFileFormatError,
 )
 from celus_nibbler.parsers import BaseParser, get_parsers
-from celus_nibbler.reader import CsvReader, SheetReader, TableReader, XlsxReader
+from celus_nibbler.reader import CsvReader, JsonCounter5Reader, SheetReader, TableReader, XlsxReader
 from celus_nibbler.validators import Platform
 
 logger = logging.getLogger(__name__)
@@ -74,10 +75,15 @@ def findparser(
     if len(parser_classes) < 1:
         logger.warning('there is no parser which expects your platform %s', platform)
         raise NoParserForPlatformFound(sheet.sheet_idx)
-    else:
-        logger.info(
-            'there is %s parsers, which expects your platform %s', len(parser_classes), platform
-        )
+
+    parser_classes = [
+        (name, parser)
+        for name, parser in parser_classes
+        if type(sheet) in parser.sheet_reader_classes()
+    ]
+    if len(parser_classes) < 1:
+        logger.warning('no parser found for reader %s', type(sheet))
+        raise NoParserForFileTypeFound(sheet.sheet_idx)
 
     if use_heuristics:
         parser_classes = [
@@ -108,6 +114,8 @@ def read_file(file_path: pathlib.Path) -> TableReader:
         return CsvReader(file_path)
     elif file_path.suffix.lower() == '.xlsx':
         return XlsxReader(file_path)
+    elif file_path.suffix.lower() == '.json':
+        return JsonCounter5Reader(file_path)
 
     raise WrongFileFormatError(file_path, file_path.suffix)
 
