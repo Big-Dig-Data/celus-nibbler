@@ -1,4 +1,5 @@
 import csv
+import io
 import itertools
 import logging
 import pathlib
@@ -11,8 +12,7 @@ from typing import IO, Any, Dict, Optional, Sequence, Union
 
 import openpyxl
 from celus_nigiri.counter5 import Counter5ReportBase
-from chardet import detect
-from chardet.universaldetector import UniversalDetector
+from celus_nigiri.csv_detect import DEFAULT_ENCODING, detect_csv_dialect, detect_file_encoding
 
 logger = logging.getLogger(__name__)
 
@@ -61,21 +61,16 @@ class CsvSheetReader(SheetReader):
         sheet_idx: int,
         name: Optional[str],
         file: IO[str],
+        encoding: str = DEFAULT_ENCODING,
         window_size: int = WINDOW_SIZE,
         delimiters: Optional[str] = None,
-        dialect: Optional[csv.Dialect] = None,
+        dialect: Optional[str] = None,
     ):
         self.name = name
         self.sheet_idx = sheet_idx
         self.file = file
 
-        if not dialect:
-            # guess dialect
-            self.dialect = csv.Sniffer().sniff(file.readline(), delimiters=delimiters)
-            self.file.seek(0)
-        else:
-            self.dialect = dialect
-
+        self.dialect = dialect or detect_csv_dialect(file)
         self.csv_reader = csv.reader(file, self.dialect)
         # Load basic window
         self.window_start = 0
@@ -239,20 +234,13 @@ class CsvReader(TableReader):
         file: IO[str]
         delimiters = None
         if isinstance(source, bytes):
-            encoding = detect(source).get("encoding")
+            encoding = detect_file_encoding(io.BytesIO(source))
             logger.debug("Encoding '%s' was found for csv data", encoding)
             file = StringIO(source.decode(encoding or "utf8"))
         elif isinstance(source, (str, pathlib.Path)):
             source = pathlib.Path(source)  # make user that source is Path
-
-            detector = UniversalDetector()
             with open(source, "rb") as f:
-                for e in f:
-                    detector.feed(e)
-                    if detector.done:
-                        break
-                detector.close()
-            encoding = detector.result.get("encoding")
+                encoding = detect_file_encoding(f)
             logger.debug("Encoding '%s' was found for csv file", encoding)
 
             # Determine delimiters based on the source name
@@ -263,7 +251,7 @@ class CsvReader(TableReader):
         else:
             raise NotImplementedError()
 
-        self.sheets = [CsvSheetReader(0, None, file, delimiters=delimiters)]
+        self.sheets = [CsvSheetReader(0, None, file, encoding, delimiters=delimiters)]
 
     def __getitem__(self, item) -> SheetReader:
         return self.sheets[item]
@@ -295,9 +283,7 @@ class XlsxReader(TableReader):
                 for row in sheet.rows:
                     writer.writerow([cell.value for cell in row])
                 f.seek(0)
-                self.sheets.append(
-                    CsvSheetReader(idx, workbook.sheetnames[idx], f, dialect=dialect)
-                )
+                self.sheets.append(CsvSheetReader(idx, workbook.sheetnames[idx], f, dialect="unix"))
 
             workbook.close()
 
