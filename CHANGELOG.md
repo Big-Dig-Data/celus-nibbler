@@ -5,7 +5,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [7.0.0] - 2022-21-03
+## [7.1.0] - 2022-11-04
+
+### Added
+- JsonCounter5SheetReader for reading counter data in JSON format
+- static TR, DR, PR, IR_M1 counter 5 Json parsers
+
+### Changed
+- csv dialect detection is done using nigiri
+
+
+## [7.0.0] - 2022-10-21
 
 ### Fixed
 - should not csv dialect when parsing XLSX files
