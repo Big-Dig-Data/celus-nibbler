@@ -6,6 +6,7 @@ from typing_extensions import Annotated
 from ..utils import JsonEncorder
 from . import counter
 from .base import BaseParserDefinition
+from .celus_format import CelusFormatAreaDefinition, CelusFormatParserDefinition
 from .date_based import DateBasedAreaDefinition, DateBasedDefinition
 from .date_metric_based import DateMetricBasedAreaDefinition, DateMetricBasedDefinition
 from .metric_based import MetricBasedAreaDefinition, MetricBasedDefinition
@@ -15,6 +16,7 @@ AreaDefinition = Annotated[
         DateBasedAreaDefinition,
         DateMetricBasedAreaDefinition,
         MetricBasedAreaDefinition,
+        CelusFormatAreaDefinition,
     ],
     Field(discriminator='kind'),
 ]
@@ -40,6 +42,7 @@ DefinitionAnotation = Annotated[
         counter.PRDefinition,
         counter.IR_M1Definition,
         MetricBasedDefinition,
+        CelusFormatParserDefinition,
     ],
     Field(discriminator='kind'),
 ]
@@ -63,4 +66,6 @@ __all__ = [
     'MetricBasedAreaDefinition',
     'MetricBasedDefinition',
     'BaseParserDefinition',
+    'CelusFormatAreaDefinition',
+    'CelusFormatParserDefinition',
 ]

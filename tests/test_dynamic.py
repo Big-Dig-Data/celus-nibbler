@@ -77,6 +77,48 @@ from celus_nibbler.parsers.dynamic import gen_parser
             "dynamic.non_counter.simple_format.my-date-metric-based",
             False,
         ),
+        (
+            "Platform1",
+            "non_counter/celus_format-2d-3x2x3-endate",
+            "csv",
+            "dynamic.non_counter.celus_format1.tabular",
+            False,
+        ),
+        (
+            "Platform1",
+            "non_counter/celus_format-2d-3x2x3-isodate",
+            "csv",
+            "dynamic.non_counter.celus_format1.tabular",
+            False,
+        ),
+        (
+            "Platform1",
+            "non_counter/celus_format-2d-3x2x3-org-isodate",
+            "csv",
+            "dynamic.non_counter.celus_format1.tabular",
+            False,
+        ),
+        (
+            "Platform1",
+            "non_counter/celus_format-simple-3x3-endate",
+            "csv",
+            "dynamic.non_counter.celus_format2.tabular",
+            False,
+        ),
+        (
+            "Platform1",
+            "non_counter/celus_format-simple-3x3-isodate",
+            "csv",
+            "dynamic.non_counter.celus_format2.tabular",
+            False,
+        ),
+        (
+            "Platform Complex",
+            "non_counter/celus_format-complex",
+            "csv",
+            "dynamic.non_counter.Complex.tabular",
+            False,
+        ),
     ),
 )
 def test_dynamic(platform, filename, ext, parser, aggregated):
@@ -103,8 +145,8 @@ def test_dynamic(platform, filename, ext, parser, aggregated):
             for record in records:
                 assert next(reader) == list(record.as_csv()), "Compare lines"
 
-            with pytest.raises(StopIteration):
-                assert next(reader) is None, "No more date present in the file"
+        with pytest.raises(StopIteration):
+            assert next(reader) is None, "No more date present in the file"
 
 
 @pytest.mark.parametrize(

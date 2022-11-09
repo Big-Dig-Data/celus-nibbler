@@ -1,4 +1,3 @@
-import abc
 import typing
 from dataclasses import field
 
@@ -60,11 +59,11 @@ class MetricBasedAreaDefinition(JsonEncorder, BaseAreaDefinition):
 
 
 @dataclass(config=PydanticConfig)
-class MetricBasedDefinition(BaseNonCounterParserDefinition, metaclass=abc.ABCMeta):
+class MetricBasedDefinition(BaseNonCounterParserDefinition):
     parser_name: str
     data_format: DataFormatDefinition
-
     areas: typing.List[MetricBasedAreaDefinition]
+
     platforms: typing.List[str] = field(default_factory=lambda: [])
     metrics_to_skip: typing.List[str] = field(default_factory=lambda: [])
     titles_to_skip: typing.List[str] = field(default_factory=lambda: [])

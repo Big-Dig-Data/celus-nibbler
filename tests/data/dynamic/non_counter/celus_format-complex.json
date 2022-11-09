@@ -1,0 +1,37 @@
+{
+  "kind": "non_counter.celus_format",
+  "version": 1,
+  "parser_name": "tabular",
+  "data_format": {
+    "name": "Complex"
+  },
+  "platforms": [
+    "Platform Complex"
+  ],
+  "metrics_to_skip": [],
+  "titles_to_skip": [],
+  "dimensions_to_skip": [],
+  "metric_aliases": [
+      ["MO", "Metric overriden"]
+  ],
+  "dimension_aliases": [
+      ["YOP", "YearOfPublish"]
+  ],
+  "areas": [
+    {
+      "kind": "non_counter.celus_format",
+      "title_column_names": ["Item"],
+      "metric_column_names": ["Metric"],
+      "override_metric": "MO",
+      "organization_column_names": ["Institution"],
+      "dimension_mapping": {
+        "Year of publication": "YOP",
+        "Country": "Country"
+      },
+      "title_ids_mapping": {
+        "ISBN": "ISBN",
+        "eissn": "Online_ISSN"
+      }
+    }
+  ]
+}

@@ -75,7 +75,6 @@ class DataHeaders(JsonEncorder):
             # Stop processing when an exception occurs
             # (index out of bounds or unable to parse next field)
             logger.debug("Header parsing terminated: %s", e)
-            pass
 
         if not res:
             raise TableException(
