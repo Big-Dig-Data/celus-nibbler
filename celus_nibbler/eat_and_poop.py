@@ -1,3 +1,4 @@
+import functools
 import logging
 import pathlib
 import typing
@@ -38,20 +39,53 @@ class Poop:
             logger.warning('sheet %s has not been parsed', self.parser.sheet.sheet_idx + 1)
             return None
 
-    def metrics_and_dimensions(self) -> typing.Tuple[typing.List[str], typing.List[str]]:
+    @property
+    def metrics(self):
+        return self.get_metrics_dimensions_title_ids_months()[0]
+
+    @property
+    def dimensions(self):
+        return self.get_metrics_dimensions_title_ids_months()[1]
+
+    @property
+    def title_ids(self):
+        return self.get_metrics_dimensions_title_ids_months()[2]
+
+    @property
+    def months(self):
+        return self.get_metrics_dimensions_title_ids_months()[3]
+
+    @functools.lru_cache
+    def get_metrics_dimensions_title_ids_months(
+        self,
+    ) -> typing.Tuple[typing.List[str], typing.List[str], typing.List[str], typing.List[str]]:
         seen_metrics = set()
-        seen_dimensions = set()
+        seen_dimensions: typing.Set[str] = set()
+        seen_title_ids: typing.Set[str] = set()
+        seen_months: typing.Set[str] = set()
         if records := self.records():
             for record in records:
+                # add month
+                seen_months.add(record.start)
+
                 # add non-empty metrics
                 if record.metric:
                     seen_metrics.add(record.metric)
+
                 # add non-empty dimensions
                 if record.dimension_data:
                     seen_dimensions.update(k for k, v in record.dimension_data.items() if v)
+                # add non-empty titles
+                if record.title_ids:
+                    seen_title_ids.update(k for k, v in record.title_ids.items() if v)
 
-            return list(e for e in seen_metrics), list(seen_dimensions)
-        return ([], [])
+            return (
+                sorted(seen_metrics),
+                sorted(seen_dimensions),
+                sorted(seen_title_ids),
+                sorted(seen_months),
+            )
+        return [], [], [], []
 
     def get_months(self) -> typing.List[typing.List[date]]:
         """Get months of the sheet (divided into areas)"""

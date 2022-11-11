@@ -77,15 +77,15 @@
             },
             {
               "Metric_Type": "Unique_Item_Requests",
-              "Count": 2
+              "Count": 4
             },
             {
               "Metric_Type": "Total_Item_Requests",
-              "Count": 2
+              "Count": 6
             },
             {
               "Metric_Type": "Unique_Item_Investigations",
-              "Count": 2
+              "Count": 8
             }
           ]
         }
@@ -125,19 +125,19 @@
           "Instance": [
             {
               "Metric_Type": "Unique_Item_Investigations",
-              "Count": 8
+              "Count": 1
             },
             {
               "Metric_Type": "Total_Item_Requests",
-              "Count": 11
+              "Count": 3 
             },
             {
               "Metric_Type": "Unique_Item_Requests",
-              "Count": 8
+              "Count": 5
             },
             {
               "Metric_Type": "Total_Item_Investigations",
-              "Count": 11
+              "Count": 7
             }
           ]
         }

@@ -1,15 +1,20 @@
 import argparse
+import csv
 import json
 import logging
 import logging.config
 import pathlib
 import sys
 import typing
+from copy import deepcopy
+from datetime import date
 from importlib.metadata import distribution
 
+from celus_nigiri import CounterRecord
 from unidecode import unidecode
 
 from celus_nibbler import Poop, eat
+from celus_nibbler.aggregator import CounterOrdering
 from celus_nibbler.definitions import Definition
 from celus_nibbler.parsers import available_parsers, get_supported_platforms_count
 from celus_nibbler.parsers.dynamic import gen_parser
@@ -35,6 +40,25 @@ def gen_description(
 Available Parsers:
 {parsers_list}
 """
+
+
+def write_batch(
+    writer,
+    records: typing.List[CounterRecord],
+    dimensions: typing.List[str],
+    title_ids: typing.List[str],
+    months: typing.List[date],
+):
+    months_dict = {e: "" for e in months}
+    for r in records:
+        months_dict[r.start] = r.value
+    writer.writerow(
+        [r.title, r.organization]
+        + [r.title_ids[ti] for ti in title_ids]
+        + [r.dimension_data[d] for d in dimensions]
+        + [r.metric]
+        + [months_dict[k] for k in sorted(months)]
+    )
 
 
 def gen_argument_parser(
@@ -75,6 +99,13 @@ def gen_argument_parser(
         default=[],
         help="Reads a definition of a dynamic parser from a file",
         type=read_definition,
+    )
+    parser.add_argument(
+        "-c",
+        "--counter-like-output",
+        action="store_true",
+        default=False,
+        help="Display processed data in counter like format",
     )
     parser.add_argument("platform")
     parser.add_argument("file", nargs='*')
@@ -117,10 +148,68 @@ def main():
                 if not isinstance(poop, Poop):
                     print(f"Failed to pick parser for sheet {idx}", file=sys.stderr)
                     continue
+
+                (
+                    metrics,
+                    dimensions,
+                    title_ids,
+                    months,
+                ) = poop.get_metrics_dimensions_title_ids_months()
+
                 print(f"Parsing sheet {idx}", file=sys.stderr)
-                print(f"Months: {poop.get_months()}", file=sys.stderr)
-                for record in poop.records():
-                    print(",".join((f'"{e}"' if e else "") for e in record.as_csv()))
+                print(f"Months: {months}", file=sys.stderr)
+                print(f"Metrics: {metrics}", file=sys.stderr)
+                print(f"Dimensions: {dimensions}", file=sys.stderr)
+                print(f"Title ids: {title_ids}", file=sys.stderr)
+
+                if options.counter_like_output:
+                    header = (
+                        ["title", "organization"]
+                        + poop.title_ids
+                        + poop.dimensions
+                        + ["metric"]
+                        + poop.months
+                    )
+                else:
+                    header = [
+                        "start",
+                        "end",
+                        "organization",
+                        "title",
+                        "metric",
+                        "dimensions",
+                        "title_ids",
+                        "value",
+                    ]
+
+                writer = csv.writer(sys.stdout, dialect="unix")
+                writer.writerow(header)
+                records = (
+                    CounterOrdering().aggregate(poop.records())
+                    if options.counter_like_output
+                    else poop.records()
+                )
+                last_rec = None
+                batch = []
+                for record in records:
+
+                    if options.counter_like_output:
+                        this_rec = deepcopy(record)
+                        this_rec.value = -1
+                        this_rec.start = date(2020, 1, 1)
+                        this_rec.end = date(2020, 1, 31)
+
+                        if not last_rec or last_rec == this_rec:
+                            batch.append(record)
+                        elif batch:
+                            write_batch(writer, batch, dimensions, title_ids, months)
+                            batch = [record]
+                        last_rec = this_rec
+                    else:
+                        writer.writerow(record.as_csv())
+
+                if batch:
+                    write_batch(writer, batch, dimensions, title_ids, months)
 
 
 if __name__ == "__main__":
