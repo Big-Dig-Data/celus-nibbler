@@ -12,7 +12,7 @@
   "titles_to_skip": [],
   "dimensions_to_skip": [],
   "metric_aliases": [
-      ["MO", "Metric overriden"]
+      ["MD", "Metric default"]
   ],
   "dimension_aliases": [
       ["YOP", "YearOfPublish"]
@@ -22,7 +22,7 @@
       "kind": "non_counter.celus_format",
       "title_column_names": ["Item"],
       "metric_column_names": ["Metric"],
-      "override_metric": "MO",
+      "default_metric": "MD",
       "organization_column_names": ["Institution"],
       "dimension_mapping": {
         "Year of publication": "YOP",

@@ -1,0 +1,22 @@
+{
+  "kind": "non_counter.celus_format",
+  "version": 1,
+  "parser_name": "tabular",
+  "data_format": {
+    "name":"celus_format2"
+  },
+  "platforms": [
+    "Platform1"
+  ],
+  "metrics_to_skip": [],
+  "titles_to_skip": [],
+  "dimensions_to_skip": [],
+  "areas": [
+    {
+      "kind": "non_counter.celus_format",
+      "title_column_names": ["Source", "Title"],
+      "metric_column_names": [],
+      "default_metric": "M1"
+    }
+  ]
+}

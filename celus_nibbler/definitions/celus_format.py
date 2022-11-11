@@ -20,7 +20,7 @@ class CelusFormatAreaDefinition(JsonEncorder, BaseAreaDefinition):
     title_column_names: typing.List[str] = field(default_factory=lambda: [])
     organization_column_names: typing.List[str] = field(default_factory=lambda: [])
     metric_column_names: typing.List[str] = field(default_factory=lambda: [])
-    override_metric: typing.Optional[str] = None  # when metric column is found
+    default_metric: typing.Optional[str] = None
     title_ids_mapping: typing.Dict[str, str] = field(default_factory=lambda: {})
     dimension_mapping: typing.Dict[str, str] = field(default_factory=lambda: {})
 
@@ -31,7 +31,7 @@ class CelusFormatAreaDefinition(JsonEncorder, BaseAreaDefinition):
             title_column_names = self.title_column_names
             organization_column_names = self.organization_column_names
             metric_column_names = self.metric_column_names
-            override_metric = self.override_metric
+            default_metric = self.default_metric
             title_ids_mapping = self.title_ids_mapping
             dimension_mapping = self.dimension_mapping
 

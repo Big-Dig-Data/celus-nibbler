@@ -1,3 +1,4 @@
+import copy
 import logging
 import typing
 
@@ -27,7 +28,7 @@ class BaseCelusFormatArea(BaseTabularArea):
     title_column_names: typing.List[str] = []
     organization_column_names: typing.List[str] = []
     metric_column_names: typing.List[str] = []
-    override_metric: typing.Optional[str] = None  # when metric column is found
+    default_metric: typing.Optional[str] = None
     title_ids_mapping: typing.Dict[str, str] = {}
     dimension_mapping: typing.Dict[str, str] = {}
 
@@ -102,8 +103,15 @@ class BaseCelusFormatArea(BaseTabularArea):
                 else:
                     raise
 
-        if self.override_metric:
-            self.metric_source = MetricSource(Value(self.override_metric))
+        if self.default_metric:
+            if self.metric_source:
+                # Need to clone here to copy&modify class variable
+                # to instance variable
+                cloned = copy.deepcopy(self.metric_source)
+                cloned.extract_params.default = self.default_metric
+                self.metric_source = cloned
+            else:
+                self.metric_source = MetricSource(Value(self.default_metric))
 
         # Raise exception that no data cell was found
         return res
