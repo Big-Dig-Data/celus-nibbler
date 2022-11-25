@@ -11,6 +11,7 @@ from celus_nibbler.parsers.base import BaseTabularArea, BaseTabularParser
 from celus_nibbler.sources import (
     DateSource,
     DimensionSource,
+    ExtractParams,
     MetricSource,
     OrganizationSource,
     TitleIdSource,
@@ -31,6 +32,7 @@ class BaseCelusFormatArea(BaseTabularArea):
     default_metric: typing.Optional[str] = None
     title_ids_mapping: typing.Dict[str, str] = {}
     dimension_mapping: typing.Dict[str, str] = {}
+    value_extract_params: ExtractParams = ExtractParams()
 
     def find_data_cells(self) -> typing.List[DataCells]:
         # Should raise validation error when column is unidentified
@@ -53,7 +55,14 @@ class BaseCelusFormatArea(BaseTabularArea):
                             start=start_month(date),
                             end=end_month(date),
                         )
-                        res.append(DataCells(record, ValueSource(source=data_source)))
+                        res.append(
+                            DataCells(
+                                record,
+                                ValueSource(
+                                    source=data_source, extract_params=self.value_extract_params
+                                ),
+                            )
+                        )
                         continue
                 except TableException as e:
                     if e.reason != "date":

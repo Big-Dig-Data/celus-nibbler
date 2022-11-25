@@ -10,6 +10,7 @@ from celus_nibbler.parsers.non_counter.celus_format import (
     BaseCelusFormatArea,
     BaseCelusFormatParser,
 )
+from celus_nibbler.sources import ExtractParams
 from celus_nibbler.utils import JsonEncorder, PydanticConfig
 
 from .base import BaseAreaDefinition, BaseNonCounterParserDefinition
@@ -23,6 +24,7 @@ class CelusFormatAreaDefinition(JsonEncorder, BaseAreaDefinition):
     default_metric: typing.Optional[str] = None
     title_ids_mapping: typing.Dict[str, str] = field(default_factory=lambda: {})
     dimension_mapping: typing.Dict[str, str] = field(default_factory=lambda: {})
+    value_extract_params: ExtractParams = field(default_factory=lambda: ExtractParams())
 
     kind: typing.Literal["non_counter.celus_format"] = "non_counter.celus_format"
 
@@ -34,6 +36,7 @@ class CelusFormatAreaDefinition(JsonEncorder, BaseAreaDefinition):
             default_metric = self.default_metric
             title_ids_mapping = self.title_ids_mapping
             dimension_mapping = self.dimension_mapping
+            value_extract_params = self.value_extract_params
 
         return Area
 

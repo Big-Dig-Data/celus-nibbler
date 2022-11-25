@@ -31,6 +31,9 @@
       "title_ids_mapping": {
         "ISBN": "ISBN",
         "eissn": "Online_ISSN"
+      },
+      "value_extract_params": {
+         "default": 0
       }
     }
   ]
