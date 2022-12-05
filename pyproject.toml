@@ -23,7 +23,7 @@ testpaths = "tests/"
 
 [tool.poetry]
 name = "celus-nibbler"
-version = "7.3.0"
+version = "7.3.1"
 description = "Counter-like data reader and processor."
 authors = ["Stepan Henek <stepan@bigdigdata.com>", "Zbynek Vyhlas <zbyneksmail@gmail.com>"]
 license = "MIT"
@@ -40,7 +40,7 @@ nibbler-eat = 'celus_nibbler.__main__:main'
 [tool.poetry.dependencies]
 python = "^3.8.1"
 
-celus-nigiri = { git = "https://github.com/Big-Dig-Data/celus-nigiri.git", tag="v1.2.1" }
+celus-nigiri = { git = "https://github.com/Big-Dig-Data/celus-nigiri.git", tag="v1.2.2" }
 chardet = "~5.0.0"
 pydantic = "~1.9.1"
 python-dateutil = "~2.8.2"
