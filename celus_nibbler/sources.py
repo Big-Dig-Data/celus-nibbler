@@ -45,6 +45,8 @@ class ContentExtractorMixin:
     source: Source
     extract_params: ExtractParams
     role: Role
+    _last_coord = None
+    _last_extracted = None
 
     def content(self, sheet: SheetReader, idx: int) -> typing.Any:
         content = self.source[idx].content(sheet)
@@ -74,20 +76,26 @@ class ContentExtractorMixin:
         validator: typing.Optional[typing.Type[validators.BaseValueModel]] = None,
     ) -> typing.Any:
         coord = self.coord(idx)
+        if coord == self._last_coord and self._last_extracted:
+            return self._last_extracted
+        else:
+            self._last_coord = coord
+
         try:
             content = self.content(sheet, idx)
             validator = validator or self.validator
             if validator:
                 if self.extract_params.default is not None:
-                    return validators.gen_default_validator(
+                    res = validators.gen_default_validator(
                         validator, self.extract_params.default, self.extract_params.blank_values
                     )(value=content).value
-                if self.extract_params.skip_validation:
-                    return (content or "").strip()
+                elif self.extract_params.skip_validation:
+                    res = (content or "").strip()
                 else:
-                    return validator(value=content).value
+                    res = validator(value=content).value
+
             else:
-                return content
+                res = content
         except ValidationError as e:
             if isinstance(self.source, Value):
                 raise TableException(
@@ -112,6 +120,10 @@ class ContentExtractorMixin:
                 sheet=sheet.sheet_idx,
                 reason='out-of-bounds',
             ) from e
+
+        # update last extracted
+        self._last_extracted = res
+        return res
 
     def coord(self, idx: int) -> typing.Optional[Coord]:
         if isinstance(self.source, Coord):
