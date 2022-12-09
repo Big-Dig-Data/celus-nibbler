@@ -7,6 +7,8 @@ from pydantic.json import pydantic_encoder
 
 class PydanticConfig:
     extra = "forbid"
+    allow_mutation = False
+    frozen = True
 
 
 class JsonEncorder:
