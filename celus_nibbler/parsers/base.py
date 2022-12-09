@@ -188,6 +188,12 @@ class BaseTabularParser(BaseParser):
 
     def _parse_area(self, area: BaseTabularArea) -> typing.Generator[CounterRecord, None, None]:
         data_cells = area.find_data_cells()
+
+        # Store title_ids and dimensions sources
+        # so it can be reused in the for-cycle
+        dimensions_sources = area.dimensions_sources
+        title_ids_sources = area.title_ids_sources
+
         try:
             for idx in itertools.count(0):
                 # iterates through ranges
@@ -216,7 +222,7 @@ class BaseTabularParser(BaseParser):
                     title = None
 
                 dimension_data = {}
-                for k, dimension_source in area.dimensions_sources.items():
+                for k, dimension_source in dimensions_sources.items():
                     dimension_data[k] = dimension_source.extract(
                         self.sheet, idx, self.dimensions_validators.get(k)
                     )
@@ -225,7 +231,7 @@ class BaseTabularParser(BaseParser):
 
                 title_ids = {}
                 for key in IDS:
-                    if title_source := area.title_ids_sources.get(key):
+                    if title_source := title_ids_sources.get(key):
                         value = title_source.extract(self.sheet, idx)
 
                         if value:
