@@ -1,6 +1,6 @@
 import logging
 import typing
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, fields
 
 from celus_nigiri import CounterRecord
 from pydantic import Field
@@ -33,6 +33,9 @@ Role = Annotated[
     ],
     Field(discriminator='role'),
 ]
+
+
+COUNTER_RECORD_FIELD_NAMES = [f.name for f in fields(CounterRecord)]
 
 
 logger = logging.getLogger(__name__)
@@ -115,28 +118,28 @@ class DataCells:
         self,
         record: CounterRecord,
     ) -> CounterRecord:
-        # Prepare header data non-empty
-        header_data = asdict(self.header_data)
-        header_data.pop("value")  # value can't be set from header
-        title_ids = {k: v for k, v in header_data.pop("title_ids") if v}
-        dimension_data = {k: v for k, v in header_data.pop("dimension_data") if v}
-        header_data = {k: v for k, v in header_data.items() if v}
+        # Update the input record instead creating new one
+        # to avoid unnecessary alocation
 
-        # update input data with non-empty header data
-        record_dict = asdict(record)
-        record_dict.update(header_data)
+        # Update non-nested updatable fields
+        for field_name in [
+            f
+            for f in COUNTER_RECORD_FIELD_NAMES
+            if f not in ("value", "title_ids", "dimension_data")
+        ]:
+            if new_value := getattr(self.header_data, field_name):
+                setattr(record, field_name, new_value)
 
-        # update nested
-        if orig_dimension_data := record_dict.get('dimension_data'):
-            orig_dimension_data.update(dimension_data)
-        else:
-            record_dict["dimension_data"] = dimension_data
-        if orig_title_ids := record_dict.get('title_ids'):
-            orig_title_ids.update(title_ids)
-        else:
-            record_dict["title_ids"] = title_ids
+        # Update nested fields
+        for nested_name in ["dimension_data", "title_ids"]:
+            if header_nested_data := getattr(self.header_data, nested_name):
+                if record_nested_data := getattr(record, nested_name):
+                    record_nested_data.update(header_nested_data)
+                else:
+                    # Clone header data
+                    record[nested_name] = {k: v for k, v in header_nested_data.items()}
 
-        return CounterRecord(**record_dict)
+        return record
 
 
 @pydantic_dataclass(config=PydanticConfig)
