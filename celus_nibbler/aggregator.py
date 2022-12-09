@@ -33,7 +33,7 @@ class SameAggregator(BaseAggregator):
         self, records: typing.Generator[CounterRecord, None, None]
     ) -> typing.Generator[CounterRecord, None, None]:
         with tempfile.TemporaryDirectory() as tmpdir:
-            with Cache(tmpdir) as db:
+            with Cache(tmpdir) as db, db.transact():
                 # Read all records
                 for record in records:
                     # Derive key
@@ -73,7 +73,7 @@ class CounterOrdering(BaseAggregator):
         self, records: typing.Generator[CounterRecord, None, None]
     ) -> typing.Generator[CounterRecord, None, None]:
         with tempfile.TemporaryDirectory() as tmpdir:
-            with Cache(tmpdir) as db:
+            with Cache(tmpdir) as db, db.transact():
                 # Read all records
                 for record in records:
                     # Derive key
