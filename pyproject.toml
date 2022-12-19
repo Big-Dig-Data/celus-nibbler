@@ -41,7 +41,6 @@ nibbler-eat = 'celus_nibbler.__main__:main'
 python = "^3.8.1"
 
 celus-nigiri = { git = "https://github.com/Big-Dig-Data/celus-nigiri.git", tag="v1.2.2" }
-chardet = "~5.0.0"
 diskcache = "~5.4.0"
 pydantic = "~1.10.2"
 python-dateutil = "~2.8.2"
