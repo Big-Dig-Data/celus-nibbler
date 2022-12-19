@@ -5,6 +5,8 @@ from typing import Any, List, Optional, Type, Union
 from dateutil import parser as datetimes_parser
 from pydantic import BaseModel, validator
 
+from .utils import COMMON_DATE_FORMATS
+
 
 class BaseValueModel(BaseModel):
     value: Any
@@ -108,6 +110,7 @@ class Title(BaseValueModel):
 
 
 class Date(BaseValueModel):
+
     value: datetime.date
 
     _not_none_date = validator('value', allow_reuse=True, pre=True)(not_none)
@@ -115,9 +118,17 @@ class Date(BaseValueModel):
     _non_empty_date = validator('value', allow_reuse=True, pre=True)(non_empty)
 
     @validator("value", pre=True)
-    def to_datetime(cls, date: str) -> str:
+    def to_datetime(cls, date: str) -> datetime.datetime:
+        # Check for common formats (faster that dateutil)
+        for fmt in COMMON_DATE_FORMATS:
+            try:
+                return datetime.datetime.strptime(date, fmt).replace(day=1)
+            except ValueError:
+                pass
+
+        # Try to parse date using dateutil for more obscure date formats
         try:
-            return datetimes_parser.parse(date)
+            return datetimes_parser.parse(date).replace(day=1)
         except datetimes_parser.ParserError:
             raise ValueError("cant-parse-date")
 

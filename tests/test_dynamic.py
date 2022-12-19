@@ -126,6 +126,20 @@ from celus_nibbler.parsers.dynamic import gen_parser
             "dynamic.non_counter.celus_format2.tabular",
             False,
         ),
+        (
+            "Platform1",
+            "non_counter/celus_format-2d-3x2x3-%b-%y",
+            "csv",
+            "dynamic.non_counter.celus_format1.tabular",
+            False,
+        ),
+        (
+            "Platform1",
+            "non_counter/celus_format-2d-3x2x3-%y-%b",
+            "csv",
+            "dynamic.non_counter.celus_format1.tabular",
+            False,
+        ),
     ),
 )
 def test_dynamic(platform, filename, ext, parser, aggregated):

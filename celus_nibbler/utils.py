@@ -4,6 +4,15 @@ from datetime import date, timedelta
 
 from pydantic.json import pydantic_encoder
 
+COMMON_DATE_FORMATS = [
+    "%Y-%m",
+    "%Y-%m-%d",
+    "%b-%Y",
+    "%Y-%b",
+    "%b-%y",
+    "%y-%b",
+]
+
 
 class PydanticConfig:
     extra = "forbid"
