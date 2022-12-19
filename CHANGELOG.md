@@ -5,6 +5,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.4.0] - 2022-12-19
+
+### Fixed
+- proper parsing of dates in `Dec-21` format
+
+### Added
+- `nibbler-eat` is able to generate celus-format output
+
+### Changed
+- parsing performance optimizations
+
+
+## [7.3.1] - 2022-12-05
+
+### Changed
+- nigiri version bumped
+
+
 ## [7.3.0] - 2022-11-25
 
 ### Added
