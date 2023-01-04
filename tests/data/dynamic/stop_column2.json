@@ -1,0 +1,84 @@
+{
+  "kind": "non_counter.metric_based",
+  "version": 1,
+  "parser_name": "stop_column2",
+  "data_format": {
+    "name": "stop_format"
+  },
+  "platforms": [
+    "Platform1",
+    "Platform2"
+  ],
+  "metrics_to_skip": [],
+  "titles_to_skip": [],
+  "dimensions_to_skip": {},
+  "metric_aliases": [],
+  "dimension_aliases": [],
+  "heuristics": {
+    "conds": [
+      {
+        "pattern": "^Month$",
+        "coord": {
+          "row": 0,
+          "col": 0
+        },
+        "kind": "regex"
+      }
+    ],
+    "kind": "and"
+  },
+  "areas": [
+    {
+      "data_headers": {
+        "roles": [
+            {
+                "source": {
+                    "coord": {
+                      "row": 0,
+                      "col": 1
+                    },
+                    "direction": "right"
+                },
+                "role": "metric"
+            }
+        ],
+        "data_direction": "down",
+        "data_cells": {
+          "coord": {
+            "row": 1,
+            "col": 1
+          },
+          "direction": "right"
+        },
+        "skip_condition": {
+            "kind": "or",
+            "conds": [
+                {
+                    "kind": "regex",
+                    "pattern": "^Metric3$"
+                },
+                {
+                    "kind": "index",
+                    "min": 1,
+                    "max": 1
+                }
+            ]
+        }
+      },
+      "dates": {
+          "source": {
+              "coord": {
+                  "row": 1,
+                  "col": 0
+              },
+              "direction": "down"
+          },
+          "role": "date"
+      },
+      "titles": null,
+      "title_ids": [],
+      "dimensions": [],
+      "kind": "non_counter.metric_based"
+    }
+  ]
+}

@@ -140,6 +140,10 @@ from celus_nibbler.parsers.dynamic import gen_parser
             "dynamic.non_counter.celus_format1.tabular",
             False,
         ),
+        ("Platform1", "skip_column1", "csv", "dynamic.non_counter.skip_format.skip_column1", False),
+        ("Platform1", "skip_column2", "csv", "dynamic.non_counter.skip_format.skip_column2", False),
+        ("Platform1", "stop_column1", "csv", "dynamic.non_counter.stop_format.stop_column1", False),
+        ("Platform1", "stop_column2", "csv", "dynamic.non_counter.stop_format.stop_column2", False),
     ),
 )
 def test_dynamic(platform, filename, ext, parser, aggregated):

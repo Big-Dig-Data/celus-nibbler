@@ -71,6 +71,8 @@ def test_date_based_area_definition():
                 "last_value_as_default": False,
                 "skip_validation": False,
             },
+            "skip_condition": None,
+            "stop_condition": None,
         },
         "dimensions": [
             {
@@ -363,6 +365,8 @@ def test_date_based_definition():
                         "last_value_as_default": False,
                         "skip_validation": False,
                     },
+                    "skip_condition": None,
+                    "stop_condition": None,
                 },
                 "dimensions": [
                     {
