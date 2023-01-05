@@ -71,8 +71,17 @@ def test_date_based_area_definition():
                 "last_value_as_default": False,
                 "skip_validation": False,
             },
-            "skip_condition": None,
-            "stop_condition": None,
+            'rules': [
+                {
+                    'condition': None,
+                    'extract_params_override': None,
+                    'on_condition_failed': 'stop',
+                    'on_condition_passed': 'proceed',
+                    'on_error': 'stop',
+                    'rule_idx': None,
+                    'rule_source_offset': 0,
+                }
+            ],
         },
         "dimensions": [
             {
@@ -365,8 +374,17 @@ def test_date_based_definition():
                         "last_value_as_default": False,
                         "skip_validation": False,
                     },
-                    "skip_condition": None,
-                    "stop_condition": None,
+                    'rules': [
+                        {
+                            'condition': None,
+                            'extract_params_override': None,
+                            'on_condition_failed': 'stop',
+                            'on_condition_passed': 'proceed',
+                            'on_error': 'stop',
+                            'rule_idx': None,
+                            'rule_source_offset': 0,
+                        }
+                    ],
                 },
                 "dimensions": [
                     {

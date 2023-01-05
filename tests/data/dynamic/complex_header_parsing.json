@@ -1,0 +1,168 @@
+{
+  "kind": "non_counter.metric_based",
+  "version": 1,
+  "parser_name": "complex_header_parsing",
+  "data_format": {
+    "name": "complex_header_parsing"
+  },
+  "platforms": [
+    "Platform1",
+    "Platform2"
+  ],
+  "metrics_to_skip": [],
+  "titles_to_skip": [],
+  "dimensions_to_skip": {},
+  "metric_aliases": [],
+  "dimension_aliases": [],
+  "heuristics": {
+    "conds": [
+      {
+        "pattern": "^Month$",
+        "coord": {
+          "row": 0,
+          "col": 0
+        },
+        "kind": "regex"
+      }
+    ],
+    "kind": "and"
+  },
+  "areas": [
+    {
+      "data_headers": {
+        "roles": [
+            {
+                "source": {
+                    "coord": {
+                      "row": 0,
+                      "col": 2
+                    },
+                    "direction": "right"
+                },
+                "role": "metric"
+            }
+        ],
+        "data_direction": "down",
+        "data_cells": {
+          "coord": {
+            "row": 1,
+            "col": 2
+          },
+          "direction": "right"
+        },
+        "rules": [
+            {
+                "condition": {
+                    "kind": "regex",
+                    "pattern": "^Comb1$"
+                },
+                "extract_params_override": {
+                    "regex": "^([^ ]+) "
+                },
+                "on_condition_failed": "proceed",
+                "on_condition_passed": "proceed",
+                "on_error": "proceed",
+                "rule_idx": 0,
+                "rule_source_offset": 0
+            },
+            {
+                "condition": {
+                    "kind": "regex",
+                    "pattern": "^Comb2$"
+                },
+                "extract_params_override": {
+                    "regex": " ([^ ]+)$"
+                },
+                "on_condition_failed": "proceed",
+                "on_condition_passed": "proceed",
+                "on_error": "proceed",
+                "rule_idx": 0,
+                "rule_source_offset": -2
+            },
+            {
+                "condition": {
+                    "kind": "regex",
+                    "pattern": "^DataAfter$"
+                },
+                "extract_params_override": null,
+                "on_condition_failed": "proceed",
+                "on_condition_passed": "proceed",
+                "on_error": "proceed",
+                "rule_idx": 0,
+                "rule_source_offset": -1
+            },
+            {
+                "condition": {
+                    "kind": "regex",
+                    "pattern": "^DataBefore$"
+                },
+                "extract_params_override": null,
+                "on_condition_failed": "proceed",
+                "on_condition_passed": "proceed",
+                "on_error": "proceed",
+                "rule_idx": 0,
+                "rule_source_offset": 1
+            },
+            {
+                "condition": {
+                    "kind": "regex",
+                    "pattern": "^(DataAfter|DataBefore)$"
+                },
+                "extract_params_override": null,
+                "on_condition_failed": "proceed",
+                "on_condition_passed": "skip",
+                "on_error": "proceed",
+                "rule_idx": 0,
+                "rule_source_offset": 0
+            },
+            {
+                "condition": {
+                    "kind": "regex",
+                    "pattern": "^SkipThis$"
+                },
+                "extract_params_override": null,
+                "on_condition_failed": "proceed",
+                "on_condition_passed": "skip",
+                "on_error": "proceed",
+                "rule_idx": 0,
+                "rule_source_offset": 0
+            },
+            {
+                "condition": null,
+                "extract_params_override": null,
+                "on_condition_failed": "stop",
+                "on_condition_passed": "proceed",
+                "on_error": "proceed",
+                "rule_idx": 0,
+                "rule_source_offset": 0
+            }
+        ]
+      },
+      "dates": {
+          "source": {
+              "coord": {
+                  "row": 1,
+                  "col": 0
+              },
+              "direction": "down"
+          },
+          "role": "date"
+      },
+      "titles": null,
+      "title_ids": [],
+      "dimensions": [
+        {
+          "name": "Dim",
+          "source": {
+            "coord": {
+              "row": 1,
+              "col": 1
+            },
+            "direction": "down"
+          }
+        }
+      ],
+      "kind": "non_counter.metric_based"
+    }
+  ]
+}

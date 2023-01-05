@@ -1,7 +1,10 @@
+import itertools
 import logging
 import typing
 from abc import ABCMeta, abstractmethod
+from copy import deepcopy
 from dataclasses import asdict, dataclass, fields
+from enum import Enum
 
 from celus_nigiri import CounterRecord
 from pydantic import Field
@@ -40,6 +43,11 @@ COUNTER_RECORD_FIELD_NAMES = [f.name for f in fields(CounterRecord)]
 
 
 logger = logging.getLogger(__name__)
+
+
+# Makes sure that wrong definition doesn't create
+# an infinite loop
+MAX_DATA_CELLS = 50
 
 
 class DataHeaderBaseCondition(metaclass=ABCMeta):
@@ -123,13 +131,70 @@ DataHeaderCondition = Annotated[
         DataHeaderRegexCondition,
         DataHeaderIndexCondition,
     ],
-    Field(discriminator='role'),
+    Field(discriminator='kind'),
 ]
 
 
 DataHeaderNegCondition.__pydantic_model__.update_forward_refs()
 DataHeaderAndCondition.__pydantic_model__.update_forward_refs()
 DataHeaderOrCondition.__pydantic_model__.update_forward_refs()
+
+
+class DataHeaderAction(Enum):
+    PROCEED = "proceed"
+    SKIP = "skip"
+    STOP = "stop"
+
+    def merge(self, dha: 'DataHeaderAction') -> 'DataHeaderAction':
+        if self == DataHeaderAction.PROCEED:
+            return dha
+        elif self == DataHeaderAction.SKIP:
+            if dha != DataHeaderAction.PROCEED:
+                return dha
+
+        return self
+
+
+@pydantic_dataclass(config=PydanticConfig)
+class DataHeaderRule(JsonEncorder):
+    condition: typing.Optional[DataHeaderCondition] = None
+    on_condition_failed: DataHeaderAction = DataHeaderAction.STOP
+    on_condition_passed: DataHeaderAction = DataHeaderAction.PROCEED
+    on_error: DataHeaderAction = DataHeaderAction.STOP
+    rule_idx: typing.Optional[int] = None
+    extract_params_override: typing.Optional[ExtractParams] = None
+    rule_source_offset: int = 0
+
+    def process(
+        self, sheet: SheetReader, idx: int, role: Role
+    ) -> typing.Tuple[DataHeaderAction, typing.Optional[typing.Any]]:
+        role = deepcopy(role)
+
+        if self.extract_params_override:
+            role.extract_params = deepcopy(self.extract_params_override)
+
+        try:
+            value = role.extract(sheet, idx + self.rule_source_offset)
+            if self.condition is None or self.condition.check(value, idx):
+                return self.on_condition_passed, value
+            else:
+                return self.on_condition_failed, None
+
+        except TableException as e:
+            if e.reason == "out-of-bounds":
+                # terminate if no offset
+                action = (
+                    DataHeaderAction.STOP
+                    if self.rule_source_offset == 0
+                    else DataHeaderAction.PROCEED
+                )
+            else:
+                action = self.on_error
+
+            logger.debug(
+                "Header role %s processing rule %s failed (->%s): %s", role, self, action, e
+            )
+            return action, None
 
 
 @pydantic_dataclass(config=PydanticConfig)
@@ -140,45 +205,59 @@ class DataHeaders(JsonEncorder):
     data_direction: Direction  # perpendicular to data_cells
     data_extract_params: ExtractParams = ExtractParams()
 
-    skip_condition: typing.Optional[DataHeaderCondition] = None
-    stop_condition: typing.Optional[DataHeaderCondition] = None
+    rules: typing.List[DataHeaderRule] = Field(default_factory=lambda: [DataHeaderRule()])
+
+    def process_value(self, record: CounterRecord, role: Role, value: typing.Any):
+        if isinstance(role, DimensionSource):
+            record.dimension_data[role.name] = value
+        elif isinstance(role, TitleIdSource):
+            record.title_ids[role.name] = value
+        elif isinstance(role, DateSource):
+            record.start = start_month(value)
+            record.end = end_month(value)
+        else:
+            setattr(record, role.role, value)
 
     def find_data_cells(self, sheet: SheetReader) -> typing.List['DataCells']:
-        res = []
+        res: typing.List[DataCells] = []
 
-        try:
-            for idx, cell in enumerate(self.data_cells):
-                record = CounterRecord(value=0)  # dummy value - will be removed later
-                skip = False
-                stop = False
-                for role in self.roles:
-                    value = role.extract(sheet, idx)
+        for idx, cell in itertools.takewhile(
+            lambda x: x[0] < MAX_DATA_CELLS, enumerate(self.data_cells)
+        ):
 
-                    #  skip or stop conditions
-                    if cond := self.skip_condition:
-                        if cond.check(value, idx):
-                            skip = True
-                            break
-                    if cond := self.stop_condition:
-                        if cond.check(value, idx):
-                            stop = True
-                            break
+            record = CounterRecord(value=0)
+            action = DataHeaderAction.PROCEED
+            store = False
+            for role_idx, role in enumerate(self.roles):
 
-                    if isinstance(role, DimensionSource):
-                        record.dimension_data[role.name] = value
-                    elif isinstance(role, TitleIdSource):
-                        record.title_ids[role.name] = value
-                    elif isinstance(role, DateSource):
-                        record.start = start_month(value)
-                        record.end = end_month(value)
-                    else:
-                        setattr(record, role.role, value)
+                value = None
+                for rule_idx, rule in enumerate(self.rules):
+                    if rule.rule_idx and rule_idx != rule.rule_idx:
+                        # Skip rules which doesn't match index
+                        continue
+                    cur_action, value = rule.process(sheet, idx, role)
+                    action = action.merge(cur_action)
 
-                if skip:
-                    continue
-                if stop:
+                    if action != DataHeaderAction.PROCEED or value is not None:
+                        break
+
+                if action != DataHeaderAction.PROCEED:
+                    # Terminate processingof other roles
                     break
 
+                if value:
+                    self.process_value(record, role, value)
+                    store = True
+
+            if action == DataHeaderAction.SKIP:
+                logger.debug("Header parsing skips: %s", cell)
+                continue
+
+            if action == DataHeaderAction.STOP:
+                logger.debug("Header parsing stops: %s", cell)
+                break
+
+            if store:
                 res.append(
                     DataCells(
                         record,
@@ -188,10 +267,6 @@ class DataHeaders(JsonEncorder):
                         ),
                     )
                 )
-        except TableException as e:
-            # Stop processing when an exception occurs
-            # (index out of bounds or unable to parse next field)
-            logger.debug("Header parsing terminated: %s", e)
 
         if not res:
             raise TableException(

@@ -50,20 +50,33 @@
           },
           "direction": "right"
         },
-        "stop_condition": {
-            "kind": "and",
-            "conds": [
-                {
-                    "kind": "regex",
-                    "pattern": "^Metric3$"
+        "rules": [
+            {
+                "condition": {
+                    "kind": "neg",
+                    "cond": {
+                        "kind": "and",
+                        "conds": [
+                            {
+                                "kind": "regex",
+                                "pattern": "^Metric3$"
+                            },
+                            {
+                                "kind": "index",
+                                "min": 2,
+                                "max": 2
+                            }
+                        ]
+                    }
                 },
-                {
-                    "kind": "index",
-                    "min": 2,
-                    "max": 2
-                }
-            ]
-        }
+                "extract_params_override": null,
+                "on_condition_failed": "stop",
+                "on_condition_passed": "proceed",
+                "on_error": "stop",
+                "rule_idx": null,
+                "rule_source_offset": 0
+            }
+        ]
       },
       "dates": {
           "source": {

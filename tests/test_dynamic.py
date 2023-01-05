@@ -144,6 +144,13 @@ from celus_nibbler.parsers.dynamic import gen_parser
         ("Platform1", "skip_column2", "csv", "dynamic.non_counter.skip_format.skip_column2", False),
         ("Platform1", "stop_column1", "csv", "dynamic.non_counter.stop_format.stop_column1", False),
         ("Platform1", "stop_column2", "csv", "dynamic.non_counter.stop_format.stop_column2", False),
+        (
+            "Platform1",
+            "complex_header_parsing",
+            "csv",
+            "dynamic.non_counter.complex_header_parsing.complex_header_parsing",
+            True,
+        ),
     ),
 )
 def test_dynamic(platform, filename, ext, parser, aggregated):
@@ -167,8 +174,8 @@ def test_dynamic(platform, filename, ext, parser, aggregated):
                 sorted(poop.records(), key=lambda x: x.as_csv()) if aggregated else poop.records()
             )
 
-            for record in records:
-                assert next(reader) == list(record.as_csv()), "Compare lines"
+            for idx, record in enumerate(records):
+                assert next(reader) == list(record.as_csv()), f"Compare {idx + 1}."
 
         with pytest.raises(StopIteration):
             assert next(reader) is None, "No more date present in the file"
