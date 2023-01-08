@@ -56,85 +56,85 @@
                     "kind": "regex",
                     "pattern": "^Comb1$"
                 },
-                "extract_params_override": {
+                "role_extract_params_override": {
                     "regex": "^([^ ]+) "
                 },
                 "on_condition_failed": "proceed",
                 "on_condition_passed": "proceed",
                 "on_error": "proceed",
-                "rule_idx": 0,
-                "rule_source_offset": 0
+                "role_idx": 0,
+                "role_source_offset": 0
             },
             {
                 "condition": {
                     "kind": "regex",
                     "pattern": "^Comb2$"
                 },
-                "extract_params_override": {
+                "role_extract_params_override": {
                     "regex": " ([^ ]+)$"
                 },
                 "on_condition_failed": "proceed",
                 "on_condition_passed": "proceed",
                 "on_error": "proceed",
-                "rule_idx": 0,
-                "rule_source_offset": -2
+                "role_idx": 0,
+                "role_source_offset": -2
             },
             {
                 "condition": {
                     "kind": "regex",
                     "pattern": "^DataAfter$"
                 },
-                "extract_params_override": null,
+                "role_extract_params_override": null,
                 "on_condition_failed": "proceed",
                 "on_condition_passed": "proceed",
                 "on_error": "proceed",
-                "rule_idx": 0,
-                "rule_source_offset": -1
+                "role_idx": 0,
+                "role_source_offset": -1
             },
             {
                 "condition": {
                     "kind": "regex",
                     "pattern": "^DataBefore$"
                 },
-                "extract_params_override": null,
+                "role_extract_params_override": null,
                 "on_condition_failed": "proceed",
                 "on_condition_passed": "proceed",
                 "on_error": "proceed",
-                "rule_idx": 0,
-                "rule_source_offset": 1
+                "role_idx": 0,
+                "role_source_offset": 1
             },
             {
                 "condition": {
                     "kind": "regex",
                     "pattern": "^(DataAfter|DataBefore)$"
                 },
-                "extract_params_override": null,
+                "role_extract_params_override": null,
                 "on_condition_failed": "proceed",
                 "on_condition_passed": "skip",
                 "on_error": "proceed",
-                "rule_idx": 0,
-                "rule_source_offset": 0
+                "role_idx": 0,
+                "role_source_offset": 0
             },
             {
                 "condition": {
                     "kind": "regex",
                     "pattern": "^SkipThis$"
                 },
-                "extract_params_override": null,
+                "role_extract_params_override": null,
                 "on_condition_failed": "proceed",
                 "on_condition_passed": "skip",
                 "on_error": "proceed",
-                "rule_idx": 0,
-                "rule_source_offset": 0
+                "role_idx": 0,
+                "role_source_offset": 0
             },
             {
                 "condition": null,
-                "extract_params_override": null,
+                "role_extract_params_override": null,
                 "on_condition_failed": "stop",
                 "on_condition_passed": "proceed",
                 "on_error": "proceed",
-                "rule_idx": 0,
-                "rule_source_offset": 0
+                "role_idx": 0,
+                "role_source_offset": 0
             }
         ]
       },

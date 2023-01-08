@@ -161,20 +161,20 @@ class DataHeaderRule(JsonEncorder):
     on_condition_failed: DataHeaderAction = DataHeaderAction.STOP
     on_condition_passed: DataHeaderAction = DataHeaderAction.PROCEED
     on_error: DataHeaderAction = DataHeaderAction.STOP
-    rule_idx: typing.Optional[int] = None
-    extract_params_override: typing.Optional[ExtractParams] = None
-    rule_source_offset: int = 0
+    role_idx: typing.Optional[int] = None
+    role_extract_params_override: typing.Optional[ExtractParams] = None
+    role_source_offset: int = 0
 
     def process(
         self, sheet: SheetReader, idx: int, role: Role
     ) -> typing.Tuple[DataHeaderAction, typing.Optional[typing.Any]]:
         role = deepcopy(role)
 
-        if self.extract_params_override:
-            role.extract_params = deepcopy(self.extract_params_override)
+        if self.role_extract_params_override:
+            role.extract_params = deepcopy(self.role_extract_params_override)
 
         try:
-            value = role.extract(sheet, idx + self.rule_source_offset)
+            value = role.extract(sheet, idx + self.role_source_offset)
             if self.condition is None or self.condition.check(value, idx):
                 return self.on_condition_passed, value
             else:
@@ -185,7 +185,7 @@ class DataHeaderRule(JsonEncorder):
                 # terminate if no offset
                 action = (
                     DataHeaderAction.STOP
-                    if self.rule_source_offset == 0
+                    if self.role_source_offset == 0
                     else DataHeaderAction.PROCEED
                 )
             else:
@@ -232,7 +232,7 @@ class DataHeaders(JsonEncorder):
 
                 value = None
                 for rule_idx, rule in enumerate(self.rules):
-                    if rule.rule_idx and rule_idx != rule.rule_idx:
+                    if rule.role_idx and role_idx != rule.role_idx:
                         # Skip rules which doesn't match index
                         continue
                     cur_action, value = rule.process(sheet, idx, role)

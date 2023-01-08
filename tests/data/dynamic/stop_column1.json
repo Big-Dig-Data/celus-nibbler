@@ -69,12 +69,9 @@
                         ]
                     }
                 },
-                "extract_params_override": null,
                 "on_condition_failed": "stop",
                 "on_condition_passed": "proceed",
-                "on_error": "stop",
-                "rule_idx": null,
-                "rule_source_offset": 0
+                "on_error": "stop"
             }
         ]
       },

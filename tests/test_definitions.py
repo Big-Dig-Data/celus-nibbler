@@ -74,12 +74,12 @@ def test_date_based_area_definition():
             'rules': [
                 {
                     'condition': None,
-                    'extract_params_override': None,
+                    'role_extract_params_override': None,
                     'on_condition_failed': 'stop',
                     'on_condition_passed': 'proceed',
                     'on_error': 'stop',
-                    'rule_idx': None,
-                    'rule_source_offset': 0,
+                    'role_idx': None,
+                    'role_source_offset': 0,
                 }
             ],
         },
@@ -377,12 +377,12 @@ def test_date_based_definition():
                     'rules': [
                         {
                             'condition': None,
-                            'extract_params_override': None,
+                            'role_extract_params_override': None,
                             'on_condition_failed': 'stop',
                             'on_condition_passed': 'proceed',
                             'on_error': 'stop',
-                            'rule_idx': None,
-                            'rule_source_offset': 0,
+                            'role_idx': None,
+                            'role_source_offset': 0,
                         }
                     ],
                 },
