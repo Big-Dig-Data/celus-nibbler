@@ -151,6 +151,13 @@ from celus_nibbler.parsers.dynamic import gen_parser
             "dynamic.non_counter.complex_header_parsing.complex_header_parsing",
             True,
         ),
+        (
+            "PlatformX",
+            "organization_sheet_name",
+            "xlsx",
+            "dynamic.non_counter.org_sheet_name.org_sheet_name",
+            False,
+        ),
     ),
 )
 def test_dynamic(platform, filename, ext, parser, aggregated):

@@ -45,6 +45,7 @@ class ContentExtractorMixin:
     source: Source
     extract_params: ExtractParams
     role: Role
+    _last_sheet = None
     _last_coord = None
     _last_extracted = None
 
@@ -76,7 +77,8 @@ class ContentExtractorMixin:
         validator: typing.Optional[typing.Type[validators.BaseValueModel]] = None,
     ) -> typing.Any:
         coord = self.coord(idx)
-        if coord == self._last_coord and self._last_extracted:
+        if coord == self._last_coord and self._last_sheet == sheet and self._last_extracted:
+            # Same value will be extracted from the same coord
             return self._last_extracted
         else:
             self._last_coord = coord
@@ -123,6 +125,7 @@ class ContentExtractorMixin:
 
         # update last extracted
         self._last_extracted = res
+        self._last_sheet = sheet
         return res
 
     def coord(self, idx: int) -> typing.Optional[Coord]:
