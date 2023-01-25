@@ -1,0 +1,210 @@
+{
+  "Report_Header": {},
+  "Report_Items": [
+    {
+      "Platform": "Platform1",
+      "Data_Type": "Book",
+      "Access_Method": "Regular",
+      "Performance": [
+        {
+          "Period": {
+            "Begin_Date": "2019-04-01",
+            "End_Date": "2019-04-30"
+          },
+          "Instance": [
+            {
+              "Metric_Type": "Total_Item_Investigations",
+              "Count": 125
+            },
+            {
+              "Metric_Type": "Total_Item_Requests",
+              "Count": 52
+            },
+            {
+              "Metric_Type": "Unique_Item_Investigations",
+              "Count": 61
+            },
+            {
+              "Metric_Type": "Unique_Item_Requests",
+              "Count": 37
+            },
+            {
+              "Metric_Type": "Unique_Title_Investigations",
+              "Count": 59
+            },
+            {
+              "Metric_Type": "Unique_Title_Requests",
+              "Count": 36
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Platform": "Platform1",
+      "Data_Type": "Database",
+      "Access_Method": "Regular",
+      "Performance": [
+        {
+          "Period": {
+            "Begin_Date": "2019-04-01",
+            "End_Date": "2019-04-30"
+          },
+          "Instance": [
+            {
+              "Metric_Type": "Total_Item_Investigations",
+              "Count": 1
+            },
+            {
+              "Metric_Type": "Unique_Item_Investigations",
+              "Count": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Platform": "Platform1",
+      "Data_Type": "Journal",
+      "Access_Method": "Regular",
+      "Performance": [
+        {
+          "Period": {
+            "Begin_Date": "2019-04-01",
+            "End_Date": "2019-04-30"
+          },
+          "Instance": [
+            {
+              "Metric_Type": "Total_Item_Investigations",
+              "Count": 1381
+            },
+            {
+              "Metric_Type": "Total_Item_Requests",
+              "Count": 610
+            },
+            {
+              "Metric_Type": "Unique_Item_Investigations",
+              "Count": 837
+            },
+            {
+              "Metric_Type": "Unique_Item_Requests",
+              "Count": 483
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Platform": "Platform1",
+      "Data_Type": "Newspaper_or_Newsletter",
+      "Access_Method": "Regular",
+      "Performance": [
+        {
+          "Period": {
+            "Begin_Date": "2019-04-01",
+            "End_Date": "2019-04-30"
+          },
+          "Instance": [
+            {
+              "Metric_Type": "Total_Item_Investigations",
+              "Count": 50
+            },
+            {
+              "Metric_Type": "Total_Item_Requests",
+              "Count": 24
+            },
+            {
+              "Metric_Type": "Unique_Item_Investigations",
+              "Count": 31
+            },
+            {
+              "Metric_Type": "Unique_Item_Requests",
+              "Count": 19
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Platform": "Platform1",
+      "Data_Type": "Other",
+      "Access_Method": "Regular",
+      "Performance": [
+        {
+          "Period": {
+            "Begin_Date": "2019-04-01",
+            "End_Date": "2019-04-30"
+          },
+          "Instance": [
+            {
+              "Metric_Type": "Total_Item_Investigations",
+              "Count": 39
+            },
+            {
+              "Metric_Type": "Total_Item_Requests",
+              "Count": 10
+            },
+            {
+              "Metric_Type": "Unique_Item_Investigations",
+              "Count": 20
+            },
+            {
+              "Metric_Type": "Unique_Item_Requests",
+              "Count": 9
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Platform": "Platform1",
+      "Data_Type": "Platform",
+      "Access_Method": "Regular",
+      "Performance": [
+        {
+          "Period": {
+            "Begin_Date": "2019-04-01",
+            "End_Date": "2019-04-30"
+          },
+          "Instance": [
+            {
+              "Metric_Type": "Searches_Platform",
+              "Count": 1113
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Platform": "Platform1",
+      "Data_Type": "Report",
+      "Access_Method": "Regular",
+      "Performance": [
+        {
+          "Period": {
+            "Begin_Date": "2019-04-01",
+            "End_Date": "2019-04-30"
+          },
+          "Instance": [
+            {
+              "Metric_Type": "Total_Item_Investigations",
+              "Count": 23
+            },
+            {
+              "Metric_Type": "Total_Item_Requests",
+              "Count": 14
+            },
+            {
+              "Metric_Type": "Unique_Item_Investigations",
+              "Count": 8
+            },
+            {
+              "Metric_Type": "Unique_Item_Requests",
+              "Count": 8
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
