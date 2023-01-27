@@ -57,7 +57,9 @@ class CounterHeaderArea(BaseDateArea):
     ORGANIZATION_EXTRACT_PARAMS: ExtractParams = ExtractParams()
     METRIC_EXTRACT_PARAMS: ExtractParams = ExtractParams()
     DATE_EXTRACT_PARAMS: ExtractParams = ExtractParams()
-    DATA_EXTRACT_PARAMS: ExtractParams = ExtractParams()
+    DATA_EXTRACT_PARAMS: ExtractParams = ExtractParams(
+        default=0,
+    )
     TITLE_EXTRACT_PARAMS: ExtractParams = ExtractParams()
     TITLE_IDS_EXTRACT_PARAMS: typing.Dict[str, ExtractParams] = {}
     DIMENSIONS_EXTRACT_PARAMS: typing.Dict[str, ExtractParams] = {}

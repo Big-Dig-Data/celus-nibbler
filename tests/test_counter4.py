@@ -13,6 +13,7 @@ from celus_nibbler import eat
         ("Ovid", "4/BR1-b.tsv", "static.counter4.BR1.Tabular", False),
         ("Ovid", "4/BR1-empty1.tsv", "static.counter4.BR1.Tabular", True),
         ("Ovid", "4/BR1-empty2.tsv", "static.counter4.BR1.Tabular", True),
+        ("Ovid", "4/BR1-empty_values.csv", "static.counter4.BR1.Tabular", True),
         ("WileyOnlineLibrary", "4/BR2-a.tsv", "static.counter4.BR2.Tabular", True),
         ("WileyOnlineLibrary", "4/BR2-b.tsv", "static.counter4.BR2.Tabular", False),
         ("Psychiatry Online", "4/BR3-a.tsv", "static.counter4.BR3.Tabular", True),
