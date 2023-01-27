@@ -203,7 +203,7 @@ def test_dynamic(platform, filename, ext, parser, aggregated):
             "wrong_fixed_value",
             "csv",
             "dynamic.non_counter.simple_format.wrong_fixed_value",
-            TableException(sheet=0, reason="wrong-value", value="not_issn"),
+            TableException(sheet=0, reason="wrong-value", value=" 1 "),
         ),
         (
             "Platform1",

@@ -1,5 +1,4 @@
 import datetime
-import re
 from typing import Any, List, Optional, Type, Union
 
 from dateutil import parser as datetimes_parser
@@ -31,11 +30,7 @@ def not_none(value: Any) -> Any:
 
 
 def issn(issn: str) -> str:
-    if not issn:
-        return ""
-    if not re.match(r"^[0-9]{4}-[0-9]{3}[0-9X]$", issn):
-        raise ValueError("not-issn")
-    return issn
+    return issn.strip() or ""
 
 
 class Value(BaseValueModel):
@@ -142,12 +137,7 @@ class DOI(BaseValueModel):
 
     @validator("value")
     def check_doi(cls, doi: str) -> str:
-        if not doi:
-            return ""
-        if not re.match(r"^10\.[\d\.]+\/[^\s]+$", doi):
-            raise ValueError("not-doi")
-
-        return doi
+        return doi.strip() or ""
 
 
 class ISBN(BaseValueModel):
@@ -155,13 +145,7 @@ class ISBN(BaseValueModel):
 
     @validator("value")
     def check_isbn(cls, isbn: str) -> str:
-        if not isbn:
-            return ""
-
-        if not re.match(r"^[0-9\-]{9,}$", isbn):
-            raise ValueError("not-isbn")
-
-        return isbn
+        return isbn.strip() or ""
 
 
 class ISSN(BaseValueModel):
