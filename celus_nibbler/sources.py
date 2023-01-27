@@ -19,6 +19,7 @@ IDS_VALIDATORS = {
     "Print_ISSN": validators.ISSN,
     "Online_ISSN": validators.EISSN,
     "Proprietary": validators.ProprietaryID,
+    "URI": validators.URI,
 }
 
 

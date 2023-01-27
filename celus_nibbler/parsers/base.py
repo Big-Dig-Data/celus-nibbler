@@ -33,6 +33,7 @@ IDS = {
     "Print_ISSN",
     "Online_ISSN",
     "Proprietary",
+    "URI",
 }
 
 
@@ -233,11 +234,8 @@ class BaseTabularParser(BaseParser):
                 for key in IDS:
                     if title_source := title_ids_sources.get(key):
                         value = title_source.extract(self.sheet, idx)
-
                         if value:
                             title_ids[key] = value
-                        else:
-                            title_ids[key] = ""
 
                 for data_cell in data_cells:
                     value = data_cell.value_source.extract(self.sheet, idx)

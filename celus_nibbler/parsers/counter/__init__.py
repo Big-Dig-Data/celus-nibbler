@@ -35,6 +35,9 @@ class CounterHeaderArea(BaseDateArea):
         "Print ISSN",
         "Print_ISSN",
     }
+    URI_NAMES = {
+        "URI",
+    }
     EISSN_NAMES = {
         "Online ISSN",
         "Online_ISSN",
@@ -173,6 +176,8 @@ class CounterHeaderArea(BaseDateArea):
                 name = "Online_ISSN"
             elif content.strip() in self.PROPRIETARY_NAMES:
                 name = "Proprietary"
+            elif content.strip() in self.URI_NAMES:
+                name = "URI"
             else:
                 # empty or other field
                 continue

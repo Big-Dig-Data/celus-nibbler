@@ -140,6 +140,14 @@ class DOI(BaseValueModel):
         return doi.strip() or ""
 
 
+class URI(BaseValueModel):
+    value: str
+
+    @validator("value")
+    def check_uri(cls, uri: str) -> str:
+        return uri.strip() or ""
+
+
 class ISBN(BaseValueModel):
     value: str
 

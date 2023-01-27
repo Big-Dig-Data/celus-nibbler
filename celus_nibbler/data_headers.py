@@ -211,7 +211,8 @@ class DataHeaders(JsonEncorder):
         if isinstance(role, DimensionSource):
             record.dimension_data[role.name] = value
         elif isinstance(role, TitleIdSource):
-            record.title_ids[role.name] = value
+            if value.strip():
+                record.title_ids[role.name] = value
         elif isinstance(role, DateSource):
             record.start = start_month(value)
             record.end = end_month(value)
