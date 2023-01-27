@@ -24,6 +24,7 @@ from celus_nibbler import eat
         ("MIT", "5/PR-d.json", "static.counter5.PR.Json", False),
         ("MIT", "5/TR-c.json", "static.counter5.TR.Json", True),
         ("MIT", "5/TR-d.json", "static.counter5.TR.Json", False),
+        ("MIT", "5/TR-e.tsv", "static.counter5.TR.Tabular", True),
         ("JSTOR", "5/IR_M1-c.json", "static.counter5.IR_M1.Json", True),
         ("JSTOR", "5/IR_M1-d.json", "static.counter5.IR_M1.Json", False),
     ),

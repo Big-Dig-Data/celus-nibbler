@@ -18,8 +18,10 @@ def non_empty(name: str) -> str:
     return name
 
 
-def stripped(name: str) -> str:
-    return name.strip()
+def stripped(name: Optional[str]) -> Optional[str]:
+    if name:
+        return name.strip()
+    return name
 
 
 def not_none(value: Any) -> Any:
@@ -107,6 +109,8 @@ class Title(BaseValueModel):
         if title is not None and title.isdigit():
             raise ValueError("cant-be-digit")
         return title
+
+    _stripped_title = validator('value', allow_reuse=True)(stripped)
 
 
 class Date(BaseValueModel):
