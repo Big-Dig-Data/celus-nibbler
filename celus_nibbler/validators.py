@@ -99,12 +99,6 @@ class Metric(BaseValueModel):
 class Title(BaseValueModel):
     value: Optional[str]
 
-    @validator("value")
-    def not_digit(cls, title: str) -> str:
-        if title is not None and title.isdigit():
-            raise ValueError("cant-be-digit")
-        return title
-
     _stripped_title = validator('value', allow_reuse=True)(stripped)
 
 
