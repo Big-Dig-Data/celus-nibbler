@@ -34,6 +34,8 @@ class CounterHeaderArea(BaseDateArea):
         "ISSN",
         "Print ISSN",
         "Print_ISSN",
+        "Printed_ISSN",
+        "Printed ISSN",
     }
     URI_NAMES = {
         "URI",
