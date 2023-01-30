@@ -50,7 +50,7 @@ class CounterHeaderArea(BaseDateArea):
     }
     DIMENSION_NAMES_MAP = [
         ("Publisher", {"Publisher"}),
-        ("Platform", {"Platform", "platform"}),
+        ("Platform", {"Platform"}),
     ]
 
     TITLE_COLUMN_NAMES: typing.List[str] = []
@@ -203,7 +203,7 @@ class CounterHeaderArea(BaseDateArea):
 
             content = content.strip()
             for dimension, names in self.DIMENSION_NAMES_MAP:
-                if content in names:
+                if content.lower() in [e.lower() for e in names]:
                     dim_sources[dimension] = DimensionSource(
                         content,
                         CoordRange(Coord(cell.row + 1, cell.col), Direction.DOWN),

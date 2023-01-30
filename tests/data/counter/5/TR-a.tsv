@@ -11,7 +11,7 @@ Reporting_Period	Begin_Date=2021-12-01; End_Date=2022-04-30
 Created	2020-01-01T00:00:00Z
 Created_By	Silverchair
 
-Title	Publisher	Publisher_ID	Platform	DOI	Proprietary_ID	ISBN	Print_ISSN	Online_ISSN	URI	Metric_Type	Reporting_Period_Total	Dec-2021	Jan-2022	Feb-2022	Mar-2022	Apr-2022
+Title	PUBLISHER	Publisher_ID	Platform	DOI	Proprietary_ID	ISBN	Print_ISSN	Online_ISSN	URI	Metric_Type	Reporting_Period_Total	Dec-2021	Jan-2022	Feb-2022	Mar-2022	Apr-2022
 Title1	The MIT Press		MIT Press	10.1111/mitpress/11111.111.1111	Silverchair:1111				https://example.com	Total_Item_Investigations	2	0	2	0	0	0
 Title1	The MIT Press		MIT Press	10.1111/mitpress/11111.111.1111	Silverchair:1111				https://example.com	Unique_Item_Investigations	2	0	2	0	0	0
 Title1	The MIT Press		MIT Press	10.1111/mitpress/11111.111.1111	Silverchair:1111				https://example.com	Unique_Title_Investigations	2	0	2	0	0	0

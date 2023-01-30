@@ -54,7 +54,7 @@ class DR(BaseCounter5Parser):
         DIMENSION_NAMES_MAP = [
             ("Access_Method", {"Access_Method", "Access Method"}),
             ("Data_Type", {"Data Type", "Data_Type"}),
-            ("Platform", {"Platform", "platform"}),
+            ("Platform", {"Platform"}),
             ("Publisher", {"Publisher"}),
         ]
 
@@ -114,7 +114,7 @@ class PR(BaseCounter5Parser):
         DIMENSION_NAMES_MAP = [
             ("Access_Method", {"Access_Method", "Access Method"}),
             ("Data_Type", {"Data Type", "Data_Type"}),
-            ("Platform", {"Platform", "platform"}),
+            ("Platform", {"Platform"}),
         ]
 
         @property
@@ -215,9 +215,9 @@ class TR(BaseCounter5Parser):
             ("Access_Method", {"Access_Method", "Access Method"}),
             ("Data_Type", {"Data Type", "Data_Type"}),
             ("Section_Type", {"Section Type", "Section_Type"}),
-            ("YOP", {"YOP", "Year of Publication", "year of publication"}),
+            ("YOP", {"YOP", "Year of Publication", "Year_of_Publication"}),
             ("Publisher", {"Publisher"}),
-            ("Platform", {"Platform", "platform"}),
+            ("Platform", {"Platform"}),
         ]
 
     areas = [Area]
@@ -250,7 +250,7 @@ class IR_M1(BaseCounter5Parser):
 
     class Area(Counter5HeaderArea):
         DIMENSION_NAMES_MAP = [
-            ("Platform", {"Platform", "platform"}),
+            ("Platform", {"Platform"}),
             ("Publisher", {"Publisher"}),
         ]
 

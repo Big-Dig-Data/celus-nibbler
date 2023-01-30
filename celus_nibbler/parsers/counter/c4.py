@@ -321,7 +321,7 @@ class MR1(BaseCounter4Parser):
     class Area(CounterHeaderArea):
         DIMENSION_NAMES_MAP = [
             ("Content Provider", {"Content Provider"}),
-            ("Platform", {"Platform", "platform"}),
+            ("Platform", {"Platform"}),
         ]
 
         def prepare_record(self, *args, **kwargs) -> CounterRecord:
