@@ -1,5 +1,6 @@
 import datetime
-from typing import Any, List, Optional, Type, Union
+from functools import lru_cache
+from typing import Any, Optional, Tuple, Type, Union
 
 from dateutil import parser as datetimes_parser
 from pydantic import BaseModel, validator
@@ -43,10 +44,11 @@ class Value(BaseValueModel):
         return round(value)
 
 
+@lru_cache
 def gen_default_validator(
     orig_validator: Type[BaseValueModel],
     default_value: Any,
-    blank_values: List[Any],
+    blank_values: Tuple[Any],
 ) -> Type[BaseValueModel]:
     class Validator(BaseValueModel):
         value: Any

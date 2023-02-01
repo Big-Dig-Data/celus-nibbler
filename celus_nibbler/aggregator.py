@@ -22,8 +22,7 @@ class NoAggregator(BaseAggregator):
     def aggregate(
         self, records: typing.Generator[CounterRecord, None, None]
     ) -> typing.Generator[CounterRecord, None, None]:
-        for record in records:
-            yield record
+        yield from records
 
 
 class SameAggregator(BaseAggregator):

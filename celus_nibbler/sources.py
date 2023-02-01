@@ -38,7 +38,7 @@ class ExtractParams(JsonEncorder):
     regex: typing.Optional[typing.Pattern] = None
     default: typing.Optional[typing.Any] = None
     last_value_as_default: bool = False
-    blank_values: typing.List[typing.Any] = field(default_factory=lambda: [None, ""])
+    blank_values: typing.Tuple[typing.Any, ...] = field(default_factory=lambda: (None, ""))
     skip_validation: bool = False
 
 
