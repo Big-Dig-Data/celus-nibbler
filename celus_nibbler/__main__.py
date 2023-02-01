@@ -6,6 +6,7 @@ import logging.config
 import pathlib
 import sys
 import typing
+from contextlib import nullcontext
 from copy import deepcopy
 from datetime import date
 from importlib.metadata import distribution
@@ -18,6 +19,7 @@ from celus_nibbler.aggregator import CounterOrdering
 from celus_nibbler.definitions import Definition
 from celus_nibbler.parsers import available_parsers, get_supported_platforms_count
 from celus_nibbler.parsers.dynamic import gen_parser
+from celus_nibbler.utils import profile
 
 
 def read_definition(path: str) -> Definition:
@@ -109,31 +111,12 @@ def gen_argument_parser(
     )
     parser.add_argument("platform")
     parser.add_argument("file", nargs='*')
+    parser.add_argument("--profile", dest="profile", action="store_true", default=False)
+
     return parser
 
 
-def main():
-    parser = gen_argument_parser(get_supported_platforms_count(), available_parsers())
-    options = parser.parse_args()
-
-    # init logging
-    logging.basicConfig(level=logging.DEBUG if options.debug else logging.WARNING)
-    logger = logging.getLogger(__name__)
-    logger.debug("Logging is configured.")
-
-    platform = unidecode(options.platform)
-    dynamic_parsers = [gen_parser(e) for e in options.definition]
-
-    if not options.file:
-        # Just print help if not parsers specified
-        parsers = options.parser
-        # Enrich with dynamic parsers
-        parser = gen_argument_parser(
-            get_supported_platforms_count(parsers, dynamic_parsers),
-            available_parsers(dynamic_parsers),
-        )
-        parser.print_help()
-        return
+def parse(options, platform, dynamic_parsers):
 
     for file in options.file:
         if poops := eat(
@@ -210,6 +193,35 @@ def main():
 
                 if batch:
                     write_batch(writer, batch, dimensions, title_ids, months)
+
+
+def main():
+    parser = gen_argument_parser(get_supported_platforms_count(), available_parsers())
+    options = parser.parse_args()
+
+    # init logging
+    logging.basicConfig(level=logging.DEBUG if options.debug else logging.WARNING)
+    logger = logging.getLogger(__name__)
+    logger.debug("Logging is configured.")
+
+    platform = unidecode(options.platform)
+    dynamic_parsers = [gen_parser(e) for e in options.definition]
+
+    if not options.file:
+        # Just print help if not parsers specified
+        parsers = options.parser
+        # Enrich with dynamic parsers
+        parser = gen_argument_parser(
+            get_supported_platforms_count(parsers, dynamic_parsers),
+            available_parsers(dynamic_parsers),
+        )
+        parser.print_help()
+        return
+
+    context_man = nullcontext if not options.profile else profile
+
+    with context_man():
+        parse(options, platform, dynamic_parsers)
 
 
 if __name__ == "__main__":

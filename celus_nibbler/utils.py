@@ -1,3 +1,5 @@
+import contextlib
+import cProfile
 import json
 import typing
 from datetime import date, timedelta
@@ -12,6 +14,17 @@ COMMON_DATE_FORMATS = [
     "%b-%y",
     "%y-%b",
 ]
+
+
+@contextlib.contextmanager
+def profile(*args, **kwargs):
+    profile = cProfile.Profile(*args, **kwargs)
+    profile.enable()
+    yield
+    profile.disable()
+
+    print()
+    profile.print_stats()
 
 
 class PydanticConfig:
