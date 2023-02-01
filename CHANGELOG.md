@@ -5,6 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.7.3] - 2023-02-01
+
+### Fixed
+- add 'Printed_ISSN' and 'Printed ISSN' aliases for ISSN
+- make dimension detection case insensitive for counter data
+- remove constraint that title can't be a number
+
+
 ## [7.7.2] - 2023-01-30
 
 ### Fixed
