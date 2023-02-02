@@ -18,6 +18,7 @@ from celus_nibbler import eat
         ("MIT", "5/PR-b.tsv", "static.counter5.PR.Tabular", False),
         ("MIT", "5/PR-c.json", "static.counter5.PR.Json", True),
         ("MIT", "5/PR-d.json", "static.counter5.PR.Json", False),
+        ("Ovid", "5/PR-e.csv", "static.counter5.PR.Tabular", False),
         ("MIT", "5/TR-a.tsv", "static.counter5.TR.Tabular", True),
         ("MIT", "5/TR-b.tsv", "static.counter5.TR.Tabular", False),
         ("MIT", "5/TR-c.json", "static.counter5.TR.Json", True),

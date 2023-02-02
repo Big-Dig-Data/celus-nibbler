@@ -119,11 +119,13 @@ class PR(BaseCounter5Parser):
 
         @property
         def dimensions_sources(self) -> typing.Dict[str, DimensionSource]:
-            return {
-                "Platform": DimensionSource(
-                    "Platform", CoordRange(Coord(self.header_row[0].row + 1, 0), Direction.DOWN)
-                ),
-            }
+            sources = super().dimensions_sources
+            # Set platform as first col after header
+            sources["Platform"] = DimensionSource(
+                "Platform",
+                CoordRange(Coord(self.header_row[0].row + 1, 0), Direction.DOWN),
+            )
+            return sources
 
     areas = [Area]
 
