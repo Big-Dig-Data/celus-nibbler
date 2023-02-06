@@ -212,6 +212,13 @@ def test_dynamic(platform, filename, ext, parser, aggregated):
             "dynamic.non_counter.simple_format.metric_number",
             TableException(sheet=0, reason="metric", value="2", row=2, col=1),
         ),
+        (
+            "Platform1",
+            "unknown_column_in_celus_format",
+            "csv",
+            "dynamic.non_counter.unknown_column.unknown_column_in_celus_format",
+            TableException(sheet=0, reason="unknown-column", value="Extra", row=0, col=2),
+        ),
     ),
 )
 def test_dynamic_errors(platform, name, ext, parser, exception):
