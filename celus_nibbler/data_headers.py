@@ -47,7 +47,7 @@ logger = logging.getLogger(__name__)
 
 # Makes sure that wrong definition doesn't create
 # an infinite loop
-MAX_DATA_CELLS = 50
+MAX_DATA_CELLS = 1000
 
 
 class DataHeaderBaseCondition(metaclass=ABCMeta):
