@@ -95,6 +95,13 @@ def gen_argument_parser(
         help="limit parsers which can be used",
     )
     parser.add_argument(
+        "-S",
+        "--show-summary",
+        action="store_true",
+        default=False,
+        help="show per sheet summary",
+    )
+    parser.add_argument(
         "-D",
         "--definition",
         action="append",
@@ -132,18 +139,19 @@ def parse(options, platform, dynamic_parsers):
                     print(f"Failed to pick parser for sheet {idx}", file=sys.stderr)
                     continue
 
-                (
-                    metrics,
-                    dimensions,
-                    title_ids,
-                    months,
-                ) = poop.get_metrics_dimensions_title_ids_months()
+                if options.show_summary:
+                    (
+                        metrics,
+                        dimensions,
+                        title_ids,
+                        months,
+                    ) = poop.get_metrics_dimensions_title_ids_months()
 
-                print(f"Parsing sheet {idx}", file=sys.stderr)
-                print(f"Months: {months}", file=sys.stderr)
-                print(f"Metrics: {metrics}", file=sys.stderr)
-                print(f"Dimensions: {dimensions}", file=sys.stderr)
-                print(f"Title ids: {title_ids}", file=sys.stderr)
+                    print(f"Parsing sheet {idx}", file=sys.stderr)
+                    print(f"Months: {months}", file=sys.stderr)
+                    print(f"Metrics: {metrics}", file=sys.stderr)
+                    print(f"Dimensions: {dimensions}", file=sys.stderr)
+                    print(f"Title ids: {title_ids}", file=sys.stderr)
 
                 if options.counter_like_output:
                     header = (
