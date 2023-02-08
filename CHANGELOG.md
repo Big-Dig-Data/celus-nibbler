@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [7.8.0] - 2023-02-07
+
+### Fixed
+- don't convert CounterReport to csv before passing it to debug logger
+
+### Added
+- flag `--show-summary` to nibbler-eat
+- flag `--no-output` to  nobbler-eat
+
+
+### Changed
+- make counter sources cached
+- avoid seeking to the first postion in a file when moving window of CsvReader forward
+- optimize extract function - reduce the number of created Coords
+
 
 ## [7.7.6] - 2023-02-06
 
