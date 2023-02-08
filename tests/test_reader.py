@@ -11,10 +11,10 @@ from celus_nibbler.reader import (
 )
 
 
-class TestJsonCounter5SheetReader:
+class TestCsvSheetReader:
     @pytest.mark.parametrize("window_size", [2, 100])
     def test_iteration(self, window_size, sheet_csv):
-        reader = CsvSheetReader(0, None, sheet_csv, window_size)
+        reader = CsvSheetReader(0, None, sheet_csv, window_size=window_size)
         assert list(reader) == [
             ["Name", "Values"],
             ["First", "1"],
@@ -25,7 +25,7 @@ class TestJsonCounter5SheetReader:
 
     @pytest.mark.parametrize("window_size", [2, 100])
     def test_next(self, window_size, sheet_csv):
-        reader = CsvSheetReader(0, None, sheet_csv, window_size)
+        reader = CsvSheetReader(0, None, sheet_csv, window_size=window_size)
         assert next(reader) == ["Name", "Values"]
         assert next(reader) == ["First", "1"]
         assert next(reader) == ["Second", "2"]
@@ -36,25 +36,38 @@ class TestJsonCounter5SheetReader:
 
     @pytest.mark.parametrize("window_size", [2, 100])
     def test_getitem(self, window_size, sheet_csv):
-        reader = CsvSheetReader(0, None, sheet_csv, window_size)
+        reader = CsvSheetReader(0, None, sheet_csv, window_size=window_size)
         assert reader[0] == ["Name", "Values"]
         assert reader[4] == ["Fourth", "4"]
         assert reader[1] == ["First", "1"]
         assert reader[3] == ["Third", "3"]
         assert reader[2] == ["Second", "2"]
+
+        assert reader[0] == ["Name", "Values"]
+        assert reader[2] == ["Second", "2"]
+        assert reader[4] == ["Fourth", "4"]
+        assert reader[1] == ["First", "1"]
+        assert reader[3] == ["Third", "3"]
+
+        assert reader[0] == ["Name", "Values"]
+        assert reader[1] == ["First", "1"]
+        assert reader[2] == ["Second", "2"]
+        assert reader[3] == ["Third", "3"]
+        assert reader[4] == ["Fourth", "4"]
+
         with pytest.raises(IndexError):
             reader[5]
 
     @pytest.mark.parametrize("window_size", [2, 100])
     def test_len(self, window_size, sheet_csv):
-        reader = CsvSheetReader(0, None, sheet_csv, window_size)
+        reader = CsvSheetReader(0, None, sheet_csv, window_size=window_size)
         assert len(reader) == 5
 
 
 class TestJsonSheetReader:
     @pytest.mark.parametrize("window_size", [2, 100])
     def test_iteration(self, window_size, sheet_json):
-        reader = JsonCounter5SheetReader(sheet_json, window_size)
+        reader = JsonCounter5SheetReader(sheet_json, window_size=window_size)
         assert reader.extra == {
             "Created": "2020-01-01T00:00:00Z",
             "Created_By": "My services",
@@ -133,7 +146,7 @@ class TestJsonSheetReader:
 
     @pytest.mark.parametrize("window_size", [2, 100])
     def test_next(self, window_size, sheet_json):
-        reader = JsonCounter5SheetReader(sheet_json, window_size)
+        reader = JsonCounter5SheetReader(sheet_json, window_size=window_size)
         assert next(reader) == {
             "Platform": "MyPlatform",
             "Item_ID": [{"Type": "Proprietary", "Value": "IIIIIIIII:000"}],
@@ -195,7 +208,7 @@ class TestJsonSheetReader:
 
     @pytest.mark.parametrize("window_size", [2, 100])
     def test_getitem(self, window_size, sheet_json):
-        reader = JsonCounter5SheetReader(sheet_json, window_size)
+        reader = JsonCounter5SheetReader(sheet_json, window_size=window_size)
         assert reader[0] == {
             "Platform": "MyPlatform",
             "Item_ID": [{"Type": "Proprietary", "Value": "IIIIIIIII:000"}],
@@ -257,7 +270,7 @@ class TestJsonSheetReader:
 
     @pytest.mark.parametrize("window_size", [2, 100])
     def test_len(self, window_size, sheet_json):
-        reader = JsonCounter5SheetReader(sheet_json, window_size)
+        reader = JsonCounter5SheetReader(sheet_json, window_size=window_size)
         assert len(reader) == 3
 
 

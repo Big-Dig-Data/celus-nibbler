@@ -42,7 +42,6 @@ def test_tsv(platform, file, parser, heuristics):
     with output_path.open() as f:
         reader = csv.reader(f)
         poop = eat(source_path, platform, parsers=[parser], use_heuristics=heuristics)[0]
-
         for record in poop.records():
             assert next(reader) == list(record.as_csv()), "Compare lines"
 

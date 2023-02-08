@@ -8,7 +8,7 @@ from abc import ABCMeta, abstractmethod
 from collections import deque
 from functools import lru_cache
 from io import BytesIO, StringIO
-from typing import IO, Any, Dict, Optional, Sequence, Union
+from typing import IO, Any, Dict, List, Optional, Sequence, Union
 
 import openpyxl
 from celus_nigiri.counter5 import Counter5ReportBase
@@ -75,9 +75,32 @@ class CsvSheetReader(SheetReader):
         # Load basic window
         self.window_start = 0
         self.window_size = window_size
+        self.window: Optional[deque[List[str]]] = None
         self.update_window(0)
 
     def update_window(self, window_start: int):
+        if self.window is not None and self.window_start <= window_start:
+            # moving forward
+            if self.window_start <= window_start - self.window_size:
+                # not overlapping
+                start = window_start - self.window_start - self.window_size
+                stop = window_start - self.window_start
+                self.window = deque(
+                    itertools.islice(
+                        self.csv_reader,
+                        start,
+                        stop,
+                    ),
+                    self.window_size,
+                )
+                self.window_start = window_start
+            else:
+                # overlapping
+                while self.window_start < window_start:
+                    self.inc_window()
+            return
+
+        # moving backward or at start
         self.file.seek(0)
         self.csv_reader = csv.reader(self.file, self.dialect)
         self.window_start = window_start
