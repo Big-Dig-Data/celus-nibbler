@@ -252,7 +252,7 @@ class BaseTabularParser(BaseParser):
                     )
                     record = data_cell.merge_into_record(record)
                     record = area.prepare_record(record)
-                    logger.debug("Parsed %s", record.as_csv())
+                    logger.debug("Parsed %s", record)
                     yield record
 
         except TableException as e:
