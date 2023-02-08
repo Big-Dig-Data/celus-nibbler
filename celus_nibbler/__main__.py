@@ -116,6 +116,13 @@ def gen_argument_parser(
         default=False,
         help="Display processed data in counter like format",
     )
+    parser.add_argument(
+        "-N",
+        "--no-output",
+        action="store_true",
+        default=False,
+        help="Parses the entire file without producing any data output (useful for benchmarks)",
+    )
     parser.add_argument("platform")
     parser.add_argument("file", nargs='*')
     parser.add_argument("--profile", dest="profile", action="store_true", default=False)
@@ -153,6 +160,8 @@ def parse(options, platform, dynamic_parsers):
                     print(f"Dimensions: {dimensions}", file=sys.stderr)
                     print(f"Title ids: {title_ids}", file=sys.stderr)
 
+                if options.no_output:
+                    header = None
                 if options.counter_like_output:
                     header = (
                         ["title", "organization"]
@@ -174,7 +183,8 @@ def parse(options, platform, dynamic_parsers):
                     ]
 
                 writer = csv.writer(sys.stdout, dialect="unix")
-                writer.writerow(header)
+                if header:
+                    writer.writerow(header)
                 records = (
                     CounterOrdering().aggregate(poop.records())
                     if options.counter_like_output
@@ -184,7 +194,10 @@ def parse(options, platform, dynamic_parsers):
                 batch = []
                 for record in records:
 
-                    if options.counter_like_output:
+                    if options.no_output:
+                        # Just go through the records and suppress any output
+                        pass
+                    elif options.counter_like_output:
                         this_rec = deepcopy(record)
                         this_rec.value = -1
                         this_rec.start = date(2020, 1, 1)
