@@ -1,6 +1,7 @@
 import itertools
 import logging
 import typing
+from functools import lru_cache
 
 from pydantic import ValidationError
 
@@ -70,10 +71,12 @@ class CounterHeaderArea(BaseDateArea):
     DIMENSIONS_EXTRACT_PARAMS: typing.Dict[str, ExtractParams] = {}
 
     @property
+    @lru_cache
     def dimensions(self) -> typing.List[str]:
         return [e[0] for e in self.DIMENSION_NAMES_MAP]
 
     @property
+    @lru_cache
     def header_row(self) -> CoordRange:
         """Find the line where counter header is"""
         # Right now it picks a first row with more than one column were the last column
@@ -112,6 +115,7 @@ class CounterHeaderArea(BaseDateArea):
         )
 
     @property
+    @lru_cache
     def data_headers(self):
         # First date which is parsed in the header
         for cell in itertools.islice(self.header_row, 1, None):
@@ -134,6 +138,7 @@ class CounterHeaderArea(BaseDateArea):
                 continue  # doesn't match the header
 
     @property
+    @lru_cache
     def title_source(self) -> typing.Optional[TitleSource]:
         if not self.TITLE_COLUMN_NAMES:
             # Name of title column not defined -> assumed the title is in first column
@@ -156,6 +161,7 @@ class CounterHeaderArea(BaseDateArea):
                 )
 
     @property
+    @lru_cache
     def title_ids_sources(self) -> typing.Dict[str, TitleIdSource]:
         ids_sources = {}
         for cell in self.header_row:
@@ -194,6 +200,7 @@ class CounterHeaderArea(BaseDateArea):
         return ids_sources
 
     @property
+    @lru_cache
     def dimensions_sources(self) -> typing.Dict[str, DimensionSource]:
         dim_sources = {}
         for cell in self.header_row:
@@ -217,6 +224,7 @@ class CounterHeaderArea(BaseDateArea):
         return dim_sources
 
     @property
+    @lru_cache
     def organization_source(self) -> typing.Optional[OrganizationSource]:
         if not self.ORGANIZATION_COLUMN_NAMES:
             # Organization column not defined
@@ -238,6 +246,7 @@ class CounterHeaderArea(BaseDateArea):
         return None
 
     @property
+    @lru_cache
     def metric_source(self) -> typing.Optional[MetricSource]:
         if not self.METRIC_COLUMN_NAMES:
             return None

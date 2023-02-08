@@ -162,7 +162,7 @@ def parse(options, platform, dynamic_parsers):
 
                 if options.no_output:
                     header = None
-                if options.counter_like_output:
+                elif options.counter_like_output:
                     header = (
                         ["title", "organization"]
                         + poop.title_ids
