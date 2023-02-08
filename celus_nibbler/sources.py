@@ -47,11 +47,11 @@ class ContentExtractorMixin:
     extract_params: ExtractParams
     role: Role
     _last_sheet = None
-    _last_coord = None
+    _last_source = None
     _last_extracted = None
 
-    def content(self, sheet: SheetReader, idx: int) -> typing.Any:
-        content = self.source[idx].content(sheet)
+    def content(self, sheet: SheetReader, source: Source) -> typing.Any:
+        content = source.content(sheet)
         if regex := self.extract_params.regex:
             if extracted := regex.search(content):
                 return extracted.group(1)
@@ -77,15 +77,15 @@ class ContentExtractorMixin:
         idx: int,
         validator: typing.Optional[typing.Type[validators.BaseValueModel]] = None,
     ) -> typing.Any:
-        coord = self.coord(idx)
-        if coord == self._last_coord and self._last_sheet == sheet and self._last_extracted:
+        source = self.source[idx]
+        if source == self._last_source and self._last_sheet == sheet and self._last_extracted:
             # Same value will be extracted from the same coord
             return self._last_extracted
         else:
-            self._last_coord = coord
+            self._last_source = source
 
         try:
-            content = self.content(sheet, idx)
+            content = self.content(sheet, source)
             validator = validator or self.validator
             if validator:
                 if self.extract_params.default is not None:
@@ -111,15 +111,15 @@ class ContentExtractorMixin:
             else:
                 raise TableException(
                     content,
-                    row=coord.row if coord else None,
-                    col=coord.col if coord else None,
+                    row=getattr(source, 'row', None),
+                    col=getattr(source, 'col', None),
                     sheet=sheet.sheet_idx,
                     reason=e.model.__name__.lower() if content else "empty",
                 ) from e
         except IndexError as e:
             raise TableException(
-                row=coord.row if coord else None,
-                col=coord.col if coord else None,
+                row=getattr(source, 'row', None),
+                col=getattr(source, 'col', None),
                 sheet=sheet.sheet_idx,
                 reason='out-of-bounds',
             ) from e
@@ -128,13 +128,6 @@ class ContentExtractorMixin:
         self._last_extracted = res
         self._last_sheet = sheet
         return res
-
-    def coord(self, idx: int) -> typing.Optional[Coord]:
-        if isinstance(self.source, Coord):
-            return Coord(self.source.row, self.source.col)
-        elif isinstance(self.source, CoordRange):
-            return self.source[idx]
-        return None
 
     @property
     def validator(self) -> typing.Optional[typing.Type[validators.BaseValueModel]]:
