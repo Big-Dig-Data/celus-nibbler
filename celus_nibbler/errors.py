@@ -55,6 +55,8 @@ class TableException(NibblerError):
     while parsing tabular format
     """
 
+    ATTRS = ["value", "row", "col", "sheet", "reason"]
+
     def __init__(
         self,
         value=None,
@@ -91,10 +93,7 @@ class TableException(NibblerError):
     def __eq__(self, other):
         if not isinstance(self, type(other)):
             return False
-        return all(
-            getattr(self, attr, None) == getattr(other, attr, None)
-            for attr in ["value", "row", "col", "sheet", "reason"]
-        )
+        return all(getattr(self, attr, None) == getattr(other, attr, None) for attr in self.ATTRS)
 
     def dict(self) -> dict:
         return {

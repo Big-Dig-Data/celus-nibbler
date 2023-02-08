@@ -182,6 +182,7 @@ class BaseTabularParser(BaseParser):
     dimensions_validators: typing.Dict[str, typing.Type[BaseModel]] = {
         "Platform": validators.Platform,
     }
+    END_EXCEPTIONS = ["out-of-bounds", "empty"]
 
     @classmethod
     def sheet_reader_classes(cls):
@@ -192,7 +193,7 @@ class BaseTabularParser(BaseParser):
 
         # Store title_ids and dimensions sources
         # so it can be reused in the for-cycle
-        dimensions_sources = area.dimensions_sources
+        dimensions_sources = list(area.dimensions_sources.items())
         title_ids_sources = area.title_ids_sources
 
         try:
@@ -223,7 +224,7 @@ class BaseTabularParser(BaseParser):
                     title = None
 
                 dimension_data = {}
-                for k, dimension_source in dimensions_sources.items():
+                for k, dimension_source in dimensions_sources:
                     dimension_data[k] = dimension_source.extract(
                         self.sheet, idx, self.dimensions_validators.get(k)
                     )
@@ -255,7 +256,7 @@ class BaseTabularParser(BaseParser):
                     yield record
 
         except TableException as e:
-            if e.reason in ["out-of-bounds", "empty"]:
+            if e.reason in self.END_EXCEPTIONS:
                 # end was reached
                 pass
             else:

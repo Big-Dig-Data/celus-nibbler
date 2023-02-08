@@ -93,7 +93,7 @@ class CounterHeaderArea(BaseDateArea):
                     if content and content.strip():
                         last = cell
                 except TableException as e:
-                    if e.reason in ["out-of-bounds"]:
+                    if e.reason == "out-of-bounds":
                         break  # last cell reached
                     raise
 
@@ -146,7 +146,7 @@ class CounterHeaderArea(BaseDateArea):
             try:
                 content = cell.content(self.sheet)
             except TableException as e:
-                if e.reason in ["out-of-bounds"]:
+                if e.reason == "out-of-bounds":
                     break  # last cell reached
 
             if content.strip() in self.TITLE_COLUMN_NAMES:
@@ -162,7 +162,7 @@ class CounterHeaderArea(BaseDateArea):
             try:
                 content = cell.content(self.sheet)
             except TableException as e:
-                if e.reason in ["out-of-bounds"]:
+                if e.reason == "out-of-bounds":
                     break  # last cell reached
 
             # Validate name
@@ -200,7 +200,7 @@ class CounterHeaderArea(BaseDateArea):
             try:
                 content = cell.content(self.sheet)
             except TableException as e:
-                if e.reason in ["out-of-bounds"]:
+                if e.reason == "out-of-bounds":
                     break  # last cell reached
 
             content = content.strip()
@@ -226,7 +226,7 @@ class CounterHeaderArea(BaseDateArea):
             try:
                 content = cell.content(self.sheet)
             except TableException as e:
-                if e.reason in ["out-of-bounds"]:
+                if e.reason == "out-of-bounds":
                     break  # last cell reached
 
             if content.strip() in self.ORGANIZATION_COLUMN_NAMES:
@@ -254,7 +254,7 @@ class CounterHeaderArea(BaseDateArea):
                         extract_params=self.METRIC_EXTRACT_PARAMS,
                     )
             except TableException as e:
-                if e.reason in ["out-of-bounds"]:
+                if e.reason == "out-of-bounds":
                     raise TableException(
                         value=self.METRIC_COLUMN_NAMES,
                         row=cell.row,

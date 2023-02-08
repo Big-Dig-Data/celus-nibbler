@@ -40,6 +40,10 @@ Role = Annotated[
 
 
 COUNTER_RECORD_FIELD_NAMES = [f.name for f in fields(CounterRecord)]
+COUNTER_RECORD_FIELD_NAMES_SIMPLE = [
+    f for f in COUNTER_RECORD_FIELD_NAMES if f not in ("value", "title_ids", "dimension_data")
+]
+COUNTER_RECORD_FIELD_NAMES_NESTED = ["title_ids", "dimension_data"]
 
 
 logger = logging.getLogger(__name__)
@@ -312,16 +316,12 @@ class DataCells:
         # to avoid unnecessary alocation
 
         # Update non-nested updatable fields
-        for field_name in [
-            f
-            for f in COUNTER_RECORD_FIELD_NAMES
-            if f not in ("value", "title_ids", "dimension_data")
-        ]:
+        for field_name in COUNTER_RECORD_FIELD_NAMES_SIMPLE:
             if new_value := getattr(self.header_data, field_name):
                 setattr(record, field_name, new_value)
 
         # Update nested fields
-        for nested_name in ["dimension_data", "title_ids"]:
+        for nested_name in COUNTER_RECORD_FIELD_NAMES_NESTED:
             if header_nested_data := getattr(self.header_data, nested_name):
                 if record_nested_data := getattr(record, nested_name):
                     record_nested_data.update(header_nested_data)
