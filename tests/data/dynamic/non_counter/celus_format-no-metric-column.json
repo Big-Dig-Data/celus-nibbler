@@ -10,7 +10,7 @@
   ],
   "metrics_to_skip": [],
   "titles_to_skip": [],
-  "dimensions_to_skip": [],
+  "dimensions_to_skip": {},
   "areas": [
     {
       "kind": "non_counter.celus_format",

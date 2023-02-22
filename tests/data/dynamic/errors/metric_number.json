@@ -10,7 +10,7 @@
   ],
   "metrics_to_skip": [],
   "titles_to_skip": [],
-  "dimensions_to_skip": [],
+  "dimensions_to_skip": {},
   "metric_aliases": [],
   "dimension_aliases": [],
   "heuristics": {

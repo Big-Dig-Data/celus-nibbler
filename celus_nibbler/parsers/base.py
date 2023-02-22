@@ -195,13 +195,16 @@ class BaseTabularParser(BaseParser):
         # so it can be reused in the for-cycle
         dimensions_sources = list(area.dimensions_sources.items())
         title_ids_sources = area.title_ids_sources
+        metrics_to_skip = [e.lower() for e in self.metrics_to_skip]
+        titles_to_skip = [e.lower() for e in self.titles_to_skip]
+        dimensions_to_skip = {k: [e.lower() for e in v] for k, v in self.dimensions_to_skip.items()}
 
         try:
             for idx in itertools.count(0):
                 # iterates through ranges
                 if area.metric_source:
                     metric = area.metric_source.extract(self.sheet, idx)
-                    if metric in self.metrics_to_skip:
+                    if metric is not None and metric.lower() in metrics_to_skip:
                         continue
                 else:
                     metric = None
@@ -218,18 +221,23 @@ class BaseTabularParser(BaseParser):
 
                 if area.title_source:
                     title = area.title_source.extract(self.sheet, idx)
-                    if title in self.titles_to_skip:
+                    if title is not None and title.lower() in titles_to_skip:
                         continue
                 else:
                     title = None
 
                 dimension_data = {}
                 for k, dimension_source in dimensions_sources:
-                    dimension_data[k] = dimension_source.extract(
+                    dimension_text = dimension_source.extract(
                         self.sheet, idx, self.dimensions_validators.get(k)
                     )
-                    if dimension_data[k] in self.dimensions_to_skip.get(k, []):
+                    if (
+                        dimension_text is not None
+                        and dimension_text.lower() in dimensions_to_skip.get(k, [])
+                    ):
                         continue
+
+                    dimension_data[k] = dimension_text
 
                 title_ids = {}
                 for key in IDS:
