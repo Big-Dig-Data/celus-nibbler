@@ -22,7 +22,7 @@ class BaseCounter4Parser(BaseTabularParser):
 class BR1(BaseCounter4Parser):
     data_format = DataFormatDefinition(name="BR1")
 
-    titles_to_skip: typing.List[str] = ["Total", "Total for all titles"]
+    titles_to_skip: typing.List[str] = ["Total", "Total for all titles", ""]
 
     platforms = [
         "ACM",
@@ -44,7 +44,7 @@ class BR1(BaseCounter4Parser):
 class BR2(BaseCounter4Parser):
     data_format = DataFormatDefinition(name="BR2")
 
-    titles_to_skip: typing.List[str] = ["Total", "Total for all titles"]
+    titles_to_skip: typing.List[str] = ["Total", "Total for all titles", ""]
 
     platforms = [
         "Access Medicine",
@@ -70,7 +70,7 @@ class BR2(BaseCounter4Parser):
 class BR3(BaseCounter4Parser):
     data_format = DataFormatDefinition(name="BR3")
 
-    titles_to_skip: typing.List[str] = ["Total", "Total for all titles"]
+    titles_to_skip: typing.List[str] = ["Total", "Total for all titles", ""]
 
     platforms = [
         "AMS",
@@ -92,7 +92,7 @@ class BR3(BaseCounter4Parser):
 class DB1(BaseCounter4Parser):
     data_format = DataFormatDefinition(name="DB1")
 
-    titles_to_skip: typing.List[str] = ["Total", "Total for all databases"]
+    titles_to_skip: typing.List[str] = ["Total", "Total for all databases", ""]
     platforms = [
         "Encyclopaedia Britannica",
         "Journal of Clinical Psychiatry",
@@ -112,7 +112,7 @@ class DB1(BaseCounter4Parser):
 class DB2(BaseCounter4Parser):
     data_format = DataFormatDefinition(name="DB2")
 
-    titles_to_skip: typing.List[str] = ["Total", "Total for all databases"]
+    titles_to_skip: typing.List[str] = ["Total", "Total for all databases", ""]
     platforms = [
         "ProQuest",
         "Tandfonline",
@@ -148,7 +148,7 @@ class PR1(BaseCounter4Parser):
 class JR1(BaseCounter4Parser):
     data_format = DataFormatDefinition(name="JR1")
 
-    titles_to_skip: typing.List[str] = ["Total", "Total for all journals"]
+    titles_to_skip: typing.List[str] = ["Total", "Total for all journals", ""]
     platforms = [
         "AACR",
         "AACN",
@@ -208,7 +208,7 @@ class JR1(BaseCounter4Parser):
 class JR1a(BaseCounter4Parser):
     data_format = DataFormatDefinition(name="JR1a")
 
-    titles_to_skip: typing.List[str] = ["Total", "Total for all journals"]
+    titles_to_skip: typing.List[str] = ["Total", "Total for all journals", ""]
     platforms = [
         "Liebert Online",
         "Ovid",
@@ -228,7 +228,7 @@ class JR1a(BaseCounter4Parser):
 class JR1GOA(BaseCounter4Parser):
     data_format = DataFormatDefinition(name="JR1GOA")
 
-    titles_to_skip: typing.List[str] = ["Total", "Total for all journals"]
+    titles_to_skip: typing.List[str] = ["Total", "Total for all journals", ""]
     platforms = [
         "Journal of Clinical Psychiatry",
         "Liebert Online",
@@ -255,7 +255,7 @@ class JR1GOA(BaseCounter4Parser):
 class JR2(BaseCounter4Parser):
     data_format = DataFormatDefinition(name="JR2")
 
-    titles_to_skip: typing.List[str] = ["Total", "Total for all journals"]
+    titles_to_skip: typing.List[str] = ["Total", "Total for all journals", ""]
     heuristics = RegexCondition(re.compile(r"^Journal Report 2 \(R4\)"), Coord(0, 0))
     platforms = [
         "AACR",
@@ -312,7 +312,7 @@ class JR2(BaseCounter4Parser):
 class MR1(BaseCounter4Parser):
     data_format = DataFormatDefinition(name="MR1")
 
-    titles_to_skip: typing.List[str] = ["Total", "Total for all collections"]
+    titles_to_skip: typing.List[str] = ["Total", "Total for all collections", ""]
     platforms = [
         "ProQuest",
     ]

@@ -26,7 +26,7 @@ class BaseCounter5Parser(BaseTabularParser):
 class DR(BaseCounter5Parser):
     data_format = DataFormatDefinition(name="DR")
 
-    titles_to_skip: typing.List[str] = ["Total", "All Databases"]
+    titles_to_skip: typing.List[str] = ["Total", "All Databases", ""]
 
     platforms = [
         "AAAS",
@@ -133,7 +133,7 @@ class PR(BaseCounter5Parser):
 class TR(BaseCounter5Parser):
     data_format = DataFormatDefinition(name="TR")
 
-    titles_to_skip: typing.List[str] = ["Total", "All Titles"]
+    titles_to_skip: typing.List[str] = ["Total", "All Titles", ""]
 
     platforms = [
         "AAAS",
@@ -228,7 +228,7 @@ class TR(BaseCounter5Parser):
 class IR_M1(BaseCounter5Parser):
     data_format = DataFormatDefinition(name="IR_M1")
 
-    titles_to_skip: typing.List[str] = ["Total", "All"]
+    titles_to_skip: typing.List[str] = ["Total", "All", ""]
 
     platforms = [
         "Access Medicine",

@@ -202,6 +202,13 @@ class BaseTabularParser(BaseParser):
         try:
             for idx in itertools.count(0):
                 # iterates through ranges
+                if area.title_source:
+                    title = area.title_source.extract(self.sheet, idx)
+                    if title is not None and title.lower() in titles_to_skip:
+                        continue
+                else:
+                    title = None
+
                 if area.metric_source:
                     metric = area.metric_source.extract(self.sheet, idx)
                     if metric is not None and metric.lower() in metrics_to_skip:
@@ -218,13 +225,6 @@ class BaseTabularParser(BaseParser):
                     date = area.date_source.extract(self.sheet, idx)
                 else:
                     date = None
-
-                if area.title_source:
-                    title = area.title_source.extract(self.sheet, idx)
-                    if title is not None and title.lower() in titles_to_skip:
-                        continue
-                else:
-                    title = None
 
                 dimension_data = {}
                 for k, dimension_source in dimensions_sources:
