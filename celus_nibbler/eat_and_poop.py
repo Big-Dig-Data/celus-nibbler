@@ -1,4 +1,5 @@
 import functools
+import itertools
 import logging
 import pathlib
 import typing
@@ -32,9 +33,13 @@ class Poop:
     def sheet_idx(self):
         return self.parser.sheet.sheet_idx
 
-    def records(self) -> typing.Optional[typing.Generator[CounterRecord, None, None]]:
+    def records(
+        self, offset: int = 0, limit: typing.Optional[int] = None
+    ) -> typing.Optional[typing.Generator[CounterRecord, None, None]]:
         if counter_records := self.parser.parse():
-            return counter_records
+            if limit is None:
+                return itertools.islice(counter_records, offset, None)
+            return itertools.islice(counter_records, offset, offset + limit)
         else:
             logger.warning('sheet %s has not been parsed', self.parser.sheet.sheet_idx + 1)
             return None
