@@ -45,7 +45,6 @@ class DR(BaseCounter5Parser):
     ]
     heuristics = (
         RegexCondition(re.compile(r"^Report_Name$"), Coord(0, 0))
-        & RegexCondition(re.compile(r"^Database Master Report$"), Coord(0, 1))
         & RegexCondition(re.compile(r"^Report_ID$"), Coord(1, 0))
         & RegexCondition(re.compile(r"^DR$"), Coord(1, 1))
     )
@@ -104,7 +103,6 @@ class PR(BaseCounter5Parser):
     ]
     heuristics = (
         RegexCondition(re.compile(r"^Report_Name$"), Coord(0, 0))
-        & RegexCondition(re.compile(r"^Platform Master Report$"), Coord(0, 1))
         & RegexCondition(re.compile(r"^Report_ID$"), Coord(1, 0))
         & RegexCondition(re.compile(r"^PR$"), Coord(1, 1))
     )
@@ -200,10 +198,6 @@ class TR(BaseCounter5Parser):
 
     heuristics = (
         RegexCondition(re.compile(r"^Report_Name$"), Coord(0, 0))
-        & (
-            RegexCondition(re.compile(r"^Title Master Report$"), Coord(0, 1))
-            | RegexCondition(re.compile(r"^Book Requests \(Excluding OA_Gold\)$"), Coord(0, 1))
-        )
         & RegexCondition(re.compile(r"^Report_ID$"), Coord(1, 0))
         & (
             RegexCondition(re.compile(r"^TR$"), Coord(1, 1))
@@ -245,7 +239,6 @@ class IR_M1(BaseCounter5Parser):
     ]
     heuristics = (
         RegexCondition(re.compile(r"^Report_Name$"), Coord(0, 0))
-        & RegexCondition(re.compile(r"^Multimedia Item Requests$"), Coord(0, 1))
         & RegexCondition(re.compile(r"^Report_ID$"), Coord(1, 0))
         & RegexCondition(re.compile(r"^IR_M1$"), Coord(1, 1))
     )
