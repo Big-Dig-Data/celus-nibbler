@@ -1,12 +1,14 @@
 import csv
 import json
 import pathlib
+from datetime import date
 
 import pytest
+from celus_nigiri import CounterRecord
 
 from celus_nibbler import Poop, eat
 from celus_nibbler.definitions import Definition
-from celus_nibbler.errors import TableException
+from celus_nibbler.errors import SameRecordsInOutput, TableException
 from celus_nibbler.parsers import available_parsers
 from celus_nibbler.parsers.dynamic import gen_parser
 
@@ -219,6 +221,23 @@ def test_dynamic(platform, filename, ext, parser, aggregated):
             "dynamic.non_counter.unknown_column.unknown_column_in_celus_format",
             TableException(sheet=0, reason="unknown-column", value="Extra", row=0, col=2),
         ),
+        (
+            "Platform1",
+            "same_records",
+            "csv",
+            "dynamic.non_counter.simple_format.same_records",
+            SameRecordsInOutput(
+                CounterRecord(
+                    start=date(2022, 2, 1),
+                    end=date(2022, 2, 28),
+                    organization=None,
+                    metric="M1",
+                    title="T1",
+                    dimension_data={"Dim1": "D11"},
+                    value=-1,
+                )
+            ),
+        ),
     ),
 )
 def test_dynamic_errors(platform, name, ext, parser, exception):
@@ -232,6 +251,6 @@ def test_dynamic_errors(platform, name, ext, parser, exception):
     # Parser should be present among available parsers
     assert parser in available_parsers(dynamic_parsers)
     poop = eat(input_path, platform, parsers=[parser], dynamic_parsers=dynamic_parsers)[0]
-    with pytest.raises(TableException) as exc:
-        list(poop.records())
+    with pytest.raises(type(exception)) as exc:
+        list(poop.records(same_check_size=100))
     assert exc.value == exception

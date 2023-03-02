@@ -1,0 +1,87 @@
+{
+  "kind": "non_counter.date_based",
+  "parser_name": "same_records",
+  "data_format": {
+    "name":"simple_format"
+  },
+  "platforms": [
+    "Platform1",
+    "Platform2"
+  ],
+  "metrics_to_skip": [],
+  "titles_to_skip": [],
+  "dimensions_to_skip": {},
+  "metric_aliases": [],
+  "dimension_aliases": [],
+  "heuristics": {
+    "conds": [
+      {
+        "pattern": "Title",
+        "coord": {
+          "row": 0,
+          "col": 0
+        },
+        "kind": "regex"
+      }
+    ],
+    "kind": "and"
+  },
+  "areas": [
+    {
+      "data_headers": {
+        "roles": [
+            {
+                "source": {
+                    "coord": {
+                      "row": 0,
+                      "col": 4
+                    },
+                    "direction": "right"
+                },
+                "role": "date"
+            }
+        ],
+        "data_direction": "down",
+        "data_cells": {
+          "coord": {
+            "row": 1,
+            "col": 4
+          },
+          "direction": "right"
+        }
+      },
+      "titles": {
+        "source": {
+          "coord": {
+            "row": 1,
+            "col": 0
+          },
+          "direction": "down"
+        }
+      },
+      "metrics": {
+        "source": {
+          "coord": {
+            "row": 1,
+            "col": 1
+          },
+          "direction": "down"
+        }
+      },
+      "title_ids": [],
+      "dimensions": [
+        {
+          "name": "Dim1",
+          "source": {
+            "coord": {
+              "row": 1,
+              "col": 2
+            },
+          "direction": "down"
+          }
+        }
+      ],
+      "kind": "non_counter.date_based"
+    }
+  ]
+}

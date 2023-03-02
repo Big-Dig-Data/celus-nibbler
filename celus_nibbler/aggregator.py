@@ -2,10 +2,13 @@ import abc
 import copy
 import tempfile
 import typing
+from collections import deque
 from datetime import date
 
 from celus_nigiri import CounterRecord
 from diskcache import Cache
+
+from celus_nibbler.errors import SameRecordsInOutput
 
 
 class BaseAggregator(metaclass=abc.ABCMeta):
@@ -49,6 +52,36 @@ class SameAggregator(BaseAggregator):
 
                 for key in db.iterkeys():
                     yield db[key]
+
+
+class CheckConflictingRecordsAggregator(BaseAggregator):
+    """
+    Checks whether last n records doesn't contain same conflicting records e.g.
+
+    Title1,Dim1,Metric1,2021-01-01,2021-01-31,999
+    Title2,Dim1,Metric1,2021-01-01,2021-01-31,888
+    Title1,Dim1,Metric1,2021-01-01,2021-01-31,999
+
+    is wrong, because it contains same Title, Dimensions and metric for 2020-01 twice
+
+    """
+
+    def __init__(self, size: int = 100):
+        self.hash_buffer: typing.Deque[int] = deque(maxlen=size)
+
+    @staticmethod
+    def make_record_hash(record: CounterRecord):
+        return hash((e for e in record.as_csv()[:-1]))  # skip value (last in csv)
+
+    def aggregate(
+        self, records: typing.Generator[CounterRecord, None, None]
+    ) -> typing.Generator[CounterRecord, None, None]:
+        for record in records:
+            hsh = self.make_record_hash(record)
+            if hsh in self.hash_buffer:
+                raise SameRecordsInOutput(record)
+            self.hash_buffer.append(hsh)
+            yield record
 
 
 class CounterOrdering(BaseAggregator):

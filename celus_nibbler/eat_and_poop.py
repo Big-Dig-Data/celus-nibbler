@@ -7,6 +7,7 @@ from datetime import date
 
 from celus_nigiri import CounterRecord
 
+from celus_nibbler.aggregator import CheckConflictingRecordsAggregator
 from celus_nibbler.errors import (
     MultipleParsersFound,
     NibblerError,
@@ -34,9 +35,17 @@ class Poop:
         return self.parser.sheet.sheet_idx
 
     def records(
-        self, offset: int = 0, limit: typing.Optional[int] = None
+        self,
+        offset: int = 0,
+        limit: typing.Optional[int] = None,
+        same_check_size: int = 0,
     ) -> typing.Optional[typing.Generator[CounterRecord, None, None]]:
         if counter_records := self.parser.parse():
+            if same_check_size:
+                counter_records = CheckConflictingRecordsAggregator(same_check_size).aggregate(
+                    counter_records
+                )
+
             if limit is None:
                 return itertools.islice(counter_records, offset, None)
             return itertools.islice(counter_records, offset, offset + limit)
