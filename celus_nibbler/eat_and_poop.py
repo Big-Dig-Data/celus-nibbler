@@ -8,6 +8,7 @@ from datetime import date
 from celus_nigiri import CounterRecord
 
 from celus_nibbler.aggregator import CheckConflictingRecordsAggregator
+from celus_nibbler.data_headers import DataFormatDefinition
 from celus_nibbler.errors import (
     MultipleParsersFound,
     NibblerError,
@@ -33,6 +34,10 @@ class Poop:
     @property
     def sheet_idx(self):
         return self.parser.sheet.sheet_idx
+
+    @property
+    def data_format(self) -> DataFormatDefinition:
+        return self.parser.data_format
 
     def records(
         self,

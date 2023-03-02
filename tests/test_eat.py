@@ -14,6 +14,7 @@ def test_eat():
     # Default call
     poops = eat(file_path, "Ovid")
     assert all(isinstance(e, Poop) for e in poops)
+    assert all(e.data_format.name == "BR1" for e in poops)
 
     # Wrong platform
     poops = eat(file_path, "Unknown")
