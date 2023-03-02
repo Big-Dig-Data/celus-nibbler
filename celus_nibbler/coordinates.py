@@ -99,6 +99,7 @@ class Coord(JsonEncorder, Content):
 class CoordRange(JsonEncorder, Content):
     coord: Coord
     direction: Direction
+    max_count: typing.Optional[int] = None
 
     def content(self, sheet: SheetReader):
         return self[self.distance].content(sheet)
@@ -108,13 +109,28 @@ class CoordRange(JsonEncorder, Content):
             raise TypeError(f"is '{type(item)}' not Coord")
 
         if self.direction == Direction.LEFT:
-            return item.row == self.coord.row and item.col <= self.coord.col
+            res = item.row == self.coord.row and item.col <= self.coord.col
+            if self.max_count is not None:
+                res = res and abs(item.col - self.coord.col) < self.max_count
+            return res
+
         elif self.direction == Direction.RIGHT:
-            return item.row == self.coord.row and item.col >= self.coord.col
+            res = item.row == self.coord.row and item.col >= self.coord.col
+            if self.max_count is not None:
+                res = res and abs(item.col - self.coord.col) < self.max_count
+            return res
+
         elif self.direction == Direction.UP:
-            return item.col == self.coord.col and item.row <= self.coord.row
+            res = item.col == self.coord.col and item.row <= self.coord.row
+            if self.max_count is not None:
+                res = res and abs(item.row - self.coord.row) < self.max_count
+            return res
+
         elif self.direction == Direction.DOWN:
-            return item.col == self.coord.col and item.row >= self.coord.row
+            res = item.col == self.coord.col and item.row >= self.coord.row
+            if self.max_count is not None:
+                res = res and abs(item.row - self.coord.row) < self.max_count
+            return res
 
         raise NotImplementedError()
 
@@ -139,6 +155,10 @@ class CoordRange(JsonEncorder, Content):
             row += self.distance
         self.distance += 1
 
+        if self.max_count is not None:
+            if self.max_count < self.distance:
+                raise StopIteration
+
         return Coord(row, col)
 
     def __getitem__(self, item: int) -> Coord:
@@ -148,6 +168,11 @@ class CoordRange(JsonEncorder, Content):
             raise ValueError("Only int are allowed as keys")
 
         self.distance = item
+
+        if self.max_count is not None:
+            if self.max_count < self.distance:
+                raise IndexError(f"{item} is not in range of {self}")
+
         try:
             return next(self)
         except StopIteration:
