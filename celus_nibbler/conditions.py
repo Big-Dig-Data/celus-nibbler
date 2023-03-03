@@ -7,7 +7,7 @@ from pydantic.dataclasses import dataclass
 from typing_extensions import Annotated
 from unidecode import unidecode
 
-from .coordinates import Coord
+from .coordinates import Coord, CoordRange
 from .errors import TableException
 from .reader import SheetReader
 from .utils import JsonEncorder, PydanticConfig
@@ -63,12 +63,14 @@ class OrCondition(ArithmeticsMixin, BaseCondition, JsonEncorder):
 @dataclass(config=PydanticConfig)
 class RegexCondition(ArithmeticsMixin, BaseCondition, JsonEncorder):
     pattern: typing.Pattern
-    coord: Coord
+    coord: typing.Union[Coord, CoordRange]
 
     kind: typing.Literal["regex"] = "regex"
 
     def check(self, sheet: SheetReader):
         try:
+            if isinstance(self.coord, CoordRange):
+                return any(bool(self.pattern.match(coord.content(sheet))) for coord in self.coord)
             return bool(self.pattern.match(self.coord.content(sheet)))
         except TableException:
             return False
@@ -79,7 +81,7 @@ class StemmerCondition(ArithmeticsMixin, BaseCondition, JsonEncorder):
     """Compare content based on Porter Stemming algorithm"""
 
     content: str
-    coord: Coord
+    coord: typing.Union[Coord, CoordRange]
 
     kind: typing.Literal["stemmer"] = "stemmer"
 
@@ -91,6 +93,10 @@ class StemmerCondition(ArithmeticsMixin, BaseCondition, JsonEncorder):
 
     def check(self, sheet: SheetReader):
         try:
+            if isinstance(self.coord, CoordRange):
+                return any(
+                    self._convert(coord.content(sheet)) == self.content for coord in self.coord
+                )
             return self._convert(self.coord.content(sheet)) == self.content
         except TableException:
             return False

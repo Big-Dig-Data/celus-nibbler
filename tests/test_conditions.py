@@ -1,7 +1,7 @@
 import json
 
 from celus_nibbler.conditions import RegexCondition, StemmerCondition
-from celus_nibbler.coordinates import Coord
+from celus_nibbler.coordinates import Coord, CoordRange, Direction
 
 
 def test_regex(csv_sheet_reader):
@@ -13,6 +13,39 @@ def test_regex(csv_sheet_reader):
     assert RegexCondition("insufficient rows", Coord(5, 0)).check(csv_sheet_reader) is False
     assert (
         RegexCondition("insufficient rows and cols", Coord(5, 3)).check(csv_sheet_reader) is False
+    )
+
+    # with ranges
+    assert (
+        RegexCondition("^Name$", CoordRange(Coord(0, 0), Direction.LEFT)).check(csv_sheet_reader)
+        is True
+    )
+    assert (
+        RegexCondition("^3$", CoordRange(Coord(3, 0), Direction.RIGHT)).check(csv_sheet_reader)
+        is True
+    )
+    assert (
+        RegexCondition("no match", CoordRange(Coord(0, 2), Direction.UP)).check(csv_sheet_reader)
+        is False
+    )
+
+    assert (
+        RegexCondition("insufficient cols", CoordRange(Coord(0, 2), Direction.DOWN)).check(
+            csv_sheet_reader
+        )
+        is False
+    )
+    assert (
+        RegexCondition(
+            "insufficient rows", CoordRange(Coord(0, 0), Direction.DOWN, max_count=6)
+        ).check(csv_sheet_reader)
+        is False
+    )
+    assert (
+        RegexCondition(
+            "insufficient rows and cols", CoordRange(Coord(0, 3), Direction.DOWN, max_count=8)
+        ).check(csv_sheet_reader)
+        is False
     )
 
 
@@ -88,6 +121,16 @@ def test_stemmer(csv_sheet_reader):
     ), "Names should match Name"
     assert (
         StemmerCondition("Value", Coord(0, 1)).check(csv_sheet_reader) is True
+    ), "Value should match Values"
+
+    # with range
+    assert (
+        StemmerCondition("Names", CoordRange(Coord(1, 0), Direction.UP)).check(csv_sheet_reader)
+        is True
+    ), "Names should match Name"
+    assert (
+        StemmerCondition("Value", CoordRange(Coord(0, 1), Direction.DOWN)).check(csv_sheet_reader)
+        is True
     ), "Value should match Values"
 
 
