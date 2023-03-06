@@ -303,8 +303,15 @@ class XlsxReader(TableReader):
                 # unix dialect escapes all by default
                 dialect = csv.get_dialect("unix")
                 writer = csv.writer(f, dialect=dialect)
+                row_length = 0
                 for row in sheet.rows:
-                    writer.writerow([cell.value for cell in row])
+
+                    # Make sure that length of the row is extending
+                    current_length = len(row)
+                    row_length = max(row_length, current_length)
+                    extra_cells = [''] * (row_length - current_length)
+
+                    writer.writerow([cell.value for cell in row] + extra_cells)
                 f.seek(0)
                 self.sheets.append(CsvSheetReader(idx, workbook.sheetnames[idx], f, dialect="unix"))
 

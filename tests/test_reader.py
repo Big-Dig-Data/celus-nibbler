@@ -296,7 +296,17 @@ class TestCsvReader:
 class TestXlsxReader:
 
     file_path = Path(__file__).parent / 'data/reader/test-simple.xlsx'
-    data_list = [[['a', 'b', 'c'], ['1', '3', '4'], ['hi', 'there', 'how are you?']]]
+    data_list = [
+        [
+            ['a', 'b', 'c'],
+            ['1', '3', '4'],
+            ['hi', 'there', 'how are you?'],
+            ['', '', ''],
+            ['', '', ''],
+            ['another', '', ''],
+            ['Extra', 'line', 'present'],
+        ],
+    ]
 
     def test_indexing(self):
         sheets = XlsxReader(self.file_path)
@@ -304,7 +314,7 @@ class TestXlsxReader:
             for row_idx in range(len(sheet)):
                 assert sheets[sheet_idx][row_idx] == self.data_list[sheet_idx][row_idx]
         with pytest.raises(IndexError):
-            assert sheets[0][3]
+            assert sheets[0][row_idx + 1]
 
     def test_iteration(self):
         sheets = XlsxReader(self.file_path)
