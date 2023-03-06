@@ -5,6 +5,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.9.0] - 2023-03-06
+
+### Feature
+- case insensitive metric_to_skip, titles_to_skip and dimesions_to_skip
+- skip empty lines while parsing tabular counter reports
+- add offset and limit to Poop.records()
+- extend eat() function with same_check_size attribute to check for the same records
+- extend Poop with data_format attribute
+- allow to use CoordRange in conditions
+- make sure that the line lenght is not decreasing during XLSX -> CSV conversion
+
+### Fixed
+- don't check for the name of the report in C5 reports
+
+
 ## [7.8.1] - 2023-02-16
 
 ### Fixed
