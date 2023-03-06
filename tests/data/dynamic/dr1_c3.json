@@ -1,0 +1,108 @@
+{
+  "kind": "non_counter.date_based",
+  "version": 1,
+  "parser_name": "dr1_c3",
+  "data_format": {
+    "name": "dr1_c3"
+  },
+  "platforms": [
+    "Platform1"
+  ],
+  "metrics_to_skip": [],
+  "titles_to_skip": ["EMPTY"],
+  "dimensions_to_skip": {},
+  "metric_aliases": [],
+  "dimension_aliases": [],
+  "heuristics": {
+    "conds": [
+      {
+        "pattern": "Database Report 1",
+        "coord": {
+          "row": 0,
+          "col": 0
+        },
+        "kind": "regex"
+      },
+      {
+        "pattern": "Total Searches and Sessions by Month and Database",
+        "coord": {
+          "row": 0,
+          "col": 1
+        },
+        "kind": "regex"
+      }
+    ],
+    "kind": "and"
+  },
+  "areas": [
+    {
+      "data_headers": {
+        "roles": [
+            {
+                "source": {
+                    "coord": {
+                      "row": 4,
+                      "col": 4
+                    },
+                    "direction": "right"
+                },
+                "role": "date"
+            }
+        ],
+        "data_direction": "down",
+        "data_cells": {
+          "coord": {
+            "row": 5,
+            "col": 4
+          },
+          "direction": "right"
+        }
+      },
+      "titles": {
+        "source": {
+          "coord": {
+            "row": 5,
+            "col": 0
+          },
+          "direction": "down"
+        },
+        "extract_params": {
+          "default": "EMPTY"
+        }
+      },
+      "metrics": {
+        "source": {
+          "coord": {
+            "row": 5,
+            "col": 3
+          },
+          "direction": "down"
+        }
+      },
+      "title_ids": [],
+      "dimensions": [
+        {
+          "name": "Publisher",
+          "source": {
+            "coord": {
+              "row": 5,
+              "col": 1
+            },
+            "direction": "down"
+          }
+        },
+        {
+          "name": "Platform",
+          "source": {
+            "coord": {
+              "row": 5,
+              "col": 2
+            },
+            "direction": "down"
+          }
+        }
+      ],
+      "kind": "non_counter.date_based"
+    }
+  ]
+}

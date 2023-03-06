@@ -160,6 +160,13 @@ from celus_nibbler.parsers.dynamic import gen_parser
             "dynamic.non_counter.org_sheet_name.org_sheet_name",
             False,
         ),
+        (
+            "Platform1",
+            "dr1_c3",
+            "csv",
+            "dynamic.non_counter.dr1_c3.dr1_c3",
+            False,
+        ),
     ),
 )
 def test_dynamic(platform, filename, ext, parser, aggregated):

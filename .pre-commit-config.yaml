@@ -4,9 +4,9 @@ repos:
     rev: v3.4.0
     hooks:
     - id: trailing-whitespace
-      exclude: '^.*\.(tsv|json|svg)'
+      exclude: '^.*\.(csv|tsv|json|svg)'
     - id: end-of-file-fixer
-      exclude: '^.*\.(tsv|json|svg)'
+      exclude: '^.*\.(csv|tsv|json|svg)'
     - id: check-yaml
 
   - repo: local
