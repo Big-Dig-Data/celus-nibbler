@@ -34,6 +34,7 @@ from celus_nibbler.errors import NoParserMatchesHeuristics
         ("Thieme", "4/JR1-a.tsv", "static.counter4.JR1.Tabular", True, True),
         ("Thieme", "4/JR1-b.tsv", "static.counter4.JR1.Tabular", False, True),
         ("Thieme", "4/JR1-b.tsv", "static.counter4.JR1.Tabular", True, False),
+        ("Thieme", "4/JR1-d.csv", "static.counter4.JR1.Tabular", True, True),
         ("Sage", "4/JR1a-a.tsv", "static.counter4.JR1a.Tabular", True, True),
         ("Sage", "4/JR1a-b.tsv", "static.counter4.JR1a.Tabular", False, True),
         ("Sage", "4/JR1a-b.tsv", "static.counter4.JR1a.Tabular", True, False),
