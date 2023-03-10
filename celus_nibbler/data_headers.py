@@ -327,7 +327,7 @@ class DataCells:
                     record_nested_data.update(header_nested_data)
                 else:
                     # Clone header data
-                    record[nested_name] = {k: v for k, v in header_nested_data.items()}
+                    setattr(record, nested_name, deepcopy(header_nested_data))
 
         return record
 
