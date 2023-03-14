@@ -167,6 +167,13 @@ from celus_nibbler.parsers.dynamic import gen_parser
             "dynamic.non_counter.dr1_c3.dr1_c3",
             False,
         ),
+        (
+            "Platform1",
+            "value_commas",
+            "csv",
+            "dynamic.non_counter.simple_format.value_commas",
+            False,
+        ),
     ),
 )
 def test_dynamic(platform, filename, ext, parser, aggregated):

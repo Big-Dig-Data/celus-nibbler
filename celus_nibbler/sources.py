@@ -23,6 +23,11 @@ IDS_VALIDATORS = {
 }
 
 
+class SpecialExtraction(str, Enum):
+    NO = "no"
+    COMMA_SEPARATED_NUMBER = "comma_separeted_number"
+
+
 class Role(str, Enum):
     VALUE = "value"
     DATE = "date"
@@ -40,6 +45,7 @@ class ExtractParams(JsonEncorder):
     last_value_as_default: bool = False
     blank_values: typing.Tuple[typing.Any, ...] = field(default_factory=lambda: (None, ""))
     skip_validation: bool = False
+    special_extraction: SpecialExtraction = SpecialExtraction.NO
 
 
 class ContentExtractorMixin:
@@ -71,6 +77,16 @@ class ContentExtractorMixin:
             self.extract_params.default = value
         return value
 
+    def get_validator(
+        self, validator: typing.Optional[typing.Type[validators.BaseValueModel]]
+    ) -> typing.Optional[typing.Type[validators.BaseValueModel]]:
+        if self.extract_params.special_extraction == SpecialExtraction.NO:
+            return validator or self.validator
+        elif self.extract_params.special_extraction == SpecialExtraction.COMMA_SEPARATED_NUMBER:
+            return validators.CommaSeparatedNumberValidator
+        else:
+            raise NotImplementedError()
+
     def _extract(
         self,
         sheet: SheetReader,
@@ -86,7 +102,7 @@ class ContentExtractorMixin:
 
         try:
             content = self.content(sheet, source)
-            validator = validator or self.validator
+            validator = self.get_validator(validator)
             if validator:
                 if self.extract_params.default is not None:
                     res = validators.gen_default_validator(

@@ -46,9 +46,7 @@ class Value(BaseValueModel):
 
 @lru_cache
 def gen_default_validator(
-    orig_validator: Type[BaseValueModel],
-    default_value: Any,
-    blank_values: Tuple[Any],
+    orig_validator: Type[BaseValueModel], default_value: Any, blank_values: Tuple[Any]
 ) -> Type[BaseValueModel]:
     class Validator(BaseValueModel):
         value: Any
@@ -61,6 +59,14 @@ def gen_default_validator(
                 return orig_validator(value=value).value
 
     return Validator
+
+
+class CommaSeparatedNumberValidator(BaseValueModel):
+    value: Any
+
+    @validator("value", allow_reuse=True, pre=True)
+    def comma_separeted_number(cls, value: str) -> str:
+        return Value(value=value.replace(",", "")).value
 
 
 class Organization(BaseValueModel):
