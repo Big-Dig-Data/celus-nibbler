@@ -3,9 +3,12 @@ import itertools
 import logging
 import pathlib
 import typing
+import warnings
+from collections import defaultdict
 from datetime import date
 
 from celus_nigiri import CounterRecord
+from pydantic import BaseModel
 
 from celus_nibbler.aggregator import CheckConflictingRecordsAggregator
 from celus_nibbler.data_headers import DataFormatDefinition
@@ -23,6 +26,27 @@ from celus_nibbler.reader import CsvReader, JsonCounter5Reader, SheetReader, Tab
 from celus_nibbler.validators import Platform
 
 logger = logging.getLogger(__name__)
+
+
+class StatUnit(BaseModel):
+    count: int = 0
+    sum: int = 0
+
+    def inc(self, value: int):
+        self.count += 1
+        self.sum += value
+
+
+class PoopStats(BaseModel):
+    months: typing.DefaultDict[str, StatUnit] = defaultdict(StatUnit)
+    metrics: typing.DefaultDict[str, StatUnit] = defaultdict(StatUnit)
+    organizations: typing.DefaultDict[str, StatUnit] = defaultdict(StatUnit)
+    titles: typing.DefaultDict[str, StatUnit] = defaultdict(StatUnit)
+    title_ids: typing.Set[str] = set()
+    dimensions: typing.DefaultDict[str, typing.DefaultDict[str, StatUnit]] = defaultdict(
+        lambda: defaultdict(StatUnit)
+    )
+    total: StatUnit = StatUnit()
 
 
 class Poop:
@@ -60,24 +84,28 @@ class Poop:
 
     @property
     def metrics(self):
-        return self.get_metrics_dimensions_title_ids_months()[0]
+        return self.get_stats().metrics.keys()
 
     @property
     def dimensions(self):
-        return self.get_metrics_dimensions_title_ids_months()[1]
+        return self.get_stats().dimensions.keys()
 
     @property
     def title_ids(self):
-        return self.get_metrics_dimensions_title_ids_months()[2]
+        return self.get_stats().title_ids()
 
     @property
     def months(self):
-        return self.get_metrics_dimensions_title_ids_months()[3]
+        return self.get_stats().months.keys()
 
     @functools.lru_cache
     def get_metrics_dimensions_title_ids_months(
         self,
     ) -> typing.Tuple[typing.List[str], typing.List[str], typing.List[str], typing.List[str]]:
+        warnings.warn(
+            "`get_metrics_dimensions_title_ids_months` is deprecated in favor of `get_stats`",
+            DeprecationWarning,
+        )
         seen_metrics = set()
         seen_dimensions: typing.Set[str] = set()
         seen_title_ids: typing.Set[str] = set()
@@ -105,6 +133,26 @@ class Poop:
                 sorted(seen_months),
             )
         return [], [], [], []
+
+    @functools.lru_cache
+    def get_stats(self) -> PoopStats:
+        res = PoopStats()
+        if records := self.records():
+            for record in records:
+                res.months[record.start.strftime("%Y-%m")].inc(record.value)
+                res.metrics[record.metric or ""].inc(record.value)
+                res.organizations[record.organization or ""].inc(record.value)
+                res.titles[record.title or ""].inc(record.value)
+
+                for title_id in record.title_ids.keys():
+                    res.title_ids.add(title_id)
+
+                for dimension_name, dimension in record.dimension_data.items():
+                    res.dimensions[dimension_name][dimension].inc(record.value)
+
+                res.total.inc(record.value)
+
+        return res
 
     def get_months(self) -> typing.List[typing.List[date]]:
         """Get months of the sheet (divided into areas)"""
