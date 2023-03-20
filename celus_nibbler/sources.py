@@ -25,7 +25,7 @@ IDS_VALIDATORS = {
 
 class SpecialExtraction(str, Enum):
     NO = "no"
-    COMMA_SEPARATED_NUMBER = "comma_separeted_number"
+    COMMA_SEPARATED_NUMBER = "comma_separated_number"
 
 
 class Role(str, Enum):
