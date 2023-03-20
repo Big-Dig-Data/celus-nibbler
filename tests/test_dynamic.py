@@ -242,13 +242,13 @@ def test_dynamic(platform, filename, ext, parser, aggregated):
             "dynamic.non_counter.simple_format.same_records",
             SameRecordsInOutput(
                 CounterRecord(
-                    start=date(2022, 2, 1),
-                    end=date(2022, 2, 28),
+                    start=date(2022, 1, 1),
+                    end=date(2022, 1, 31),
                     organization=None,
                     metric="M1",
                     title="T1",
                     dimension_data={"Dim1": "D11"},
-                    value=-1,
+                    value=3,
                 )
             ),
         ),

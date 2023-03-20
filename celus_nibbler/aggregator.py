@@ -71,7 +71,7 @@ class CheckConflictingRecordsAggregator(BaseAggregator):
 
     @staticmethod
     def make_record_hash(record: CounterRecord):
-        return hash((e for e in record.as_csv()[:-1]))  # skip value (last in csv)
+        return hash(tuple(e for e in record.as_csv()[:-1]))  # skip value (last in csv)
 
     def aggregate(
         self, records: typing.Generator[CounterRecord, None, None]
