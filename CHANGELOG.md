@@ -4,10 +4,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [7.10.0] - 2023-03-20
+
+### Added
+- allow to parse numbers with comma separated digits (e.g. '1,123,456')
+- added `Poop.get_stats` to gather various info regarding output data
+
+### Changed
+- make function `get_metrics_dimensions_title_ids_months` deprecated
+
+### Fixed
+- don't stop when an empty Platform dimension occurs during counter data parsing
+- setting nested data while merging CounterRecord
+
 
 ## [7.9.0] - 2023-03-06
 
-### Feature
+### Added
 - case insensitive metric_to_skip, titles_to_skip and dimesions_to_skip
 - skip empty lines while parsing tabular counter reports
 - add offset and limit to Poop.records()
