@@ -36,6 +36,17 @@ class StatUnit(BaseModel):
         self.count += 1
         self.sum += value
 
+    def __add__(self, other: 'StatUnit') -> 'StatUnit':
+        return StatUnit(
+            count=self.count + other.count,
+            sum=self.sum + other.sum,
+        )
+
+    def __iadd__(self, other: 'StatUnit'):
+        self.sum += other.sum
+        self.count += other.count
+        return self
+
 
 class PoopStats(BaseModel):
     months: typing.DefaultDict[str, StatUnit] = defaultdict(StatUnit)
@@ -47,6 +58,33 @@ class PoopStats(BaseModel):
         lambda: defaultdict(StatUnit)
     )
     total: StatUnit = StatUnit()
+
+    def __add__(self, other: 'PoopStats') -> 'PoopStats':
+        result = PoopStats()
+        for month, data in list(self.months.items()) + list(other.months.items()):
+            result.months[month] += data
+
+        for metric, data in list(self.metrics.items()) + list(other.metrics.items()):
+            result.metrics[metric] += data
+
+        for organization, data in list(self.organizations.items()) + list(
+            other.organizations.items()
+        ):
+            result.organizations[organization] += data
+
+        for title, data in list(self.titles.items()) + list(other.titles.items()):
+            result.titles[title] += data
+
+        for dimension_name, dimensions in list(self.dimensions.items()) + list(
+            other.dimensions.items()
+        ):
+            for dimension, data in dimensions.items():
+                result.dimensions[dimension_name][dimension] += data
+
+        result.title_ids = self.title_ids | other.title_ids
+
+        result.total = self.total + other.total
+        return result
 
 
 class Poop:

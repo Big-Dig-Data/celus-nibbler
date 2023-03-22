@@ -89,3 +89,58 @@ def test_poop_offset_limit():
     assert len([e for e in poop.records(offset=12)]) == 12
     assert len([e for e in poop.records(limit=10)]) == 10
     assert len([e for e in poop.records(offset=18, limit=10)]) == 6
+
+
+def test_stats():
+    assert PoopStats() + PoopStats() == PoopStats(), "empty stats"
+
+    stat1 = PoopStats()
+    stat1.months["2020-01"] = StatUnit(sum=5, count=2)
+    stat1.months["2020-02"] = StatUnit(sum=5, count=2)
+    stat1.metrics["M1"] = StatUnit(sum=5, count=2)
+    stat1.metrics["M2"] = StatUnit(sum=5, count=2)
+    stat1.organizations["O1"] = StatUnit(sum=5, count=2)
+    stat1.organizations["O2"] = StatUnit(sum=5, count=2)
+    stat1.titles["T1"] = StatUnit(sum=5, count=2)
+    stat1.titles["T2"] = StatUnit(sum=5, count=2)
+    stat1.title_ids = {"ISBN", "URI"}
+    stat1.total = StatUnit(sum=5, count=2)
+    stat1.dimensions["D1"]["aaa"] = StatUnit(sum=5, count=2)
+    stat1.dimensions["D1"]["bbb"] = StatUnit(sum=5, count=2)
+    stat1.dimensions["D2"]["aaa"] = StatUnit(sum=5, count=2)
+
+    stat2 = PoopStats()
+    stat2.months["2020-02"] = StatUnit(sum=3, count=1)
+    stat2.months["2020-03"] = StatUnit(sum=3, count=1)
+    stat2.metrics["M2"] = StatUnit(sum=3, count=1)
+    stat2.metrics["M3"] = StatUnit(sum=3, count=1)
+    stat2.organizations["O2"] = StatUnit(sum=3, count=1)
+    stat2.organizations["O3"] = StatUnit(sum=3, count=1)
+    stat2.titles["T2"] = StatUnit(sum=3, count=1)
+    stat2.titles["T3"] = StatUnit(sum=3, count=1)
+    stat2.title_ids = {"ISBN", "DOI"}
+    stat2.total = StatUnit(sum=3, count=1)
+    stat2.dimensions["D1"]["bbb"] = StatUnit(sum=3, count=1)
+    stat2.dimensions["D2"]["aaa"] = StatUnit(sum=3, count=1)
+    stat2.dimensions["D2"]["bbb"] = StatUnit(sum=3, count=1)
+
+    stat3 = PoopStats()
+    stat3.months["2020-01"] = StatUnit(sum=5, count=2)
+    stat3.months["2020-02"] = StatUnit(sum=8, count=3)
+    stat3.months["2020-03"] = StatUnit(sum=3, count=1)
+    stat3.metrics["M1"] = StatUnit(sum=5, count=2)
+    stat3.metrics["M2"] = StatUnit(sum=8, count=3)
+    stat3.metrics["M3"] = StatUnit(sum=3, count=1)
+    stat3.organizations["O1"] = StatUnit(sum=5, count=2)
+    stat3.organizations["O2"] = StatUnit(sum=8, count=3)
+    stat3.organizations["O3"] = StatUnit(sum=3, count=1)
+    stat3.titles["T1"] = StatUnit(sum=5, count=2)
+    stat3.titles["T2"] = StatUnit(sum=8, count=3)
+    stat3.titles["T3"] = StatUnit(sum=3, count=1)
+    stat3.title_ids = {"ISBN", "URI", "DOI"}
+    stat3.dimensions["D1"]["aaa"] = StatUnit(sum=5, count=2)
+    stat3.dimensions["D1"]["bbb"] = StatUnit(sum=8, count=3)
+    stat3.dimensions["D2"]["aaa"] = StatUnit(sum=8, count=3)
+    stat3.dimensions["D2"]["bbb"] = StatUnit(sum=3, count=1)
+    stat3.total = StatUnit(sum=8, count=3)
+    assert stat1 + stat2 == stat3
