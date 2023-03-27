@@ -196,6 +196,10 @@ class Poop:
         """Get months of the sheet (divided into areas)"""
         return self.parser.get_months()
 
+    def __del__(self):
+        # Make sure that underlying file is closed
+        self.parser.sheet.close()
+
 
 def findparser(
     sheet: SheetReader,
@@ -289,5 +293,7 @@ def eat(
                 sheet.sheet_idx + 1,
             )
             poops.append(e)
+            # Make sure that underlying file is closed
+            sheet.close()
 
     return poops

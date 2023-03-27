@@ -45,6 +45,10 @@ class SheetReader(metaclass=ABCMeta):
     def __next__(self):
         pass
 
+    @abstractmethod
+    def close(self):
+        pass
+
 
 class CsvSheetReader(SheetReader):
     """
@@ -153,6 +157,9 @@ class CsvSheetReader(SheetReader):
             self.update_window(self.window_start + self.window_size)
         return res
 
+    def close(self):
+        self.file.close()
+
 
 class JsonCounter5SheetReader(SheetReader):
 
@@ -231,6 +238,9 @@ class JsonCounter5SheetReader(SheetReader):
             res += len(self.window)
             self.update_window(self.window_start + self.window_size)
         return res
+
+    def close(self):
+        self.file.close()
 
 
 class TableReader(metaclass=ABCMeta):
