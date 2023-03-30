@@ -14,7 +14,7 @@ from . import CounterHeaderArea
 
 class Counter5HeaderArea(CounterHeaderArea):
     HEADER_DATE_START = 3
-    METRIC_COLUMN_NAMES = ["Metric_Type"]
+    METRIC_COLUMN_NAMES = ["Metric_Type", "Metric Type"]
 
 
 class BaseCounter5Parser(BaseTabularParser):
