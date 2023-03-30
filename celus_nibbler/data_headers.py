@@ -3,7 +3,7 @@ import logging
 import typing
 from abc import ABCMeta, abstractmethod
 from copy import deepcopy
-from dataclasses import asdict, dataclass, fields
+from dataclasses import asdict, dataclass, field, fields
 from enum import Enum
 
 from celus_nigiri import CounterRecord
@@ -207,7 +207,7 @@ class DataHeaders(JsonEncorder):
 
     data_cells: CoordRange  # first data after the header
     data_direction: Direction  # perpendicular to data_cells
-    data_extract_params: ExtractParams = ExtractParams()
+    data_extract_params: ExtractParams = field(default_factory=lambda: ExtractParams())
 
     rules: typing.List[DataHeaderRule] = Field(default_factory=lambda: [DataHeaderRule()])
 

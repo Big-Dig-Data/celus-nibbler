@@ -158,7 +158,7 @@ class ContentExtractorMixin:
 class DimensionSource(JsonEncorder, ContentExtractorMixin):
     name: str
     source: Source
-    extract_params: ExtractParams = ExtractParams()
+    extract_params: ExtractParams = field(default_factory=lambda: ExtractParams())
     role: typing.Literal[Role.DIMENSION] = Role.DIMENSION
 
     @property
@@ -169,7 +169,7 @@ class DimensionSource(JsonEncorder, ContentExtractorMixin):
 @dataclass(config=PydanticConfig)
 class MetricSource(JsonEncorder, ContentExtractorMixin):
     source: Source
-    extract_params: ExtractParams = ExtractParams()
+    extract_params: ExtractParams = field(default_factory=lambda: ExtractParams())
     role: typing.Literal[Role.METRIC] = Role.METRIC
 
     @property
@@ -180,7 +180,7 @@ class MetricSource(JsonEncorder, ContentExtractorMixin):
 @dataclass(config=PydanticConfig)
 class OrganizationSource(JsonEncorder, ContentExtractorMixin):
     source: Source
-    extract_params: ExtractParams = ExtractParams()
+    extract_params: ExtractParams = field(default_factory=lambda: ExtractParams())
     role: typing.Literal[Role.ORGANIZATION] = Role.ORGANIZATION
 
     @property
@@ -191,7 +191,7 @@ class OrganizationSource(JsonEncorder, ContentExtractorMixin):
 @dataclass(config=PydanticConfig)
 class TitleSource(JsonEncorder, ContentExtractorMixin):
     source: Source
-    extract_params: ExtractParams = ExtractParams()
+    extract_params: ExtractParams = field(default_factory=lambda: ExtractParams())
     role: typing.Literal[Role.TITLE] = Role.TITLE
 
     @property
@@ -203,7 +203,7 @@ class TitleSource(JsonEncorder, ContentExtractorMixin):
 class TitleIdSource(JsonEncorder, ContentExtractorMixin):
     name: str
     source: Source
-    extract_params: ExtractParams = ExtractParams()
+    extract_params: ExtractParams = field(default_factory=lambda: ExtractParams())
     role: typing.Literal[Role.TITLE_ID] = Role.TITLE_ID
 
     @property
@@ -214,7 +214,7 @@ class TitleIdSource(JsonEncorder, ContentExtractorMixin):
 @dataclass(config=PydanticConfig)
 class DateSource(JsonEncorder, ContentExtractorMixin):
     source: Source
-    extract_params: ExtractParams = ExtractParams()
+    extract_params: ExtractParams = field(default_factory=lambda: ExtractParams())
     role: typing.Literal[Role.DATE] = Role.DATE
 
     @property
@@ -225,7 +225,7 @@ class DateSource(JsonEncorder, ContentExtractorMixin):
 @dataclass(config=PydanticConfig)
 class ValueSource(JsonEncorder, ContentExtractorMixin):
     source: Source
-    extract_params: ExtractParams = ExtractParams()
+    extract_params: ExtractParams = field(default_factory=lambda: ExtractParams())
     role: typing.Literal[Role.VALUE] = Role.VALUE
 
     @property
