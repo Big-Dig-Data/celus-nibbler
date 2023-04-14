@@ -61,6 +61,7 @@ def test_date_based_area_definition():
                         "skip_validation": False,
                         "special_extraction": "no",
                     },
+                    "preferred_date_format": "us",
                     "role": Role.DATE,
                 }
             ],
@@ -187,6 +188,7 @@ def test_errors():
                         "direction": "left",
                         "max_count": None,
                     },
+                    "preferred_date_format": "us",
                     "role": Role.DATE,
                 },
                 "dimensions": [
@@ -274,6 +276,7 @@ def test_errors():
                         "direction": "left",
                         "max_count": None,
                     },
+                    "preferred_date_format": "us",
                     "role": Role.DATE,
                 },
                 "dimensions": [
@@ -427,6 +430,7 @@ def test_date_based_definition():
                                 "skip_validation": False,
                                 "special_extraction": "no",
                             },
+                            "preferred_date_format": "us",
                             "role": Role.DATE,
                         }
                     ],

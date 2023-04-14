@@ -23,6 +23,11 @@ IDS_VALIDATORS = {
 }
 
 
+class DateFormat(str, Enum):
+    US = "us"  # US format 12/31/2022 (more common)
+    EU = "eu"  # EU format 31/12/2022
+
+
 class SpecialExtraction(str, Enum):
     NO = "no"
     COMMA_SEPARATED_NUMBER = "comma_separated_number"
@@ -215,11 +220,20 @@ class TitleIdSource(JsonEncorder, ContentExtractorMixin):
 class DateSource(JsonEncorder, ContentExtractorMixin):
     source: Source
     extract_params: ExtractParams = field(default_factory=lambda: ExtractParams())
+    preferred_date_format: DateFormat = DateFormat.US
     role: typing.Literal[Role.DATE] = Role.DATE
 
     @property
     def validator(self) -> typing.Optional[typing.Type[validators.BaseValueModel]]:
         return validators.Date
+
+    def get_validator(
+        self, validator: typing.Optional[typing.Type[validators.BaseValueModel]]
+    ) -> typing.Optional[typing.Type[validators.BaseValueModel]]:
+        if self.preferred_date_format == DateFormat.EU:
+            return validators.DateEU
+        else:
+            return validators.Date
 
 
 @dataclass(config=PydanticConfig)

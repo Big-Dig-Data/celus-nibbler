@@ -111,12 +111,13 @@ class Title(BaseValueModel):
 
 
 class Date(BaseValueModel):
-
     value: datetime.date
 
     _not_none_date = validator('value', allow_reuse=True, pre=True)(not_none)
     _stripped_date = validator('value', allow_reuse=True, pre=True)(stripped)
     _non_empty_date = validator('value', allow_reuse=True, pre=True)(non_empty)
+
+    _parserinfo = datetimes_parser.parserinfo(dayfirst=False)  # prefer US variant
 
     @validator("value", pre=True)
     def to_datetime(cls, date: str) -> datetime.datetime:
@@ -129,9 +130,13 @@ class Date(BaseValueModel):
 
         # Try to parse date using dateutil for more obscure date formats
         try:
-            return datetimes_parser.parse(date).replace(day=1)
+            return datetimes_parser.parse(date, parserinfo=cls._parserinfo).replace(day=1)
         except datetimes_parser.ParserError:
             raise ValueError("cant-parse-date")
+
+
+class DateEU(Date):
+    _parserinfo = datetimes_parser.parserinfo(dayfirst=True)  # prefer EU variant
 
 
 class DOI(BaseValueModel):
@@ -172,18 +177,3 @@ class EISSN(BaseValueModel):
 
 class ProprietaryID(BaseValueModel):
     value: str
-
-
-class DateInString(BaseValueModel):
-    value: datetime.date
-
-    _stripped_date = validator('value', allow_reuse=True, pre=True)(stripped)
-    _non_empty_date = validator('value', allow_reuse=True, pre=True)(non_empty)
-
-    @validator("value", pre=True)
-    def to_datetime(cls, date: str) -> str:
-        # TODO add some validation whether the date in the 'date' variable is really on the last index
-        try:
-            return datetimes_parser.parse(date.split(' ')[-1])
-        except datetimes_parser.ParserError:
-            raise ValueError("cant-parse-date")
