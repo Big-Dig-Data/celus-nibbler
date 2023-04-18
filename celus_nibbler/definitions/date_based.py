@@ -84,7 +84,10 @@ class DateBasedDefinition(JsonEncorder, BaseNonCounterParserDefinition):
 
             data_format = _definition.data_format
             platforms = _definition.platforms
-            name = f"dynamic.{_definition.group}.{_definition.data_format.name}.{_definition.parser_name}"
+            name = (
+                f"dynamic.{_definition.group}.{_definition.data_format.name}"
+                f".{_definition.parser_name}"
+            )
 
             metrics_to_skip = _definition.metrics_to_skip
             titles_to_skip = _definition.titles_to_skip

@@ -62,7 +62,10 @@ class CelusFormatParserDefinition(BaseNonCounterParserDefinition, metaclass=abc.
         class Parser(BaseCelusFormatParser):
             _definition = self
             data_format = _definition.data_format
-            name = f"dynamic.{_definition.group}.{_definition.data_format.name}.{_definition.parser_name}"
+            name = (
+                f"dynamic.{_definition.group}.{_definition.data_format.name}"
+                f".{_definition.parser_name}"
+            )
 
             platforms = _definition.platforms
             metrics_to_skip = self.metrics_to_skip

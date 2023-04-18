@@ -75,15 +75,24 @@ class TableException(NibblerError):
         self.reason = reason
 
     def __str__(self):
-        self.laymancount_sheet = self.sheet + 1 if self.sheet is not None else "unspecified"
-        self.laymancount_row = self.row + 1 if self.row is not None else "unspecified"
-        self.laymancount_col = self.col + 1 if self.col is not None else "unspecified"
-        self.colletters_explanation = (
-            f" (col \"{colnum_to_colletters(self.laymancount_col)}\" if using software for table sheets)"
+        laymancount_sheet = self.sheet + 1 if self.sheet is not None else "unspecified"
+        laymancount_row = self.row + 1 if self.row is not None else "unspecified"
+        laymancount_col = self.col + 1 if self.col is not None else "unspecified"
+        colletters_explanation = (
+            f" (col \"{colnum_to_colletters(laymancount_col)}\" if using software for table sheets)"
             if self.col is not None
             else ""
         )
-        return f'Problem with parsing your format has occured.\nValue causing this exception: {self.value}\nLocation of this value: sheet {self.laymancount_sheet}, row {self.laymancount_row}, col {self.laymancount_col}{self.colletters_explanation}.\nReason: {self.reason}.'
+        location = (
+            f"sheet {laymancount_sheet}, row {laymancount_row}, col {laymancount_col}"
+            f"{colletters_explanation}"
+        )
+        return f"""\
+Problem with parsing your format has occured.
+Value causing this exception: {self.value}
+Location of this value: {location}.
+Reason: {self.reason}.
+"""
 
     def __repr__(self):
         return (
