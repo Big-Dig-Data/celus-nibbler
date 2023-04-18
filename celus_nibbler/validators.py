@@ -139,6 +139,25 @@ class DateEU(Date):
     _parserinfo = datetimes_parser.parserinfo(dayfirst=True)  # prefer EU variant
 
 
+@lru_cache
+def gen_date_format_validator(pattern: str) -> BaseValueModel:
+    class DateFormat(BaseValueModel):
+        value: datetime.date
+
+        _not_none_date = validator('value', allow_reuse=True, pre=True)(not_none)
+        _stripped_date = validator('value', allow_reuse=True, pre=True)(stripped)
+        _non_empty_date = validator('value', allow_reuse=True, pre=True)(non_empty)
+
+        @validator("value", pre=True)
+        def to_datetime(cls, date: str) -> datetime.datetime:
+            try:
+                return datetime.datetime.strptime(date, pattern).replace(day=1)
+            except ValueError:
+                pass
+
+    return DateFormat
+
+
 class DOI(BaseValueModel):
     value: str
 

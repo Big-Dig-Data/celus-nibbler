@@ -1,5 +1,6 @@
 import typing
 from dataclasses import field
+from datetime import date
 from enum import Enum
 
 from pydantic import ValidationError
@@ -56,6 +57,7 @@ class ExtractParams(JsonEncorder):
 class ContentExtractorMixin:
     source: Source
     extract_params: ExtractParams
+    cleanup_during_header_processing: bool
     role: Role
     _last_sheet_idx = None
     _last_source = None
@@ -164,6 +166,7 @@ class DimensionSource(JsonEncorder, ContentExtractorMixin):
     name: str
     source: Source
     extract_params: ExtractParams = field(default_factory=lambda: ExtractParams())
+    cleanup_during_header_processing: bool = True
     role: typing.Literal[Role.DIMENSION] = Role.DIMENSION
 
     @property
@@ -175,6 +178,7 @@ class DimensionSource(JsonEncorder, ContentExtractorMixin):
 class MetricSource(JsonEncorder, ContentExtractorMixin):
     source: Source
     extract_params: ExtractParams = field(default_factory=lambda: ExtractParams())
+    cleanup_during_header_processing: bool = True
     role: typing.Literal[Role.METRIC] = Role.METRIC
 
     @property
@@ -186,6 +190,7 @@ class MetricSource(JsonEncorder, ContentExtractorMixin):
 class OrganizationSource(JsonEncorder, ContentExtractorMixin):
     source: Source
     extract_params: ExtractParams = field(default_factory=lambda: ExtractParams())
+    cleanup_during_header_processing: bool = True
     role: typing.Literal[Role.ORGANIZATION] = Role.ORGANIZATION
 
     @property
@@ -197,6 +202,7 @@ class OrganizationSource(JsonEncorder, ContentExtractorMixin):
 class TitleSource(JsonEncorder, ContentExtractorMixin):
     source: Source
     extract_params: ExtractParams = field(default_factory=lambda: ExtractParams())
+    cleanup_during_header_processing: bool = True
     role: typing.Literal[Role.TITLE] = Role.TITLE
 
     @property
@@ -209,6 +215,7 @@ class TitleIdSource(JsonEncorder, ContentExtractorMixin):
     name: str
     source: Source
     extract_params: ExtractParams = field(default_factory=lambda: ExtractParams())
+    cleanup_during_header_processing: bool = True
     role: typing.Literal[Role.TITLE_ID] = Role.TITLE_ID
 
     @property
@@ -217,10 +224,19 @@ class TitleIdSource(JsonEncorder, ContentExtractorMixin):
 
 
 @dataclass(config=PydanticConfig)
+class ComposedDate(JsonEncorder):
+    year: 'DateSource'
+    month: 'DateSource'
+
+
+@dataclass(config=PydanticConfig)
 class DateSource(JsonEncorder, ContentExtractorMixin):
     source: Source
     extract_params: ExtractParams = field(default_factory=lambda: ExtractParams())
+    cleanup_during_header_processing: bool = True
     preferred_date_format: DateFormat = DateFormat.US
+    composed: typing.Optional[ComposedDate] = None
+    date_pattern: typing.Optional[str] = None
     role: typing.Literal[Role.DATE] = Role.DATE
 
     @property
@@ -230,16 +246,37 @@ class DateSource(JsonEncorder, ContentExtractorMixin):
     def get_validator(
         self, validator: typing.Optional[typing.Type[validators.BaseValueModel]]
     ) -> typing.Optional[typing.Type[validators.BaseValueModel]]:
+
+        if date_pattern := self.date_pattern:
+            return validators.gen_date_format_validator(date_pattern)
+
         if self.preferred_date_format == DateFormat.EU:
             return validators.DateEU
         else:
             return validators.Date
+
+    def extract(
+        self,
+        sheet: SheetReader,
+        idx: int,
+        validator: typing.Optional[typing.Type[validators.BaseValueModel]] = None,
+    ) -> typing.Any:
+        if self.composed:
+            year_date = self.composed.year.extract(sheet, idx)
+            month_date = self.composed.month.extract(sheet, idx)
+            return date(year_date.year, month_date.month, 1)
+        else:
+            return super().extract(sheet, idx, validator)
+
+
+ComposedDate.__pydantic_model__.update_forward_refs()
 
 
 @dataclass(config=PydanticConfig)
 class ValueSource(JsonEncorder, ContentExtractorMixin):
     source: Source
     extract_params: ExtractParams = field(default_factory=lambda: ExtractParams())
+    cleanup_during_header_processing: bool = True
     role: typing.Literal[Role.VALUE] = Role.VALUE
 
     @property

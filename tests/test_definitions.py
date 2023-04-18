@@ -62,6 +62,9 @@ def test_date_based_area_definition():
                         "special_extraction": "no",
                     },
                     "preferred_date_format": "us",
+                    "cleanup_during_header_processing": True,
+                    "composed": None,
+                    "date_pattern": None,
                     "role": Role.DATE,
                 }
             ],
@@ -103,6 +106,7 @@ def test_date_based_area_definition():
                     "skip_validation": False,
                     "special_extraction": "no",
                 },
+                "cleanup_during_header_processing": True,
                 "role": Role.DIMENSION,
             },
             {
@@ -116,6 +120,7 @@ def test_date_based_area_definition():
                     "skip_validation": False,
                     "special_extraction": "no",
                 },
+                "cleanup_during_header_processing": True,
                 "role": Role.DIMENSION,
             },
         ],
@@ -129,6 +134,7 @@ def test_date_based_area_definition():
                 "skip_validation": False,
                 "special_extraction": "no",
             },
+            "cleanup_during_header_processing": True,
             "role": Role.METRIC,
         },
         "title_ids": [
@@ -143,6 +149,7 @@ def test_date_based_area_definition():
                     "skip_validation": False,
                     "special_extraction": "no",
                 },
+                "cleanup_during_header_processing": True,
                 "role": Role.TITLE_ID,
             }
         ],
@@ -156,6 +163,7 @@ def test_date_based_area_definition():
                 "skip_validation": False,
                 "special_extraction": "no",
             },
+            "cleanup_during_header_processing": True,
             "role": Role.TITLE,
         },
         "organizations": None,
@@ -189,6 +197,9 @@ def test_errors():
                         "max_count": None,
                     },
                     "preferred_date_format": "us",
+                    "cleanup_during_header_processing": True,
+                    "composed": None,
+                    "date_pattern": None,
                     "role": Role.DATE,
                 },
                 "dimensions": [
@@ -260,6 +271,7 @@ def test_errors():
                         "skip_validation": False,
                         "special_extraction": "no",
                     },
+                    "cleanup_during_header_processing": True,
                     "role": Role.TITLE,
                 },
             }
@@ -277,6 +289,9 @@ def test_errors():
                         "max_count": None,
                     },
                     "preferred_date_format": "us",
+                    "cleanup_during_header_processing": True,
+                    "composed": None,
+                    "date_pattern": None,
                     "role": Role.DATE,
                 },
                 "dimensions": [
@@ -295,6 +310,7 @@ def test_errors():
                             "skip_validation": False,
                             "special_extraction": "no",
                         },
+                        "cleanup_during_header_processing": True,
                         "role": Role.DIMENSION,
                     },
                     {
@@ -312,6 +328,7 @@ def test_errors():
                             "skip_validation": False,
                             "special_extraction": "no",
                         },
+                        "cleanup_during_header_processing": True,
                         "role": Role.DIMENSION,
                     },
                 ],
@@ -329,6 +346,7 @@ def test_errors():
                         "skip_validation": False,
                         "special_extraction": "no",
                     },
+                    "cleanup_during_header_processing": True,
                     "role": Role.METRIC,
                 },
                 "title_ids": [
@@ -347,6 +365,7 @@ def test_errors():
                             "skip_validation": False,
                             "special_extraction": "no",
                         },
+                        "cleanup_during_header_processing": True,
                         "role": Role.TITLE_ID,
                     }
                 ],
@@ -431,6 +450,9 @@ def test_date_based_definition():
                                 "special_extraction": "no",
                             },
                             "preferred_date_format": "us",
+                            "cleanup_during_header_processing": True,
+                            "composed": None,
+                            "date_pattern": None,
                             "role": Role.DATE,
                         }
                     ],
@@ -476,6 +498,7 @@ def test_date_based_definition():
                             "skip_validation": False,
                             "special_extraction": "no",
                         },
+                        "cleanup_during_header_processing": True,
                         "role": Role.DIMENSION,
                     },
                     {
@@ -493,6 +516,7 @@ def test_date_based_definition():
                             "skip_validation": False,
                             "special_extraction": "no",
                         },
+                        "cleanup_during_header_processing": True,
                         "role": Role.DIMENSION,
                     },
                 ],
@@ -510,6 +534,7 @@ def test_date_based_definition():
                         "skip_validation": False,
                         "special_extraction": "no",
                     },
+                    "cleanup_during_header_processing": True,
                     "role": Role.METRIC,
                 },
                 "titles": {
@@ -526,6 +551,7 @@ def test_date_based_definition():
                         "skip_validation": False,
                         "special_extraction": "no",
                     },
+                    "cleanup_during_header_processing": True,
                     "role": Role.TITLE,
                 },
                 "title_ids": [
@@ -544,6 +570,7 @@ def test_date_based_definition():
                             "skip_validation": False,
                             "special_extraction": "no",
                         },
+                        "cleanup_during_header_processing": True,
                         "role": Role.TITLE_ID,
                     },
                 ],

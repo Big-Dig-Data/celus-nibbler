@@ -172,7 +172,8 @@ class DataHeaderRule(JsonEncorder):
     def process(
         self, sheet: SheetReader, idx: int, role: Role
     ) -> typing.Tuple[DataHeaderAction, typing.Optional[typing.Any]]:
-        role = deepcopy(role)
+        if role.cleanup_during_header_processing:
+            role = deepcopy(role)
 
         if self.role_extract_params_override:
             role.extract_params = deepcopy(self.role_extract_params_override)
