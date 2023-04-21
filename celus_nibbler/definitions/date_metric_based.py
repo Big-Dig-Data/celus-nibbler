@@ -65,6 +65,7 @@ class DateMetricBasedDefinition(JsonEncorder, BaseNonCounterParserDefinition):
     metric_aliases: typing.List[typing.Tuple[str, str]] = field(default_factory=lambda: [])
     dimension_aliases: typing.List[typing.Tuple[str, str]] = field(default_factory=lambda: [])
     heuristics: typing.Optional[Condition] = None
+    possible_row_offsets: typing.List[int] = field(default_factory=lambda: [0])
 
     kind: typing.Literal["non_counter.date_metric_based"] = "non_counter.date_metric_based"
     version: typing.Literal[1] = 1
@@ -88,6 +89,8 @@ class DateMetricBasedDefinition(JsonEncorder, BaseNonCounterParserDefinition):
             dimension_aliases = _definition.dimension_aliases
 
             heuristics = _definition.heuristics
+            possible_row_offsets = _definition.possible_row_offsets
+
             areas = [e.make_area() for e in _definition.areas]
 
         return Parser

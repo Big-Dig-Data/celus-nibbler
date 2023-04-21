@@ -208,7 +208,7 @@ def findparser(
     check_platform: bool = True,
     use_heuristics: bool = True,
     dynamic_parsers: typing.List[typing.Type[BaseParser]] = [],
-) -> typing.Type[BaseParser]:
+) -> BaseParser:
     parser_classes = [
         (name, parser)
         for name, parser in get_parsers(parsers, dynamic_parsers)
@@ -228,26 +228,21 @@ def findparser(
         logger.warning('no parser found for reader %s', type(sheet))
         raise NoParserForFileTypeFound(sheet.sheet_idx)
 
+    parser_instances = [(name, parser(sheet, platform=platform)) for name, parser in parser_classes]
     if use_heuristics:
-        parser_classes = [
-            (name, parser)
-            for name, parser in parser_classes
-            if parser(sheet, platform=platform).heuristic_check()
+        parser_instances = [
+            (name, parser) for (name, parser) in parser_instances if parser.heuristic_check()
         ]
 
-    if len(parser_classes) < 1:
+    if len(parser_instances) < 1:
         logger.warning('no parser found')
         raise NoParserMatchesHeuristics(sheet.sheet_idx)
 
-    elif len(parser_classes) > 1:
+    elif len(parser_instances) > 1:
         logger.warning('%s more than one parser found', len(parser_classes))
         raise MultipleParsersFound(sheet.sheet_idx, *(e[0] for e in parser_classes))
 
-    logger.info(
-        '%s parser, matching the heuristics in the file, has been found.',
-        len(parser_classes),
-    )
-    name, parser = parser_classes[0]
+    name, parser = parser_instances[0]
     logger.info('Parser used: %s', name)
     return parser
 
@@ -286,7 +281,7 @@ def eat(
             parser = findparser(
                 sheet, platform, parsers, check_platform, use_heuristics, dynamic_parsers
             )
-            poops.append(Poop(parser(sheet, platform)))
+            poops.append(Poop(parser))
         except (NoParserFound, MultipleParsersFound) as e:
             logger.warning(
                 'parser has not been chosen for sheet %s, the sheet wont be parsed',

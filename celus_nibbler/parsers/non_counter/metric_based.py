@@ -19,10 +19,14 @@ from .base import BaseNonCounterParser
 class BaseMetricArea(BaseHeaderArea, metaclass=ABCMeta):
     aggregator = SameAggregator()
 
-    def get_months(self) -> typing.List[datetime.date]:
+    def get_months(self, row_offset: typing.Optional[int]) -> typing.List[datetime.date]:
         res = set()
         try:
             for cell in self.date_source.source:
+
+                if row_offset:
+                    cell = cell.with_row_offset(row_offset)
+
                 date = self.parse_date(cell)
                 res.add(date.replace(day=1))
 

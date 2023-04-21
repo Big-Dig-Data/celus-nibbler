@@ -34,7 +34,7 @@ class BaseCelusFormatArea(BaseTabularArea):
     dimension_mapping: typing.Dict[str, str] = {}
     value_extract_params: ExtractParams = ExtractParams()
 
-    def find_data_cells(self) -> typing.List[DataCells]:
+    def find_data_cells(self, row_offset: typing.Optional[int]) -> typing.List[DataCells]:
         # Should raise validation error when column is unidentified
         res = []
 
@@ -45,6 +45,10 @@ class BaseCelusFormatArea(BaseTabularArea):
         self.dimensions_sources = {}
 
         for cell in CoordRange(Coord(0, 0), Direction.RIGHT):
+
+            if row_offset:
+                cell = cell.with_row_offset(row_offset)
+
             data_source = CoordRange(cell, Direction.DOWN).skip(1)
             try:
                 # First try to extract date

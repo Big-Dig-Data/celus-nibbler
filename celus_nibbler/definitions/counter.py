@@ -239,6 +239,7 @@ class BaseCounterParserDefinition(BaseParserDefinition, metaclass=abc.ABCMeta):
     dimensions_to_skip: typing.Dict[str, typing.List[str]] = field(default_factory=lambda: {})
     metric_aliases: typing.List[typing.Tuple[str, str]] = field(default_factory=lambda: [])
     dimension_aliases: typing.List[typing.Tuple[str, str]] = field(default_factory=lambda: [])
+    possible_row_offsets: typing.List[int] = field(default_factory=lambda: [0])
 
 
 @dataclass(config=PydanticConfig)
@@ -267,6 +268,7 @@ def gen_parser(
         dimensions_to_skip = definition.dimensions_to_skip or base.dimensions_to_skip
         metric_aliases = definition.metric_aliases or base.metric_aliases
         dimension_aliases = definition.dimension_aliases or base.dimension_aliases
+        possible_row_offsets = definition.possible_row_offsets or base.possible_row_offsets
 
         areas = [definition.areas[0].make_area()]
 

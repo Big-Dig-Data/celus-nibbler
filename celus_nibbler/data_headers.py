@@ -170,7 +170,7 @@ class DataHeaderRule(JsonEncorder):
     role_source_offset: int = 0
 
     def process(
-        self, sheet: SheetReader, idx: int, role: Role
+        self, sheet: SheetReader, idx: int, role: Role, row_offset: typing.Optional[int]
     ) -> typing.Tuple[DataHeaderAction, typing.Optional[typing.Any]]:
         if role.cleanup_during_header_processing:
             role = deepcopy(role)
@@ -179,7 +179,7 @@ class DataHeaderRule(JsonEncorder):
             role.extract_params = deepcopy(self.role_extract_params_override)
 
         try:
-            value = role.extract(sheet, idx + self.role_source_offset)
+            value = role.extract(sheet, idx + self.role_source_offset, row_offset=row_offset)
             if self.condition is None or self.condition.check(value, idx):
                 return self.on_condition_passed, value
             else:
@@ -224,12 +224,16 @@ class DataHeaders(JsonEncorder):
         else:
             setattr(record, role.role, value)
 
-    def find_data_cells(self, sheet: SheetReader) -> typing.List['DataCells']:
+    def find_data_cells(
+        self, sheet: SheetReader, row_offset: typing.Optional[int]
+    ) -> typing.List['DataCells']:
         res: typing.List[DataCells] = []
 
         for idx, cell in itertools.takewhile(
             lambda x: x[0] < MAX_DATA_CELLS, enumerate(self.data_cells)
         ):
+            if row_offset:
+                cell = cell.with_row_offset(row_offset)
 
             record = CounterRecord(value=0)
             action = DataHeaderAction.PROCEED
@@ -241,7 +245,7 @@ class DataHeaders(JsonEncorder):
                     if rule.role_idx and role_idx != rule.role_idx:
                         # Skip rules which doesn't match index
                         continue
-                    cur_action, value = rule.process(sheet, idx, role)
+                    cur_action, value = rule.process(sheet, idx, role, row_offset)
                     action = action.merge(cur_action)
 
                     if action != DataHeaderAction.PROCEED or value is not None:

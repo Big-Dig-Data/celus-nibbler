@@ -54,6 +54,7 @@ class CelusFormatParserDefinition(BaseNonCounterParserDefinition, metaclass=abc.
     metric_aliases: typing.List[typing.Tuple[str, str]] = field(default_factory=lambda: [])
     dimension_aliases: typing.List[typing.Tuple[str, str]] = field(default_factory=lambda: [])
     heuristics: typing.Optional[Condition] = None
+    possible_row_offsets: typing.List[int] = field(default_factory=lambda: [0])
 
     kind: typing.Literal["non_counter.celus_format"] = "non_counter.celus_format"
     version: typing.Literal[1] = 1
@@ -76,6 +77,7 @@ class CelusFormatParserDefinition(BaseNonCounterParserDefinition, metaclass=abc.
             dimension_aliases = self.dimension_aliases
 
             heuristics = self.heuristics
+            possible_row_offsets = self.possible_row_offsets
 
             areas = [e.make_area() for e in self.areas]
 

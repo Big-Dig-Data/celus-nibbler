@@ -22,6 +22,9 @@ class Content(metaclass=abc.ABCMeta):
     def content(self, sheet: SheetReader):
         pass
 
+    def with_row_offset(self, row_offset: int) -> 'Content':
+        return self
+
 
 @dataclass(config=PydanticConfig)
 class Value(JsonEncorder, Content):
@@ -93,6 +96,9 @@ class Coord(JsonEncorder, Content):
 
     def __add__(self, other) -> 'Coord':
         return Coord(self.row + other.row, self.col + other.col)
+
+    def with_row_offset(self, row_offset: int) -> 'Coord':
+        return Coord(self.row + row_offset, self.col)
 
 
 @dataclass(config=PydanticConfig)
@@ -180,3 +186,10 @@ class CoordRange(JsonEncorder, Content):
 
     def skip(self, count: int) -> 'CoordRange':
         return CoordRange(self[count], self.direction)
+
+    def with_row_offset(self, row_offset: int) -> 'CoordRange':
+        return CoordRange(
+            coord=self.coord.with_row_offset(row_offset),
+            direction=self.direction,
+            max_count=self.max_count,
+        )

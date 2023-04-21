@@ -190,6 +190,13 @@ from celus_nibbler.parsers.dynamic import gen_parser
             "dynamic.non_counter.simple_format.two_line_dates2",
             False,
         ),
+        (
+            "Platform2",
+            "row_offset",
+            "csv",
+            "dynamic.non_counter.simple_format.row_offset",
+            False,
+        ),
     ),
 )
 def test_dynamic(platform, filename, ext, parser, aggregated):

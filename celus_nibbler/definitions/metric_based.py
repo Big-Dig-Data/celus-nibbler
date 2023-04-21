@@ -71,6 +71,7 @@ class MetricBasedDefinition(BaseNonCounterParserDefinition):
     metric_aliases: typing.List[typing.Tuple[str, str]] = field(default_factory=lambda: [])
     dimension_aliases: typing.List[typing.Tuple[str, str]] = field(default_factory=lambda: [])
     heuristics: typing.Optional[Condition] = None
+    possible_row_offsets: typing.List[int] = field(default_factory=lambda: [0])
 
     kind: typing.Literal["non_counter.metric_based"] = "non_counter.metric_based"
     version: typing.Literal[1] = 1
@@ -94,6 +95,7 @@ class MetricBasedDefinition(BaseNonCounterParserDefinition):
             dimension_aliases = self.dimension_aliases
 
             heuristics = self.heuristics
+            possible_row_offsets = _definition.possible_row_offsets
 
             areas = [e.make_area() for e in self.areas]
 

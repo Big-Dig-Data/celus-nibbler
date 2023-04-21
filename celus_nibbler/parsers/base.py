@@ -56,7 +56,7 @@ class BaseArea(metaclass=ABCMeta):
         return record
 
     @abstractmethod
-    def get_months(self) -> typing.List[datetime.date]:
+    def get_months(self, row_offset: typing.Optional[int]) -> typing.List[datetime.date]:
         pass
 
     @property
@@ -82,7 +82,7 @@ class BaseTabularArea(BaseArea):
         return validators.Date(value=content).value
 
     @abstractmethod
-    def find_data_cells(self) -> typing.List[DataCells]:
+    def find_data_cells(self, row_offset: typing.Optional[int]) -> typing.List[DataCells]:
         pass
 
 
@@ -92,8 +92,8 @@ class BaseHeaderArea(BaseTabularArea):
     def data_headers(self) -> DataHeaders:
         pass
 
-    def find_data_cells(self) -> typing.List[DataCells]:
-        return self.data_headers.find_data_cells(self.sheet)
+    def find_data_cells(self, row_offset: typing.Optional[int]) -> typing.List[DataCells]:
+        return self.data_headers.find_data_cells(self.sheet, row_offset)
 
 
 class BaseParser(metaclass=ABCMeta):
@@ -103,6 +103,8 @@ class BaseParser(metaclass=ABCMeta):
     heuristics: typing.Optional[BaseCondition] = None
     metric_aliases: typing.List[typing.Tuple[str, str]] = []
     dimension_aliases: typing.List[typing.Tuple[str, str]] = []
+    possible_row_offsets: typing.List[int] = [0]
+    current_row_offset: int = 0
 
     @classmethod
     @abstractmethod
@@ -135,7 +137,12 @@ class BaseParser(metaclass=ABCMeta):
 
     def heuristic_check(self) -> bool:
         if self.heuristics:
-            return self.heuristics.check(self.sheet)
+            for row_offset in self.possible_row_offsets:
+                if self.heuristics.check(self.sheet, row_offset):
+                    # Set detect offset to be used later
+                    self.current_row_offset = row_offset
+                    return True
+            return False
         return True
 
     @property
@@ -169,7 +176,7 @@ class BaseParser(metaclass=ABCMeta):
         pass
 
     def get_months(self) -> typing.List[typing.List[datetime.date]]:
-        return [e.get_months() for e in self.get_areas()]
+        return [e.get_months(self.current_row_offset) for e in self.get_areas()]
 
 
 class BaseJsonParser(BaseParser):
@@ -189,7 +196,9 @@ class BaseTabularParser(BaseParser):
         return [CsvSheetReader]
 
     def _parse_area(self, area: BaseTabularArea) -> typing.Generator[CounterRecord, None, None]:
-        data_cells = area.find_data_cells()
+        row_offset = self.current_row_offset
+
+        data_cells = area.find_data_cells(row_offset)
 
         # Store title_ids and dimensions sources
         # so it can be reused in the for-cycle
@@ -203,33 +212,38 @@ class BaseTabularParser(BaseParser):
             for idx in itertools.count(0):
                 # iterates through ranges
                 if area.title_source:
-                    title = area.title_source.extract(self.sheet, idx)
+                    title = area.title_source.extract(self.sheet, idx, row_offset=row_offset)
                     if title is not None and title.lower() in titles_to_skip:
                         continue
                 else:
                     title = None
 
                 if area.metric_source:
-                    metric = area.metric_source.extract(self.sheet, idx)
+                    metric = area.metric_source.extract(self.sheet, idx, row_offset=row_offset)
                     if metric is not None and metric.lower() in metrics_to_skip:
                         continue
                 else:
                     metric = None
 
                 if area.organization_source:
-                    organization = area.organization_source.extract(self.sheet, idx)
+                    organization = area.organization_source.extract(
+                        self.sheet, idx, row_offset=row_offset
+                    )
                 else:
                     organization = None
 
                 if area.date_source:
-                    date = area.date_source.extract(self.sheet, idx)
+                    date = area.date_source.extract(self.sheet, idx, row_offset=row_offset)
                 else:
                     date = None
 
                 dimension_data = {}
                 for k, dimension_source in dimensions_sources:
                     dimension_text = dimension_source.extract(
-                        self.sheet, idx, self.dimensions_validators.get(k)
+                        self.sheet,
+                        idx,
+                        validator=self.dimensions_validators.get(k),
+                        row_offset=row_offset,
                     )
                     if (
                         dimension_text is not None
@@ -242,11 +256,13 @@ class BaseTabularParser(BaseParser):
                 title_ids = {}
                 for key in IDS:
                     if title_source := title_ids_sources.get(key):
-                        value = title_source.extract(self.sheet, idx)
+                        value = title_source.extract(self.sheet, idx, row_offset=row_offset)
                         if value:
                             title_ids[key] = value
 
                 for data_cell in data_cells:
+                    # No need to consider offset here, it was already been
+                    # derived in find_data_cells
                     value = data_cell.value_source.extract(self.sheet, idx)
                     record = CounterRecord(
                         value=round(value),
