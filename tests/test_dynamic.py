@@ -197,6 +197,13 @@ from celus_nibbler.parsers.dynamic import gen_parser
             "dynamic.non_counter.simple_format.row_offset",
             False,
         ),
+        (
+            "Platform2",
+            "prefix_and_suffix_extraction",
+            "csv",
+            "dynamic.non_counter.simple_format.prefix_and_suffix_extraction",
+            False,
+        ),
     ),
 )
 def test_dynamic(platform, filename, ext, parser, aggregated):

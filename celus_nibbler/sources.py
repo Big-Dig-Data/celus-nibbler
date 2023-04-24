@@ -51,6 +51,8 @@ class ExtractParams(JsonEncorder):
     last_value_as_default: bool = False
     blank_values: typing.Tuple[typing.Any, ...] = field(default_factory=lambda: (None, ""))
     skip_validation: bool = False
+    prefix: str = ""
+    suffix: str = ""
     special_extraction: SpecialExtraction = SpecialExtraction.NO
 
 
@@ -67,10 +69,17 @@ class ContentExtractorMixin:
         content = source.content(sheet)
         if regex := self.extract_params.regex:
             if extracted := regex.search(content):
-                return extracted.group(1)
+                content = extracted.group(1)
             else:
                 # Unable to extract data
                 return None
+
+        if prefix := self.extract_params.prefix:
+            content = prefix + content
+
+        if suffix := self.extract_params.suffix:
+            content = content + suffix
+
         return content
 
     def extract(
