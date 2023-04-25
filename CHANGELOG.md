@@ -5,11 +5,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.14.2] - 2023-04-25
+
+### Fixed
+- use calculate_dimensions in xlsx parsing properly (even for unsized worksheets)
+
+
 ## [7.14.1] - 2023-04-25
 
 ### Fixed
 - remedy for parsing of messed up xlsx files
-
 
 
 ## [7.14.0] - 2023-04-24
