@@ -308,6 +308,11 @@ class XlsxReader(TableReader):
             # Store each sheet as temporary CSV file
             for idx, sheet in enumerate(workbook.worksheets):
 
+                # For some reason in it necessary to reset dimension for some files
+                # which display that only a single cell is present in the data
+                if sheet.calculate_dimension() == "A1:A1":
+                    sheet.reset_dimensions()
+
                 # write data to csv
                 f = tempfile.TemporaryFile("w+")
                 # unix dialect escapes all by default
