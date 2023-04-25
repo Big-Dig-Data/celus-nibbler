@@ -310,7 +310,7 @@ class XlsxReader(TableReader):
 
                 # For some reason in it necessary to reset dimension for some files
                 # which display that only a single cell is present in the data
-                if sheet.calculate_dimension() == "A1:A1":
+                if sheet.calculate_dimension(force=True) == "A1:A1":
                     sheet.reset_dimensions()
 
                 # write data to csv
