@@ -83,6 +83,9 @@
               },
               "direction": "down"
           },
+          "extract_params": {
+              "on_validation_error": "stop"
+          },
           "role": "date"
       },
       "titles": null,

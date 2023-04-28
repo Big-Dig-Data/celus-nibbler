@@ -1,5 +1,8 @@
-from celus_nigiri import CounterRecord
+import typing
 
+from enum import Enum
+
+from celus_nigiri import CounterRecord
 from celus_nibbler.utils import colnum_to_colletters
 
 # TODO more verbose exception (e.g. write why does it failed)
@@ -57,15 +60,21 @@ class TableException(NibblerError):
     while parsing tabular format
     """
 
+    class Action(str, Enum):
+        FAIL = "fail"
+        SKIP = "skip"
+        STOP = "stop"
+
     ATTRS = ["value", "row", "col", "sheet", "reason"]
 
     def __init__(
         self,
         value=None,
-        row: int = None,
-        col: int = None,
-        sheet: int = None,
+        row: typing.Optional[int] = None,
+        col: typing.Optional[int] = None,
+        sheet: typing.Optional[int] = None,
         reason: str = "unspecified",
+        action: Action = Action.FAIL,
     ):
         super().__init__()
         self.value = value
@@ -73,6 +82,7 @@ class TableException(NibblerError):
         self.col = col
         self.sheet = sheet
         self.reason = reason
+        self.action = action
 
     def __str__(self):
         laymancount_sheet = self.sheet + 1 if self.sheet is not None else "unspecified"

@@ -189,16 +189,19 @@ class BaseTabularParser(BaseParser):
     dimensions_validators: typing.Dict[str, typing.Type[BaseModel]] = {
         "Platform": validators.Platform,
     }
-    END_EXCEPTIONS = ["out-of-bounds", "empty"]
 
     @classmethod
     def sheet_reader_classes(cls):
         return [CsvSheetReader]
 
     def _parse_area(self, area: BaseTabularArea) -> typing.Generator[CounterRecord, None, None]:
-        row_offset = self.current_row_offset
 
-        data_cells = area.find_data_cells(row_offset)
+        row_offset = self.current_row_offset
+        try:
+            data_cells = area.find_data_cells(row_offset)
+        except TableException as e:
+            if e.action == TableException.Action.FAIL:
+                raise
 
         # Store title_ids and dimensions sources
         # so it can be reused in the for-cycle
@@ -208,8 +211,8 @@ class BaseTabularParser(BaseParser):
         titles_to_skip = [e.lower() for e in self.titles_to_skip]
         dimensions_to_skip = {k: [e.lower() for e in v] for k, v in self.dimensions_to_skip.items()}
 
-        try:
-            for idx in itertools.count(0):
+        for idx in itertools.count(0):
+            try:
                 # iterates through ranges
                 if area.title_source:
                     title = area.title_source.extract(self.sheet, idx, row_offset=row_offset)
@@ -260,7 +263,16 @@ class BaseTabularParser(BaseParser):
                         if value:
                             title_ids[key] = value
 
-                for data_cell in data_cells:
+            except TableException as e:
+                if e.action == TableException.Action.SKIP:
+                    continue
+                if e.action == TableException.Action.STOP:
+                    return
+                else:
+                    raise
+
+            for data_cell in data_cells:
+                try:
                     # No need to consider offset here, it was already been
                     # derived in find_data_cells
                     value = data_cell.value_source.extract(self.sheet, idx)
@@ -279,9 +291,10 @@ class BaseTabularParser(BaseParser):
                     logger.debug("Parsed %s", record)
                     yield record
 
-        except TableException as e:
-            if e.reason in self.END_EXCEPTIONS:
-                # end was reached
-                pass
-            else:
-                raise
+                except TableException as e:
+                    if e.action == TableException.Action.SKIP:
+                        continue
+                    if e.action == TableException.Action.STOP:
+                        return
+                    else:
+                        raise

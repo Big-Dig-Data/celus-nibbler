@@ -54,6 +54,7 @@ class ExtractParams(JsonEncorder):
     prefix: str = ""
     suffix: str = ""
     special_extraction: SpecialExtraction = SpecialExtraction.NO
+    on_validation_error: TableException.Action = TableException.Action.FAIL
 
 
 class ContentExtractorMixin:
@@ -146,11 +147,17 @@ class ContentExtractorMixin:
         except ValidationError as e:
             if isinstance(self.source, Value):
                 raise TableException(
-                    value=self.source.value, sheet=sheet.sheet_idx, reason="wrong-value"
+                    value=self.source.value,
+                    sheet=sheet.sheet_idx,
+                    reason="wrong-value",
+                    action=self.extract_params.on_validation_error,
                 )
             elif isinstance(self.source, SheetAttr):
                 raise TableException(
-                    value=self.source.sheet_attr, sheet=sheet.sheet_idx, reason="wrong-sheet-attr"
+                    value=self.source.sheet_attr,
+                    sheet=sheet.sheet_idx,
+                    reason="wrong-sheet-attr",
+                    action=self.extract_params.on_validation_error,
                 )
             else:
                 raise TableException(
@@ -158,7 +165,8 @@ class ContentExtractorMixin:
                     row=getattr(source, 'row', None),
                     col=getattr(source, 'col', None),
                     sheet=sheet.sheet_idx,
-                    reason=e.model.__name__.lower() if content else "empty",
+                    reason=e.model.__name__.lower(),
+                    action=self.extract_params.on_validation_error,
                 ) from e
         except IndexError as e:
             raise TableException(
@@ -166,6 +174,7 @@ class ContentExtractorMixin:
                 col=getattr(source, 'col', None),
                 sheet=sheet.sheet_idx,
                 reason='out-of-bounds',
+                action=TableException.Action.STOP,
             ) from e
 
         # update last extracted

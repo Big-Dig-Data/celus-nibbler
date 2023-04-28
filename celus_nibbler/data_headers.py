@@ -186,7 +186,7 @@ class DataHeaderRule(JsonEncorder):
                 return self.on_condition_failed, None
 
         except TableException as e:
-            if e.reason == "out-of-bounds":
+            if e.reason == TableException.Action.STOP:
                 # terminate if no offset
                 action = (
                     DataHeaderAction.STOP
@@ -208,7 +208,9 @@ class DataHeaders(JsonEncorder):
 
     data_cells: CoordRange  # first data after the header
     data_direction: Direction  # perpendicular to data_cells
-    data_extract_params: ExtractParams = field(default_factory=lambda: ExtractParams())
+    data_extract_params: ExtractParams = field(
+        default_factory=lambda: ExtractParams(on_validation_error=TableException.Action.STOP)
+    )
 
     rules: typing.List[DataHeaderRule] = Field(default_factory=lambda: [DataHeaderRule()])
 

@@ -11,7 +11,13 @@ from celus_nibbler.coordinates import Coord, CoordRange, Direction
 from celus_nibbler.data_headers import DataFormatDefinition, DataHeaders
 from celus_nibbler.errors import TableException
 from celus_nibbler.parsers.base import BaseHeaderArea
-from celus_nibbler.sources import DateSource, DimensionSource, MetricSource, OrganizationSource
+from celus_nibbler.sources import (
+    DateSource,
+    DimensionSource,
+    MetricSource,
+    OrganizationSource,
+    ExtractParams,
+)
 
 from .base import BaseNonCounterParser
 
@@ -31,8 +37,8 @@ class BaseMetricArea(BaseHeaderArea, metaclass=ABCMeta):
                 res.add(date.replace(day=1))
 
         except TableException as e:
-            if e.reason in ["out-of-bounds"]:
-                pass  # last cell reached
+            if e.action == TableException.Action.STOP:
+                pass
             else:
                 raise
         except ValidationError:
@@ -52,11 +58,17 @@ class MetricBasedParser(BaseNonCounterParser):
 
 
 class MyMetricArea(BaseMetricArea):
-    date_source = DateSource(CoordRange(Coord(15, 1), Direction.DOWN))
+    date_source = DateSource(
+        CoordRange(Coord(15, 1), Direction.DOWN),
+        extract_params=ExtractParams(on_validation_error=TableException.Action.STOP),
+    )
     dimensions_sources = {
         "Dimension1": DimensionSource("Dimension1", CoordRange(Coord(15, 2), Direction.DOWN)),
     }
-    organization_source = OrganizationSource(CoordRange(Coord(15, 3), Direction.DOWN))
+    organization_source = OrganizationSource(
+        CoordRange(Coord(15, 3), Direction.DOWN),
+        extract_params=ExtractParams(on_validation_error=TableException.Action.STOP),
+    )
 
     data_headers = DataHeaders(
         roles=[

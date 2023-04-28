@@ -77,7 +77,11 @@ class Coord(JsonEncorder, Content):
             return sheet[self.row][self.col]
         except IndexError as e:
             raise TableException(
-                row=self.row, col=self.col, sheet=sheet.sheet_idx, reason="out-of-bounds"
+                row=self.row,
+                col=self.col,
+                sheet=sheet.sheet_idx,
+                reason="out-of-bounds",
+                action=TableException.Action.STOP,
             ) from e
 
     def __iter__(self):

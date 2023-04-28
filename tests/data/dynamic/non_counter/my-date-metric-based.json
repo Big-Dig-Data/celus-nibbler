@@ -77,7 +77,8 @@
               "direction": "down"
           },
           "extract_params": {
-            "regex": "^MYCONS - (.*)$"
+            "regex": "^MYCONS - (.*)$",
+            "on_validation_error": "stop"
           }
       },
       "titles": null,

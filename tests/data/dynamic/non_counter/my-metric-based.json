@@ -62,6 +62,9 @@
                   "col": 3
               },
               "direction": "down"
+          },
+          "extract_params": {
+            "on_validation_error": "stop"
           }
       },
       "dates": {

@@ -110,7 +110,7 @@ class BaseCelusFormatArea(BaseTabularArea):
             except TableException as e:
                 # Stop processing when an exception occurs
                 # (index out of bounds or unable to parse next field)
-                if e.reason == "out-of-bounds":
+                if e.action == TableException.Action.STOP:
                     logger.debug("Header parsing terminated: %s", e)
                     break
                 else:
