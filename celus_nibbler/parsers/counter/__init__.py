@@ -3,12 +3,12 @@ import logging
 import typing
 from functools import lru_cache
 
-from pydantic import ValidationError
 
 from celus_nibbler.coordinates import Coord, CoordRange, Direction
 from celus_nibbler.data_headers import DataHeaders
 from celus_nibbler.errors import TableException
 from celus_nibbler.parsers.non_counter.date_based import BaseDateArea
+from celus_nibbler.conditions import IsDateCondition
 from celus_nibbler.sources import (
     DateSource,
     DimensionSource,
@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 
 class CounterHeaderArea(BaseDateArea):
-    HEADER_DATE_START = 1
+    HEADER_DATE_COL_START = 1
     MAX_HEADER_ROW = 50
     DOI_NAMES = {
         "Book DOI",
@@ -87,7 +87,7 @@ class CounterHeaderArea(BaseDateArea):
             return self._header_row
 
         for idx in range(self.MAX_HEADER_ROW):
-            crange = CoordRange(Coord(idx, self.HEADER_DATE_START), Direction.RIGHT)
+            crange = CoordRange(Coord(idx, self.HEADER_DATE_COL_START), Direction.RIGHT)
 
             last = None
             for cell in crange:
@@ -101,13 +101,9 @@ class CounterHeaderArea(BaseDateArea):
                     raise
 
             if last:
-                try:
-                    # Throws exception when it is not a date
-                    self.parse_date(last)
+                if IsDateCondition(coord=last).check(self.sheet):
                     self._header_row = CoordRange(Coord(idx, 0), Direction.RIGHT)
                     return self._header_row
-                except ValidationError:
-                    continue  # doesn't match the header
 
         raise TableException(
             sheet=self.sheet.sheet_idx,
@@ -119,23 +115,22 @@ class CounterHeaderArea(BaseDateArea):
     def data_headers(self):
         # First date which is parsed in the header
         for cell in itertools.islice(self.header_row, 1, None):
-            try:
-                # Throws exception when it is not a date
-                self.parse_date(cell)
-                first_data_cell = CoordRange(cell, Direction.DOWN)[1]
-                return DataHeaders(
-                    roles=[
-                        DateSource(
-                            source=CoordRange(cell, Direction.RIGHT),
-                            extract_params=self.DATE_EXTRACT_PARAMS,
-                        ),
-                    ],
-                    data_cells=CoordRange(first_data_cell, Direction.RIGHT),
-                    data_direction=Direction.DOWN,
-                    data_extract_params=self.DATA_EXTRACT_PARAMS,
-                )
-            except ValidationError:
-                continue  # doesn't match the header
+
+            if not IsDateCondition(coord=cell).check(self.sheet):
+                continue
+
+            first_data_cell = CoordRange(cell, Direction.DOWN)[1]
+            return DataHeaders(
+                roles=[
+                    DateSource(
+                        source=CoordRange(cell, Direction.RIGHT),
+                        extract_params=self.DATE_EXTRACT_PARAMS,
+                    ),
+                ],
+                data_cells=CoordRange(first_data_cell, Direction.RIGHT),
+                data_direction=Direction.DOWN,
+                data_extract_params=self.DATA_EXTRACT_PARAMS,
+            )
 
     @property
     @lru_cache

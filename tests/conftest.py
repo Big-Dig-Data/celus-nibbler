@@ -15,6 +15,14 @@ def csv_sheet_reader(sheet_csv):
     return CsvSheetReader(0, None, sheet_csv)
 
 
+@pytest.fixture
+def csv_sheet_generator():
+    def gen(raw_data):
+        return CsvSheetReader(0, None, StringIO(raw_data))
+
+    return gen
+
+
 @pytest.fixture()
 def sheet_json():
     return BytesIO(

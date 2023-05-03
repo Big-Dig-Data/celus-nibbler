@@ -1,9 +1,9 @@
 import datetime
 import re
 import typing
+import itertools
 from abc import ABCMeta
 
-from pydantic import ValidationError
 
 from celus_nibbler.aggregator import SameAggregator
 from celus_nibbler.conditions import RegexCondition, SheetNameRegexCondition
@@ -27,23 +27,18 @@ class BaseMetricArea(BaseHeaderArea, metaclass=ABCMeta):
 
     def get_months(self, row_offset: typing.Optional[int]) -> typing.List[datetime.date]:
         res = set()
-        try:
-            for cell in self.date_source.source:
-
-                if row_offset:
-                    cell = cell.with_row_offset(row_offset)
-
-                date = self.parse_date(cell)
+        for idx in itertools.count(0):
+            try:
+                date = self.date_source.extract(self.sheet, idx, row_offset=row_offset)
                 res.add(date.replace(day=1))
 
-        except TableException as e:
-            if e.action == TableException.Action.STOP:
-                pass
-            else:
-                raise
-        except ValidationError:
-            # failed to parse date => assume that input ended
-            pass
+            except TableException as e:
+                if e.action == TableException.Action.SKIP:
+                    continue
+                elif e.action == TableException.Action.STOP:
+                    break
+                else:
+                    raise
 
         return list(res)
 

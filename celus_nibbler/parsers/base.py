@@ -10,7 +10,6 @@ from pydantic import BaseModel
 from celus_nibbler import validators
 from celus_nibbler.aggregator import BaseAggregator, NoAggregator
 from celus_nibbler.conditions import BaseCondition
-from celus_nibbler.coordinates import Coord
 from celus_nibbler.data_headers import DataCells, DataFormatDefinition, DataHeaders
 from celus_nibbler.errors import TableException
 from celus_nibbler.reader import CsvSheetReader, JsonCounter5SheetReader, SheetReader
@@ -76,10 +75,6 @@ class BaseTabularArea(BaseArea):
     title_ids_sources: typing.Dict[str, TitleIdSource] = {}
     dimensions_sources: typing.Dict[str, DimensionSource] = {}
     metric_source: typing.Optional[MetricSource] = None
-
-    def parse_date(self, cell: Coord) -> datetime.date:
-        content = cell.content(self.sheet)
-        return validators.Date(value=content).value
 
     @abstractmethod
     def find_data_cells(self, row_offset: typing.Optional[int]) -> typing.List[DataCells]:

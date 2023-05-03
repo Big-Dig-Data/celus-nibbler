@@ -2,11 +2,12 @@ import typing
 from abc import ABCMeta, abstractmethod
 
 from jellyfish import porter_stem
-from pydantic import Field
+from pydantic import Field, ValidationError
 from pydantic.dataclasses import dataclass
 from typing_extensions import Annotated
 from unidecode import unidecode
 
+from . import validators
 from .coordinates import Coord, CoordRange
 from .errors import TableException
 from .reader import SheetReader
@@ -79,6 +80,43 @@ class RegexCondition(ArithmeticsMixin, BaseCondition, JsonEncorder):
             return bool(self.pattern.match(coord.content(sheet)))
         except TableException:
             return False
+
+
+@dataclass(config=PydanticConfig)
+class IsDateCondition(ArithmeticsMixin, BaseCondition, JsonEncorder):
+    coord: typing.Union[Coord, CoordRange]
+
+    kind: typing.Literal["is_date"] = "is_date"
+
+    def check(self, sheet: SheetReader, row_offset: typing.Optional[int] = None) -> bool:
+        # Deal with offsets
+        coord = self.coord
+        if row_offset:
+            coord = coord.with_row_offset(row_offset)
+
+        # Handle coord ranges
+        if isinstance(coord, CoordRange):
+            for c in coord:
+                try:
+                    content = c.content(sheet)
+                    content = content and content.strip()
+                    validators.Date(value=content)
+                except ValidationError:
+                    continue
+                except (TableException, IndexError):
+                    return False  # end was reached
+
+                return True
+
+        # Handle single coord
+        try:
+            content = coord.content(sheet)
+            content = content and content.strip()
+            validators.Date(value=content)
+        except (TableException, ValidationError, IndexError):
+            return False
+
+        return True
 
 
 @dataclass(config=PydanticConfig)
