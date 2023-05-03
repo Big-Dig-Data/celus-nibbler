@@ -7,8 +7,8 @@ from abc import ABCMeta
 from celus_nibbler.conditions import RegexCondition, SheetIdxCondition
 from celus_nibbler.coordinates import Coord, CoordRange, Direction
 from celus_nibbler.data_headers import DataFormatDefinition, DataHeaders
-from celus_nibbler.parsers.base import BaseHeaderArea
 from celus_nibbler.errors import TableException
+from celus_nibbler.parsers.base import BaseHeaderArea
 from celus_nibbler.sources import (
     DateSource,
     DimensionSource,

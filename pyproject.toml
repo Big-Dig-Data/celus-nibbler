@@ -9,6 +9,19 @@ target-version = ["py38"]
 
 [tool.ruff]
 line-length = 100
+select = [
+	# Pyflakes
+	"F",
+	# pycodestyle
+	"E",
+	# isort
+	"I",
+]
+src = ["celus_nibbler", "tests"]
+
+[tool.ruff.isort]
+known-first-party = ["celus_nibbler"]
+
 
 [tool.mypy]
 plugins = "pydantic.mypy"

@@ -1,9 +1,8 @@
 import datetime
+import itertools
 import re
 import typing
-import itertools
 from abc import ABCMeta
-
 
 from celus_nibbler.aggregator import SameAggregator
 from celus_nibbler.conditions import RegexCondition, SheetNameRegexCondition
@@ -14,9 +13,9 @@ from celus_nibbler.parsers.base import BaseHeaderArea
 from celus_nibbler.sources import (
     DateSource,
     DimensionSource,
+    ExtractParams,
     MetricSource,
     OrganizationSource,
-    ExtractParams,
 )
 
 from .base import BaseNonCounterParser

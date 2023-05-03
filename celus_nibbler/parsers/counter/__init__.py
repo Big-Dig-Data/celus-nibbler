@@ -3,12 +3,11 @@ import logging
 import typing
 from functools import lru_cache
 
-
+from celus_nibbler.conditions import IsDateCondition
 from celus_nibbler.coordinates import Coord, CoordRange, Direction
 from celus_nibbler.data_headers import DataHeaders
 from celus_nibbler.errors import TableException
 from celus_nibbler.parsers.non_counter.date_based import BaseDateArea
-from celus_nibbler.conditions import IsDateCondition
 from celus_nibbler.sources import (
     DateSource,
     DimensionSource,

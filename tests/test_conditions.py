@@ -1,7 +1,8 @@
-import pytest
 import json
 
-from celus_nibbler.conditions import RegexCondition, StemmerCondition, IsDateCondition
+import pytest
+
+from celus_nibbler.conditions import IsDateCondition, RegexCondition, StemmerCondition
 from celus_nibbler.coordinates import Coord, CoordRange, Direction
 
 

@@ -1,8 +1,8 @@
 import typing
-
 from enum import Enum
 
 from celus_nigiri import CounterRecord
+
 from celus_nibbler.utils import colnum_to_colletters
 
 # TODO more verbose exception (e.g. write why does it failed)
