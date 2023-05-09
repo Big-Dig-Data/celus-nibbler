@@ -2,12 +2,10 @@ import copy
 import logging
 import typing
 
-from celus_nigiri import CounterRecord
-
 from celus_nibbler.coordinates import Coord, CoordRange, Direction, Value
-from celus_nibbler.data_headers import DataCells
+from celus_nibbler.data_headers import DataHeaders
 from celus_nibbler.errors import TableException
-from celus_nibbler.parsers.base import BaseTabularArea, BaseTabularParser
+from celus_nibbler.parsers.base import BaseHeaderArea, BaseTabularParser
 from celus_nibbler.sources import (
     DateSource,
     DimensionSource,
@@ -16,16 +14,14 @@ from celus_nibbler.sources import (
     OrganizationSource,
     TitleIdSource,
     TitleSource,
-    ValueSource,
 )
-from celus_nibbler.utils import end_month, start_month
 
 from .base import BaseNonCounterParser
 
 logger = logging.getLogger(__name__)
 
 
-class BaseCelusFormatArea(BaseTabularArea):
+class BaseCelusFormatArea(BaseHeaderArea):
     title_column_names: typing.List[str] = []
     organization_column_names: typing.List[str] = []
     metric_column_names: typing.List[str] = []
@@ -34,9 +30,9 @@ class BaseCelusFormatArea(BaseTabularArea):
     dimension_mapping: typing.Dict[str, str] = {}
     value_extract_params: ExtractParams = ExtractParams()
 
-    def find_data_cells(self, row_offset: typing.Optional[int]) -> typing.List[DataCells]:
+    @property
+    def data_headers(self) -> DataHeaders:
         # Should raise validation error when column is unidentified
-        res = []
 
         # Convert title_ids_sources and dimensions_sources to instance variables
         # otherwise class variable would be modified here causing
@@ -44,29 +40,18 @@ class BaseCelusFormatArea(BaseTabularArea):
         self.title_ids_sources = {}
         self.dimensions_sources = {}
 
+        date_source = None
         for cell in CoordRange(Coord(0, 0), Direction.RIGHT):
-
-            if row_offset:
-                cell = cell.with_row_offset(row_offset)
 
             data_source = CoordRange(cell, Direction.DOWN).skip(1)
             try:
                 # First try to extract date
                 try:
-                    if date := DateSource(cell).extract(self.sheet, 0):
-                        record = CounterRecord(
-                            value=0,
-                            start=start_month(date),
-                            end=end_month(date),
-                        )
-                        res.append(
-                            DataCells(
-                                record,
-                                ValueSource(
-                                    source=data_source, extract_params=self.value_extract_params
-                                ),
-                            )
-                        )
+                    test_date_source = DateSource(CoordRange(cell, Direction.RIGHT))
+                    if test_date_source.extract(self.sheet, 0):
+                        # Set date source based on the first found date
+                        if not date_source:
+                            date_source = test_date_source
                         continue
                 except TableException as e:
                     if e.reason != "date":
@@ -126,8 +111,26 @@ class BaseCelusFormatArea(BaseTabularArea):
             else:
                 self.metric_source = MetricSource(Value(self.default_metric))
 
-        # Raise exception that no data cell was found
-        return res
+        # Raise exception when first row doesn't contain any date
+        if not date_source:
+            raise TableException(
+                value=None,
+                row=0,
+                col=None,
+                sheet=self.sheet.sheet_idx,
+                reason="no-date-in-header",
+            )
+
+        # data cells are right under date_source
+        data_cells: CoordRange = copy.deepcopy(date_source.source)
+        data_cells.coord.row += 1
+
+        return DataHeaders(
+            roles=[date_source],
+            data_cells=data_cells,
+            data_direction=Direction.DOWN,
+            data_extract_params=self.value_extract_params,
+        )
 
     def dimensions(self) -> typing.List[str]:
         # populate dimensions_sources
