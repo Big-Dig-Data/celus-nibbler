@@ -81,10 +81,6 @@ class CounterHeaderArea(BaseDateArea):
         # Right now it picks a first row with more than one column were the last column
         # is a date
 
-        # Try to use cached
-        if hasattr(self, '_header_row'):
-            return self._header_row
-
         for idx in range(self.MAX_HEADER_ROW):
             crange = CoordRange(Coord(idx, self.HEADER_DATE_COL_START), Direction.RIGHT)
 
@@ -101,8 +97,7 @@ class CounterHeaderArea(BaseDateArea):
 
             if last:
                 if IsDateCondition(coord=last).check(self.sheet):
-                    self._header_row = CoordRange(Coord(idx, 0), Direction.RIGHT)
-                    return self._header_row
+                    return CoordRange(Coord(idx, 0), Direction.RIGHT)
 
         raise TableException(
             sheet=self.sheet.sheet_idx,
