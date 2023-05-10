@@ -204,6 +204,13 @@ from celus_nibbler.parsers.dynamic import gen_parser
             "dynamic.non_counter.simple_format.prefix_and_suffix_extraction",
             False,
         ),
+        (
+            "Platform1",
+            "data_header-condition",
+            "csv",
+            "dynamic.non_counter.simple_format.data_header-condition",
+            False,
+        ),
     ),
 )
 def test_dynamic(platform, filename, ext, parser, aggregated):

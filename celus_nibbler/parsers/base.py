@@ -75,6 +75,7 @@ class BaseTabularArea(BaseArea):
     title_ids_sources: typing.Dict[str, TitleIdSource] = {}
     dimensions_sources: typing.Dict[str, DimensionSource] = {}
     metric_source: typing.Optional[MetricSource] = None
+    current_row_offset: int = 0
 
     @abstractmethod
     def find_data_cells(self, row_offset: typing.Optional[int]) -> typing.List[DataCells]:
@@ -88,7 +89,9 @@ class BaseHeaderArea(BaseTabularArea):
         pass
 
     def find_data_cells(self, row_offset: typing.Optional[int]) -> typing.List[DataCells]:
-        return self.data_headers.find_data_cells(self.sheet, row_offset)
+        offset, data_cells = self.data_headers.find_data_cells(self.sheet, row_offset)
+        self.current_row_offset = offset
+        return data_cells
 
 
 class BaseParser(metaclass=ABCMeta):
@@ -191,12 +194,14 @@ class BaseTabularParser(BaseParser):
 
     def _parse_area(self, area: BaseTabularArea) -> typing.Generator[CounterRecord, None, None]:
 
-        row_offset = self.current_row_offset
         try:
-            data_cells = area.find_data_cells(row_offset)
+            data_cells = area.find_data_cells(self.current_row_offset)
         except TableException as e:
             if e.action == TableException.Action.FAIL:
                 raise
+
+        # Add area offset to offset
+        row_offset = self.current_row_offset + area.current_row_offset
 
         # Store title_ids and dimensions sources
         # so it can be reused in the for-cycle

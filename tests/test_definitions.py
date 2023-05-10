@@ -99,6 +99,7 @@ def test_date_based_area_definition():
                     'role_source_offset': 0,
                 }
             ],
+            "condition": None,
         },
         "dimensions": [
             {
@@ -529,6 +530,7 @@ def test_date_based_definition():
                             'role_source_offset': 0,
                         }
                     ],
+                    "condition": None,
                 },
                 "dimensions": [
                     {

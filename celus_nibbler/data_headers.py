@@ -11,6 +11,7 @@ from pydantic import Field
 from pydantic.dataclasses import dataclass as pydantic_dataclass
 from typing_extensions import Annotated
 
+from celus_nibbler.conditions import Condition
 from celus_nibbler.coordinates import Coord, CoordRange, Direction
 from celus_nibbler.errors import TableException
 from celus_nibbler.reader import SheetReader
@@ -49,9 +50,13 @@ COUNTER_RECORD_FIELD_NAMES_NESTED = ["title_ids", "dimension_data"]
 logger = logging.getLogger(__name__)
 
 
-# Makes sure that wrong definition doesn't create
-# an infinite loop
+# Make sure that wrong definition doesn't create
+# an infinite loop while processing header
 MAX_DATA_CELLS = 1000
+
+# Make sure that wrong definition doesn't create
+# an infinite loop while looking for header
+MAX_HEADER_OFFSET_LOOKUP_COUNT = 1_000_000
 
 
 class DataHeaderBaseCondition(metaclass=ABCMeta):
@@ -213,6 +218,7 @@ class DataHeaders(JsonEncorder):
     )
 
     rules: typing.List[DataHeaderRule] = Field(default_factory=lambda: [DataHeaderRule()])
+    condition: typing.Optional[Condition] = None
 
     def process_value(self, record: CounterRecord, role: Role, value: typing.Any):
         if isinstance(role, DimensionSource):
@@ -226,20 +232,47 @@ class DataHeaders(JsonEncorder):
         else:
             setattr(record, role.role, value)
 
+    def prepare_row_offset(
+        self, sheet: SheetReader, initial_row_offset: typing.Optional[int]
+    ) -> int:
+        if not self.condition:
+            # No condition specified -> use initial
+            return initial_row_offset or 0
+
+        # Iterate until condition matches or an exception is raised
+        for offset in range(
+            initial_row_offset, MAX_HEADER_OFFSET_LOOKUP_COUNT + initial_row_offset
+        ):
+            try:
+                # TODO perhaps some kind of max limit would be nice here to
+                # avoid infinite loops
+                if self.condition.check(sheet, offset):
+                    return offset
+
+            except TableException as e:
+                raise TableException(
+                    row=None, col=None, sheet=e.sheet, reason="failed-to-detect-data-header"
+                ) from e
+
     def find_data_cells(
         self, sheet: SheetReader, row_offset: typing.Optional[int]
-    ) -> typing.List['DataCells']:
+    ) -> (int, typing.List['DataCells']):
         res: typing.List[DataCells] = []
+
+        # Derive row offset
+        absolute_row_offset = self.prepare_row_offset(sheet, row_offset)
 
         for idx, cell in itertools.takewhile(
             lambda x: x[0] < MAX_DATA_CELLS, enumerate(self.data_cells)
         ):
-            if row_offset:
-                cell = cell.with_row_offset(row_offset)
+            if absolute_row_offset:
+                cell = cell.with_row_offset(absolute_row_offset)
 
             record = CounterRecord(value=0)
             action = DataHeaderAction.PROCEED
             store = False
+
+            # Process data from header
             for role_idx, role in enumerate(self.roles):
 
                 value = None
@@ -247,7 +280,7 @@ class DataHeaders(JsonEncorder):
                     if rule.role_idx and role_idx != rule.role_idx:
                         # Skip rules which doesn't match index
                         continue
-                    cur_action, value = rule.process(sheet, idx, role, row_offset)
+                    cur_action, value = rule.process(sheet, idx, role, absolute_row_offset)
                     action = action.merge(cur_action)
 
                     if action != DataHeaderAction.PROCEED or value is not None:
@@ -288,7 +321,7 @@ class DataHeaders(JsonEncorder):
                 reason="no-header-data-found",
             )
 
-        return res
+        return absolute_row_offset - row_offset, res
 
 
 @dataclass
