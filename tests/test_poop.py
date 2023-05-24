@@ -85,10 +85,127 @@ def test_poop_offset_limit():
 
     poop = poops[0]
 
+    # Without storing stats
     assert len([e for e in poop.records()]) == 24
     assert len([e for e in poop.records(offset=12)]) == 12
     assert len([e for e in poop.records(limit=10)]) == 10
     assert len([e for e in poop.records(offset=18, limit=10)]) == 6
+
+    # With stats stored and updated
+
+    assert len([e for e in poop.records_with_stats()]) == 24
+    assert poop.current_stats == PoopStats(
+        months={
+            "2018-01": StatUnit(count=2, sum=3),
+            "2018-02": StatUnit(count=2, sum=2),
+            "2018-03": StatUnit(count=2, sum=3),
+            "2018-04": StatUnit(count=2, sum=1),
+            "2018-05": StatUnit(count=2, sum=10),
+            "2018-06": StatUnit(count=2, sum=0),
+            "2018-07": StatUnit(count=2, sum=6),
+            "2018-08": StatUnit(count=2, sum=0),
+            "2018-09": StatUnit(count=2, sum=0),
+            "2018-10": StatUnit(count=2, sum=0),
+            "2018-11": StatUnit(count=2, sum=0),
+            "2018-12": StatUnit(count=2, sum=13),
+        },
+        metrics={'Book Title Requests': StatUnit(count=24, sum=38)},
+        organizations={'': StatUnit(count=24, sum=38)},
+        titles={"Title1": StatUnit(count=12, sum=32), "Title2": StatUnit(count=12, sum=6)},
+        title_ids={"ISBN"},
+        dimensions={
+            "Platform": {
+                "Ovid": StatUnit(count=24, sum=38),
+            },
+            "Publisher": {
+                "Publisher1": StatUnit(count=12, sum=32),
+                "Publisher2": StatUnit(count=12, sum=6),
+            },
+        },
+        total=StatUnit(count=24, sum=38),
+    )
+    assert len([e for e in poop.records_with_stats(offset=12)]) == 12
+    assert poop.current_stats == PoopStats(
+        months={
+            "2018-01": StatUnit(count=1, sum=0),
+            "2018-02": StatUnit(count=1, sum=0),
+            "2018-03": StatUnit(count=1, sum=0),
+            "2018-04": StatUnit(count=1, sum=0),
+            "2018-05": StatUnit(count=1, sum=0),
+            "2018-06": StatUnit(count=1, sum=0),
+            "2018-07": StatUnit(count=1, sum=0),
+            "2018-08": StatUnit(count=1, sum=0),
+            "2018-09": StatUnit(count=1, sum=0),
+            "2018-10": StatUnit(count=1, sum=0),
+            "2018-11": StatUnit(count=1, sum=0),
+            "2018-12": StatUnit(count=1, sum=6),
+        },
+        metrics={'Book Title Requests': StatUnit(count=12, sum=6)},
+        organizations={'': StatUnit(count=12, sum=6)},
+        titles={"Title2": StatUnit(count=12, sum=6)},
+        title_ids={"ISBN"},
+        dimensions={
+            "Platform": {
+                "Ovid": StatUnit(count=12, sum=6),
+            },
+            "Publisher": {
+                "Publisher2": StatUnit(count=12, sum=6),
+            },
+        },
+        total=StatUnit(count=12, sum=6),
+    )
+    assert len([e for e in poop.records_with_stats(limit=10)]) == 10
+    assert poop.current_stats == PoopStats(
+        months={
+            "2018-01": StatUnit(count=1, sum=3),
+            "2018-02": StatUnit(count=1, sum=2),
+            "2018-03": StatUnit(count=1, sum=3),
+            "2018-04": StatUnit(count=1, sum=1),
+            "2018-05": StatUnit(count=1, sum=10),
+            "2018-06": StatUnit(count=1, sum=0),
+            "2018-07": StatUnit(count=1, sum=6),
+            "2018-08": StatUnit(count=1, sum=0),
+            "2018-09": StatUnit(count=1, sum=0),
+            "2018-10": StatUnit(count=1, sum=0),
+        },
+        metrics={'Book Title Requests': StatUnit(count=10, sum=25)},
+        organizations={'': StatUnit(count=10, sum=25)},
+        titles={"Title1": StatUnit(count=10, sum=25)},
+        title_ids={"ISBN"},
+        dimensions={
+            "Platform": {
+                "Ovid": StatUnit(count=10, sum=25),
+            },
+            "Publisher": {
+                "Publisher1": StatUnit(count=10, sum=25),
+            },
+        },
+        total=StatUnit(count=10, sum=25),
+    )
+    assert len([e for e in poop.records_with_stats(offset=18, limit=10)]) == 6
+    assert poop.current_stats == PoopStats(
+        months={
+            "2018-07": StatUnit(count=1, sum=0),
+            "2018-08": StatUnit(count=1, sum=0),
+            "2018-09": StatUnit(count=1, sum=0),
+            "2018-10": StatUnit(count=1, sum=0),
+            "2018-11": StatUnit(count=1, sum=0),
+            "2018-12": StatUnit(count=1, sum=6),
+        },
+        metrics={'Book Title Requests': StatUnit(count=6, sum=6)},
+        organizations={'': StatUnit(count=6, sum=6)},
+        titles={"Title2": StatUnit(count=6, sum=6)},
+        title_ids={"ISBN"},
+        dimensions={
+            "Platform": {
+                "Ovid": StatUnit(count=6, sum=6),
+            },
+            "Publisher": {
+                "Publisher2": StatUnit(count=6, sum=6),
+            },
+        },
+        total=StatUnit(count=6, sum=6),
+    )
 
 
 def test_stats():

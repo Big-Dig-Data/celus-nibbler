@@ -86,12 +86,27 @@ class PoopStats(BaseModel):
         result.total = self.total + other.total
         return result
 
+    def process_record(self, record: CounterRecord):
+        self.months[record.start.strftime("%Y-%m")].inc(record.value)
+        self.metrics[record.metric or ""].inc(record.value)
+        self.organizations[record.organization or ""].inc(record.value)
+        self.titles[record.title or ""].inc(record.value)
+
+        for title_id in record.title_ids.keys():
+            self.title_ids.add(title_id)
+
+        for dimension_name, dimension in record.dimension_data.items():
+            self.dimensions[dimension_name][dimension].inc(record.value)
+
+        self.total.inc(record.value)
+
 
 class Poop:
     """nibblonians dark matter"""
 
     def __init__(self, parser: BaseParser):
         self.parser = parser
+        self.current_stats = PoopStats()
 
     @property
     def sheet_idx(self):
@@ -119,6 +134,20 @@ class Poop:
         else:
             logger.warning('sheet %s has not been parsed', self.parser.sheet.sheet_idx + 1)
             return None
+
+    def records_with_stats(
+        self,
+        offset: int = 0,
+        limit: typing.Optional[int] = None,
+        same_check_size: int = 0,
+    ) -> typing.Optional[typing.Generator[CounterRecord, None, None]]:
+        self.current_stats = PoopStats()
+        if records := self.records(offset, limit, same_check_size):
+            for record in records:
+                self.current_stats.process_record(record)
+                yield record
+
+        return None
 
     @property
     def metrics(self):
@@ -174,21 +203,11 @@ class Poop:
 
     @functools.lru_cache
     def get_stats(self) -> PoopStats:
+        """Goes through all records and caluculates stats based on output records"""
         res = PoopStats()
         if records := self.records():
             for record in records:
-                res.months[record.start.strftime("%Y-%m")].inc(record.value)
-                res.metrics[record.metric or ""].inc(record.value)
-                res.organizations[record.organization or ""].inc(record.value)
-                res.titles[record.title or ""].inc(record.value)
-
-                for title_id in record.title_ids.keys():
-                    res.title_ids.add(title_id)
-
-                for dimension_name, dimension in record.dimension_data.items():
-                    res.dimensions[dimension_name][dimension].inc(record.value)
-
-                res.total.inc(record.value)
+                res.process_record(record)
 
         return res
 
