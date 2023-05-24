@@ -5,6 +5,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [8.1.0] - 2023-05-24
+
+### Added
+- IsDateCondition can be used to check that field contains a date (using validators.Date)
+- Conditions for areas - this enables to dynamically detect areas position based on provided condition
+
+### Changed
+- removed `parse_date` function to unite date parsing logic
+- use `data_headers` for celus format (so the parsing behaves more similar to regular parsers)
+
+### Fixed
+- removed double caching in `CounterHeaderArea.header_row`
+
+
 ## [8.0.0] - 2023-04-28
 
 ### Added
