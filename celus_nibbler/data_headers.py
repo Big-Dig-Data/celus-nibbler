@@ -244,8 +244,6 @@ class DataHeaders(JsonEncorder):
             initial_row_offset, MAX_HEADER_OFFSET_LOOKUP_COUNT + initial_row_offset
         ):
             try:
-                # TODO perhaps some kind of max limit would be nice here to
-                # avoid infinite loops
                 if self.condition.check(sheet, offset):
                     return offset
 
