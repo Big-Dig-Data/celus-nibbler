@@ -87,13 +87,23 @@ def test_poop_offset_limit():
 
     # Without storing stats
     assert len([e for e in poop.records()]) == 24
+    assert len(poop.area_counter) == 1, "only single area present"
+    assert poop.area_counter[0] == 24
     assert len([e for e in poop.records(offset=12)]) == 12
+    assert len(poop.area_counter) == 1, "only single area present"
+    assert poop.area_counter[0] == 12
     assert len([e for e in poop.records(limit=10)]) == 10
+    assert len(poop.area_counter) == 1, "only single area present"
+    assert poop.area_counter[0] == 10
     assert len([e for e in poop.records(offset=18, limit=10)]) == 6
+    assert len(poop.area_counter) == 1, "only single area present"
+    assert poop.area_counter[0] == 6
 
     # With stats stored and updated
 
     assert len([e for e in poop.records_with_stats()]) == 24
+    assert len(poop.area_counter) == 1, "only single area present"
+    assert poop.area_counter[0] == 24
     assert poop.current_stats == PoopStats(
         months={
             "2018-01": StatUnit(count=2, sum=3),
@@ -125,6 +135,8 @@ def test_poop_offset_limit():
         total=StatUnit(count=24, sum=38),
     )
     assert len([e for e in poop.records_with_stats(offset=12)]) == 12
+    assert len(poop.area_counter) == 1, "only single area present"
+    assert poop.area_counter[0] == 12
     assert poop.current_stats == PoopStats(
         months={
             "2018-01": StatUnit(count=1, sum=0),
@@ -155,6 +167,8 @@ def test_poop_offset_limit():
         total=StatUnit(count=12, sum=6),
     )
     assert len([e for e in poop.records_with_stats(limit=10)]) == 10
+    assert len(poop.area_counter) == 1, "only single area present"
+    assert poop.area_counter[0] == 10
     assert poop.current_stats == PoopStats(
         months={
             "2018-01": StatUnit(count=1, sum=3),
@@ -183,6 +197,8 @@ def test_poop_offset_limit():
         total=StatUnit(count=10, sum=25),
     )
     assert len([e for e in poop.records_with_stats(offset=18, limit=10)]) == 6
+    assert len(poop.area_counter) == 1, "only single area present"
+    assert poop.area_counter[0] == 6
     assert poop.current_stats == PoopStats(
         months={
             "2018-07": StatUnit(count=1, sum=0),

@@ -149,14 +149,19 @@ class BaseParser(metaclass=ABCMeta):
         """List of available platforms (used for validation)"""
         pass
 
-    def _parse(self) -> typing.Generator[CounterRecord, None, None]:
-        for area in self.get_areas():
-            yield from self.parse_area(area)
+    def _parse(self) -> typing.Generator[typing.Tuple[int, CounterRecord], None, None]:
+        for idx, area in enumerate(self.get_areas()):
 
-    def parse(self) -> typing.Generator[CounterRecord, None, None]:
+            def gen():
+                for e in self.parse_area(area):
+                    yield idx, e
+
+            yield from gen()
+
+    def parse(self) -> typing.Generator[typing.Tuple[int, CounterRecord], None, None]:
         dimension_aliases = dict(self.dimension_aliases)
         metric_aliases = dict(self.metric_aliases)
-        for record in self._parse():
+        for idx, record in self._parse():
             record.metric = (
                 metric_aliases.get(record.metric, record.metric) if record.metric else record.metric
             )
@@ -164,13 +169,15 @@ class BaseParser(metaclass=ABCMeta):
                 dimension_aliases.get(key, key): value
                 for key, value in record.dimension_data.items()
             }
-            yield record
+            yield idx, record
 
-    def parse_area(self, area) -> typing.Generator[CounterRecord, None, None]:
+    def parse_area(self, area) -> typing.Generator[typing.Tuple[int, CounterRecord], None, None]:
         return area.aggregator.aggregate(self._parse_area(area))
 
     @abstractmethod
-    def _parse_area(self, area: BaseArea) -> typing.Generator[CounterRecord, None, None]:
+    def _parse_area(
+        self, area: BaseArea
+    ) -> typing.Generator[typing.Tuple[int, CounterRecord], None, None]:
         pass
 
     def get_months(self) -> typing.List[typing.List[datetime.date]]:
@@ -192,7 +199,9 @@ class BaseTabularParser(BaseParser):
     def sheet_reader_classes(cls):
         return [CsvSheetReader]
 
-    def _parse_area(self, area: BaseTabularArea) -> typing.Generator[CounterRecord, None, None]:
+    def _parse_area(
+        self, area: BaseTabularArea
+    ) -> typing.Generator[typing.Tuple[int, CounterRecord], None, None]:
 
         try:
             data_cells = area.find_data_cells(self.current_row_offset)

@@ -4,7 +4,7 @@ import logging
 import pathlib
 import typing
 import warnings
-from collections import defaultdict
+from collections import Counter, defaultdict
 from datetime import date
 
 from celus_nigiri import CounterRecord
@@ -107,6 +107,7 @@ class Poop:
     def __init__(self, parser: BaseParser):
         self.parser = parser
         self.current_stats = PoopStats()
+        self.area_counter: Counter[int] = Counter()
 
     @property
     def sheet_idx(self):
@@ -116,22 +117,47 @@ class Poop:
     def data_format(self) -> DataFormatDefinition:
         return self.parser.data_format
 
+    def records_basic(
+        self,
+        offset: int = 0,
+        limit: typing.Optional[int] = None,
+        same_check_size: int = 0,
+    ) -> typing.Optional[typing.Generator[typing.Tuple[int, CounterRecord], None, None]]:
+        if counter_records := self.parser.parse():
+            if limit is None:
+                return itertools.islice(counter_records, offset, None)
+            return itertools.islice(counter_records, offset, offset + limit)
+
+        return None
+
+    def records_with_counter(
+        self,
+        offset: int = 0,
+        limit: typing.Optional[int] = None,
+        same_check_size: int = 0,
+    ) -> typing.Optional[typing.Generator[CounterRecord, None, None]]:
+        self.area_counter = Counter()
+        if counter_records := self.records_basic(offset, limit, same_check_size):
+            for idx, record in counter_records:
+                self.area_counter[idx] += 1
+                yield record
+        return None
+
     def records(
         self,
         offset: int = 0,
         limit: typing.Optional[int] = None,
         same_check_size: int = 0,
     ) -> typing.Optional[typing.Generator[CounterRecord, None, None]]:
-        if counter_records := self.parser.parse():
+        if counter_records := self.records_with_counter(offset, limit, same_check_size):
             if same_check_size:
                 counter_records = CheckConflictingRecordsAggregator(same_check_size).aggregate(
                     counter_records
                 )
 
-            if limit is None:
-                return itertools.islice(counter_records, offset, None)
-            return itertools.islice(counter_records, offset, offset + limit)
+            return counter_records
         else:
+
             logger.warning('sheet %s has not been parsed', self.parser.sheet.sheet_idx + 1)
             return None
 
