@@ -8,7 +8,8 @@ from collections import Counter, defaultdict
 from datetime import date
 
 from celus_nigiri import CounterRecord
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+from typing_extensions import Annotated
 
 from celus_nibbler.aggregator import CheckConflictingRecordsAggregator, CheckNonNegativeValues
 from celus_nibbler.data_headers import DataFormatDefinition
@@ -48,16 +49,31 @@ class StatUnit(BaseModel):
         return self
 
 
+AnnotatedStatUnit = Annotated[StatUnit, Field(default_factory=lambda: StatUnit)]
+
+
 class PoopStats(BaseModel):
-    months: typing.DefaultDict[str, StatUnit] = defaultdict(StatUnit)
-    metrics: typing.DefaultDict[str, StatUnit] = defaultdict(StatUnit)
-    organizations: typing.DefaultDict[str, StatUnit] = defaultdict(StatUnit)
-    titles: typing.DefaultDict[str, StatUnit] = defaultdict(StatUnit)
-    title_ids: typing.Set[str] = set()
-    dimensions: typing.DefaultDict[str, typing.DefaultDict[str, StatUnit]] = defaultdict(
-        lambda: defaultdict(StatUnit)
+    months: typing.DefaultDict[str, AnnotatedStatUnit] = Field(
+        default_factory=lambda: defaultdict(StatUnit)
     )
-    total: StatUnit = StatUnit()
+    metrics: typing.DefaultDict[str, AnnotatedStatUnit] = Field(
+        default_factory=lambda: defaultdict(StatUnit)
+    )
+    organizations: typing.DefaultDict[str, AnnotatedStatUnit] = Field(
+        default_factory=lambda: defaultdict(StatUnit)
+    )
+    titles: typing.DefaultDict[str, AnnotatedStatUnit] = Field(
+        default_factory=lambda: defaultdict(StatUnit)
+    )
+    title_ids: typing.Set[str] = set()
+    dimensions: typing.DefaultDict[
+        str,
+        Annotated[
+            typing.DefaultDict[str, AnnotatedStatUnit],
+            Field(default_factory=lambda: defaultdict(StatUnit)),
+        ],
+    ] = Field(defaultdict(lambda: defaultdict(StatUnit)))
+    total: StatUnit = Field(default_factory=lambda: StatUnit())
 
     def __add__(self, other: 'PoopStats') -> 'PoopStats':
         result = PoopStats()

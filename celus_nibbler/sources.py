@@ -4,7 +4,7 @@ from datetime import date
 from enum import Enum
 
 from pydantic import ValidationError
-from pydantic.dataclasses import dataclass
+from pydantic.dataclasses import dataclass, rebuild_dataclass
 
 from celus_nibbler import validators
 from celus_nibbler.coordinates import Coord, CoordRange, SheetAttr, Value
@@ -173,7 +173,7 @@ class ContentExtractorMixin:
                     row=getattr(source, 'row', None),
                     col=getattr(source, 'col', None),
                     sheet=sheet.sheet_idx,
-                    reason=e.model.__name__.lower(),
+                    reason=e.title.lower(),
                     action=self.extract_params.on_validation_error,
                 ) from e
         except IndexError as e:
@@ -334,7 +334,7 @@ class DateSource(JsonEncorder, ContentExtractorMixin):
             return super().extract(sheet, idx, validator, row_offset)
 
 
-ComposedDate.__pydantic_model__.update_forward_refs()
+rebuild_dataclass(ComposedDate, force=True)
 
 
 @dataclass(config=PydanticConfig)

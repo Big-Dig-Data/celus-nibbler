@@ -4,6 +4,7 @@ import json
 import typing
 from datetime import date, timedelta
 
+from pydantic import TypeAdapter
 from pydantic.json import pydantic_encoder
 
 COMMON_DATE_FORMATS = [
@@ -31,6 +32,7 @@ class PydanticConfig:
     extra = "forbid"
     allow_mutation = False
     frozen = True
+    undefined_types_warning = False
 
 
 class JsonEncorder:
@@ -42,16 +44,10 @@ class JsonEncorder:
 
     @classmethod
     def parse(cls, obj: typing.Dict[str, typing.Any]):
-        # triggers validations
-        if hasattr(cls, '__pydantic_model__'):
-            # Run for data_classes
-            pydantic_obj = cls.__pydantic_model__.parse_obj(obj)
+        if not hasattr(cls, 'adapter'):
+            cls.adapter = TypeAdapter(cls)
 
-            # convert to original object (dataclass)
-            return cls(**pydantic_obj.dict())
-        else:
-            # For pydantic models
-            return cls.parse_obj(obj)
+        return cls.adapter.validate_python(obj)
 
 
 def start_month(in_date: date) -> date:

@@ -9,6 +9,7 @@ from enum import Enum
 from celus_nigiri import CounterRecord
 from pydantic import Field
 from pydantic.dataclasses import dataclass as pydantic_dataclass
+from pydantic.dataclasses import rebuild_dataclass
 from typing_extensions import Annotated
 
 from celus_nibbler.conditions import Condition
@@ -147,9 +148,9 @@ DataHeaderCondition = Annotated[
 ]
 
 
-DataHeaderNegCondition.__pydantic_model__.update_forward_refs()
-DataHeaderAndCondition.__pydantic_model__.update_forward_refs()
-DataHeaderOrCondition.__pydantic_model__.update_forward_refs()
+rebuild_dataclass(DataHeaderNegCondition, force=True)
+rebuild_dataclass(DataHeaderAndCondition, force=True)
+rebuild_dataclass(DataHeaderOrCondition, force=True)
 
 
 class DataHeaderAction(Enum):

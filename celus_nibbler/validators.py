@@ -24,7 +24,7 @@ def non_empty(name: str) -> str:
 
 
 def stripped(name: Optional[str]) -> Optional[str]:
-    if name:
+    if name and isinstance(name, str):
         return name.strip()
     return name
 
@@ -138,6 +138,10 @@ class Title(BaseValueModel):
     _stripped_title = validator('value', allow_reuse=True)(stripped)
 
 
+parserinfo_us = datetimes_parser.parserinfo(dayfirst=False)  # prefer US variant
+parserinfo_eu = datetimes_parser.parserinfo(dayfirst=True)  # prefer EU variant
+
+
 class Date(BaseValueModel):
     value: datetime.date
 
@@ -145,7 +149,9 @@ class Date(BaseValueModel):
     _stripped_date = validator('value', allow_reuse=True, pre=True)(stripped)
     _non_empty_date = validator('value', allow_reuse=True, pre=True)(non_empty)
 
-    _parserinfo = datetimes_parser.parserinfo(dayfirst=False)  # prefer US variant
+    @classmethod
+    def parserinfo(cls):
+        return parserinfo_us
 
     @validator("value", pre=True)
     def to_datetime(cls, date: str) -> datetime.datetime:
@@ -158,13 +164,15 @@ class Date(BaseValueModel):
 
         # Try to parse date using dateutil for more obscure date formats
         try:
-            return datetimes_parser.parse(date, parserinfo=cls._parserinfo).replace(day=1)
+            return datetimes_parser.parse(date, parserinfo=cls.parserinfo()).replace(day=1)
         except datetimes_parser.ParserError:
             raise ValueError("cant-parse-date")
 
 
 class DateEU(Date):
-    _parserinfo = datetimes_parser.parserinfo(dayfirst=True)  # prefer EU variant
+    @classmethod
+    def parserinfo(cls):
+        return parserinfo_eu
 
 
 @lru_cache

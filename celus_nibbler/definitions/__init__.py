@@ -1,6 +1,6 @@
 import typing
 
-from pydantic import BaseModel, Field
+from pydantic import Field, RootModel
 from typing_extensions import Annotated
 
 from ..utils import JsonEncorder
@@ -55,8 +55,8 @@ def get_all_definitions() -> typing.List[BaseParserDefinition]:
     return list(DefinitionAnotation.__origin__.__args__)
 
 
-class Definition(JsonEncorder, BaseModel):
-    __root__: DefinitionAnotation
+class Definition(JsonEncorder, RootModel):
+    root: DefinitionAnotation
 
 
 __all__ = [

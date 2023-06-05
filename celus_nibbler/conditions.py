@@ -3,7 +3,7 @@ from abc import ABCMeta, abstractmethod
 
 from jellyfish import porter_stem
 from pydantic import Field, ValidationError
-from pydantic.dataclasses import dataclass
+from pydantic.dataclasses import dataclass, rebuild_dataclass
 from typing_extensions import Annotated
 from unidecode import unidecode
 
@@ -212,6 +212,6 @@ class SheetExtraCondition(ArithmeticsMixin, BaseCondition, JsonEncorder):
 
 
 # Need to update forward refs
-NegCondition.__pydantic_model__.update_forward_refs()
-AndCondition.__pydantic_model__.update_forward_refs()
-OrCondition.__pydantic_model__.update_forward_refs()
+rebuild_dataclass(NegCondition, force=True)
+rebuild_dataclass(AndCondition, force=True)
+rebuild_dataclass(OrCondition, force=True)
