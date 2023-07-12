@@ -23,6 +23,15 @@ IDS_VALIDATORS = {
     "URI": validators.URI,
 }
 
+IDS_VALIDATORS_STRICT = {
+    "DOI": validators.DOI,  # TODO strict validator for DOI
+    "ISBN": validators.StrictISBN,
+    "Print_ISSN": validators.StrictISSN,
+    "Online_ISSN": validators.StrictEISSN,
+    "Proprietary": validators.ProprietaryID,
+    "URI": validators.URI,  # TODO strict validator for URI
+}
+
 
 class DateFormat(str, Enum):
     US = "us"  # US format 12/31/2022 (more common)
@@ -131,8 +140,7 @@ class ContentExtractorMixin:
 
         try:
             content = self.content(sheet, source)
-            validator = self.get_validator(validator)
-            if validator:
+            if validator := self.get_validator(validator):
                 if self.extract_params.default is not None:
                     res = validators.gen_default_validator(
                         validator, self.extract_params.default, self.extract_params.blank_values
@@ -242,11 +250,43 @@ class TitleIdSource(JsonEncorder, ContentExtractorMixin):
     source: Source
     extract_params: ExtractParams = field(default_factory=lambda: ExtractParams())
     cleanup_during_header_processing: bool = True
+    fallback: typing.Optional['TitleIdSource'] = None
+    strict: bool = False
     role: typing.Literal[Role.TITLE_ID] = Role.TITLE_ID
 
     @property
+    def last_key(self):
+        return getattr(self, '_last_key', self.name)
+
+    @property
     def validator(self) -> typing.Optional[typing.Type[validators.BaseModel]]:
-        return IDS_VALIDATORS.get(self.name)
+        if self.strict:
+            return IDS_VALIDATORS_STRICT.get(self.name)
+        else:
+            return IDS_VALIDATORS.get(self.name)
+
+    def extract(
+        self,
+        sheet: SheetReader,
+        idx: int,
+        validator: typing.Optional[typing.Type[validators.BaseModel]] = None,
+        row_offset: typing.Optional[int] = None,
+    ) -> typing.Any:
+
+        self._last_key = None
+
+        try:
+            res = super().extract(sheet, idx, validator, row_offset)
+            self._last_key = self.name
+
+        except TableException as e:
+            if e.action == TableException.Action.PASS and self.fallback:
+                res = self.fallback.extract(sheet, idx, validator, row_offset)
+                self._last_key = self.fallback.last_key
+            else:
+                raise
+
+        return res
 
 
 @dataclass(config=PydanticConfig)

@@ -211,6 +211,13 @@ from celus_nibbler.parsers.dynamic import gen_parser
             "dynamic.non_counter.simple_format.data_header-condition",
             False,
         ),
+        (
+            "Platform1",
+            "ids-fallback",
+            "csv",
+            "dynamic.non_counter.simple_format.ids-fallback",
+            False,
+        ),
     ),
 )
 def test_dynamic(platform, filename, ext, parser, aggregated):

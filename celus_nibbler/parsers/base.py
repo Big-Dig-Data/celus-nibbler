@@ -270,7 +270,7 @@ class BaseTabularParser(BaseParser):
                     if title_source := title_ids_sources.get(key):
                         value = title_source.extract(self.sheet, idx, row_offset=row_offset)
                         if value:
-                            title_ids[key] = value
+                            title_ids[title_source.last_key] = value
 
             except TableException as e:
                 if e.action == TableException.Action.SKIP:

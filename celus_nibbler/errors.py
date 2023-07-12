@@ -64,6 +64,7 @@ class TableException(NibblerError):
         FAIL = "fail"
         SKIP = "skip"
         STOP = "stop"
+        PASS = "pass"
 
     ATTRS = ["value", "row", "col", "sheet", "reason"]
 

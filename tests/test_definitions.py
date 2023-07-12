@@ -168,6 +168,8 @@ def test_date_based_area_definition():
                     "suffix": "",
                     "on_validation_error": "fail",
                 },
+                "strict": False,
+                "fallback": None,
                 "cleanup_during_header_processing": True,
                 "role": Role.TITLE_ID,
             }
@@ -282,6 +284,8 @@ def test_errors():
                             "suffix": "",
                             "on_validation_error": "fail",
                         },
+                        "strict": False,
+                        "fallback": None,
                         "role": Role.TITLE_ID,
                     }
                 ],
@@ -408,6 +412,8 @@ def test_errors():
                             "suffix": "",
                             "on_validation_error": "fail",
                         },
+                        "strict": False,
+                        "fallback": None,
                         "cleanup_during_header_processing": True,
                         "role": Role.TITLE_ID,
                     }
@@ -635,6 +641,8 @@ def test_date_based_definition():
                             "suffix": "",
                             "on_validation_error": "fail",
                         },
+                        "strict": False,
+                        "fallback": None,
                         "cleanup_during_header_processing": True,
                         "role": Role.TITLE_ID,
                     },

@@ -1,11 +1,16 @@
 import datetime
+import re
 from functools import lru_cache
 from typing import Any, Optional, Tuple, Type, Union
 
 from dateutil import parser as datetimes_parser
+from isbnlib import get_isbnlike
 from pydantic import BaseModel, validator
 
 from .utils import COMMON_DATE_FORMATS
+
+issn_matcher = re.compile(r'(\d{4})-?(\d{3}[\dXx])')
+issn_number_matcher = re.compile(r'^\d{0,7}[\dXx]$')
 
 
 class BaseValueModel(BaseModel):
@@ -32,6 +37,21 @@ def not_none(value: Any) -> Any:
 
 def issn(issn: str) -> str:
     return issn.strip() or ""
+
+
+def issn_strict(issn: str) -> str:
+    clean = ''.join(issn.split())  # remove all whitespace
+
+    if m := issn_matcher.search(clean):
+        # upper() because 'X' can be also lowercase
+        return m.group(1) + '-' + m.group(2).upper()
+
+    # sometimes the leading zeros are missing, so we add them
+    if issn_number_matcher.match(clean):
+        clean = (8 - len(clean)) * '0' + clean
+        return clean[:4] + '-' + clean[4:].upper()
+
+    raise ValueError(f'Invalid ISSN: "{issn}"')
 
 
 class Value(BaseValueModel):
@@ -182,16 +202,42 @@ class ISBN(BaseValueModel):
         return isbn.strip() or ""
 
 
+class StrictISBN(BaseValueModel):
+    value: str
+
+    @validator("value")
+    def check_isbn(cls, isbn: str) -> str:
+        isbns = get_isbnlike(isbn)
+
+        if not isbns:
+            raise ValueError("isbn-not-valid")
+
+        # return the first isbn the rest is omitted
+        return isbns[0]
+
+
 class ISSN(BaseValueModel):
     value: str
 
     _issn_format = validator('value', allow_reuse=True)(issn)
 
 
+class StrictISSN(BaseValueModel):
+    value: str
+
+    _issn_format = validator('value', allow_reuse=True)(issn_strict)
+
+
 class EISSN(BaseValueModel):
     value: str
 
     _issn_format = validator('value', allow_reuse=True)(issn)
+
+
+class StrictEISSN(BaseValueModel):
+    value: str
+
+    _issn_format = validator('value', allow_reuse=True)(issn_strict)
 
 
 class ProprietaryID(BaseValueModel):
