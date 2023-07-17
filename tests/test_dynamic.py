@@ -230,6 +230,13 @@ from celus_nibbler.parsers.dynamic import gen_parser
             "generic",
             "csv",
             "dynamic.non_counter.simple_format.generic",
+            False,
+        ),
+        (
+            "Platform1",
+            "generic-no_values",
+            "csv",
+            "dynamic.non_counter.simple_format.generic-no_values",
             True,
         ),
     ),

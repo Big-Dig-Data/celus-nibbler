@@ -37,6 +37,7 @@ Role = Annotated[
         TitleIdSource,
         DateSource,
         VoidSource,
+        ValueSource,
     ],
     Field(discriminator='role'),
 ]
@@ -265,6 +266,19 @@ class DataHeaders(JsonEncorder):
         # Derive row offset
         absolute_row_offset = self.prepare_row_offset(sheet, row_offset)
 
+        # When role with ValueSource is present make it value_source
+        # for all other roles
+        root_value_source = None
+        for role in self.roles:
+            if isinstance(role, ValueSource):
+                res.append(
+                    DataCells(
+                        header_data=CounterRecord(value=0),
+                        value_source=role,
+                    )
+                )
+                break
+
         for idx, cell in itertools.takewhile(
             lambda x: x[0] < MAX_DATA_CELLS, enumerate(self.data_cells)
         ):
@@ -275,10 +289,18 @@ class DataHeaders(JsonEncorder):
             action = DataHeaderAction.PROCEED
             store = False
 
+            value_source = ValueSource(
+                source=CoordRange(cell, self.data_direction),
+                extract_params=self.data_extract_params,
+                allow_negative=self.data_allow_negative,
+            )
+
             # Process data from header
             for role_idx, role in enumerate(self.roles):
 
-                value = None
+                if isinstance(role, ValueSource):
+                    continue
+
                 for rule_idx, rule in enumerate(self.rules):
                     if rule.role_idx and role_idx != rule.role_idx:
                         # Skip rules which doesn't match index
@@ -309,11 +331,7 @@ class DataHeaders(JsonEncorder):
                 res.append(
                     DataCells(
                         record,
-                        ValueSource(
-                            source=CoordRange(cell, self.data_direction),
-                            extract_params=self.data_extract_params,
-                            allow_negative=self.data_allow_negative,
-                        ),
+                        root_value_source or value_source,
                     )
                 )
 
