@@ -26,6 +26,7 @@ class MetricBasedAreaDefinition(JsonEncorder, BaseAreaDefinition):
     title_ids: typing.List[TitleIdSource] = field(default_factory=lambda: [])
     dimensions: typing.List[DimensionSource] = field(default_factory=lambda: [])
     organizations: typing.Optional[OrganizationSource] = None
+    aggregate_same_records: bool = True
 
     kind: typing.Literal["non_counter.metric_based"] = "non_counter.metric_based"
 
@@ -54,6 +55,8 @@ class MetricBasedAreaDefinition(JsonEncorder, BaseAreaDefinition):
             @property
             def dimensions(self) -> typing.List[str]:
                 return list([e.name for e in dimensions])
+
+            aggregator = self.make_aggregator()
 
         return Area
 
@@ -91,8 +94,8 @@ class MetricBasedDefinition(BaseNonCounterParserDefinition):
             titles_to_skip = self.titles_to_skip
             dimensions_to_skip = self.dimensions_to_skip
 
-            metric_aliases = self.metric_aliases
-            dimension_aliases = self.dimension_aliases
+            metric_aliases = dict(self.metric_aliases)
+            dimension_aliases = dict(self.dimension_aliases)
 
             heuristics = self.heuristics
             possible_row_offsets = _definition.possible_row_offsets

@@ -28,6 +28,7 @@ class DateBasedAreaDefinition(JsonEncorder, BaseAreaDefinition):
     organizations: typing.Optional[OrganizationSource] = None
     title_ids: typing.List[TitleIdSource] = field(default_factory=lambda: [])
     dimensions: typing.List[DimensionSource] = field(default_factory=lambda: [])
+    aggregate_same_records: bool = False
 
     kind: typing.Literal["non_counter.date_based"] = "non_counter.date_based"
 
@@ -44,6 +45,7 @@ class DateBasedAreaDefinition(JsonEncorder, BaseAreaDefinition):
             organization_source = organizations
             title_source = titles
             metric_source = metrics
+            aggregator = self.make_aggregator()
 
             @property
             def title_ids_sources(self) -> typing.Dict[str, TitleIdSource]:
@@ -94,8 +96,8 @@ class DateBasedDefinition(JsonEncorder, BaseNonCounterParserDefinition):
             titles_to_skip = _definition.titles_to_skip
             dimensions_to_skip = _definition.dimensions_to_skip
 
-            metric_aliases = _definition.metric_aliases
-            dimension_aliases = _definition.dimension_aliases
+            metric_aliases = dict(_definition.metric_aliases)
+            dimension_aliases = dict(_definition.dimension_aliases)
 
             heuristics = _definition.heuristics
             possible_row_offsets = _definition.possible_row_offsets

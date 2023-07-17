@@ -1,6 +1,7 @@
 import abc
 import typing
 
+from celus_nibbler.aggregator import BaseAggregator, NoAggregator, SameAggregator
 from celus_nibbler.conditions import Condition
 from celus_nibbler.data_headers import DataFormatDefinition
 from celus_nibbler.parsers.base import BaseArea, BaseParser
@@ -35,3 +36,8 @@ class BaseAreaDefinition(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def make_area(self) -> typing.Type[BaseArea]:
         pass
+
+    def make_aggregator(self) -> BaseAggregator:
+        return (
+            SameAggregator() if getattr(self, 'aggregate_same_records', False) else NoAggregator()
+        )

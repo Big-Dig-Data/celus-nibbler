@@ -45,6 +45,7 @@ class BaseCounterAreaDefinition(BaseAreaDefinition):
     title_extract_params: typing.Optional[ExtractParams] = None
     title_ids_extract_params: typing.Optional[typing.Dict[str, ExtractParams]] = None
     dimensions_extract_params: typing.Optional[typing.Dict[str, ExtractParams]] = None
+    aggregate_same_records: bool = False
 
     def make_area(self):
         raise NotImplementedError()
@@ -77,6 +78,8 @@ def gen_area(
             TITLE_IDS_EXTRACT_PARAMS = definition.title_ids_extract_params
         if definition.dimensions_extract_params is not None:
             DIMENSIONS_EXTRACT_PARAMS = definition.dimensions_extract_params
+
+        aggregator = definition.make_aggregator()
 
     return Area
 
@@ -266,8 +269,8 @@ def gen_parser(
         metrics_to_skip = definition.metrics_to_skip or base.metrics_to_skip
         titles_to_skip = definition.titles_to_skip or base.titles_to_skip
         dimensions_to_skip = definition.dimensions_to_skip or base.dimensions_to_skip
-        metric_aliases = definition.metric_aliases or base.metric_aliases
-        dimension_aliases = definition.dimension_aliases or base.dimension_aliases
+        metric_aliases = dict(definition.metric_aliases) or dict(base.metric_aliases)
+        dimension_aliases = dict(definition.dimension_aliases) or dict(base.dimension_aliases)
         possible_row_offsets = definition.possible_row_offsets or base.possible_row_offsets
 
         areas = [definition.areas[0].make_area()]

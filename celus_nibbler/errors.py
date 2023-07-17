@@ -14,7 +14,25 @@ class NibblerError(Exception):
 
 
 class RecordError(NibblerError):
-    pass
+    def __init__(self, record: CounterRecord):
+        self.record = record
+
+    def dict(self) -> dict:
+        return {
+            "name": f"{self.__class__.__name__}",
+            "start": self.record.start,
+            "end": self.record.end,
+            "metric": self.record.metric,
+            "title": self.record.title,
+            "organization": self.record.organization,
+            "dimensions": self.record.dimension_data,
+            "title_ids": self.record.title_ids,
+        }
+
+    def __eq__(self, other):
+        if not isinstance(self, type(other)):
+            return False
+        return self.dict() == other.dict()
 
 
 class WrongFileFormatError(NibblerError):
@@ -168,22 +186,8 @@ class MultipleParsersFound(NibblerError):
 
 
 class SameRecordsInOutput(RecordError):
-    def __init__(self, record: CounterRecord):
-        self.record = record
+    pass
 
-    def dict(self) -> dict:
-        return {
-            "name": f"{self.__class__.__name__}",
-            "start": self.record.start,
-            "end": self.record.end,
-            "metric": self.record.metric,
-            "title": self.record.title,
-            "organization": self.record.organization,
-            "dimensions": self.record.dimension_data,
-            "title_ids": self.record.title_ids,
-        }
 
-    def __eq__(self, other):
-        if not isinstance(self, type(other)):
-            return False
-        return self.dict() == other.dict()
+class NegativeValueInOutput(RecordError):
+    pass

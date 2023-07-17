@@ -100,6 +100,7 @@ def test_date_based_area_definition():
                 }
             ],
             "condition": None,
+            "data_allow_negative": False,
         },
         "dimensions": [
             {
@@ -191,6 +192,7 @@ def test_date_based_area_definition():
             "role": Role.TITLE,
         },
         "organizations": None,
+        "aggregate_same_records": False,
     }
 
     converted_definition = DateBasedAreaDefinition.parse(definition_dict)
@@ -309,6 +311,7 @@ def test_errors():
                     "cleanup_during_header_processing": True,
                     "role": Role.TITLE,
                 },
+                "aggregate_same_records": False,
             }
         )
 
@@ -418,6 +421,7 @@ def test_errors():
                         "role": Role.TITLE_ID,
                     }
                 ],
+                "aggregate_same_records": False,
             }
         )
 
@@ -537,6 +541,7 @@ def test_date_based_definition():
                         }
                     ],
                     "condition": None,
+                    "data_allow_negative": False,
                 },
                 "dimensions": [
                     {
@@ -648,6 +653,7 @@ def test_date_based_definition():
                     },
                 ],
                 "organizations": None,
+                "aggregate_same_records": False,
             },
         ],
         "metric_aliases": [],

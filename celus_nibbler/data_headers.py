@@ -216,6 +216,7 @@ class DataHeaders(JsonEncorder):
     data_extract_params: ExtractParams = field(
         default_factory=lambda: ExtractParams(on_validation_error=TableException.Action.STOP)
     )
+    data_allow_negative: bool = False
 
     rules: typing.List[DataHeaderRule] = Field(default_factory=lambda: [DataHeaderRule()])
     condition: typing.Optional[Condition] = None
@@ -307,6 +308,7 @@ class DataHeaders(JsonEncorder):
                         ValueSource(
                             source=CoordRange(cell, self.data_direction),
                             extract_params=self.data_extract_params,
+                            allow_negative=self.data_allow_negative,
                         ),
                     )
                 )

@@ -10,7 +10,7 @@ from datetime import date
 from celus_nigiri import CounterRecord
 from pydantic import BaseModel
 
-from celus_nibbler.aggregator import CheckConflictingRecordsAggregator
+from celus_nibbler.aggregator import CheckConflictingRecordsAggregator, CheckNonNegativeValues
 from celus_nibbler.data_headers import DataFormatDefinition
 from celus_nibbler.errors import (
     MultipleParsersFound,
@@ -150,12 +150,11 @@ class Poop:
         same_check_size: int = 0,
     ) -> typing.Optional[typing.Generator[CounterRecord, None, None]]:
         if counter_records := self.records_with_counter(offset, limit, same_check_size):
+            aggregator = CheckNonNegativeValues()
             if same_check_size:
-                counter_records = CheckConflictingRecordsAggregator(same_check_size).aggregate(
-                    counter_records
-                )
+                aggregator = aggregator | CheckConflictingRecordsAggregator(same_check_size)
 
-            return counter_records
+            return aggregator.aggregate(counter_records)
         else:
 
             logger.warning('sheet %s has not been parsed', self.parser.sheet.sheet_idx + 1)

@@ -25,6 +25,7 @@ class CelusFormatAreaDefinition(JsonEncorder, BaseAreaDefinition):
     title_ids_mapping: typing.Dict[str, str] = field(default_factory=lambda: {})
     dimension_mapping: typing.Dict[str, str] = field(default_factory=lambda: {})
     value_extract_params: ExtractParams = field(default_factory=lambda: ExtractParams())
+    aggregate_same_records: bool = False
 
     kind: typing.Literal["non_counter.celus_format"] = "non_counter.celus_format"
 
@@ -37,6 +38,7 @@ class CelusFormatAreaDefinition(JsonEncorder, BaseAreaDefinition):
             title_ids_mapping = self.title_ids_mapping
             dimension_mapping = self.dimension_mapping
             value_extract_params = self.value_extract_params
+            aggregator = self.make_aggregator()
 
         return Area
 
@@ -73,8 +75,8 @@ class CelusFormatParserDefinition(BaseNonCounterParserDefinition, metaclass=abc.
             titles_to_skip = self.titles_to_skip
             dimensions_to_skip = self.dimensions_to_skip
 
-            metric_aliases = self.metric_aliases
-            dimension_aliases = self.dimension_aliases
+            metric_aliases = dict(self.metric_aliases)
+            dimension_aliases = dict(self.dimension_aliases)
 
             heuristics = self.heuristics
             possible_row_offsets = self.possible_row_offsets

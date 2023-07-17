@@ -7,7 +7,7 @@ from celus_nibbler import Poop, eat
 
 
 @pytest.mark.parametrize(
-    "platform,file,parser,poops_presence,heuristics,aggregated",
+    "platform,file,parser,poops_presence,heuristics,ignore_order",
     [
         (
             "My Platform",
@@ -23,16 +23,18 @@ from celus_nibbler import Poop, eat
             "static.non_counter.MY.MyDateMetricBased",
             [True, False],
             True,
-            False,
+            True,
         ),
     ],
 )
-def test_non_counter(platform, file, parser, poops_presence, heuristics, aggregated):
+def test_non_counter(platform, file, parser, poops_presence, heuristics, ignore_order):
     source_path = pathlib.Path(__file__).parent / 'data/non_counter' / file
     output_path = pathlib.Path(__file__).parent / 'data/non_counter' / f"{file}.out"
 
     with output_path.open() as f:
         reader = csv.reader(f)
+        if ignore_order:
+            reader = iter(sorted(reader))
         poops = eat(source_path, platform, parsers=[parser], use_heuristics=heuristics)
         assert [isinstance(p, Poop) for p in poops] == poops_presence
 
@@ -40,7 +42,7 @@ def test_non_counter(platform, file, parser, poops_presence, heuristics, aggrega
 
             # Aggregated records might be out of order, we need to sort it first
             records = (
-                sorted(poop.records(), key=lambda x: x.as_csv()) if aggregated else poop.records()
+                sorted(poop.records(), key=lambda x: x.as_csv()) if ignore_order else poop.records()
             )
             for record in records:
                 assert next(reader) == list(record.as_csv()), "Compare lines"

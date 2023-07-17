@@ -8,7 +8,7 @@ from datetime import date
 from celus_nigiri import CounterRecord
 from diskcache import Cache
 
-from celus_nibbler.errors import SameRecordsInOutput
+from celus_nibbler.errors import NegativeValueInOutput, SameRecordsInOutput
 
 
 class BaseAggregator(metaclass=abc.ABCMeta):
@@ -17,6 +17,9 @@ class BaseAggregator(metaclass=abc.ABCMeta):
         self, records: typing.Generator[CounterRecord, None, None]
     ) -> typing.Generator[CounterRecord, None, None]:
         pass
+
+    def __or__(self, other):
+        return PippedAggregator(self, other)
 
 
 class NoAggregator(BaseAggregator):
@@ -127,3 +130,28 @@ class CounterOrdering(BaseAggregator):
                 for db_key in db.iterkeys():
                     record_dict = db[db_key]
                     yield from [record_dict[key] for key in sorted(record_dict.keys())]
+
+
+class CheckNonNegativeValues(BaseAggregator):
+    """Checks whether outout contains negative values and raises and error if so"""
+
+    def aggregate(
+        self, records: typing.Generator[CounterRecord, None, None]
+    ) -> typing.Generator[CounterRecord, None, None]:
+        for record in records:
+            if record.value < 0:
+                raise NegativeValueInOutput(record)
+            yield record
+
+
+class PippedAggregator(BaseAggregator):
+    """Pipes output from one aggregator to another aggregator"""
+
+    def __init__(self, a1: BaseAggregator, a2: BaseAggregator):
+        self.a1 = a1
+        self.a2 = a2
+
+    def aggregate(
+        self, records: typing.Generator[CounterRecord, None, None]
+    ) -> typing.Generator[CounterRecord, None, None]:
+        return self.a2.aggregate(self.a1.aggregate(records))

@@ -4,6 +4,7 @@ import re
 import typing
 from abc import ABCMeta
 
+from celus_nibbler.aggregator import SameAggregator
 from celus_nibbler.conditions import RegexCondition, SheetIdxCondition
 from celus_nibbler.coordinates import Coord, CoordRange, Direction
 from celus_nibbler.data_headers import DataFormatDefinition, DataHeaders
@@ -23,6 +24,8 @@ logger = logging.getLogger(__name__)
 
 
 class BaseDateMetricArea(BaseHeaderArea, metaclass=ABCMeta):
+    aggregator = SameAggregator()
+
     def get_months(self, row_offset: typing.Optional[int]) -> typing.List[datetime.date]:
         return [e.header_data.start for e in self.find_data_cells(row_offset)]
 

@@ -99,8 +99,8 @@ class BaseParser(metaclass=ABCMeta):
     titles_to_skip: typing.List[str] = ["Total"]
     dimensions_to_skip: typing.Dict[str, typing.List[str]] = {"Platform": ["Total"]}
     heuristics: typing.Optional[BaseCondition] = None
-    metric_aliases: typing.List[typing.Tuple[str, str]] = []
-    dimension_aliases: typing.List[typing.Tuple[str, str]] = []
+    metric_aliases: typing.Dict[str, str] = {}
+    dimension_aliases: typing.Dict[str, str] = {}
     possible_row_offsets: typing.List[int] = [0]
     current_row_offset: int = 0
 
@@ -158,17 +158,14 @@ class BaseParser(metaclass=ABCMeta):
 
             yield from gen()
 
+    def get_metric_name(self, name):
+        return self.metric_aliases.get(name, name)
+
+    def get_dimension_name(self, name):
+        return self.dimension_aliases.get(name, name)
+
     def parse(self) -> typing.Generator[typing.Tuple[int, CounterRecord], None, None]:
-        dimension_aliases = dict(self.dimension_aliases)
-        metric_aliases = dict(self.metric_aliases)
         for idx, record in self._parse():
-            record.metric = (
-                metric_aliases.get(record.metric, record.metric) if record.metric else record.metric
-            )
-            record.dimension_data = {
-                dimension_aliases.get(key, key): value
-                for key, value in record.dimension_data.items()
-            }
             yield idx, record
 
     def parse_area(self, area) -> typing.Generator[typing.Tuple[int, CounterRecord], None, None]:
@@ -188,6 +185,17 @@ class BaseJsonParser(BaseParser):
     @classmethod
     def sheet_reader_classes(cls):
         return [JsonCounter5SheetReader]
+
+    def parse(self) -> typing.Generator[typing.Tuple[int, CounterRecord], None, None]:
+
+        for idx, record in super().parse():
+
+            # process aliases
+            record.metric = self.get_metric_name(record.metric) if record.metric else record.metric
+            record.dimension_data = {
+                self.get_dimension_name(key): value for key, value in record.dimension_data.items()
+            }
+            yield idx, record
 
 
 class BaseTabularParser(BaseParser):
@@ -232,6 +240,7 @@ class BaseTabularParser(BaseParser):
 
                 if area.metric_source:
                     metric = area.metric_source.extract(self.sheet, idx, row_offset=row_offset)
+                    metric = self.get_metric_name(metric)
                     if metric is not None and metric.lower() in metrics_to_skip:
                         continue
                 else:
@@ -263,7 +272,7 @@ class BaseTabularParser(BaseParser):
                     ):
                         continue
 
-                    dimension_data[k] = dimension_text
+                    dimension_data[self.get_dimension_name(k)] = dimension_text
 
                 title_ids = {}
                 for key in IDS:

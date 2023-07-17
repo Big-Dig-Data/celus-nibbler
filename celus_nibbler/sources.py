@@ -342,10 +342,14 @@ ComposedDate.__pydantic_model__.update_forward_refs()
 @dataclass(config=PydanticConfig)
 class ValueSource(JsonEncorder, ContentExtractorMixin):
     source: Source
+    allow_negative: bool = False
     extract_params: ExtractParams = field(default_factory=lambda: ExtractParams())
     cleanup_during_header_processing: bool = True
     role: typing.Literal[Role.VALUE] = Role.VALUE
 
     @property
     def validator(self) -> typing.Optional[typing.Type[validators.BaseModel]]:
-        return validators.Value
+        if self.allow_negative:
+            return validators.ValueNegative
+        else:
+            return validators.Value

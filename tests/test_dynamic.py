@@ -8,13 +8,13 @@ from celus_nigiri import CounterRecord
 
 from celus_nibbler import Poop, eat
 from celus_nibbler.definitions import Definition
-from celus_nibbler.errors import SameRecordsInOutput, TableException
+from celus_nibbler.errors import NegativeValueInOutput, SameRecordsInOutput, TableException
 from celus_nibbler.parsers import available_parsers
 from celus_nibbler.parsers.dynamic import gen_parser
 
 
 @pytest.mark.parametrize(
-    "platform,filename,ext,parser,aggregated",
+    "platform,filename,ext,parser,ignore_order",
     (
         ("Platform1", "simple", "csv", "dynamic.non_counter.simple_format.simple", False),
         (
@@ -77,7 +77,7 @@ from celus_nibbler.parsers.dynamic import gen_parser
             "non_counter/my-date-metric-based",
             "xlsx",
             "dynamic.non_counter.simple_format.my-date-metric-based",
-            False,
+            True,
         ),
         (
             "Platform1",
@@ -218,9 +218,16 @@ from celus_nibbler.parsers.dynamic import gen_parser
             "dynamic.non_counter.simple_format.ids-fallback",
             False,
         ),
+        (
+            "Platform1",
+            "negative-values",
+            "csv",
+            "dynamic.non_counter.simple_format.negative-values",
+            True,
+        ),
     ),
 )
-def test_dynamic(platform, filename, ext, parser, aggregated):
+def test_dynamic(platform, filename, ext, parser, ignore_order):
     definition_path = pathlib.Path(__file__).parent / 'data/dynamic' / f"{filename}.json"
     input_path = pathlib.Path(__file__).parent / 'data/dynamic' / f"{filename}.{ext}"
     output_path = pathlib.Path(__file__).parent / 'data/dynamic' / f"{filename}.{ext}.out"
@@ -234,11 +241,13 @@ def test_dynamic(platform, filename, ext, parser, aggregated):
 
     with output_path.open() as f:
         reader = csv.reader(f)
+        if ignore_order:
+            reader = iter(sorted(reader))
         poops = eat(input_path, platform, parsers=[parser], dynamic_parsers=dynamic_parsers)
         for poop in [poop for poop in poops if isinstance(poop, Poop)]:
             # Aggregated records might be out of order, we need to sort it first
             records = (
-                sorted(poop.records(), key=lambda x: x.as_csv()) if aggregated else poop.records()
+                sorted(poop.records(), key=lambda x: x.as_csv()) if ignore_order else poop.records()
             )
 
             for idx, record in enumerate(records):
@@ -294,6 +303,24 @@ def test_dynamic(platform, filename, ext, parser, aggregated):
                     title="T1",
                     dimension_data={"Dim1": "D11"},
                     value=3,
+                )
+            ),
+        ),
+        (
+            "Platform1",
+            "negative-values-in-output",
+            "csv",
+            "dynamic.non_counter.simple_format.negative-values-in-output",
+            NegativeValueInOutput(
+                CounterRecord(
+                    start=date(2020, 1, 1),
+                    end=date(2020, 1, 31),
+                    organization=None,
+                    metric="Denied",
+                    title="T1",
+                    title_ids={"Print_ISSN": "1111-1111"},
+                    dimension_data={"Platform": "P1", "YOP": "2015"},
+                    value=-1,
                 )
             ),
         ),

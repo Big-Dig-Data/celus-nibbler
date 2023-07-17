@@ -64,6 +64,14 @@ class Value(BaseValueModel):
         return round(value)
 
 
+class ValueNegative(BaseValueModel):
+    value: Union[int, float]
+
+    @validator("value")
+    def non_negative(cls, value: Union[int, float]) -> Union[int, float]:
+        return round(value)
+
+
 @lru_cache
 def gen_default_validator(
     orig_validator: Type[BaseValueModel], default_value: Any, blank_values: Tuple[Any]
