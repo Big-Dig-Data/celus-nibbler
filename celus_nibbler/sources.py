@@ -51,6 +51,7 @@ class Role(str, Enum):
     DIMENSION = "dimension"
     METRIC = "metric"
     ORGANIZATION = "organization"
+    VOID = "void"
 
 
 @dataclass(config=PydanticConfig)
@@ -353,3 +354,11 @@ class ValueSource(JsonEncorder, ContentExtractorMixin):
             return validators.ValueNegative
         else:
             return validators.Value
+
+
+@dataclass(config=PydanticConfig)
+class VoidSource(JsonEncorder, ContentExtractorMixin):
+    source: Source
+    extract_params: ExtractParams = field(default_factory=lambda: ExtractParams())
+    cleanup_during_header_processing: bool = True
+    role: typing.Literal[Role.VOID] = Role.VOID

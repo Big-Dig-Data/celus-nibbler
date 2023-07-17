@@ -9,6 +9,7 @@ from .base import BaseParserDefinition
 from .celus_format import CelusFormatAreaDefinition, CelusFormatParserDefinition
 from .date_based import DateBasedAreaDefinition, DateBasedDefinition
 from .date_metric_based import DateMetricBasedAreaDefinition, DateMetricBasedDefinition
+from .generic import GenericAreaDefinition, GenericDefinition
 from .metric_based import MetricBasedAreaDefinition, MetricBasedDefinition
 
 AreaDefinition = Annotated[
@@ -17,6 +18,7 @@ AreaDefinition = Annotated[
         DateMetricBasedAreaDefinition,
         MetricBasedAreaDefinition,
         CelusFormatAreaDefinition,
+        GenericAreaDefinition,
     ],
     Field(discriminator='kind'),
 ]
@@ -43,6 +45,7 @@ DefinitionAnotation = Annotated[
         counter.IR_M1Definition,
         MetricBasedDefinition,
         CelusFormatParserDefinition,
+        GenericDefinition,
     ],
     Field(discriminator='kind'),
 ]

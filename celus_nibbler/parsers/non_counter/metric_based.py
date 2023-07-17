@@ -1,5 +1,4 @@
 import datetime
-import itertools
 import re
 import typing
 from abc import ABCMeta
@@ -25,21 +24,7 @@ class BaseMetricArea(BaseHeaderArea, metaclass=ABCMeta):
     aggregator = SameAggregator()
 
     def get_months(self, row_offset: typing.Optional[int]) -> typing.List[datetime.date]:
-        res = set()
-        for idx in itertools.count(0):
-            try:
-                date = self.date_source.extract(self.sheet, idx, row_offset=row_offset)
-                res.add(date.replace(day=1))
-
-            except TableException as e:
-                if e.action == TableException.Action.SKIP:
-                    continue
-                elif e.action == TableException.Action.STOP:
-                    break
-                else:
-                    raise
-
-        return list(res)
+        return self._get_months_from_column(row_offset)
 
 
 class MetricBasedParser(BaseNonCounterParser):

@@ -93,6 +93,32 @@ class BaseHeaderArea(BaseTabularArea):
         self.current_row_offset = offset
         return data_cells
 
+    def _get_months_from_column(
+        self, row_offset: typing.Optional[int]
+    ) -> typing.List[datetime.date]:
+        """This will get all months from months column"""
+
+        res = set()
+        for idx in itertools.count(0):
+            try:
+                date = self.date_source.extract(self.sheet, idx, row_offset=row_offset)
+                res.add(date.replace(day=1))
+
+            except TableException as e:
+                if e.action == TableException.Action.SKIP:
+                    continue
+                elif e.action == TableException.Action.STOP:
+                    break
+                else:
+                    raise
+
+        return list(res)
+
+    def _get_months_from_header(
+        self, row_offset: typing.Optional[int]
+    ) -> typing.List[datetime.date]:
+        return [e.header_data.start for e in self.find_data_cells(row_offset)]
+
 
 class BaseParser(metaclass=ABCMeta):
     metrics_to_skip: typing.List[str] = ["Total"]

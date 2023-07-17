@@ -1,4 +1,5 @@
 import copy
+import datetime
 import logging
 import typing
 
@@ -137,8 +138,8 @@ class BaseCelusFormatArea(BaseHeaderArea):
         self.find_data_cells()
         return list(self.dimensions_sources.keys())
 
-    def get_months(self):
-        return [e.header_data.start for e in self.find_data_cells()]
+    def get_months(self, row_offset: typing.Optional[int]) -> typing.List[datetime.date]:
+        return self._get_months_from_header(row_offset)
 
 
 class BaseCelusFormatParser(BaseNonCounterParser, BaseTabularParser):

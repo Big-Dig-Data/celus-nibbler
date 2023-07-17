@@ -24,6 +24,7 @@ from celus_nibbler.sources import (
     TitleIdSource,
     TitleSource,
     ValueSource,
+    VoidSource,
 )
 from celus_nibbler.utils import JsonEncorder, PydanticConfig, end_month, start_month
 
@@ -35,6 +36,7 @@ Role = Annotated[
         TitleSource,
         TitleIdSource,
         DateSource,
+        VoidSource,
     ],
     Field(discriminator='role'),
 ]
@@ -230,6 +232,8 @@ class DataHeaders(JsonEncorder):
         elif isinstance(role, DateSource):
             record.start = start_month(value)
             record.end = end_month(value)
+        elif isinstance(role, VoidSource):
+            pass
         else:
             setattr(record, role.role, value)
 
@@ -313,7 +317,7 @@ class DataHeaders(JsonEncorder):
                     )
                 )
 
-        if not res:
+        if not res and len(self.roles) > 0:
             raise TableException(
                 row=self.data_cells.coord.row,
                 col=self.data_cells.coord.col,
@@ -321,7 +325,7 @@ class DataHeaders(JsonEncorder):
                 reason="no-header-data-found",
             )
 
-        return absolute_row_offset - row_offset, res
+        return absolute_row_offset - (row_offset or 0), res
 
 
 @dataclass

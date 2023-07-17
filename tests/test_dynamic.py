@@ -225,6 +225,13 @@ from celus_nibbler.parsers.dynamic import gen_parser
             "dynamic.non_counter.simple_format.negative-values",
             True,
         ),
+        (
+            "Platform1",
+            "generic",
+            "csv",
+            "dynamic.non_counter.simple_format.generic",
+            True,
+        ),
     ),
 )
 def test_dynamic(platform, filename, ext, parser, ignore_order):
