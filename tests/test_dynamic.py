@@ -154,6 +154,13 @@ from celus_nibbler.parsers.dynamic import gen_parser
             True,
         ),
         (
+            "Platform1",
+            "complex_header_parsing2",
+            "csv",
+            "dynamic.non_counter.complex_header_parsing2.complex_header_parsing2",
+            False,
+        ),
+        (
             "PlatformX",
             "organization_sheet_name",
             "xlsx",

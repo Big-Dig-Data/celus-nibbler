@@ -1,0 +1,150 @@
+{
+  "kind": "non_counter.generic",
+  "version": 1,
+  "parser_name": "complex_header_parsing2",
+  "data_format": {
+    "name": "complex_header_parsing2"
+  },
+  "platforms": [
+    "Platform1",
+    "Platform2"
+  ],
+  "metrics_to_skip": [],
+  "titles_to_skip": [],
+  "dimensions_to_skip": {},
+  "metric_aliases": [],
+  "dimension_aliases": [],
+  "heuristics": {
+    "conds": [
+      {
+        "pattern": "^Month$",
+        "coord": {
+          "row": 0,
+          "col": 0
+        },
+        "kind": "regex"
+      }
+    ],
+    "kind": "and"
+  },
+  "areas": [
+    {
+      "kind": "non_counter.generic",
+      "dates": {
+        "role": "date",
+        "source": {
+          "coord": {
+            "col": 0,
+            "row": 4
+          },
+          "direction": "down"
+        },
+        "extract_params": {
+          "on_validation_error": "stop"
+        }
+      },
+      "titles": null,
+      "title_ids": [],
+      "dimensions": [],
+      "data_headers": {
+        "roles": [
+          {
+            "role": "metric",
+            "source": {
+              "value": "Total clicks"
+            }
+          },
+          {
+            "name": "Products",
+            "role": "dimension",
+            "source": {
+              "coord": {
+                "col": 1,
+                "row": 1
+              },
+              "direction": "right"
+            },
+            "extract_params": {
+              "last_value_as_default": true
+            },
+            "cleanup_during_header_processing": false
+          },
+          {
+            "name": "Product Kind",
+            "role": "dimension",
+            "source": {
+              "coord": {
+                "col": 1,
+                "row": 3
+              },
+              "direction": "right"
+            },
+            "extract_params": {
+              "blank_values": [],
+              "on_validation_error": "stop"
+            }
+          },
+          {
+            "name": "Subproducts",
+            "role": "dimension",
+            "source": {
+              "coord": {
+                "col": 1,
+                "row": 2
+              },
+              "direction": "right"
+            },
+            "extract_params": {
+              "last_value_as_default": true
+            },
+            "cleanup_during_header_processing": false
+          }
+        ],
+        "rules": [
+          {
+            "on_error": "stop",
+            "condition": {
+              "kind": "regex",
+              "pattern": "^Total$"
+            },
+            "on_condition_failed": "proceed",
+            "on_condition_passed": "stop"
+          },
+          {
+            "on_error": "stop",
+            "role_idx": 3,
+            "condition": {
+              "kind": "index",
+              "min": 9,
+              "max": 20
+            },
+            "on_condition_failed": "proceed",
+            "on_condition_passed": "bypass"
+          },
+          {
+            "on_error": "stop",
+            "role_idx": 2,
+            "condition": {
+              "kind": "regex",
+              "pattern": "^(X|Y|Z|W)*$"
+            },
+            "on_condition_failed": "stop",
+            "on_condition_passed": "proceed"
+          },
+          {}
+        ],
+        "data_cells": {
+          "coord": {
+            "col": 1,
+            "row": 4
+          },
+          "direction": "right"
+        },
+        "data_direction": "down",
+        "data_extract_params": {
+          "special_extraction": "comma_separated_number"
+        }
+      }
+    } 
+  ]
+}

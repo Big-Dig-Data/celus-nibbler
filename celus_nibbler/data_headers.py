@@ -154,12 +154,15 @@ DataHeaderOrCondition.__pydantic_model__.update_forward_refs()
 
 class DataHeaderAction(Enum):
     PROCEED = "proceed"
+    BYPASS = "bypass"
     SKIP = "skip"
     STOP = "stop"
 
     def merge(self, dha: 'DataHeaderAction') -> 'DataHeaderAction':
         if self == DataHeaderAction.PROCEED:
             return dha
+        elif self == DataHeaderAction.BYPASS:
+            return dha if dha != DataHeaderAction.PROCEED else self
         elif self == DataHeaderAction.SKIP:
             if dha != DataHeaderAction.PROCEED:
                 return dha
@@ -311,11 +314,11 @@ class DataHeaders(JsonEncorder):
                     if action != DataHeaderAction.PROCEED or value is not None:
                         break
 
-                if action != DataHeaderAction.PROCEED:
-                    # Terminate processingof other roles
+                if action not in [DataHeaderAction.PROCEED, DataHeaderAction.BYPASS]:
+                    # Terminate processing of other roles
                     break
 
-                if value:
+                if value and action == DataHeaderAction.PROCEED:
                     self.process_value(record, role, value)
                     store = True
 
