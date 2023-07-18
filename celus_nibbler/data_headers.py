@@ -194,7 +194,7 @@ class DataHeaderRule(JsonEncorder):
                 return self.on_condition_failed, None
 
         except TableException as e:
-            if e.reason == TableException.Action.STOP:
+            if e.action == TableException.Action.STOP:
                 # terminate if no offset
                 action = (
                     DataHeaderAction.STOP
