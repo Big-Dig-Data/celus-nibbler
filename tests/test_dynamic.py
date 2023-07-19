@@ -27,6 +27,7 @@ from celus_nibbler.parsers.dynamic import gen_parser
         ("Platform1", "coord", "csv", "dynamic.non_counter.simple_format.coord", False),
         ("Platform1", "value", "csv", "dynamic.non_counter.simple_format.value", False),
         ("Platform1", "aliases", "csv", "dynamic.non_counter.simple_format.aliases", False),
+        ("Platform1", "aliases2", "csv", "dynamic.non_counter.simple_format.aliases2", True),
         (
             "Platform1",
             "organization",

@@ -227,7 +227,13 @@ class DataHeaders(JsonEncorder):
     rules: typing.List[DataHeaderRule] = Field(default_factory=lambda: [DataHeaderRule()])
     condition: typing.Optional[Condition] = None
 
-    def process_value(self, record: CounterRecord, role: Role, value: typing.Any):
+    def process_value(
+        self,
+        record: CounterRecord,
+        role: Role,
+        value: typing.Any,
+        get_metric_name: typing.Callable[[str], str],
+    ):
         if isinstance(role, DimensionSource):
             record.dimension_data[role.name] = value
         elif isinstance(role, TitleIdSource):
@@ -236,6 +242,8 @@ class DataHeaders(JsonEncorder):
         elif isinstance(role, DateSource):
             record.start = start_month(value)
             record.end = end_month(value)
+        elif isinstance(role, MetricSource):
+            record.metric = get_metric_name(value)
         elif isinstance(role, VoidSource):
             pass
         else:
@@ -262,8 +270,11 @@ class DataHeaders(JsonEncorder):
                 ) from e
 
     def find_data_cells(
-        self, sheet: SheetReader, row_offset: typing.Optional[int]
-    ) -> (int, typing.List['DataCells']):
+        self,
+        sheet: SheetReader,
+        row_offset: typing.Optional[int],
+        get_metric_name: typing.Callable[[str], str],
+    ) -> typing.Tuple[int, typing.List['DataCells']]:
         res: typing.List[DataCells] = []
 
         # Derive row offset
@@ -318,7 +329,7 @@ class DataHeaders(JsonEncorder):
                     break
 
                 if value and action == DataHeaderAction.PROCEED:
-                    self.process_value(record, role, value)
+                    self.process_value(record, role, value, get_metric_name)
                     store = True
 
             if action == DataHeaderAction.SKIP:
