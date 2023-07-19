@@ -23,7 +23,6 @@ from .base import BaseAreaDefinition, BaseNonCounterParserDefinition
 
 @dataclass(config=PydanticConfig)
 class GenericAreaDefinition(JsonEncorder, BaseAreaDefinition):
-
     data_headers: DataHeaders
     metrics: typing.Optional[MetricSource] = None
     dates: typing.Optional[DateSource] = None
@@ -70,7 +69,6 @@ class GenericAreaDefinition(JsonEncorder, BaseAreaDefinition):
 
 @dataclass(config=PydanticConfig)
 class GenericDefinition(JsonEncorder, BaseNonCounterParserDefinition):
-
     parser_name: str
     data_format: DataFormatDefinition
 

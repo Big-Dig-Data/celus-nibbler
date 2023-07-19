@@ -162,7 +162,6 @@ class CsvSheetReader(SheetReader):
 
 
 class JsonCounter5SheetReader(SheetReader):
-
     WINDOW_SIZE = 1000  # number of lines to be cached
     sheet_idx = 0
     name = None
@@ -307,7 +306,6 @@ class XlsxReader(TableReader):
 
             # Store each sheet as temporary CSV file
             for idx, sheet in enumerate(workbook.worksheets):
-
                 # For some reason in it necessary to reset dimension for some files
                 # which display that only a single cell is present in the data
                 if sheet.calculate_dimension(force=True) == "A1:A1":
@@ -320,7 +318,6 @@ class XlsxReader(TableReader):
                 writer = csv.writer(f, dialect=dialect)
                 row_length = 0
                 for row in sheet.rows:
-
                     # Make sure that length of the row is extending
                     current_length = len(row)
                     row_length = max(row_length, current_length)
@@ -352,7 +349,6 @@ class JsonCounter5Reader(TableReader):
         self.header = header
 
     def __init__(self, source: Union[str, pathlib.Path, bytes]):
-
         file: IO[bytes]
         if isinstance(source, bytes):
             file = BytesIO(source)

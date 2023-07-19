@@ -131,7 +131,6 @@ def gen_argument_parser(
 
 
 def parse(options, platform, dynamic_parsers):
-
     for file in options.file:
         if poops := eat(
             pathlib.Path(file),
@@ -193,7 +192,6 @@ def parse(options, platform, dynamic_parsers):
                 last_rec = None
                 batch = []
                 for record in records:
-
                     if options.no_output:
                         # Just go through the records and suppress any output
                         pass

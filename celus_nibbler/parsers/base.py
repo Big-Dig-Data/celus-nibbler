@@ -215,9 +215,7 @@ class BaseJsonParser(BaseParser):
         return [JsonCounter5SheetReader]
 
     def parse(self) -> typing.Generator[typing.Tuple[int, CounterRecord], None, None]:
-
         for idx, record in super().parse():
-
             # process aliases
             record.metric = self.get_metric_name(record.metric) if record.metric else record.metric
             record.dimension_data = {
@@ -262,7 +260,6 @@ class BaseTabularParser(BaseParser):
     def _parse_area(
         self, area: BaseTabularArea
     ) -> typing.Generator[typing.Tuple[int, CounterRecord], None, None]:
-
         try:
             data_cells = area.find_data_cells(self.current_row_offset)
         except TableException as e:

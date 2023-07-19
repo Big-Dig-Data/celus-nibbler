@@ -201,7 +201,6 @@ def test_date_based_area_definition():
 
 
 def test_errors():
-
     # Unknown definition
     with pytest.raises(ValidationError):
         MetricBasedAreaDefinition.parse({"name": "unknown"})

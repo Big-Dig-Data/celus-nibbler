@@ -56,7 +56,6 @@ class DateMetricBasedAreaDefinition(JsonEncorder, BaseAreaDefinition):
 
 @dataclass(config=PydanticConfig)
 class DateMetricBasedDefinition(JsonEncorder, BaseNonCounterParserDefinition):
-
     parser_name: str
     data_format: DataFormatDefinition
 

@@ -156,7 +156,6 @@ class Poop:
 
             return aggregator.aggregate(counter_records)
         else:
-
             logger.warning('sheet %s has not been parsed', self.parser.sheet.sheet_idx + 1)
             return None
 

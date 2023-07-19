@@ -10,7 +10,6 @@ from .utils import JsonEncorder, PydanticConfig
 
 
 class Direction(str, Enum):
-
     LEFT = 'left'
     RIGHT = 'right'
     UP = 'up'

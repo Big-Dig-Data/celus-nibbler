@@ -122,7 +122,6 @@ class ContentExtractorMixin:
         validator: typing.Optional[typing.Type[validators.BaseModel]] = None,
         row_offset: typing.Optional[int] = None,
     ) -> typing.Any:
-
         if row_offset:
             source = self.source.with_row_offset(row_offset)
         else:
@@ -273,7 +272,6 @@ class TitleIdSource(JsonEncorder, ContentExtractorMixin):
         validator: typing.Optional[typing.Type[validators.BaseModel]] = None,
         row_offset: typing.Optional[int] = None,
     ) -> typing.Any:
-
         self._last_key = None
 
         try:
@@ -313,7 +311,6 @@ class DateSource(JsonEncorder, ContentExtractorMixin):
     def get_validator(
         self, validator: typing.Optional[typing.Type[validators.BaseModel]]
     ) -> typing.Optional[typing.Type[validators.BaseModel]]:
-
         if date_pattern := self.date_pattern:
             return validators.gen_date_format_validator(date_pattern)
 

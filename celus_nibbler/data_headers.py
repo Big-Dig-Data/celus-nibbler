@@ -300,7 +300,6 @@ class DataHeaders(JsonEncorder):
 
             # Process data from header
             for role_idx, role in enumerate(self.roles):
-
                 if isinstance(role, ValueSource):
                     continue
 

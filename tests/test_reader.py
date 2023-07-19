@@ -275,7 +275,6 @@ class TestJsonSheetReader:
 
 
 class TestCsvReader:
-
     data_csv = b'a,b,c\n1,3,4\nhi,there,"how are you?"\n'
     data_list = [[['a', 'b', 'c'], ['1', '3', '4'], ['hi', 'there', 'how are you?']]]
 
@@ -294,7 +293,6 @@ class TestCsvReader:
 
 
 class TestXlsxReader:
-
     file_path = Path(__file__).parent / 'data/reader/test-simple.xlsx'
     data_list = [
         [

@@ -43,7 +43,6 @@ class BaseCelusFormatArea(BaseHeaderArea):
 
         date_source = None
         for cell in CoordRange(Coord(0, 0), Direction.RIGHT):
-
             data_source = CoordRange(cell, Direction.DOWN).skip(1)
             try:
                 # First try to extract date

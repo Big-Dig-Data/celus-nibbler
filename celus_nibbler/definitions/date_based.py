@@ -22,7 +22,6 @@ from .base import BaseAreaDefinition, BaseNonCounterParserDefinition
 
 @dataclass(config=PydanticConfig)
 class DateBasedAreaDefinition(JsonEncorder, BaseAreaDefinition):
-
     data_headers: DataHeaders
     metrics: MetricSource
     titles: typing.Optional[TitleSource] = None
@@ -65,7 +64,6 @@ class DateBasedAreaDefinition(JsonEncorder, BaseAreaDefinition):
 
 @dataclass(config=PydanticConfig)
 class DateBasedDefinition(JsonEncorder, BaseNonCounterParserDefinition):
-
     parser_name: str
     data_format: DataFormatDefinition
 

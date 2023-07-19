@@ -39,7 +39,6 @@ def test_non_counter(platform, file, parser, poops_presence, heuristics, ignore_
         assert [isinstance(p, Poop) for p in poops] == poops_presence
 
         for poop in [poop for poop in poops if isinstance(poop, Poop)]:
-
             # Aggregated records might be out of order, we need to sort it first
             records = (
                 sorted(poop.records(), key=lambda x: x.as_csv()) if ignore_order else poop.records()

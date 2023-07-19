@@ -109,7 +109,6 @@ class CounterHeaderArea(BaseDateArea):
     def data_headers(self):
         # First date which is parsed in the header
         for cell in itertools.islice(self.header_row, 1, None):
-
             if not IsDateCondition(coord=cell).check(self.sheet):
                 continue
 
@@ -246,7 +245,6 @@ class CounterHeaderArea(BaseDateArea):
                 if content and content.strip().lower() in [
                     e.lower() for e in self.METRIC_COLUMN_NAMES
                 ]:
-
                     return MetricSource(
                         CoordRange(cell, Direction.DOWN).skip(1),
                         extract_params=self.METRIC_EXTRACT_PARAMS,
