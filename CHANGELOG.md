@@ -5,6 +5,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [8.3.0] - 2023-07-19
+
+### Added
+- fallback when processing title_ids
+- generic parser and parser definition
+- allow to process log-like files without values
+- new action to data header parsing
+- new `available_metrics` and `on_metric_check_failed` parser attributes
+
+### Fixed
+- wrong exception handling during data header processing
+
+
 ## [8.2.1] - 2023-06-05
 
 ### Fixed
