@@ -8,6 +8,7 @@ from typing_extensions import Annotated
 
 from celus_nibbler.conditions import Condition
 from celus_nibbler.data_headers import DataFormatDefinition
+from celus_nibbler.errors import TableException
 from celus_nibbler.parsers.base import BaseArea, BaseParser
 from celus_nibbler.parsers.counter import CounterHeaderArea
 from celus_nibbler.parsers.counter.c4 import (
@@ -238,6 +239,8 @@ class BaseCounterParserDefinition(BaseParserDefinition, metaclass=abc.ABCMeta):
         default_factory=lambda: [], metadata={"min_items": 1, "max_items": 1}
     )
     metrics_to_skip: typing.List[str] = field(default_factory=lambda: [])
+    available_metrics: typing.Optional[typing.List[str]] = None
+    on_metric_check_failed: TableException.Action = TableException.Action.SKIP
     titles_to_skip: typing.List[str] = field(default_factory=lambda: [])
     dimensions_to_skip: typing.Dict[str, typing.List[str]] = field(default_factory=lambda: {})
     metric_aliases: typing.List[typing.Tuple[str, str]] = field(default_factory=lambda: [])
@@ -267,6 +270,8 @@ def gen_parser(
         platforms = definition.platforms or base.platforms
         heuristics = definition.heuristics or base.heuristics
         metrics_to_skip = definition.metrics_to_skip or base.metrics_to_skip
+        available_metrics = definition.available_metrics or base.available_metrics
+        on_metric_check_failed = definition.on_metric_check_failed or base.on_metric_check_failed
         titles_to_skip = definition.titles_to_skip or base.titles_to_skip
         dimensions_to_skip = definition.dimensions_to_skip or base.dimensions_to_skip
         metric_aliases = dict(definition.metric_aliases) or dict(base.metric_aliases)

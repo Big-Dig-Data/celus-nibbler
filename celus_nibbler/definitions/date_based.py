@@ -5,6 +5,7 @@ from pydantic.dataclasses import dataclass
 
 from celus_nibbler.conditions import Condition
 from celus_nibbler.data_headers import DataFormatDefinition, DataHeaders
+from celus_nibbler.errors import TableException
 from celus_nibbler.parsers.base import BaseArea, BaseTabularParser
 from celus_nibbler.parsers.non_counter.date_based import BaseDateArea
 from celus_nibbler.sources import (
@@ -71,6 +72,8 @@ class DateBasedDefinition(JsonEncorder, BaseNonCounterParserDefinition):
     areas: typing.List[DateBasedAreaDefinition] = field(default_factory=lambda: [])
     platforms: typing.List[str] = field(default_factory=lambda: [])
     metrics_to_skip: typing.List[str] = field(default_factory=lambda: [])
+    available_metrics: typing.Optional[typing.List[str]] = None
+    on_metric_check_failed: TableException.Action = TableException.Action.SKIP
     titles_to_skip: typing.List[str] = field(default_factory=lambda: [])
     dimensions_to_skip: typing.Dict[str, typing.List[str]] = field(default_factory=lambda: {})
     metric_aliases: typing.List[typing.Tuple[str, str]] = field(default_factory=lambda: [])
@@ -93,6 +96,8 @@ class DateBasedDefinition(JsonEncorder, BaseNonCounterParserDefinition):
             )
 
             metrics_to_skip = _definition.metrics_to_skip
+            available_metrics = _definition.available_metrics
+            on_metric_check_failed = _definition.on_metric_check_failed
             titles_to_skip = _definition.titles_to_skip
             dimensions_to_skip = _definition.dimensions_to_skip
 

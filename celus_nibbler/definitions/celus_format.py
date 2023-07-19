@@ -6,6 +6,7 @@ from pydantic.dataclasses import dataclass
 
 from celus_nibbler.conditions import Condition
 from celus_nibbler.data_headers import DataFormatDefinition
+from celus_nibbler.errors import TableException
 from celus_nibbler.parsers.non_counter.celus_format import (
     BaseCelusFormatArea,
     BaseCelusFormatParser,
@@ -51,6 +52,8 @@ class CelusFormatParserDefinition(BaseNonCounterParserDefinition, metaclass=abc.
 
     platforms: typing.List[str] = field(default_factory=lambda: [])
     metrics_to_skip: typing.List[str] = field(default_factory=lambda: [])
+    available_metrics: typing.Optional[typing.List[str]] = None
+    on_metric_check_failed: TableException.Action = TableException.Action.SKIP
     titles_to_skip: typing.List[str] = field(default_factory=lambda: [])
     dimensions_to_skip: typing.Dict[str, typing.List[str]] = field(default_factory=lambda: {})
     metric_aliases: typing.List[typing.Tuple[str, str]] = field(default_factory=lambda: [])
@@ -74,6 +77,8 @@ class CelusFormatParserDefinition(BaseNonCounterParserDefinition, metaclass=abc.
             metrics_to_skip = self.metrics_to_skip
             titles_to_skip = self.titles_to_skip
             dimensions_to_skip = self.dimensions_to_skip
+            available_metrics = self.available_metrics
+            on_metric_check_failed = self.on_metric_check_failed
 
             metric_aliases = dict(self.metric_aliases)
             dimension_aliases = dict(self.dimension_aliases)

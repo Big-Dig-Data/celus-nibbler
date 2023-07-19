@@ -4,6 +4,7 @@ import typing
 from celus_nibbler.aggregator import BaseAggregator, NoAggregator, SameAggregator
 from celus_nibbler.conditions import Condition
 from celus_nibbler.data_headers import DataFormatDefinition
+from celus_nibbler.errors import TableException
 from celus_nibbler.parsers.base import BaseArea, BaseParser
 
 
@@ -21,6 +22,8 @@ class BaseNonCounterParserDefinition(BaseParserDefinition):
     group: str = "non_counter"
     heuristics: typing.Optional[Condition] = None
     metrics_to_skip: typing.List[str] = []
+    available_metrics: typing.Optional[typing.List[str]] = None
+    on_metric_check_failed: TableException.Action = TableException.Action.SKIP
     titles_to_skip: typing.List[str] = []
     dimensions_to_skip: typing.Dict[str, typing.List[str]] = {}
     metric_aliases: typing.List[typing.Tuple[str, str]] = []

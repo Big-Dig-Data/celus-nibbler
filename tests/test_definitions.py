@@ -658,6 +658,8 @@ def test_date_based_definition():
         ],
         "metric_aliases": [],
         "metrics_to_skip": [],
+        "available_metrics": None,
+        "on_metric_check_failed": "skip",
         "titles_to_skip": [],
         'possible_row_offsets': [0],
     }

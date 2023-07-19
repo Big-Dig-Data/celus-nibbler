@@ -122,6 +122,8 @@ class BaseHeaderArea(BaseTabularArea):
 
 class BaseParser(metaclass=ABCMeta):
     metrics_to_skip: typing.List[str] = ["Total"]
+    available_metrics: typing.Optional[typing.List[str]] = None
+    on_metric_check_failed: TableException.Action = TableException.Action.SKIP
     titles_to_skip: typing.List[str] = ["Total"]
     dimensions_to_skip: typing.Dict[str, typing.List[str]] = {"Platform": ["Total"]}
     heuristics: typing.Optional[BaseCondition] = None
@@ -233,6 +235,30 @@ class BaseTabularParser(BaseParser):
     def sheet_reader_classes(cls):
         return [CsvSheetReader]
 
+    def _metric_check(
+        self,
+        metric,
+        orig_metric,
+        metrics_to_skip: typing.List[str],
+        available_metrics: typing.Optional[typing.List[str]],
+        on_metric_check_failed: TableException.Action,
+    ):
+        def error():
+            raise TableException(
+                sheet=self.sheet.sheet_idx,
+                value=orig_metric,
+                reason="wrong-metric-found",
+                action=on_metric_check_failed,
+            )
+
+        # ignore case during skip
+        if metric.lower() in metrics_to_skip:
+            error()
+
+        # keep case when processing available metrics
+        if available_metrics and metric not in available_metrics:
+            error()
+
     def _parse_area(
         self, area: BaseTabularArea
     ) -> typing.Generator[typing.Tuple[int, CounterRecord], None, None]:
@@ -265,10 +291,15 @@ class BaseTabularParser(BaseParser):
                     title = None
 
                 if area.metric_source:
-                    metric = area.metric_source.extract(self.sheet, idx, row_offset=row_offset)
-                    metric = self.get_metric_name(metric)
-                    if metric is not None and metric.lower() in metrics_to_skip:
-                        continue
+                    orig_metric = area.metric_source.extract(self.sheet, idx, row_offset=row_offset)
+                    metric = self.get_metric_name(orig_metric)
+                    self._metric_check(
+                        metric,
+                        orig_metric,
+                        metrics_to_skip,
+                        self.available_metrics,
+                        self.on_metric_check_failed,
+                    )
                 else:
                     metric = None
 
