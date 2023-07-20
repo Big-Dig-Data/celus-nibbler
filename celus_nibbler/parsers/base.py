@@ -275,7 +275,6 @@ class BaseTabularParser(BaseParser):
     def _parse_area(
         self, area: BaseTabularArea
     ) -> typing.Generator[typing.Tuple[int, CounterRecord], None, None]:
-
         metrics_to_skip = [e.lower() for e in self.metrics_to_skip]
         try:
 
