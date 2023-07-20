@@ -256,10 +256,24 @@ from celus_nibbler.parsers.dynamic import gen_parser
         ),
         (
             "Platform1",
+            "available-metrics2",
+            "csv",
+            "dynamic.non_counter.simple_format.available-metrics2",
+            True,
+        ),
+        (
+            "Platform1",
             "available-metrics-stop",
             "csv",
             "dynamic.non_counter.simple_format.available-metrics-stop",
             False,
+        ),
+        (
+            "Platform1",
+            "available-metrics2-stop",
+            "csv",
+            "dynamic.non_counter.simple_format.available-metrics2-stop",
+            True,
         ),
     ),
 )
@@ -366,6 +380,13 @@ def test_dynamic(platform, filename, ext, parser, ignore_order):
             "csv",
             "dynamic.non_counter.simple_format.available-metrics-fail",
             TableException(sheet=0, reason="wrong-metric-found", value="Denied"),
+        ),
+        (
+            "Platform1",
+            "available-metrics2-fail",
+            "csv",
+            "dynamic.non_counter.simple_format.available-metrics2-fail",
+            TableException(sheet=0, reason="wrong-metric-found", value="Metric3"),
         ),
     ),
 )

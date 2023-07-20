@@ -233,7 +233,8 @@ class DataHeaders(JsonEncorder):
         role: Role,
         value: typing.Any,
         get_metric_name: typing.Callable[[str], str],
-    ):
+        check_metric_name: typing.Callable[[str, str], None],
+    ) -> DataHeaderAction:
         if isinstance(role, DimensionSource):
             record.dimension_data[role.name] = value
         elif isinstance(role, TitleIdSource):
@@ -243,11 +244,21 @@ class DataHeaders(JsonEncorder):
             record.start = start_month(value)
             record.end = end_month(value)
         elif isinstance(role, MetricSource):
-            record.metric = get_metric_name(value)
+            metric_name = get_metric_name(value)
+            try:
+                check_metric_name(metric_name, value)
+            except TableException as e:
+                if e.action == TableException.Action.SKIP:
+                    return DataHeaderAction.SKIP
+                elif e.action == TableException.Action.STOP:
+                    return DataHeaderAction.STOP
+                raise
+            record.metric = metric_name
         elif isinstance(role, VoidSource):
             pass
         else:
             setattr(record, role.role, value)
+        return DataHeaderAction.PROCEED
 
     def prepare_row_offset(
         self, sheet: SheetReader, initial_row_offset: typing.Optional[int]
@@ -274,6 +285,7 @@ class DataHeaders(JsonEncorder):
         sheet: SheetReader,
         row_offset: typing.Optional[int],
         get_metric_name: typing.Callable[[str], str],
+        check_metric_name: typing.Callable[[str, str], None],
     ) -> typing.Tuple[int, typing.List['DataCells']]:
         res: typing.List[DataCells] = []
 
@@ -328,8 +340,17 @@ class DataHeaders(JsonEncorder):
                     # Terminate processing of other roles
                     break
 
+                # merge with action which occured during processing
                 if value and action == DataHeaderAction.PROCEED:
-                    self.process_value(record, role, value, get_metric_name)
+                    action = action.merge(
+                        self.process_value(record, role, value, get_metric_name, check_metric_name)
+                    )
+
+                if action not in [DataHeaderAction.PROCEED, DataHeaderAction.BYPASS]:
+                    # Terminate processing of other roles
+                    break
+
+                if value and action == DataHeaderAction.PROCEED:
                     store = True
 
             if action == DataHeaderAction.SKIP:

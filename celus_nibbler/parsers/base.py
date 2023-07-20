@@ -82,6 +82,7 @@ class BaseTabularArea(BaseArea):
         self,
         row_offset: typing.Optional[int],
         get_metric_name: typing.Callable[[str], str],
+        check_metric_name: typing.Callable[[str, str], None],
     ) -> typing.List[DataCells]:
         pass
 
@@ -96,9 +97,10 @@ class BaseHeaderArea(BaseTabularArea):
         self,
         row_offset: typing.Optional[int],
         get_metric_name: typing.Callable[[str], str],
+        check_metric_name: typing.Callable[[str, str], None],
     ) -> typing.List[DataCells]:
         offset, data_cells = self.data_headers.find_data_cells(
-            self.sheet, row_offset, get_metric_name
+            self.sheet, row_offset, get_metric_name, check_metric_name
         )
         self.current_row_offset = offset
         return data_cells
@@ -127,7 +129,10 @@ class BaseHeaderArea(BaseTabularArea):
     def _get_months_from_header(
         self, row_offset: typing.Optional[int]
     ) -> typing.List[datetime.date]:
-        return [e.header_data.start for e in self.find_data_cells(row_offset, lambda x, y: y)]
+        return [
+            e.header_data.start
+            for e in self.find_data_cells(row_offset, lambda x, y: y, lambda x, y: None)
+        ]
 
 
 class BaseParser(metaclass=ABCMeta):
@@ -270,8 +275,22 @@ class BaseTabularParser(BaseParser):
     def _parse_area(
         self, area: BaseTabularArea
     ) -> typing.Generator[typing.Tuple[int, CounterRecord], None, None]:
+
+        metrics_to_skip = [e.lower() for e in self.metrics_to_skip]
         try:
-            data_cells = area.find_data_cells(self.current_row_offset, self.get_metric_name)
+
+            def check_metric_name(value: str, orig_value: str):
+                self._metric_check(
+                    value,
+                    orig_value,
+                    metrics_to_skip,
+                    self.available_metrics,
+                    self.on_metric_check_failed,
+                )
+
+            data_cells = area.find_data_cells(
+                self.current_row_offset, self.get_metric_name, check_metric_name
+            )
         except TableException as e:
             if e.action == TableException.Action.FAIL:
                 raise
