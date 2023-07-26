@@ -176,7 +176,7 @@ def gen_date_format_validator(pattern: str) -> BaseValueModel:
         _stripped_date = validator('value', allow_reuse=True, pre=True)(stripped)
         _non_empty_date = validator('value', allow_reuse=True, pre=True)(non_empty)
 
-        @validator("value", pre=True)
+        @validator("value", pre=True, allow_reuse=True)
         def to_datetime(cls, date: str) -> datetime.datetime:
             try:
                 return datetime.datetime.strptime(date, pattern).replace(day=1)

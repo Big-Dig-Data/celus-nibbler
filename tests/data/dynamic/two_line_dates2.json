@@ -83,6 +83,7 @@
                         "extract_params": {
                             "last_value_as_default": true
                         },
+                        "date_pattern": "%Y",
                         "role": "date"
                     },
                     "month": {
