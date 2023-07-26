@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [8.3.4] - 2023-07-26
+
+### Fixed
+- pydantic error when reusing date_pattern attribute of DateSource
+
+
+
 ## [8.3.3] - 2023-07-20
 
 ### Fixed
