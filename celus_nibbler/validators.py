@@ -5,7 +5,7 @@ from typing import Any, Optional, Tuple, Type, Union
 
 from dateutil import parser as datetimes_parser
 from isbnlib import get_isbnlike
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, field_validator
 
 from .utils import COMMON_DATE_FORMATS
 
@@ -57,7 +57,7 @@ def issn_strict(issn: str) -> str:
 class Value(BaseValueModel):
     value: Union[int, float]
 
-    @validator("value")
+    @field_validator("value")
     def non_negative(cls, value: Union[int, float]) -> Union[int, float]:
         if value < 0:
             raise ValueError("cant-be-negative")
@@ -67,7 +67,7 @@ class Value(BaseValueModel):
 class ValueNegative(BaseValueModel):
     value: Union[int, float]
 
-    @validator("value")
+    @field_validator("value")
     def non_negative(cls, value: Union[int, float]) -> Union[int, float]:
         return round(value)
 
@@ -79,7 +79,7 @@ def gen_default_validator(
     class Validator(BaseValueModel):
         value: Any
 
-        @validator("value", allow_reuse=True)
+        @field_validator("value")
         def default(cls, value: Any) -> Any:
             if value in blank_values:
                 return default_value
@@ -92,7 +92,7 @@ def gen_default_validator(
 class CommaSeparatedNumberValidator(BaseValueModel):
     value: Any
 
-    @validator("value", allow_reuse=True, pre=True)
+    @field_validator("value", mode='before')
     def comma_separeted_number(cls, value: str) -> str:
         return Value(value=value.replace(",", "")).value
 
@@ -100,32 +100,32 @@ class CommaSeparatedNumberValidator(BaseValueModel):
 class Organization(BaseValueModel):
     value: str
 
-    _not_none_organization = validator('value', allow_reuse=True)(not_none)
-    _stripped_organization = validator('value', allow_reuse=True)(stripped)
-    _non_empty_organization = validator('value', allow_reuse=True)(non_empty)
+    _not_none_organization = field_validator('value')(not_none)
+    _stripped_organization = field_validator('value')(stripped)
+    _non_empty_organization = field_validator('value')(non_empty)
 
 
 class Platform(BaseValueModel):
     value: str
 
-    _stripped_platform = validator('value', allow_reuse=True)(stripped)
-    _non_empty_platform = validator('value', allow_reuse=True)(non_empty)
+    _stripped_platform = field_validator('value')(stripped)
+    _non_empty_platform = field_validator('value')(non_empty)
 
 
 class Dimension(BaseValueModel):
     value: str
 
-    _stripped_dimension = validator('value', allow_reuse=True)(stripped)
+    _stripped_dimension = field_validator('value')(stripped)
 
 
 class Metric(BaseValueModel):
     value: str
 
-    _not_none_metic = validator('value', allow_reuse=True)(not_none)
-    _stripped_metric = validator('value', allow_reuse=True)(stripped)
-    _non_empty_metric = validator('value', allow_reuse=True)(non_empty)
+    _not_none_metic = field_validator('value')(not_none)
+    _stripped_metric = field_validator('value')(stripped)
+    _non_empty_metric = field_validator('value')(non_empty)
 
-    @validator("value")
+    @field_validator("value")
     def not_digit(cls, metric: str) -> str:
         if metric.isdigit():
             raise ValueError("cant-be-digit")
@@ -135,7 +135,7 @@ class Metric(BaseValueModel):
 class Title(BaseValueModel):
     value: Optional[str]
 
-    _stripped_title = validator('value', allow_reuse=True)(stripped)
+    _stripped_title = field_validator('value')(stripped)
 
 
 parserinfo_us = datetimes_parser.parserinfo(dayfirst=False)  # prefer US variant
@@ -145,15 +145,15 @@ parserinfo_eu = datetimes_parser.parserinfo(dayfirst=True)  # prefer EU variant
 class Date(BaseValueModel):
     value: datetime.date
 
-    _not_none_date = validator('value', allow_reuse=True, pre=True)(not_none)
-    _stripped_date = validator('value', allow_reuse=True, pre=True)(stripped)
-    _non_empty_date = validator('value', allow_reuse=True, pre=True)(non_empty)
+    _not_none_date = field_validator('value', mode='before')(not_none)
+    _stripped_date = field_validator('value', mode='before')(stripped)
+    _non_empty_date = field_validator('value', mode='before')(non_empty)
 
     @classmethod
     def parserinfo(cls):
         return parserinfo_us
 
-    @validator("value", pre=True)
+    @field_validator("value", mode='before')
     def to_datetime(cls, date: str) -> datetime.datetime:
         # Check for common formats (faster that dateutil)
         for fmt in COMMON_DATE_FORMATS:
@@ -180,11 +180,11 @@ def gen_date_format_validator(pattern: str) -> BaseValueModel:
     class DateFormat(BaseValueModel):
         value: datetime.date
 
-        _not_none_date = validator('value', allow_reuse=True, pre=True)(not_none)
-        _stripped_date = validator('value', allow_reuse=True, pre=True)(stripped)
-        _non_empty_date = validator('value', allow_reuse=True, pre=True)(non_empty)
+        _not_none_date = field_validator('value', mode='before')(not_none)
+        _stripped_date = field_validator('value', mode='before')(stripped)
+        _non_empty_date = field_validator('value', mode='before')(non_empty)
 
-        @validator("value", pre=True, allow_reuse=True)
+        @field_validator("value", mode='before')
         def to_datetime(cls, date: str) -> datetime.datetime:
             try:
                 return datetime.datetime.strptime(date, pattern).replace(day=1)
@@ -197,7 +197,7 @@ def gen_date_format_validator(pattern: str) -> BaseValueModel:
 class DOI(BaseValueModel):
     value: str
 
-    @validator("value")
+    @field_validator("value")
     def check_doi(cls, doi: str) -> str:
         return doi.strip() or ""
 
@@ -205,7 +205,7 @@ class DOI(BaseValueModel):
 class URI(BaseValueModel):
     value: str
 
-    @validator("value")
+    @field_validator("value")
     def check_uri(cls, uri: str) -> str:
         return uri.strip() or ""
 
@@ -213,7 +213,7 @@ class URI(BaseValueModel):
 class ISBN(BaseValueModel):
     value: str
 
-    @validator("value")
+    @field_validator("value")
     def check_isbn(cls, isbn: str) -> str:
         return isbn.strip() or ""
 
@@ -221,7 +221,7 @@ class ISBN(BaseValueModel):
 class StrictISBN(BaseValueModel):
     value: str
 
-    @validator("value")
+    @field_validator("value")
     def check_isbn(cls, isbn: str) -> str:
         isbns = get_isbnlike(isbn)
 
@@ -235,25 +235,25 @@ class StrictISBN(BaseValueModel):
 class ISSN(BaseValueModel):
     value: str
 
-    _issn_format = validator('value', allow_reuse=True)(issn)
+    _issn_format = field_validator('value')(issn)
 
 
 class StrictISSN(BaseValueModel):
     value: str
 
-    _issn_format = validator('value', allow_reuse=True)(issn_strict)
+    _issn_format = field_validator('value')(issn_strict)
 
 
 class EISSN(BaseValueModel):
     value: str
 
-    _issn_format = validator('value', allow_reuse=True)(issn)
+    _issn_format = field_validator('value')(issn)
 
 
 class StrictEISSN(BaseValueModel):
     value: str
 
-    _issn_format = validator('value', allow_reuse=True)(issn_strict)
+    _issn_format = field_validator('value')(issn_strict)
 
 
 class ProprietaryID(BaseValueModel):

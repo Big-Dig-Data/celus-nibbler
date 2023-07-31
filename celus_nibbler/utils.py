@@ -4,8 +4,8 @@ import json
 import typing
 from datetime import date, timedelta
 
-from pydantic import TypeAdapter
-from pydantic.json import pydantic_encoder
+from pydantic import ConfigDict, TypeAdapter
+from pydantic_core import to_jsonable_python
 
 COMMON_DATE_FORMATS = [
     "%Y-%m",
@@ -28,19 +28,19 @@ def profile(*args, **kwargs):
     profile.print_stats()
 
 
-class PydanticConfig:
-    extra = "forbid"
-    allow_mutation = False
-    frozen = True
-    undefined_types_warning = False
+PydanticConfig = ConfigDict(
+    extra="forbid",
+    frozen=True,
+    undefined_types_warning=False,
+)
 
 
 class JsonEncorder:
     def dict(self):
-        return pydantic_encoder(self)
+        return to_jsonable_python(self)
 
     def json(self):
-        return json.dumps(self, default=pydantic_encoder)
+        return json.dumps(self, default=to_jsonable_python)
 
     @classmethod
     def parse(cls, obj: typing.Dict[str, typing.Any]):
