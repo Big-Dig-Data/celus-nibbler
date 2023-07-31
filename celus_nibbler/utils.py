@@ -1,11 +1,10 @@
 import contextlib
 import cProfile
-import json
+import functools
 import typing
 from datetime import date, timedelta
 
 from pydantic import ConfigDict, TypeAdapter
-from pydantic_core import to_jsonable_python
 
 COMMON_DATE_FORMATS = [
     "%Y-%m",
@@ -36,18 +35,20 @@ PydanticConfig = ConfigDict(
 
 
 class JsonEncorder:
+    @classmethod
+    @functools.lru_cache
+    def adapter(cls):
+        return TypeAdapter(cls)
+
     def dict(self):
-        return to_jsonable_python(self)
+        return self.adapter().dump_python(self)
 
     def json(self):
-        return json.dumps(self, default=to_jsonable_python)
+        return self.adapter().dump_json(self).decode()
 
     @classmethod
     def parse(cls, obj: typing.Dict[str, typing.Any]):
-        if not hasattr(cls, 'adapter'):
-            cls.adapter = TypeAdapter(cls)
-
-        return cls.adapter.validate_python(obj)
+        return cls.adapter().validate_python(obj)
 
 
 def start_month(in_date: date) -> date:

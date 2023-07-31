@@ -139,14 +139,14 @@ def test_getitem():
 def test_serialization_and_deserialization():
     # Coord
     coord_json = Coord(1, 2).json()
-    assert coord_json == '{"row": 1, "col": 2}'
+    assert coord_json == '{"row":1,"col":2}'
     assert Coord(**json.loads(coord_json)) == Coord(1, 2)
 
     # Coord Range
     range_json = CoordRange(Coord(2, 3), Direction.DOWN).json()
-    assert range_json == '{"coord": {"row": 2, "col": 3}, "direction": "down", "max_count": null}'
+    assert range_json == '{"coord":{"row":2,"col":3},"direction":"down","max_count":null}'
     assert CoordRange(**json.loads(range_json)) == CoordRange(Coord(2, 3), Direction.DOWN)
 
     range_json = CoordRange(Coord(2, 3), Direction.DOWN, 10).json()
-    assert range_json == '{"coord": {"row": 2, "col": 3}, "direction": "down", "max_count": 10}'
+    assert range_json == '{"coord":{"row":2,"col":3},"direction":"down","max_count":10}'
     assert CoordRange(**json.loads(range_json)) == CoordRange(Coord(2, 3), Direction.DOWN, 10)
