@@ -1,4 +1,4 @@
-from .eat_and_poop import Poop, PoopStats, eat
+from .eat_and_poop import Poop, PoopOrganizationStats, PoopStats, eat
 from .errors import (
     MultipleParsersFound,
     NibblerError,
@@ -16,6 +16,7 @@ __all__ = [
     'get_supported_platforms',
     'Poop',
     'PoopStats',
+    'PoopOrganizationStats',
     'MultipleParsersFound',
     'NibblerError',
     'NoParserFound',

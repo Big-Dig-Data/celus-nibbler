@@ -52,6 +52,62 @@ class StatUnit(BaseModel):
 AnnotatedStatUnit = Annotated[StatUnit, Field(default_factory=lambda: StatUnit)]
 
 
+class PoopOrganizationStats(BaseModel):
+    months: typing.DefaultDict[str, AnnotatedStatUnit] = Field(
+        default_factory=lambda: defaultdict(StatUnit)
+    )
+    metrics: typing.DefaultDict[str, AnnotatedStatUnit] = Field(
+        default_factory=lambda: defaultdict(StatUnit)
+    )
+    titles: typing.DefaultDict[str, AnnotatedStatUnit] = Field(
+        default_factory=lambda: defaultdict(StatUnit)
+    )
+    title_ids: typing.Set[str] = set()
+    dimensions: typing.DefaultDict[
+        str,
+        Annotated[
+            typing.DefaultDict[str, AnnotatedStatUnit],
+            Field(default_factory=lambda: defaultdict(StatUnit)),
+        ],
+    ] = Field(defaultdict(lambda: defaultdict(StatUnit)))
+    total: StatUnit = Field(default_factory=lambda: StatUnit())
+
+    def process_record(self, record: CounterRecord):
+        self.months[record.start.strftime("%Y-%m")].inc(record.value)
+        self.metrics[record.metric or ""].inc(record.value)
+        self.titles[record.title or ""].inc(record.value)
+
+        for title_id in record.title_ids.keys():
+            self.title_ids.add(title_id)
+
+        for dimension_name, dimension in record.dimension_data.items():
+            self.dimensions[dimension_name][dimension].inc(record.value)
+
+        self.total.inc(record.value)
+
+    def __add__(self, other: 'PoopOrganizationStats') -> 'PoopOrganizationStats':
+        result = PoopOrganizationStats()
+        for month, data in list(self.months.items()) + list(other.months.items()):
+            result.months[month] += data
+
+        for metric, data in list(self.metrics.items()) + list(other.metrics.items()):
+            result.metrics[metric] += data
+
+        for title, data in list(self.titles.items()) + list(other.titles.items()):
+            result.titles[title] += data
+
+        for dimension_name, dimensions in list(self.dimensions.items()) + list(
+            other.dimensions.items()
+        ):
+            for dimension, data in dimensions.items():
+                result.dimensions[dimension_name][dimension] += data
+
+        result.title_ids = self.title_ids | other.title_ids
+
+        result.total = self.total + other.total
+        return result
+
+
 class PoopStats(BaseModel):
     months: typing.DefaultDict[str, AnnotatedStatUnit] = Field(
         default_factory=lambda: defaultdict(StatUnit)
@@ -59,9 +115,10 @@ class PoopStats(BaseModel):
     metrics: typing.DefaultDict[str, AnnotatedStatUnit] = Field(
         default_factory=lambda: defaultdict(StatUnit)
     )
-    organizations: typing.DefaultDict[str, AnnotatedStatUnit] = Field(
-        default_factory=lambda: defaultdict(StatUnit)
-    )
+    organizations: typing.DefaultDict[
+        str,
+        Annotated[PoopOrganizationStats, Field(default_factory=lambda: PoopOrganizationStats())],
+    ] = Field(default_factory=lambda: defaultdict(PoopOrganizationStats))
     titles: typing.DefaultDict[str, AnnotatedStatUnit] = Field(
         default_factory=lambda: defaultdict(StatUnit)
     )
@@ -105,7 +162,7 @@ class PoopStats(BaseModel):
     def process_record(self, record: CounterRecord):
         self.months[record.start.strftime("%Y-%m")].inc(record.value)
         self.metrics[record.metric or ""].inc(record.value)
-        self.organizations[record.organization or ""].inc(record.value)
+        self.organizations[record.organization or ""].process_record(record)
         self.titles[record.title or ""].inc(record.value)
 
         for title_id in record.title_ids.keys():
