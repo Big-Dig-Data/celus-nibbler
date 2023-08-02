@@ -10,25 +10,6 @@ def test_extra_poop_info():
 
     poops = eat(file_path, "Ovid", parsers=["static.counter4.BR1.Tabular"])
     assert poops and len(poops) == 1
-    assert [sorted(e) for e in poops[0].get_metrics_dimensions_title_ids_months()] == [
-        ["Book Title Requests"],
-        ["Platform", "Publisher"],
-        ["ISBN"],
-        [
-            date(2018, 1, 1),
-            date(2018, 2, 1),
-            date(2018, 3, 1),
-            date(2018, 4, 1),
-            date(2018, 5, 1),
-            date(2018, 6, 1),
-            date(2018, 7, 1),
-            date(2018, 8, 1),
-            date(2018, 9, 1),
-            date(2018, 10, 1),
-            date(2018, 11, 1),
-            date(2018, 12, 1),
-        ],
-    ]
     assert poops[0].get_stats() == PoopStats(
         months={
             "2018-01": StatUnit(count=2, sum=3),
@@ -97,12 +78,6 @@ def test_extra_poop_info():
 
         poops = eat(file_path, "Ovid", parsers=["static.counter4.BR1.Tabular"])
         assert poops and len(poops) == 1
-        assert [sorted(e) for e in poops[0].get_metrics_dimensions_title_ids_months()] == [
-            [],
-            [],
-            [],
-            [],
-        ]
         assert poops[0].get_stats() == PoopStats()
         assert poops[0].sheet_idx == 0
         assert poops[0].get_months() == [[date(2018, i, 1) for i in range(1, 13)]]

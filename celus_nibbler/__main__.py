@@ -145,19 +145,13 @@ def parse(options, platform, dynamic_parsers):
                     print(f"Failed to pick parser for sheet {idx}", file=sys.stderr)
                     continue
 
+                stat_dict = poop.get_stats().model_dump()
                 if options.show_summary:
-                    (
-                        metrics,
-                        dimensions,
-                        title_ids,
-                        months,
-                    ) = poop.get_metrics_dimensions_title_ids_months()
-
                     print(f"Parsing sheet {idx}", file=sys.stderr)
-                    print(f"Months: {months}", file=sys.stderr)
-                    print(f"Metrics: {metrics}", file=sys.stderr)
-                    print(f"Dimensions: {dimensions}", file=sys.stderr)
-                    print(f"Title ids: {title_ids}", file=sys.stderr)
+                    print(f"Months: {stat_dict['months']}", file=sys.stderr)
+                    print(f"Metrics: {stat_dict['metrics']}", file=sys.stderr)
+                    print(f"Dimensions: {stat_dict['dimensions']}", file=sys.stderr)
+                    print(f"Title ids: {stat_dict['title_ids']}", file=sys.stderr)
 
                 if options.no_output:
                     header = None
@@ -187,7 +181,7 @@ def parse(options, platform, dynamic_parsers):
                 records = (
                     CounterOrdering().aggregate(poop.records())
                     if options.counter_like_output
-                    else poop.records()
+                    else poop.records_with_stats()
                 )
                 last_rec = None
                 batch = []
@@ -204,14 +198,26 @@ def parse(options, platform, dynamic_parsers):
                         if not last_rec or last_rec == this_rec:
                             batch.append(record)
                         elif batch:
-                            write_batch(writer, batch, dimensions, title_ids, months)
+                            write_batch(
+                                writer,
+                                batch,
+                                stat_dict["dimensions"].keys(),
+                                stat_dict["title_ids"],
+                                stat_dict["months"].keys(),
+                            )
                             batch = [record]
                         last_rec = this_rec
                     else:
                         writer.writerow(record.as_csv())
 
                 if batch:
-                    write_batch(writer, batch, dimensions, title_ids, months)
+                    write_batch(
+                        writer,
+                        batch,
+                        stat_dict["dimensions"].keys(),
+                        stat_dict["title_ids"],
+                        stat_dict["months"].keys(),
+                    )
 
 
 def main():

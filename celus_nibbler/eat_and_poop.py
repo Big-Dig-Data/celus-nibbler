@@ -3,7 +3,6 @@ import itertools
 import logging
 import pathlib
 import typing
-import warnings
 from collections import Counter, defaultdict
 from datetime import date
 
@@ -261,42 +260,6 @@ class Poop:
     @property
     def months(self):
         return self.get_stats().months.keys()
-
-    @functools.lru_cache
-    def get_metrics_dimensions_title_ids_months(
-        self,
-    ) -> typing.Tuple[typing.List[str], typing.List[str], typing.List[str], typing.List[str]]:
-        warnings.warn(
-            "`get_metrics_dimensions_title_ids_months` is deprecated in favor of `get_stats`",
-            DeprecationWarning,
-        )
-        seen_metrics = set()
-        seen_dimensions: typing.Set[str] = set()
-        seen_title_ids: typing.Set[str] = set()
-        seen_months: typing.Set[str] = set()
-        if records := self.records():
-            for record in records:
-                # add month
-                seen_months.add(record.start)
-
-                # add non-empty metrics
-                if record.metric:
-                    seen_metrics.add(record.metric)
-
-                # add non-empty dimensions
-                if record.dimension_data:
-                    seen_dimensions.update(k for k, v in record.dimension_data.items() if v)
-                # add non-empty titles
-                if record.title_ids:
-                    seen_title_ids.update(k for k, v in record.title_ids.items() if v)
-
-            return (
-                sorted(seen_metrics),
-                sorted(seen_dimensions),
-                sorted(seen_title_ids),
-                sorted(seen_months),
-            )
-        return [], [], [], []
 
     @functools.lru_cache
     def get_stats(self) -> PoopStats:
