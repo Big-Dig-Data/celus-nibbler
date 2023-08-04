@@ -275,6 +275,20 @@ from celus_nibbler.parsers.dynamic import gen_parser
             "dynamic.non_counter.simple_format.available-metrics2-stop",
             True,
         ),
+        (
+            "Platform1",
+            "metrics-to-skip1",
+            "csv",
+            "dynamic.non_counter.simple_format.metrics-to-skip1",
+            False,
+        ),
+        (
+            "Platform1",
+            "metrics-to-skip2",
+            "csv",
+            "dynamic.non_counter.simple_format.metrics-to-skip2",
+            True,
+        ),
     ),
 )
 def test_dynamic(platform, filename, ext, parser, ignore_order):
