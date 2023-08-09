@@ -11,7 +11,7 @@ Reporting_Period	Begin_Date=2016-01-01; End_Date=2016-03-31
 Created	2019-04-25T11:39:56Z
 Created_By	Publisher Platform Delta
 
-Institution_Name	CuCustomer_ID	Title	Publisher	Publisher_ID	Platform	DOI	Proprietary_ID	ISBN	Print_ISSN	Online_ISSN	URI	Data_Type	Section_Type	YOP	Access_Type	Access_Method	Metric_Type	Reporting_Period_Total	Jan-2016	Feb-2016	Mar-2016
+Institution_Name	Customer_ID	Title	Publisher	Publisher_ID	Platform	DOI	Proprietary_ID	ISBN	Print_ISSN	Online_ISSN	URI	Data_Type	Section_Type	YOP	Access_Type	Access_Method	Metric_Type	Reporting_Period_Total	Jan-2016	Feb-2016	Mar-2016
 MyLib	L1	Book 1715	Publisher 109		PPDelta		ppdelta:1715	978-0-300-94426-6				Book	Book	2012	Controlled	Regular	Limit_Exceeded	1	0	0	1
 MyLib	L1	Book 1715	Publisher 109		PPDelta		ppdelta:1715	978-0-300-94426-6				Book	Book	2012	Controlled	Regular	No_License	3	1	2	0
 MyLib	L1	Book 1715	Publisher 109		PPDelta		ppdelta:1715	978-0-300-94426-6				Book	Book	2012	Controlled	Regular	Total_Item_Investigations	10	0	0	10

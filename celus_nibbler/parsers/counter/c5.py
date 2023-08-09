@@ -16,6 +16,7 @@ class Counter5HeaderArea(CounterHeaderArea):
     HEADER_DATE_COL_START = 3
     METRIC_COLUMN_NAMES = ["Metric_Type", "Metric Type"]
     TITLE_COLUMN_NAMES = ['Title']
+    ORGANIZATION_COLUMN_NAMES = ['Institution_Name', 'Institution Name']
 
 
 class BaseCounter5Parser(BaseTabularParser):
