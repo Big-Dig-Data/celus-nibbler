@@ -148,6 +148,12 @@ class CounterHeaderArea(BaseDateArea):
                     extract_params=self.TITLE_EXTRACT_PARAMS,
                 )
 
+        # title column was not found, assuming that first column is the title
+        return TitleSource(
+            CoordRange(self.header_row[0], Direction.DOWN).skip(1),
+            extract_params=self.TITLE_EXTRACT_PARAMS,
+        )
+
     @property
     @lru_cache
     def title_ids_sources(self) -> typing.Dict[str, TitleIdSource]:

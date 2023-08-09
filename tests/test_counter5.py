@@ -37,6 +37,7 @@ from celus_nibbler.errors import NoParserMatchesHeuristics
         ("MIT", "5/TR-e.tsv", "static.counter5.TR.Tabular", True, True),
         ("MIT", "5/TR-sample.tsv", "static.counter5.TR.Tabular", True, True),
         ("MIT", "5/TR-f.tsv", "static.counter5.TR.Tabular", True, True),
+        ("MIT", "5/TR-with-organization.tsv", "static.counter5.TR.Tabular", True, True),
         ("T&F ebooks", "5/TR_B1-a.xlsx", "static.counter5.TR.Tabular", True, True),
         ("JSTOR", "5/IR_M1-a.csv", "static.counter5.IR_M1.Tabular", True, True),
         ("JSTOR", "5/IR_M1-b.csv", "static.counter5.IR_M1.Tabular", False, True),

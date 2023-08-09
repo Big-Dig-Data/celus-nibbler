@@ -37,6 +37,8 @@ class BR1(BaseCounter4Parser):
     heuristics = RegexCondition(re.compile(r"^Book Report 1 \(R4\)"), Coord(0, 0))
 
     class Area(CounterHeaderArea):
+        TITLE_COLUMN_NAMES = ['Book']
+
         def prepare_record(self, *args, **kwargs) -> CounterRecord:
             res = super().prepare_record(*args, **kwargs)
             res.metric = "Book Title Requests"
@@ -63,6 +65,8 @@ class BR2(BaseCounter4Parser):
     heuristics = RegexCondition(re.compile(r"^Book Report 2 \(R4\)"), Coord(0, 0))
 
     class Area(CounterHeaderArea):
+        TITLE_COLUMN_NAMES = ['Book']
+
         def prepare_record(self, *args, **kwargs) -> CounterRecord:
             res = super().prepare_record(*args, **kwargs)
             res.metric = "Book Section Requests"
@@ -88,6 +92,7 @@ class BR3(BaseCounter4Parser):
     heuristics = RegexCondition(re.compile(r"^Book Report 3 \(R4\)"), Coord(0, 0))
 
     class Area(CounterHeaderArea):
+        TITLE_COLUMN_NAMES = ['Book']
         METRIC_COLUMN_NAMES = ["Access Denied Category"]
 
     areas = [Area]
@@ -108,6 +113,7 @@ class DB1(BaseCounter4Parser):
     heuristics = RegexCondition(re.compile(r"^Database Report 1 \(R4\)"), Coord(0, 0))
 
     class Area(CounterHeaderArea):
+        TITLE_COLUMN_NAMES = ['Database']
         METRIC_COLUMN_NAMES = ["User Activity"]
 
     areas = [Area]
@@ -124,6 +130,7 @@ class DB2(BaseCounter4Parser):
     heuristics = RegexCondition(re.compile(r"^Database Report 2 \(R4\)"), Coord(0, 0))
 
     class Area(CounterHeaderArea):
+        TITLE_COLUMN_NAMES = ['Database']
         METRIC_COLUMN_NAMES = ["Access denied category"]
 
     areas = [Area]
@@ -201,6 +208,8 @@ class JR1(BaseCounter4Parser):
     heuristics = RegexCondition(re.compile(r"^Journal Report 1 \(R4\)"), Coord(0, 0))
 
     class Area(CounterHeaderArea):
+        TITLE_COLUMN_NAMES = ['Journal']
+
         def prepare_record(self, *args, **kwargs) -> CounterRecord:
             res = super().prepare_record(*args, **kwargs)
             res.metric = "FT Article Requests"
@@ -221,6 +230,8 @@ class JR1a(BaseCounter4Parser):
     heuristics = RegexCondition(re.compile(r"^Journal Report 1a \(R4\)"), Coord(0, 0))
 
     class Area(CounterHeaderArea):
+        TITLE_COLUMN_NAMES = ['Journal']
+
         def prepare_record(self, *args, **kwargs) -> CounterRecord:
             res = super().prepare_record(*args, **kwargs)
             res.metric = "Archive Article Requests"
@@ -248,6 +259,8 @@ class JR1GOA(BaseCounter4Parser):
     heuristics = RegexCondition(re.compile(r"^Journal Report 1 GOA \(R4\)"), Coord(0, 0))
 
     class Area(CounterHeaderArea):
+        TITLE_COLUMN_NAMES = ['Journal']
+
         def prepare_record(self, *args, **kwargs) -> CounterRecord:
             res = super().prepare_record(*args, **kwargs)
             res.metric = "Gold Open Access Article Requests"
@@ -308,6 +321,7 @@ class JR2(BaseCounter4Parser):
     ]
 
     class Area(CounterHeaderArea):
+        TITLE_COLUMN_NAMES = ['Journal']
         METRIC_COLUMN_NAMES = ["Access Denied Category"]
 
     areas = [Area]
@@ -327,6 +341,7 @@ class MR1(BaseCounter4Parser):
             ("Content Provider", {"Content Provider"}),
             ("Platform", {"Platform"}),
         ]
+        TITLE_COLUMN_NAMES = ['Collection']
 
         def prepare_record(self, *args, **kwargs) -> CounterRecord:
             res = super().prepare_record(*args, **kwargs)
