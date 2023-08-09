@@ -5,6 +5,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [9.0.0] - 2023-08-09
+
+### Fixed
+- title detection for counter format parsing was fixed
+
+### Added
+- PoopStat.organizations updated to provide more info per orgnization
+- Organization is extracted from C5 reports according to the standard
+
+### Changed
+- using newer version of pydantic 2.1 with significant performance boost
+
+### Removed
+- deprecated `get_metrics_dimensions_title_ids_months` function was removed
+
+
 ## [8.3.4] - 2023-07-26
 
 ### Fixed
