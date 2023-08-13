@@ -254,9 +254,12 @@ class TitleIdSource(JsonEncorder, ContentExtractorMixin):
     strict: bool = False
     role: typing.Literal[Role.TITLE_ID] = Role.TITLE_ID
 
+    def __post_init__(self):
+        self._last_key = None
+
     @property
-    def last_key(self):
-        return getattr(self, '_last_key', self.name)
+    def last_key(self) -> typing.Optional[str]:
+        return self._last_key
 
     @property
     def validator(self) -> typing.Optional[typing.Type[validators.BaseModel]]:
