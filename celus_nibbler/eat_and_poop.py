@@ -7,7 +7,8 @@ from collections import Counter, defaultdict
 from datetime import date
 
 from celus_nigiri import CounterRecord
-from pydantic import BaseModel, Field
+from pydantic import Field
+from pydantic.dataclasses import dataclass
 from typing_extensions import Annotated
 
 from celus_nibbler.aggregator import CheckConflictingRecordsAggregator, CheckNonNegativeValues
@@ -23,12 +24,14 @@ from celus_nibbler.errors import (
 )
 from celus_nibbler.parsers import BaseParser, get_parsers
 from celus_nibbler.reader import CsvReader, JsonCounter5Reader, SheetReader, TableReader, XlsxReader
+from celus_nibbler.utils import JsonEncorder, PydanticConfig
 from celus_nibbler.validators import Platform
 
 logger = logging.getLogger(__name__)
 
 
-class StatUnit(BaseModel):
+@dataclass(config=PydanticConfig)
+class StatUnit(JsonEncorder):
     count: int = 0
     sum: int = 0
 
@@ -51,7 +54,8 @@ class StatUnit(BaseModel):
 AnnotatedStatUnit = Annotated[StatUnit, Field(default_factory=lambda: StatUnit)]
 
 
-class PoopOrganizationStats(BaseModel):
+@dataclass(config=PydanticConfig)
+class PoopOrganizationStats(JsonEncorder):
     months: typing.DefaultDict[str, AnnotatedStatUnit] = Field(
         default_factory=lambda: defaultdict(StatUnit)
     )
@@ -61,7 +65,7 @@ class PoopOrganizationStats(BaseModel):
     titles: typing.DefaultDict[str, AnnotatedStatUnit] = Field(
         default_factory=lambda: defaultdict(StatUnit)
     )
-    title_ids: typing.Set[str] = set()
+    title_ids: typing.Set[str] = Field(default_factory=lambda: set())
     dimensions: typing.DefaultDict[
         str,
         Annotated[
@@ -107,7 +111,8 @@ class PoopOrganizationStats(BaseModel):
         return result
 
 
-class PoopStats(BaseModel):
+@dataclass(config=PydanticConfig)
+class PoopStats(JsonEncorder):
     months: typing.DefaultDict[str, AnnotatedStatUnit] = Field(
         default_factory=lambda: defaultdict(StatUnit)
     )
@@ -121,7 +126,7 @@ class PoopStats(BaseModel):
     titles: typing.DefaultDict[str, AnnotatedStatUnit] = Field(
         default_factory=lambda: defaultdict(StatUnit)
     )
-    title_ids: typing.Set[str] = set()
+    title_ids: typing.Set[str] = Field(default_factory=lambda: set())
     dimensions: typing.DefaultDict[
         str,
         Annotated[

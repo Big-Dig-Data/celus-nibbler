@@ -46,6 +46,10 @@ class JsonEncorder:
     def json(self):
         return self.adapter().dump_json(self).decode()
 
+    def model_dump(self):
+        """To become more compatible with basic BaseModel"""
+        return self.dict()
+
     @classmethod
     def parse(cls, obj: typing.Dict[str, typing.Any]):
         return cls.adapter().validate_python(obj)

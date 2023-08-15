@@ -145,7 +145,7 @@ def parse(options, platform, dynamic_parsers):
                     print(f"Failed to pick parser for sheet {idx}", file=sys.stderr)
                     continue
 
-                stat_dict = poop.get_stats().model_dump()
+                stat_dict = poop.get_stats().dict()
                 if options.show_summary:
                     print(f"Parsing sheet {idx}", file=sys.stderr)
                     print(f"Months: {stat_dict['months']}", file=sys.stderr)
@@ -179,13 +179,13 @@ def parse(options, platform, dynamic_parsers):
                 if header:
                     writer.writerow(header)
                 records = (
-                    CounterOrdering().aggregate(poop.records())
+                    CounterOrdering().aggregate(poop.records_basic())
                     if options.counter_like_output
-                    else poop.records_with_stats()
+                    else poop.records_basic()
                 )
                 last_rec = None
                 batch = []
-                for record in records:
+                for idx, record in records:
                     if options.no_output:
                         # Just go through the records and suppress any output
                         pass
