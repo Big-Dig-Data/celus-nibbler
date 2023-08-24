@@ -77,6 +77,9 @@ class BaseCounter5JsonParser(BaseJsonParser):
             raise TypeError(f"Only JsonCounter5SheetReader is allowed to be used in {type(self)}")
         raise TypeError(f"Only NigiriArea is allowed to be used in {type(self)}")
 
+    def get_extras(self):
+        return self.sheet.extra or {}
+
 
 class DR(BaseCounter5JsonParser):
     heuristics = SheetExtraCondition(field_name="Report_ID", value="DR")
