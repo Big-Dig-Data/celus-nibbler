@@ -223,6 +223,9 @@ class BaseParser(metaclass=ABCMeta):
     def get_months(self) -> typing.List[typing.List[datetime.date]]:
         return [e.get_months(self.current_row_offset) for e in self.get_areas()]
 
+    def get_extras(self) -> dict:
+        return {}
+
 
 class BaseJsonParser(BaseParser):
     @classmethod

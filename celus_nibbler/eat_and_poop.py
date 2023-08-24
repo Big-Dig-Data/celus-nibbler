@@ -185,6 +185,7 @@ class Poop:
         self.parser = parser
         self.current_stats = PoopStats()
         self.area_counter: Counter[int] = Counter()
+        self.extras = parser.get_extras()
 
     @property
     def sheet_idx(self):

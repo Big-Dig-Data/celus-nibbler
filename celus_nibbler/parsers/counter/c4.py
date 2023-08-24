@@ -7,6 +7,7 @@ from pydantic import BaseModel
 from celus_nibbler.conditions import RegexCondition
 from celus_nibbler.coordinates import Coord
 from celus_nibbler.data_headers import DataFormatDefinition
+from celus_nibbler.errors import TableException
 from celus_nibbler.parsers.base import BaseTabularParser
 
 from . import CounterHeaderArea
@@ -18,9 +19,37 @@ class BaseCounter4Parser(BaseTabularParser):
     # TODO perhaps implement some kind of YOP validator
     dimensions_validators: typing.Dict[str, typing.Type[BaseModel]] = {}
 
+    HEADER_DATA_OFFSETS = (
+        ("Created", 1),
+        ("Reporting_Period", 3),
+        ("Institution_Name", 6),
+    )
+
     @property
     def name(self):
         return f"counter4.{self.data_format.name}"
+
+    def get_extras(self) -> dict:
+        area = self.Area(self.sheet, self.platform)
+
+        # get header row
+        col = area.header_row.coord.col
+        row = area.header_row.coord.row
+
+        res = {}
+        # use offsets to extract data
+        for key, offset in self.HEADER_DATA_OFFSETS:
+            coord = Coord(row=row - offset, col=col)
+
+            if coord.row < 0:
+                # out of bounds
+                continue
+            try:
+                res[key] = coord.content(self.sheet)
+            except (TableException, IndexError):
+                continue
+
+        return res
 
 
 class BR1(BaseCounter4Parser):
