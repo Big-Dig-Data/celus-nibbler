@@ -6,6 +6,7 @@ from pydantic import BaseModel
 from celus_nibbler.conditions import RegexCondition
 from celus_nibbler.coordinates import Coord, CoordRange, Direction
 from celus_nibbler.data_headers import DataFormatDefinition
+from celus_nibbler.errors import TableException
 from celus_nibbler.parsers.base import BaseTabularParser
 from celus_nibbler.sources import DimensionSource
 
@@ -28,6 +29,31 @@ class BaseCounter5Parser(BaseTabularParser):
     @property
     def name(self):
         return f"counter5.{self.data_format.name}"
+
+    def get_extras(self) -> dict:
+        area = self.Area(self.sheet, self.platform)
+
+        # get header row
+        col = area.header_row.coord.col
+        row = area.header_row.coord.row
+
+        if row == 0:
+            return {}
+
+        res = {}
+        for coord in CoordRange(Coord(col=col, row=row - 1), direction=Direction.UP):
+            try:
+                key = coord.content(self.sheet).strip()
+                if not key:
+                    continue
+                right_coord = Coord(col=coord.col + 1, row=coord.row)
+                value = right_coord.content(self.sheet).strip()
+                res[key] = value
+            except TableException:
+                # Ignore out of bounds
+                continue
+
+        return res
 
 
 class DR(BaseCounter5Parser):
