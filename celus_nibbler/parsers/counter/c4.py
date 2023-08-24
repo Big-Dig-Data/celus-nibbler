@@ -25,6 +25,8 @@ class BaseCounter4Parser(BaseTabularParser):
         ("Institution_Name", 6),
     )
 
+    REPORT_TYPE_NAME: str
+
     @property
     def name(self):
         return f"counter4.{self.data_format.name}"
@@ -33,8 +35,11 @@ class BaseCounter4Parser(BaseTabularParser):
         area = self.Area(self.sheet, self.platform)
 
         # get header row
-        col = area.header_row.coord.col
-        row = area.header_row.coord.row
+        try:
+            col = area.header_row.coord.col
+            row = area.header_row.coord.row
+        except TableException:
+            return {}
 
         res = {}
         # use offsets to extract data
@@ -51,8 +56,37 @@ class BaseCounter4Parser(BaseTabularParser):
 
         return res
 
+    def analyze(self) -> typing.List[dict]:
+        area = self.Area(self.sheet, self.platform)
+
+        # get header row
+        try:
+            col = area.header_row.coord.col
+            row = area.header_row.coord.row
+        except TableException:
+            return [{"code": "header-row-not-found"}]
+
+        rtn_coord = Coord(col=col, row=row - 7)
+        if rtn_coord.row < 0:
+            return [{"code": "report-name-not-in-header"}]
+
+        res = []
+        rtn = rtn_coord.content(self.sheet)
+        if self.REPORT_TYPE_NAME != rtn:
+            res.append(
+                {
+                    "code": "wrong-report-type",
+                    "found": rtn,
+                    "expected": self.REPORT_TYPE_NAME,
+                }
+            )
+
+        return res
+
 
 class BR1(BaseCounter4Parser):
+    REPORT_TYPE_NAME = 'Book Report 1 (R4)'
+
     data_format = DataFormatDefinition(name="BR1")
 
     titles_to_skip: typing.List[str] = ["Total", "Total for all titles", ""]
@@ -77,6 +111,8 @@ class BR1(BaseCounter4Parser):
 
 
 class BR2(BaseCounter4Parser):
+    REPORT_TYPE_NAME = 'Book Report 2 (R4)'
+
     data_format = DataFormatDefinition(name="BR2")
 
     titles_to_skip: typing.List[str] = ["Total", "Total for all titles", ""]
@@ -105,6 +141,8 @@ class BR2(BaseCounter4Parser):
 
 
 class BR3(BaseCounter4Parser):
+    REPORT_TYPE_NAME = 'Book Report 3 (R4)'
+
     data_format = DataFormatDefinition(name="BR3")
 
     titles_to_skip: typing.List[str] = ["Total", "Total for all titles", ""]
@@ -128,6 +166,8 @@ class BR3(BaseCounter4Parser):
 
 
 class DB1(BaseCounter4Parser):
+    REPORT_TYPE_NAME = 'Database Report 1 (R4)'
+
     data_format = DataFormatDefinition(name="DB1")
 
     titles_to_skip: typing.List[str] = ["Total", "Total for all databases", ""]
@@ -149,6 +189,8 @@ class DB1(BaseCounter4Parser):
 
 
 class DB2(BaseCounter4Parser):
+    REPORT_TYPE_NAME = 'Database Report 2 (R4)'
+
     data_format = DataFormatDefinition(name="DB2")
 
     titles_to_skip: typing.List[str] = ["Total", "Total for all databases", ""]
@@ -166,6 +208,8 @@ class DB2(BaseCounter4Parser):
 
 
 class PR1(BaseCounter4Parser):
+    REPORT_TYPE_NAME = 'Platform Report 1 (R4)'
+
     data_format = DataFormatDefinition(name="PR1")
 
     titles_to_skip: typing.List[str] = ["Total", "Total for all platforms"]
@@ -186,6 +230,8 @@ class PR1(BaseCounter4Parser):
 
 
 class JR1(BaseCounter4Parser):
+    REPORT_TYPE_NAME = 'Journal Report 1 (R4)'
+
     data_format = DataFormatDefinition(name="JR1")
 
     titles_to_skip: typing.List[str] = ["Total", "Total for all journals", ""]
@@ -248,6 +294,8 @@ class JR1(BaseCounter4Parser):
 
 
 class JR1a(BaseCounter4Parser):
+    REPORT_TYPE_NAME = 'Journal Report 1a (R4)'
+
     data_format = DataFormatDefinition(name="JR1a")
 
     titles_to_skip: typing.List[str] = ["Total", "Total for all journals", ""]
@@ -270,6 +318,8 @@ class JR1a(BaseCounter4Parser):
 
 
 class JR1GOA(BaseCounter4Parser):
+    REPORT_TYPE_NAME = 'Journal Report 1 GOA (R4)'
+
     data_format = DataFormatDefinition(name="JR1GOA")
 
     titles_to_skip: typing.List[str] = ["Total", "Total for all journals", ""]
@@ -299,6 +349,8 @@ class JR1GOA(BaseCounter4Parser):
 
 
 class JR2(BaseCounter4Parser):
+    REPORT_TYPE_NAME = 'Journal Report 2 (R4)'
+
     data_format = DataFormatDefinition(name="JR2")
 
     titles_to_skip: typing.List[str] = ["Total", "Total for all journals", ""]
@@ -357,6 +409,8 @@ class JR2(BaseCounter4Parser):
 
 
 class MR1(BaseCounter4Parser):
+    REPORT_TYPE_NAME = 'Multimedia Report 1 (R4)'
+
     data_format = DataFormatDefinition(name="MR1")
 
     titles_to_skip: typing.List[str] = ["Total", "Total for all collections", ""]

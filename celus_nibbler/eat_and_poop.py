@@ -315,19 +315,24 @@ def findparser(
 
     parser_instances = [(name, parser(sheet, platform=platform)) for name, parser in parser_classes]
     if use_heuristics:
-        parser_instances = [
+        parser_instances_filtered = [
             (name, parser) for (name, parser) in parser_instances if parser.heuristic_check()
         ]
+    else:
+        parser_instances_filtered = parser_instances
 
-    if len(parser_instances) < 1:
+    if len(parser_instances_filtered) < 1:
         logger.warning('no parser found')
-        raise NoParserMatchesHeuristics(sheet.sheet_idx)
+        raise NoParserMatchesHeuristics(
+            sheet.sheet_idx,
+            parsers_info={name: parser.analyze() for name, parser in parser_instances},
+        )
 
-    elif len(parser_instances) > 1:
+    elif len(parser_instances_filtered) > 1:
         logger.warning('%s more than one parser found', len(parser_classes))
         raise MultipleParsersFound(sheet.sheet_idx, *(e[0] for e in parser_classes))
 
-    name, parser = parser_instances[0]
+    name, parser = parser_instances_filtered[0]
     logger.info('Parser used: %s', name)
     return parser
 

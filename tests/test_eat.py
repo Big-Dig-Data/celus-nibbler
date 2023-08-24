@@ -37,11 +37,63 @@ def test_eat():
     }
 
     # Parser with mismatched heuristics
-    poops = eat(file_path, "Ovid", check_platform=False, parsers=["static.counter4.JR1.Tabular"])
+    poops = eat(
+        file_path,
+        "Ovid",
+        check_platform=False,
+        parsers=[
+            "static.counter4.JR1.Tabular",
+            "static.counter5.DR.Tabular",
+        ],
+    )
     assert all(isinstance(e, NoParserMatchesHeuristics) for e in poops)
     assert poops[0].dict() == {
         "name": "NoParserMatchesHeuristics",
         "sheet_idx": 0,
+        "parsers_info": {
+            "static.counter4.JR1.Tabular": [
+                {
+                    "code": "wrong-report-type",
+                    "expected": "Journal Report 1 (R4)",
+                    "found": "Book Report 1 (R4)",
+                }
+            ],
+            "static.counter5.DR.Tabular": [
+                {
+                    "code": "report-id-not-in-header",
+                }
+            ],
+        },
+    }
+
+    # Parser with mismatched heuristics
+    poops = eat(
+        pathlib.Path(__file__).parent / 'data/counter/5/DR-a.tsv',
+        "Ovid",
+        check_platform=False,
+        parsers=[
+            "static.counter4.JR2.Tabular",
+            "static.counter5.TR.Tabular",
+        ],
+    )
+    assert all(isinstance(e, NoParserMatchesHeuristics) for e in poops)
+    assert poops[0].dict() == {
+        "name": "NoParserMatchesHeuristics",
+        "sheet_idx": 0,
+        "parsers_info": {
+            "static.counter4.JR2.Tabular": [
+                {
+                    "code": "report-name-not-in-header",
+                }
+            ],
+            "static.counter5.TR.Tabular": [
+                {
+                    "code": "wrong-report-type",
+                    "expected": "TR",
+                    "found": "DR",
+                }
+            ],
+        },
     }
 
     # parser exact match

@@ -165,7 +165,16 @@ class NoParserForPlatformFound(NoParserFound):
 
 
 class NoParserMatchesHeuristics(NoParserFound):
-    pass
+    def __init__(self, sheet_idx: int, parsers_info: dict, *args):
+        self.sheet_idx = sheet_idx
+        self.parsers_info = parsers_info
+
+    def dict(self) -> dict:
+        return {
+            "name": f"{self.__class__.__name__}",
+            "sheet_idx": self.sheet_idx,
+            "parsers_info": self.parsers_info,
+        }
 
 
 class NoParserForFileTypeFound(NoParserFound):

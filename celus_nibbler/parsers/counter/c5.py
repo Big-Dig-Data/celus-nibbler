@@ -21,6 +21,7 @@ class Counter5HeaderArea(CounterHeaderArea):
 
 
 class BaseCounter5Parser(BaseTabularParser):
+    data_format: DataFormatDefinition
     Area: typing.Type[CounterHeaderArea]
 
     # TODO perhaps implement some kind of YOP validator
@@ -34,8 +35,11 @@ class BaseCounter5Parser(BaseTabularParser):
         area = self.Area(self.sheet, self.platform)
 
         # get header row
-        col = area.header_row.coord.col
-        row = area.header_row.coord.row
+        try:
+            col = area.header_row.coord.col
+            row = area.header_row.coord.row
+        except TableException:
+            return {}
 
         if row == 0:
             return {}
@@ -54,6 +58,29 @@ class BaseCounter5Parser(BaseTabularParser):
                 continue
 
         return res
+
+    def analyze(self) -> typing.List[dict]:
+        header = self.get_extras()
+        if not header:
+            return [
+                {
+                    "code": "no-header-data-extracted",
+                }
+            ]
+        if "Report_ID" not in header:
+            return [
+                {
+                    "code": "report-id-not-in-header",
+                }
+            ]
+        if header["Report_ID"] != self.data_format.name:
+            return [
+                {
+                    "code": "wrong-report-type",
+                    "found": header["Report_ID"],
+                    "expected": self.data_format.name,
+                }
+            ]
 
 
 class DR(BaseCounter5Parser):

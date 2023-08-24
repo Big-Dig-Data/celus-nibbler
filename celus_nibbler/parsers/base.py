@@ -226,6 +226,9 @@ class BaseParser(metaclass=ABCMeta):
     def get_extras(self) -> dict:
         return {}
 
+    def analyze(self) -> typing.List[dict]:
+        return []
+
 
 class BaseJsonParser(BaseParser):
     @classmethod
