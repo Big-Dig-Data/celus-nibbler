@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [9.1.0] - 2023-08-25
+
+### Added
+- extend NoParserMatchesHeuristics with information obtained from parsers (only C4 and C5)
+- extract data and put it to Poops.extras (currently only C4 and C5 headers)
+
+
 ## [9.0.1] - 2023-08-14
 
 ### Fixed
