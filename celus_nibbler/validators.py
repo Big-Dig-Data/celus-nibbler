@@ -5,7 +5,7 @@ from typing import Any, Optional, Tuple, Type, Union
 
 from dateutil import parser as datetimes_parser
 from isbnlib import get_isbnlike
-from pydantic import field_validator
+from pydantic import NonNegativeFloat, NonNegativeInt, field_validator
 from pydantic.dataclasses import dataclass as pydantic_dataclass
 
 from .utils import COMMON_DATE_FORMATS, PydanticConfig
@@ -60,12 +60,10 @@ def issn_strict(issn: str) -> str:
 
 @pydantic_dataclass(config=PydanticConfig)
 class Value(BaseValueModel):
-    value: Union[int, float]
+    value: Union[NonNegativeInt, NonNegativeFloat]
 
     @field_validator("value")
-    def non_negative(cls, value: Union[int, float]) -> Union[int, float]:
-        if value < 0:
-            raise ValueError("cant-be-negative")
+    def non_negative(cls, value: Union[NonNegativeInt, NonNegativeFloat]) -> Union[int, float]:
         return round(value)
 
 
