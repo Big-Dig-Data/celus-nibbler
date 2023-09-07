@@ -31,6 +31,7 @@ PydanticConfig = ConfigDict(
     extra="forbid",
     frozen=True,
     undefined_types_warning=False,
+    defer_build=True,
 )
 
 
