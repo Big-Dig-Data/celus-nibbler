@@ -5,7 +5,6 @@ import typing
 from abc import ABCMeta, abstractmethod
 
 from celus_nigiri import CounterRecord
-from pydantic import BaseModel
 
 from celus_nibbler import validators
 from celus_nibbler.aggregator import BaseAggregator, NoAggregator
@@ -246,7 +245,7 @@ class BaseJsonParser(BaseParser):
 
 
 class BaseTabularParser(BaseParser):
-    dimensions_validators: typing.Dict[str, typing.Type[BaseModel]] = {
+    dimensions_validators: typing.Dict[str, typing.Type[validators.BaseValueModel]] = {
         "Platform": validators.Platform,
     }
 

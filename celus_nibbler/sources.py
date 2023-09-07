@@ -97,7 +97,7 @@ class ContentExtractorMixin:
         self,
         sheet: SheetReader,
         idx: int,
-        validator: typing.Optional[typing.Type[validators.BaseModel]] = None,
+        validator: typing.Optional[typing.Type[validators.BaseValueModel]] = None,
         row_offset: typing.Optional[int] = None,
     ) -> typing.Any:
         value = self._extract(sheet, idx, validator, row_offset)
@@ -106,8 +106,8 @@ class ContentExtractorMixin:
         return value
 
     def get_validator(
-        self, validator: typing.Optional[typing.Type[validators.BaseModel]]
-    ) -> typing.Optional[typing.Type[validators.BaseModel]]:
+        self, validator: typing.Optional[typing.Type[validators.BaseValueModel]]
+    ) -> typing.Optional[typing.Type[validators.BaseValueModel]]:
         if self.extract_params.special_extraction == SpecialExtraction.NO:
             return validator or self.validator
         elif self.extract_params.special_extraction == SpecialExtraction.COMMA_SEPARATED_NUMBER:
@@ -119,7 +119,7 @@ class ContentExtractorMixin:
         self,
         sheet: SheetReader,
         idx: int,
-        validator: typing.Optional[typing.Type[validators.BaseModel]] = None,
+        validator: typing.Optional[typing.Type[validators.BaseValueModel]] = None,
         row_offset: typing.Optional[int] = None,
     ) -> typing.Any:
         if row_offset:
@@ -191,7 +191,7 @@ class ContentExtractorMixin:
         return res
 
     @property
-    def validator(self) -> typing.Optional[typing.Type[validators.BaseModel]]:
+    def validator(self) -> typing.Optional[typing.Type[validators.BaseValueModel]]:
         return None
 
 
@@ -204,7 +204,7 @@ class DimensionSource(JsonEncorder, ContentExtractorMixin):
     role: typing.Literal[Role.DIMENSION] = Role.DIMENSION
 
     @property
-    def validator(self) -> typing.Optional[typing.Type[validators.BaseModel]]:
+    def validator(self) -> typing.Optional[typing.Type[validators.BaseValueModel]]:
         return validators.Dimension
 
 
@@ -216,7 +216,7 @@ class MetricSource(JsonEncorder, ContentExtractorMixin):
     role: typing.Literal[Role.METRIC] = Role.METRIC
 
     @property
-    def validator(self) -> typing.Optional[typing.Type[validators.BaseModel]]:
+    def validator(self) -> typing.Optional[typing.Type[validators.BaseValueModel]]:
         return validators.Metric
 
 
@@ -228,7 +228,7 @@ class OrganizationSource(JsonEncorder, ContentExtractorMixin):
     role: typing.Literal[Role.ORGANIZATION] = Role.ORGANIZATION
 
     @property
-    def validator(self) -> typing.Optional[typing.Type[validators.BaseModel]]:
+    def validator(self) -> typing.Optional[typing.Type[validators.BaseValueModel]]:
         return validators.Organization
 
 
@@ -240,7 +240,7 @@ class TitleSource(JsonEncorder, ContentExtractorMixin):
     role: typing.Literal[Role.TITLE] = Role.TITLE
 
     @property
-    def validator(self) -> typing.Optional[typing.Type[validators.BaseModel]]:
+    def validator(self) -> typing.Optional[typing.Type[validators.BaseValueModel]]:
         return validators.Title
 
 
@@ -262,7 +262,7 @@ class TitleIdSource(JsonEncorder, ContentExtractorMixin):
         return self._last_key
 
     @property
-    def validator(self) -> typing.Optional[typing.Type[validators.BaseModel]]:
+    def validator(self) -> typing.Optional[typing.Type[validators.BaseValueModel]]:
         if self.strict:
             return IDS_VALIDATORS_STRICT.get(self.name)
         else:
@@ -272,7 +272,7 @@ class TitleIdSource(JsonEncorder, ContentExtractorMixin):
         self,
         sheet: SheetReader,
         idx: int,
-        validator: typing.Optional[typing.Type[validators.BaseModel]] = None,
+        validator: typing.Optional[typing.Type[validators.BaseValueModel]] = None,
         row_offset: typing.Optional[int] = None,
     ) -> typing.Any:
         self._last_key = None
@@ -308,12 +308,12 @@ class DateSource(JsonEncorder, ContentExtractorMixin):
     role: typing.Literal[Role.DATE] = Role.DATE
 
     @property
-    def validator(self) -> typing.Optional[typing.Type[validators.BaseModel]]:
+    def validator(self) -> typing.Optional[typing.Type[validators.BaseValueModel]]:
         return validators.Date
 
     def get_validator(
-        self, validator: typing.Optional[typing.Type[validators.BaseModel]]
-    ) -> typing.Optional[typing.Type[validators.BaseModel]]:
+        self, validator: typing.Optional[typing.Type[validators.BaseValueModel]]
+    ) -> typing.Optional[typing.Type[validators.BaseValueModel]]:
         if date_pattern := self.date_pattern:
             return validators.gen_date_format_validator(date_pattern)
 
@@ -326,7 +326,7 @@ class DateSource(JsonEncorder, ContentExtractorMixin):
         self,
         sheet: SheetReader,
         idx: int,
-        validator: typing.Optional[typing.Type[validators.BaseModel]] = None,
+        validator: typing.Optional[typing.Type[validators.BaseValueModel]] = None,
         row_offset: typing.Optional[int] = None,
     ) -> typing.Any:
         if self.composed:
@@ -349,7 +349,7 @@ class ValueSource(JsonEncorder, ContentExtractorMixin):
     role: typing.Literal[Role.VALUE] = Role.VALUE
 
     @property
-    def validator(self) -> typing.Optional[typing.Type[validators.BaseModel]]:
+    def validator(self) -> typing.Optional[typing.Type[validators.BaseValueModel]]:
         if self.allow_negative:
             return validators.ValueNegative
         else:

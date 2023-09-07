@@ -5,15 +5,19 @@ from typing import Any, Optional, Tuple, Type, Union
 
 from dateutil import parser as datetimes_parser
 from isbnlib import get_isbnlike
-from pydantic import BaseModel, field_validator
+from pydantic import field_validator
+from pydantic.dataclasses import dataclass as pydantic_dataclass
 
-from .utils import COMMON_DATE_FORMATS
+from .utils import COMMON_DATE_FORMATS, PydanticConfig
 
 issn_matcher = re.compile(r'(\d{4})-?(\d{3}[\dXx])')
 issn_number_matcher = re.compile(r'^\d{0,7}[\dXx]$')
 
 
-class BaseValueModel(BaseModel):
+@pydantic_dataclass(config=PydanticConfig)
+class BaseValueModel:
+    model_config = PydanticConfig
+
     value: Any
 
 
@@ -54,6 +58,7 @@ def issn_strict(issn: str) -> str:
     raise ValueError(f'Invalid ISSN: "{issn}"')
 
 
+@pydantic_dataclass(config=PydanticConfig)
 class Value(BaseValueModel):
     value: Union[int, float]
 
@@ -64,6 +69,7 @@ class Value(BaseValueModel):
         return round(value)
 
 
+@pydantic_dataclass(config=PydanticConfig)
 class ValueNegative(BaseValueModel):
     value: Union[int, float]
 
@@ -76,6 +82,7 @@ class ValueNegative(BaseValueModel):
 def gen_default_validator(
     orig_validator: Type[BaseValueModel], default_value: Any, blank_values: Tuple[Any]
 ) -> Type[BaseValueModel]:
+    @pydantic_dataclass(config=PydanticConfig)
     class Validator(BaseValueModel):
         value: Any
 
@@ -89,6 +96,7 @@ def gen_default_validator(
     return Validator
 
 
+@pydantic_dataclass(config=PydanticConfig)
 class CommaSeparatedNumberValidator(BaseValueModel):
     value: Any
 
@@ -97,6 +105,7 @@ class CommaSeparatedNumberValidator(BaseValueModel):
         return Value(value=value.replace(",", "")).value
 
 
+@pydantic_dataclass(config=PydanticConfig)
 class Organization(BaseValueModel):
     value: str
 
@@ -105,6 +114,7 @@ class Organization(BaseValueModel):
     _non_empty_organization = field_validator('value')(non_empty)
 
 
+@pydantic_dataclass(config=PydanticConfig)
 class Platform(BaseValueModel):
     value: str
 
@@ -112,12 +122,14 @@ class Platform(BaseValueModel):
     _non_empty_platform = field_validator('value')(non_empty)
 
 
+@pydantic_dataclass(config=PydanticConfig)
 class Dimension(BaseValueModel):
     value: str
 
     _stripped_dimension = field_validator('value')(stripped)
 
 
+@pydantic_dataclass(config=PydanticConfig)
 class Metric(BaseValueModel):
     value: str
 
@@ -132,6 +144,7 @@ class Metric(BaseValueModel):
         return metric
 
 
+@pydantic_dataclass(config=PydanticConfig)
 class Title(BaseValueModel):
     value: Optional[str]
 
@@ -142,6 +155,7 @@ parserinfo_us = datetimes_parser.parserinfo(dayfirst=False)  # prefer US variant
 parserinfo_eu = datetimes_parser.parserinfo(dayfirst=True)  # prefer EU variant
 
 
+@pydantic_dataclass(config=PydanticConfig)
 class Date(BaseValueModel):
     value: datetime.date
 
@@ -169,6 +183,7 @@ class Date(BaseValueModel):
             raise ValueError("cant-parse-date")
 
 
+@pydantic_dataclass(config=PydanticConfig)
 class DateEU(Date):
     @classmethod
     def parserinfo(cls):
@@ -177,6 +192,7 @@ class DateEU(Date):
 
 @lru_cache
 def gen_date_format_validator(pattern: str) -> BaseValueModel:
+    @pydantic_dataclass(config=PydanticConfig)
     class DateFormat(BaseValueModel):
         value: datetime.date
 
@@ -194,6 +210,7 @@ def gen_date_format_validator(pattern: str) -> BaseValueModel:
     return DateFormat
 
 
+@pydantic_dataclass(config=PydanticConfig)
 class DOI(BaseValueModel):
     value: str
 
@@ -202,6 +219,7 @@ class DOI(BaseValueModel):
         return doi.strip() or ""
 
 
+@pydantic_dataclass(config=PydanticConfig)
 class URI(BaseValueModel):
     value: str
 
@@ -210,6 +228,7 @@ class URI(BaseValueModel):
         return uri.strip() or ""
 
 
+@pydantic_dataclass(config=PydanticConfig)
 class ISBN(BaseValueModel):
     value: str
 
@@ -218,6 +237,7 @@ class ISBN(BaseValueModel):
         return isbn.strip() or ""
 
 
+@pydantic_dataclass(config=PydanticConfig)
 class StrictISBN(BaseValueModel):
     value: str
 
@@ -232,29 +252,34 @@ class StrictISBN(BaseValueModel):
         return isbns[0]
 
 
+@pydantic_dataclass(config=PydanticConfig)
 class ISSN(BaseValueModel):
     value: str
 
     _issn_format = field_validator('value')(issn)
 
 
+@pydantic_dataclass(config=PydanticConfig)
 class StrictISSN(BaseValueModel):
     value: str
 
     _issn_format = field_validator('value')(issn_strict)
 
 
+@pydantic_dataclass(config=PydanticConfig)
 class EISSN(BaseValueModel):
     value: str
 
     _issn_format = field_validator('value')(issn)
 
 
+@pydantic_dataclass(config=PydanticConfig)
 class StrictEISSN(BaseValueModel):
     value: str
 
     _issn_format = field_validator('value')(issn_strict)
 
 
+@pydantic_dataclass(config=PydanticConfig)
 class ProprietaryID(BaseValueModel):
     value: str

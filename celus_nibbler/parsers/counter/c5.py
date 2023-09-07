@@ -1,14 +1,13 @@
 import re
 import typing
 
-from pydantic import BaseModel
-
 from celus_nibbler.conditions import RegexCondition
 from celus_nibbler.coordinates import Coord, CoordRange, Direction
 from celus_nibbler.data_headers import DataFormatDefinition
 from celus_nibbler.errors import TableException
 from celus_nibbler.parsers.base import BaseTabularParser
 from celus_nibbler.sources import DimensionSource
+from celus_nibbler.validators import BaseValueModel
 
 from . import CounterHeaderArea
 
@@ -25,7 +24,7 @@ class BaseCounter5Parser(BaseTabularParser):
     Area: typing.Type[CounterHeaderArea]
 
     # TODO perhaps implement some kind of YOP validator
-    dimensions_validators: typing.Dict[str, typing.Type[BaseModel]] = {}
+    dimensions_validators: typing.Dict[str, typing.Type[BaseValueModel]] = {}
 
     @property
     def name(self):
