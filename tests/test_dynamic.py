@@ -228,6 +228,20 @@ from celus_nibbler.parsers.dynamic import gen_parser
         ),
         (
             "Platform1",
+            "ids-fallback-isbn10",
+            "csv",
+            "dynamic.non_counter.simple_format.ids-fallback-isbn10",
+            False,
+        ),
+        (
+            "Platform1",
+            "ids-fallback-isbn13",
+            "csv",
+            "dynamic.non_counter.simple_format.ids-fallback-isbn13",
+            False,
+        ),
+        (
+            "Platform1",
             "negative-values",
             "csv",
             "dynamic.non_counter.simple_format.negative-values",

@@ -1,7 +1,7 @@
 {
   "kind": "non_counter.date_based",
   "version": 1,
-  "parser_name": "ids-fallback",
+  "parser_name": "ids-fallback-isbn13",
   "data_format": {
     "name": "simple_format"
   },
@@ -129,7 +129,8 @@
             },
             "validator_opts": {
                 "type": "ISBN",
-                "strict": true
+                "strict": true,
+                "isbn_kind": "isbn13"
             },
             "extract_params": {
               "on_validation_error": "pass"

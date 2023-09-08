@@ -3,8 +3,9 @@ from dataclasses import field
 from datetime import date
 from enum import Enum
 
-from pydantic import ValidationError
+from pydantic import Field, ValidationError
 from pydantic.dataclasses import dataclass, rebuild_dataclass
+from typing_extensions import Annotated
 
 from celus_nibbler import validators
 from celus_nibbler.coordinates import Coord, CoordRange, SheetAttr, Value
@@ -14,23 +15,94 @@ from celus_nibbler.utils import JsonEncorder, PydanticConfig
 
 Source = typing.Union[Coord, CoordRange, SheetAttr, Value]
 
-IDS_VALIDATORS = {
-    "DOI": validators.DOI,
-    "ISBN": validators.ISBN,
-    "Print_ISSN": validators.ISSN,
-    "Online_ISSN": validators.EISSN,
-    "Proprietary": validators.ProprietaryID,
-    "URI": validators.URI,
-}
 
-IDS_VALIDATORS_STRICT = {
-    "DOI": validators.DOI,  # TODO strict validator for DOI
-    "ISBN": validators.StrictISBN,
-    "Print_ISSN": validators.StrictISSN,
-    "Online_ISSN": validators.StrictEISSN,
-    "Proprietary": validators.ProprietaryID,
-    "URI": validators.URI,  # TODO strict validator for URI
-}
+class KindISBN(str, Enum):
+    ISBN13 = "isbn13"
+    ISBN10 = "isbn10"
+
+
+class TitleIdKind(str, Enum):
+    ISBN = "ISBN"
+    Print_ISSN = "Print_ISSN"
+    Online_ISSN = "Online_ISSN"
+    Proprietary = "Proprietary"
+    DOI = "DOI"
+    URI = "URI"
+
+    def __str__(self):
+        return self.value
+
+    def validator_class(
+        self, opts: typing.Optional['IdValidatorOpts'] = None
+    ) -> typing.Type[validators.BaseValueModel]:
+        if self == TitleIdKind.ISBN:
+            if not isinstance(opts, IdValidatorOptsISBN):
+                opts = IdValidatorOptsISBN()
+            return opts.validator_class()
+        elif self == TitleIdKind.Print_ISSN:
+            if not isinstance(opts, IdValidatorOptsISSN):
+                opts = IdValidatorOptsISSN()
+            return opts.validator_class()
+        elif self == TitleIdKind.Online_ISSN:
+            if not isinstance(opts, IdValidatorOptsEISSN):
+                opts = IdValidatorOptsEISSN()
+            return opts.validator_class()
+        elif self == TitleIdKind.Proprietary:
+            return validators.ProprietaryID
+        elif self == TitleIdKind.DOI:
+            return validators.DOI
+        elif self == TitleIdKind.URI:
+            return validators.URI
+        else:
+            raise NotImplementedError()
+
+
+@dataclass(config=PydanticConfig)
+class IdValidatorOptsISSN:
+    type: typing.Literal[TitleIdKind.Print_ISSN] = TitleIdKind.Print_ISSN
+
+    strict: bool = False
+
+    def validator_class(self) -> typing.Type[validators.BaseValueModel]:
+        return validators.StrictISSN if self.strict else validators.ISSN
+
+
+@dataclass(config=PydanticConfig)
+class IdValidatorOptsEISSN:
+    type: typing.Literal[TitleIdKind.Online_ISSN] = TitleIdKind.Online_ISSN
+    strict: bool = False
+
+    def validator_class(self) -> typing.Type[validators.BaseValueModel]:
+        return validators.StrictEISSN if self.strict else validators.EISSN
+
+
+@dataclass(config=PydanticConfig)
+class IdValidatorOptsISBN:
+    type: typing.Literal[TitleIdKind.ISBN] = TitleIdKind.ISBN
+    strict: bool = False
+    isbn_kind: typing.Optional[KindISBN] = None
+
+    def validator_class(self) -> typing.Type[validators.BaseValueModel]:
+        if not self.strict:
+            return validators.ISBN
+        if not self.isbn_kind:
+            return validators.StrictISBN
+        elif self.isbn_kind == KindISBN.ISBN13:
+            return validators.StrictISBN13
+        elif self.isbn_kind == KindISBN.ISBN10:
+            return validators.StrictISBN10
+
+        raise NotImplementedError()
+
+
+IdValidatorOpts = Annotated[
+    typing.Union[
+        IdValidatorOptsISBN,
+        IdValidatorOptsISSN,
+        IdValidatorOptsEISSN,
+    ],
+    Field(discriminator='type'),
+]
 
 
 class DateFormat(str, Enum):
@@ -246,12 +318,12 @@ class TitleSource(JsonEncorder, ContentExtractorMixin):
 
 @dataclass(config=PydanticConfig)
 class TitleIdSource(JsonEncorder, ContentExtractorMixin):
-    name: str
+    name: TitleIdKind
     source: Source
     extract_params: ExtractParams = field(default_factory=lambda: ExtractParams())
     cleanup_during_header_processing: bool = True
     fallback: typing.Optional['TitleIdSource'] = None
-    strict: bool = False
+    validator_opts: typing.Optional[IdValidatorOpts] = None
     role: typing.Literal[Role.TITLE_ID] = Role.TITLE_ID
 
     def __post_init__(self):
@@ -263,10 +335,7 @@ class TitleIdSource(JsonEncorder, ContentExtractorMixin):
 
     @property
     def validator(self) -> typing.Optional[typing.Type[validators.BaseValueModel]]:
-        if self.strict:
-            return IDS_VALIDATORS_STRICT.get(self.name)
-        else:
-            return IDS_VALIDATORS.get(self.name)
+        return self.name.validator_class(self.validator_opts)
 
     def extract(
         self,

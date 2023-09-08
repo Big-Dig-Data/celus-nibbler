@@ -4,7 +4,7 @@ from functools import lru_cache
 from typing import Any, Optional, Tuple, Type, Union
 
 from dateutil import parser as datetimes_parser
-from isbnlib import get_isbnlike
+from isbnlib import get_isbnlike, is_isbn10, is_isbn13
 from pydantic import NonNegativeFloat, NonNegativeInt, field_validator
 from pydantic.dataclasses import dataclass as pydantic_dataclass
 
@@ -241,13 +241,61 @@ class StrictISBN(BaseValueModel):
 
     @field_validator("value")
     def check_isbn(cls, isbn: str) -> str:
-        isbns = get_isbnlike(isbn)
+        isbns = get_isbnlike(isbn, level='strict')
 
         if not isbns:
             raise ValueError("isbn-not-valid")
 
         # return the first isbn the rest is omitted
-        return isbns[0]
+        isbn = isbns[0]
+
+        # check isbns including checksums
+        if not (is_isbn10(isbn) or is_isbn13(isbn)):
+            raise ValueError("isbn-not-valid")
+
+        return isbn
+
+
+@pydantic_dataclass(config=PydanticConfig)
+class StrictISBN13(BaseValueModel):
+    value: str
+
+    @field_validator("value")
+    def check_isbn(cls, isbn: str) -> str:
+        isbns = get_isbnlike(isbn, level='strict')
+
+        if not isbns:
+            raise ValueError("isbn13-not-valid")
+
+        # return the first isbn the rest is omitted
+        isbn = isbns[0]
+
+        # check isbns including checksums
+        if not is_isbn13(isbn):
+            raise ValueError("isbn13-not-valid")
+
+        return isbn
+
+
+@pydantic_dataclass(config=PydanticConfig)
+class StrictISBN10(BaseValueModel):
+    value: str
+
+    @field_validator("value")
+    def check_isbn(cls, isbn: str) -> str:
+        isbns = get_isbnlike(isbn, level='strict')
+
+        if not isbns:
+            raise ValueError("isbn10-not-valid")
+
+        # return the first isbn the rest is omitted
+        isbn = isbns[0]
+
+        # check isbns including checksums
+        if not is_isbn10(isbn):
+            raise ValueError("isbn10-not-valid")
+
+        return isbn
 
 
 @pydantic_dataclass(config=PydanticConfig)
