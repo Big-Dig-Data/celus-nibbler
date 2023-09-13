@@ -17,7 +17,7 @@ from unidecode import unidecode
 from celus_nibbler import Poop, eat
 from celus_nibbler.aggregator import CounterOrdering
 from celus_nibbler.definitions import Definition
-from celus_nibbler.parsers import available_parsers, get_supported_platforms_count
+from celus_nibbler.parsers import available_parsers
 from celus_nibbler.parsers.dynamic import gen_parser
 from celus_nibbler.utils import profile
 
@@ -28,18 +28,10 @@ def read_definition(path: str) -> Definition:
     return Definition.parse(definition_data)
 
 
-def gen_description(
-    platforms_count_list: typing.List[typing.Tuple[str, int]], parsers: typing.List[str]
-) -> str:
-    platforms_count = "\n".join(
-        [f"  {platform}({count})" for platform, count in platforms_count_list]
-    )
+def gen_description(parsers: typing.List[str]) -> str:
     parsers_list = "\n".join([f"  {e}" for e in parsers])
 
-    return f"""Supported platforms
-{platforms_count}
-
-Available Parsers:
+    return f"""Available Parsers:
 {parsers_list}
 """
 
@@ -63,12 +55,10 @@ def write_batch(
     )
 
 
-def gen_argument_parser(
-    platforms_count_list: typing.List[typing.Tuple[str, int]], parsers: typing.List[str]
-) -> argparse.ArgumentParser:
+def gen_argument_parser(parsers: typing.List[str]) -> argparse.ArgumentParser:
     dist = distribution("celus-nibbler")
     version = dist.version if dist else "?"
-    description = gen_description(platforms_count_list, parsers)
+    description = gen_description(parsers)
     parser = argparse.ArgumentParser(
         prog="nibbler-eat",
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -76,9 +66,6 @@ def gen_argument_parser(
     )
     parser.add_argument("-d", "--debug", dest="debug", action="store_true", default=False)
     parser.add_argument("--version", action="version", version=version)
-    parser.add_argument(
-        "-i", "--ignore-platform", dest="ignore_platform", action="store_true", default=False
-    )
     parser.add_argument(
         "-s",
         "--skip-heuristics",
@@ -110,6 +97,12 @@ def gen_argument_parser(
         type=read_definition,
     )
     parser.add_argument(
+        "-P",
+        "--platform",
+        default="",
+        help="Limit platform that can be used",
+    )
+    parser.add_argument(
         "-c",
         "--counter-like-output",
         action="store_true",
@@ -123,7 +116,6 @@ def gen_argument_parser(
         default=False,
         help="Parses the entire file without producing any data output (useful for benchmarks)",
     )
-    parser.add_argument("platform")
     parser.add_argument("file", nargs='*')
     parser.add_argument("--profile", dest="profile", action="store_true", default=False)
 
@@ -134,9 +126,9 @@ def parse(options, platform, dynamic_parsers):
     for file in options.file:
         if poops := eat(
             pathlib.Path(file),
-            platform,
+            platform or "void",
             parsers=options.parser or None,
-            check_platform=not options.ignore_platform,
+            check_platform=bool(platform),
             use_heuristics=not options.skip_heuristics,
             dynamic_parsers=dynamic_parsers,
         ):
@@ -221,7 +213,7 @@ def parse(options, platform, dynamic_parsers):
 
 
 def main():
-    parser = gen_argument_parser(get_supported_platforms_count(), available_parsers())
+    parser = gen_argument_parser(available_parsers())
     options = parser.parse_args()
 
     # init logging
@@ -234,12 +226,8 @@ def main():
 
     if not options.file:
         # Just print help if not parsers specified
-        parsers = options.parser
         # Enrich with dynamic parsers
-        parser = gen_argument_parser(
-            get_supported_platforms_count(parsers, dynamic_parsers),
-            available_parsers(dynamic_parsers),
-        )
+        parser = gen_argument_parser(available_parsers(dynamic_parsers))
         parser.print_help()
         return
 
