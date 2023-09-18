@@ -62,6 +62,8 @@ def issn_strict(issn: str) -> str:
 class Value(BaseValueModel):
     value: Union[NonNegativeInt, NonNegativeFloat]
 
+    _stripped_value = field_validator('value', mode='before')(stripped)
+
     @field_validator("value")
     def non_negative(cls, value: Union[NonNegativeInt, NonNegativeFloat]) -> Union[int, float]:
         return round(value)
