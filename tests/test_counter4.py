@@ -131,6 +131,18 @@ from celus_nibbler.errors import NoParserMatchesHeuristics
         ("ProQuest", "4/PR1-b.tsv", "static.counter4.PR1.Tabular", False, True, {}),
         ("ProQuest", "4/PR1-b.tsv", "static.counter4.PR1.Tabular", True, False, {}),
         (
+            "ProQuest",
+            "4/PR1-c.tsv",
+            "static.counter4.PR1.Tabular",
+            True,
+            True,
+            {
+                "Institution_Name": "My library",
+                "Created": "2022-04-01",
+                "Reporting_Period": "2022-03-01 to 2022-03-31",
+            },
+        ),
+        (
             "Thieme",
             "4/JR1-a.tsv",
             "static.counter4.JR1.Tabular",

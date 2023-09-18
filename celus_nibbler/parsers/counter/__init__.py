@@ -60,7 +60,10 @@ class CounterHeaderArea(BaseDateArea):
     METRIC_COLUMN_NAMES: typing.List[str] = []
 
     ORGANIZATION_EXTRACT_PARAMS: ExtractParams = ExtractParams()
-    METRIC_EXTRACT_PARAMS: ExtractParams = ExtractParams()
+    METRIC_EXTRACT_PARAMS: ExtractParams = ExtractParams(
+        # Totals are usually without metrics => skip it instead of failing
+        on_validation_error=TableException.Action.SKIP,
+    )
     DATE_EXTRACT_PARAMS: ExtractParams = ExtractParams()
     DATA_EXTRACT_PARAMS: ExtractParams = ExtractParams(
         default=0,

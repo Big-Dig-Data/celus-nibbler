@@ -212,7 +212,6 @@ class PR1(BaseCounter4Parser):
 
     data_format = DataFormatDefinition(name="PR1")
 
-    titles_to_skip: typing.List[str] = ["Total", "Total for all platforms"]
     platforms = [
         "ProQuest",
         "Tandfonline",

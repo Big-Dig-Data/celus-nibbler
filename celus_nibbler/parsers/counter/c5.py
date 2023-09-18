@@ -123,8 +123,6 @@ class DR(BaseCounter5Parser):
 class PR(BaseCounter5Parser):
     data_format = DataFormatDefinition(name="PR")
 
-    titles_to_skip: typing.List[str] = ["Total", "All Platforms"]
-
     platforms = [
         "AAAS",
         "ACS",
