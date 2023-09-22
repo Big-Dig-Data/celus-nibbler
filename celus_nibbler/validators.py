@@ -65,7 +65,7 @@ class Value(BaseValueModel):
     _stripped_value = field_validator('value', mode='before')(stripped)
 
     @field_validator("value")
-    def non_negative(cls, value: Union[NonNegativeInt, NonNegativeFloat]) -> Union[int, float]:
+    def non_negative(cls, value: Union[NonNegativeInt, NonNegativeFloat]) -> int:
         return round(value)
 
 
@@ -103,6 +103,15 @@ class CommaSeparatedNumberValidator(BaseValueModel):
     @field_validator("value", mode='before')
     def comma_separeted_number(cls, value: str) -> str:
         return Value(value=value.replace(",", "")).value
+
+
+@pydantic_dataclass(config=PydanticConfig)
+class MinutesToSecondsValidator(BaseValueModel):
+    value: Union[NonNegativeInt, NonNegativeFloat]
+
+    @field_validator("value", mode='after')
+    def minutes_to_seconds(cls, value: Union[float, int]) -> int:
+        return round(value * 60)
 
 
 @pydantic_dataclass(config=PydanticConfig)

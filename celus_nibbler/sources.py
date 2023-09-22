@@ -113,6 +113,7 @@ class DateFormat(str, Enum):
 class SpecialExtraction(str, Enum):
     NO = "no"
     COMMA_SEPARATED_NUMBER = "comma_separated_number"
+    MINUTES_TO_SECONDS = "minutes_to_seconds"
 
 
 class Role(str, Enum):
@@ -184,6 +185,8 @@ class ContentExtractorMixin:
             return validator or self.validator
         elif self.extract_params.special_extraction == SpecialExtraction.COMMA_SEPARATED_NUMBER:
             return validators.CommaSeparatedNumberValidator
+        elif self.extract_params.special_extraction == SpecialExtraction.MINUTES_TO_SECONDS:
+            return validators.MinutesToSecondsValidator
         else:
             raise NotImplementedError()
 
