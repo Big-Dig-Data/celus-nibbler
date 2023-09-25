@@ -656,6 +656,7 @@ def test_date_based_definition():
             },
         ],
         "metric_aliases": [],
+        "metric_value_extraction_overrides": {},
         "metrics_to_skip": [],
         "available_metrics": None,
         "on_metric_check_failed": "skip",

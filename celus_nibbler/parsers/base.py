@@ -17,6 +17,7 @@ from celus_nibbler.sources import (
     DimensionSource,
     MetricSource,
     OrganizationSource,
+    SpecialExtraction,
     TitleIdSource,
     TitleSource,
 )
@@ -142,6 +143,7 @@ class BaseParser(metaclass=ABCMeta):
     dimensions_to_skip: typing.Dict[str, typing.List[str]] = {"Platform": ["Total"]}
     heuristics: typing.Optional[BaseCondition] = None
     metric_aliases: typing.Dict[str, str] = {}
+    metric_value_extraction_overrides: typing.Dict[str, SpecialExtraction] = {}
     dimension_aliases: typing.Dict[str, str] = {}
     possible_row_offsets: typing.List[int] = [0]
     current_row_offset: int = 0
@@ -309,6 +311,7 @@ class BaseTabularParser(BaseParser):
         metrics_to_skip = [e.lower() for e in self.metrics_to_skip]
         titles_to_skip = [e.lower() for e in self.titles_to_skip]
         dimensions_to_skip = {k: [e.lower() for e in v] for k, v in self.dimensions_to_skip.items()}
+        metric_value_extraction_overrides = self.metric_value_extraction_overrides
 
         for idx in itertools.count(0):
             try:
@@ -378,9 +381,15 @@ class BaseTabularParser(BaseParser):
 
             for data_cell in data_cells:
                 try:
+                    value_validator = metric_value_extraction_overrides.get(
+                        data_cell.header_data.metric or metric or "", SpecialExtraction.NO
+                    ).get_validator()
+
                     # No need to consider offset here, it was already been
                     # derived in find_data_cells
-                    value = data_cell.value_source.extract(self.sheet, idx)
+                    value = data_cell.value_source.extract(
+                        self.sheet, idx, validator=value_validator
+                    )
                     record = CounterRecord(
                         value=round(value),
                         organization=organization,

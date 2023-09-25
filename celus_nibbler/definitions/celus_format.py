@@ -11,7 +11,7 @@ from celus_nibbler.parsers.non_counter.celus_format import (
     BaseCelusFormatArea,
     BaseCelusFormatParser,
 )
-from celus_nibbler.sources import ExtractParams
+from celus_nibbler.sources import ExtractParams, SpecialExtraction
 from celus_nibbler.utils import JsonEncorder, PydanticConfig
 
 from .base import BaseAreaDefinition, BaseNonCounterParserDefinition
@@ -57,6 +57,9 @@ class CelusFormatParserDefinition(BaseNonCounterParserDefinition, metaclass=abc.
     titles_to_skip: typing.List[str] = field(default_factory=lambda: [])
     dimensions_to_skip: typing.Dict[str, typing.List[str]] = field(default_factory=lambda: {})
     metric_aliases: typing.List[typing.Tuple[str, str]] = field(default_factory=lambda: [])
+    metric_value_extraction_overrides: typing.Dict[str, SpecialExtraction] = field(
+        default_factory=lambda: {}
+    )
     dimension_aliases: typing.List[typing.Tuple[str, str]] = field(default_factory=lambda: [])
     heuristics: typing.Optional[Condition] = None
     possible_row_offsets: typing.List[int] = field(default_factory=lambda: [0])
@@ -81,6 +84,7 @@ class CelusFormatParserDefinition(BaseNonCounterParserDefinition, metaclass=abc.
             on_metric_check_failed = self.on_metric_check_failed
 
             metric_aliases = dict(self.metric_aliases)
+            metric_value_extraction_overrides = dict(self.metric_value_extraction_overrides)
             dimension_aliases = dict(self.dimension_aliases)
 
             heuristics = self.heuristics

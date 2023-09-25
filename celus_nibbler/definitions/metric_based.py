@@ -11,6 +11,7 @@ from celus_nibbler.sources import (
     DateSource,
     DimensionSource,
     OrganizationSource,
+    SpecialExtraction,
     TitleIdSource,
     TitleSource,
 )
@@ -75,6 +76,9 @@ class MetricBasedDefinition(BaseNonCounterParserDefinition):
     titles_to_skip: typing.List[str] = field(default_factory=lambda: [])
     dimensions_to_skip: typing.Dict[str, typing.List[str]] = field(default_factory=lambda: {})
     metric_aliases: typing.List[typing.Tuple[str, str]] = field(default_factory=lambda: [])
+    metric_value_extraction_overrides: typing.Dict[str, SpecialExtraction] = field(
+        default_factory=lambda: {}
+    )
     dimension_aliases: typing.List[typing.Tuple[str, str]] = field(default_factory=lambda: [])
     heuristics: typing.Optional[Condition] = None
     possible_row_offsets: typing.List[int] = field(default_factory=lambda: [0])
@@ -100,6 +104,7 @@ class MetricBasedDefinition(BaseNonCounterParserDefinition):
             dimensions_to_skip = self.dimensions_to_skip
 
             metric_aliases = dict(self.metric_aliases)
+            metric_value_extraction_overrides = dict(self.metric_value_extraction_overrides)
             dimension_aliases = dict(self.dimension_aliases)
 
             heuristics = self.heuristics

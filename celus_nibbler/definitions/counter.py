@@ -26,7 +26,7 @@ from celus_nibbler.parsers.counter.c4 import (
     JR1a,
 )
 from celus_nibbler.parsers.counter.c5 import DR, IR_M1, PR, TR, BaseCounter5Parser
-from celus_nibbler.sources import ExtractParams
+from celus_nibbler.sources import ExtractParams, SpecialExtraction
 from celus_nibbler.utils import JsonEncorder, PydanticConfig
 
 from .base import BaseAreaDefinition, BaseParserDefinition
@@ -244,6 +244,9 @@ class BaseCounterParserDefinition(BaseParserDefinition, metaclass=abc.ABCMeta):
     titles_to_skip: typing.List[str] = field(default_factory=lambda: [])
     dimensions_to_skip: typing.Dict[str, typing.List[str]] = field(default_factory=lambda: {})
     metric_aliases: typing.List[typing.Tuple[str, str]] = field(default_factory=lambda: [])
+    metric_value_extraction_overrides: typing.Dict[str, SpecialExtraction] = field(
+        default_factory=lambda: {}
+    )
     dimension_aliases: typing.List[typing.Tuple[str, str]] = field(default_factory=lambda: [])
     possible_row_offsets: typing.List[int] = field(default_factory=lambda: [0])
 
@@ -275,6 +278,7 @@ def gen_parser(
         titles_to_skip = definition.titles_to_skip or base.titles_to_skip
         dimensions_to_skip = definition.dimensions_to_skip or base.dimensions_to_skip
         metric_aliases = dict(definition.metric_aliases) or dict(base.metric_aliases)
+        metric_value_extraction_overrides = dict(definition.metric_value_extraction_overrides)
         dimension_aliases = dict(definition.dimension_aliases) or dict(base.dimension_aliases)
         possible_row_offsets = definition.possible_row_offsets or base.possible_row_offsets
 

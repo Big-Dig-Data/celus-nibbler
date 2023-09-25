@@ -8,7 +8,13 @@ from celus_nibbler.data_headers import DataFormatDefinition, DataHeaders
 from celus_nibbler.errors import TableException
 from celus_nibbler.parsers.base import BaseArea, BaseTabularParser
 from celus_nibbler.parsers.non_counter.date_metric_based import BaseDateMetricArea
-from celus_nibbler.sources import DimensionSource, OrganizationSource, TitleIdSource, TitleSource
+from celus_nibbler.sources import (
+    DimensionSource,
+    OrganizationSource,
+    SpecialExtraction,
+    TitleIdSource,
+    TitleSource,
+)
 from celus_nibbler.utils import JsonEncorder, PydanticConfig
 
 from .base import BaseAreaDefinition, BaseNonCounterParserDefinition
@@ -67,6 +73,9 @@ class DateMetricBasedDefinition(JsonEncorder, BaseNonCounterParserDefinition):
     titles_to_skip: typing.List[str] = field(default_factory=lambda: [])
     dimensions_to_skip: typing.Dict[str, typing.List[str]] = field(default_factory=lambda: {})
     metric_aliases: typing.List[typing.Tuple[str, str]] = field(default_factory=lambda: [])
+    metric_value_extraction_overrides: typing.Dict[str, SpecialExtraction] = field(
+        default_factory=lambda: {}
+    )
     dimension_aliases: typing.List[typing.Tuple[str, str]] = field(default_factory=lambda: [])
     heuristics: typing.Optional[Condition] = None
     possible_row_offsets: typing.List[int] = field(default_factory=lambda: [0])
@@ -92,6 +101,7 @@ class DateMetricBasedDefinition(JsonEncorder, BaseNonCounterParserDefinition):
             dimensions_to_skip = _definition.dimensions_to_skip
 
             metric_aliases = dict(_definition.metric_aliases)
+            metric_value_extraction_overrides = dict(_definition.metric_value_extraction_overrides)
             dimension_aliases = dict(_definition.dimension_aliases)
 
             heuristics = _definition.heuristics
