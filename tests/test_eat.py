@@ -136,3 +136,31 @@ def test_eat():
             "static.counter4.BR3.Tabular",
         ],
     }
+
+
+def test_parsers_info_of_c5_json():
+    file_path = pathlib.Path(__file__).parent / 'data/counter/5/TR_J1-sample.json'
+
+    poops = eat(
+        file_path,
+        "Ovid",
+        parsers=["static.counter5.TR.Json"],
+        check_platform=False,
+        use_heuristics=True,
+    )
+    assert len(poops) == 1
+    poop = poops[0]
+    assert isinstance(poop, NoParserMatchesHeuristics)
+    assert poop.dict() == {
+        "name": "NoParserMatchesHeuristics",
+        "sheet_idx": 0,
+        "parsers_info": {
+            "static.counter5.TR.Json": [
+                {
+                    "code": "wrong-report-type",
+                    "expected": "TR",
+                    "found": "TR_J1",
+                }
+            ],
+        },
+    }

@@ -19,7 +19,32 @@ class Counter5HeaderArea(CounterHeaderArea):
     ORGANIZATION_COLUMN_NAMES = ['Institution_Name', 'Institution Name']
 
 
-class BaseCounter5Parser(BaseTabularParser):
+class Counter5ParserAnalyzeMixin:
+    def analyze(self) -> typing.List[dict]:
+        header = self.get_extras()
+        if not header:
+            return [
+                {
+                    "code": "no-header-data-extracted",
+                }
+            ]
+        if "Report_ID" not in header:
+            return [
+                {
+                    "code": "report-id-not-in-header",
+                }
+            ]
+        if header["Report_ID"] != self.data_format.name:
+            return [
+                {
+                    "code": "wrong-report-type",
+                    "found": header["Report_ID"],
+                    "expected": self.data_format.name,
+                }
+            ]
+
+
+class BaseCounter5Parser(Counter5ParserAnalyzeMixin, BaseTabularParser):
     data_format: DataFormatDefinition
     Area: typing.Type[CounterHeaderArea]
 
@@ -57,29 +82,6 @@ class BaseCounter5Parser(BaseTabularParser):
                 continue
 
         return res
-
-    def analyze(self) -> typing.List[dict]:
-        header = self.get_extras()
-        if not header:
-            return [
-                {
-                    "code": "no-header-data-extracted",
-                }
-            ]
-        if "Report_ID" not in header:
-            return [
-                {
-                    "code": "report-id-not-in-header",
-                }
-            ]
-        if header["Report_ID"] != self.data_format.name:
-            return [
-                {
-                    "code": "wrong-report-type",
-                    "found": header["Report_ID"],
-                    "expected": self.data_format.name,
-                }
-            ]
 
 
 class DR(BaseCounter5Parser):

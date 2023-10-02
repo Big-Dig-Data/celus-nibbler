@@ -64,7 +64,7 @@ class NigiriIR_M1Area(NigiriBaseArea):
     nigiri_report_class = Counter5IRM1Report
 
 
-class BaseCounter5JsonParser(BaseJsonParser):
+class BaseCounter5JsonParser(c5tabular.Counter5ParserAnalyzeMixin, BaseJsonParser):
     @property
     def name(self):
         return f"counter5.{self.data_format.name}"
