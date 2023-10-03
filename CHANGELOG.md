@@ -5,6 +5,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [10.0.0] - 2023-10-03
+
+### Fixed
+- value validator should strip content before number is parsed
+- properly terminate when no metric is present for counter formats
+
+### Added
+- isbn13 and isbn10 only validators
+- special value extractor MinutesToSeconds
+- make it possible to override value validators per metric
+- add for C5 Json parsers parser_info
+
+### Changed
+- updated pydantic to 2.3.0
+- small optimization of pydantic models loading
+- using pydantic dataclasses for validators
+- nibbler-eat: make platfrom optional param
+
+
 ## [9.1.0] - 2023-08-25
 
 ### Added
