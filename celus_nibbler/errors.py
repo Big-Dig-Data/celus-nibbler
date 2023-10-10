@@ -14,11 +14,13 @@ class NibblerError(Exception):
 
 
 class RecordError(NibblerError):
-    def __init__(self, record: CounterRecord):
+    def __init__(self, idx: int, record: CounterRecord):
         self.record = record
+        self.idx = idx
 
     def dict(self) -> dict:
         return {
+            "idx": self.idx,
             "name": f"{self.__class__.__name__}",
             "start": self.record.start,
             "end": self.record.end,
@@ -195,7 +197,14 @@ class MultipleParsersFound(NibblerError):
 
 
 class SameRecordsInOutput(RecordError):
-    pass
+    def __init__(self, clashing_idx: int, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.clashing_idx = clashing_idx
+
+    def dict(self) -> dict:
+        dct = super().dict()
+        dct["clashing_idx"] = self.clashing_idx
+        return dct
 
 
 class NegativeValueInOutput(RecordError):

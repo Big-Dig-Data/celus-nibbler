@@ -394,6 +394,8 @@ def test_dynamic(platform, filename, ext, parser, ignore_order):
             "csv",
             "dynamic.non_counter.simple_format.same_records",
             SameRecordsInOutput(
+                0,
+                2,
                 CounterRecord(
                     start=date(2022, 1, 1),
                     end=date(2022, 1, 31),
@@ -402,7 +404,7 @@ def test_dynamic(platform, filename, ext, parser, ignore_order):
                     title="T1",
                     dimension_data={"Dim1": "D11"},
                     value=3,
-                )
+                ),
             ),
         ),
         (
@@ -411,6 +413,7 @@ def test_dynamic(platform, filename, ext, parser, ignore_order):
             "csv",
             "dynamic.non_counter.simple_format.negative-values-in-output",
             NegativeValueInOutput(
+                0,
                 CounterRecord(
                     start=date(2020, 1, 1),
                     end=date(2020, 1, 31),
@@ -420,7 +423,7 @@ def test_dynamic(platform, filename, ext, parser, ignore_order):
                     title_ids={"Print_ISSN": "1111-1111"},
                     dimension_data={"Platform": "P1", "YOP": "2015"},
                     value=-1,
-                )
+                ),
             ),
         ),
         (

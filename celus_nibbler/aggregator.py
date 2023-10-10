@@ -70,7 +70,7 @@ class CheckConflictingRecordsAggregator(BaseAggregator):
     """
 
     def __init__(self, size: int = 100):
-        self.hash_buffer: typing.Deque[int] = deque(maxlen=size)
+        self.hash_buffer: typing.Deque[int, int] = deque(maxlen=size)
 
     @staticmethod
     def make_record_hash(record: CounterRecord):
@@ -79,12 +79,15 @@ class CheckConflictingRecordsAggregator(BaseAggregator):
     def aggregate(
         self, records: typing.Generator[CounterRecord, None, None]
     ) -> typing.Generator[CounterRecord, None, None]:
+        idx = 0
         for record in records:
             hsh = self.make_record_hash(record)
-            if hsh in self.hash_buffer:
-                raise SameRecordsInOutput(record)
-            self.hash_buffer.append(hsh)
+            for e in self.hash_buffer:
+                if e[0] == hsh:
+                    raise SameRecordsInOutput(e[1], idx, record)
+            self.hash_buffer.append((hsh, idx))
             yield record
+            idx += 1
 
 
 class CounterOrdering(BaseAggregator):
@@ -138,10 +141,12 @@ class CheckNonNegativeValues(BaseAggregator):
     def aggregate(
         self, records: typing.Generator[CounterRecord, None, None]
     ) -> typing.Generator[CounterRecord, None, None]:
+        idx = 0
         for record in records:
             if record.value < 0:
-                raise NegativeValueInOutput(record)
+                raise NegativeValueInOutput(idx, record)
             yield record
+            idx += 1
 
 
 class PippedAggregator(BaseAggregator):
