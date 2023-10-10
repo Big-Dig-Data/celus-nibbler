@@ -178,6 +178,9 @@ class Date(BaseValueModel):
 
     @field_validator("value", mode='before')
     def to_datetime(cls, date: str) -> datetime.datetime:
+        if not date:
+            raise ValueError("no-date-provided")
+
         # Check for common formats (faster that dateutil)
         for fmt in COMMON_DATE_FORMATS:
             try:
@@ -200,7 +203,7 @@ class DateEU(Date):
 
 
 @lru_cache
-def gen_date_format_validator(pattern: str) -> BaseValueModel:
+def gen_date_format_validator(pattern: str) -> Type[BaseValueModel]:
     @pydantic_dataclass(config=PydanticConfig)
     class DateFormat(BaseValueModel):
         value: datetime.date
@@ -211,10 +214,12 @@ def gen_date_format_validator(pattern: str) -> BaseValueModel:
 
         @field_validator("value", mode='before')
         def to_datetime(cls, date: str) -> datetime.datetime:
+            if not date:
+                raise ValueError("no-date-provided")
             try:
                 return datetime.datetime.strptime(date, pattern).replace(day=1)
             except ValueError:
-                pass
+                raise ValueError("cant-parse-date")
 
     return DateFormat
 
