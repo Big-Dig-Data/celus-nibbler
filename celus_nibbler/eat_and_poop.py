@@ -23,7 +23,14 @@ from celus_nibbler.errors import (
     WrongFileFormatError,
 )
 from celus_nibbler.parsers import BaseParser, get_parsers
-from celus_nibbler.reader import CsvReader, JsonCounter5Reader, SheetReader, TableReader, XlsxReader
+from celus_nibbler.reader import (
+    CsvReader,
+    JsonCounter5Reader,
+    SheetReader,
+    TableReader,
+    XlsReader,
+    XlsxReader,
+)
 from celus_nibbler.utils import JsonEncorder, PydanticConfig
 from celus_nibbler.validators import Platform
 
@@ -342,6 +349,8 @@ def read_file(file_path: pathlib.Path) -> TableReader:
         return CsvReader(file_path)
     elif file_path.suffix.lower() == '.xlsx':
         return XlsxReader(file_path)
+    elif XlsReader and file_path.suffix.lower() in ['.xls', '.xlsb']:
+        return XlsReader(file_path)
     elif file_path.suffix.lower() == '.json':
         return JsonCounter5Reader(file_path)
 

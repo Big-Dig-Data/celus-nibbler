@@ -365,3 +365,68 @@ class JsonCounter5Reader(TableReader):
 
     def __iter__(self):
         return self.sheets.__iter__()
+
+
+try:
+    import xlrd
+except ImportError:
+    XlsReader = None
+else:
+
+    class XlsReader(TableReader):  # noqa
+        """
+        Reads XLS file it probably loads entire file into memory
+        """
+
+        def __init__(self, source: Union[str, pathlib.Path]):
+            with open(source, "rb") as file:
+                workbook = xlrd.open_workbook(file_contents=file.read())
+                self.sheets = []
+
+                # Store each sheet as temporary CSV file
+                for idx in range(workbook.nsheets):
+                    sheet = workbook.sheet_by_index(idx)
+
+                    # write data to csv
+                    f = tempfile.TemporaryFile("w+")
+                    # unix dialect escapes all by default
+                    dialect = csv.get_dialect("unix")
+                    writer = csv.writer(f, dialect=dialect)
+                    row_length = sheet.ncols
+                    for rx in range(sheet.nrows):
+                        row = sheet.row(rx)
+
+                        # Make sure that length of the row is extending
+                        current_length = len(row)
+                        extra_cells = [''] * (row_length - current_length)
+
+                        writer.writerow([self._cell_to_str(cell) for cell in row] + extra_cells)
+                    f.seek(0)
+
+                    self.sheets.append(CsvSheetReader(idx, sheet.name, f, dialect="unix"))
+                    workbook.unload_sheet(idx)
+
+                workbook.release_resources()
+
+        def _cell_to_str(self, cell: xlrd.sheet.Cell) -> str:
+            if cell.ctype in [xlrd.XL_CELL_EMPTY, xlrd.XL_CELL_BLANK, xlrd.XL_CELL_ERROR]:
+                return ""
+
+            elif cell.ctype == xlrd.XL_CELL_TEXT:
+                return cell.value
+            elif cell.ctype == xlrd.XL_CELL_BOOLEAN:
+                return str(bool(cell.value))
+            elif cell.ctype == xlrd.XL_CELL_NUMBER:
+                # value is float
+                return str(cell.value)
+            elif cell.ctype == xlrd.XL_CELL_DATE:
+                # value is float
+                return xlrd.xldate.xldate_as_datetime(cell.value, 0).isoformat(sep=' ')
+
+            raise NotImplementedError()
+
+        def __getitem__(self, item) -> SheetReader:
+            return self.sheets[item]
+
+        def __iter__(self):
+            return self.sheets.__iter__()

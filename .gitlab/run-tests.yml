@@ -8,7 +8,7 @@ tests:run_tests:
   before_script:
     - curl -sSL https://install.python-poetry.org | python3 -
     - export PATH="$HOME/.local/bin:$PATH"
-    - poetry install
+    - poetry install -E xls
   script:
     - poetry run pytest -v --junitxml=report.xml --cov=celus_nibbler --cov-report=xml --cov-report=term
   artifacts:

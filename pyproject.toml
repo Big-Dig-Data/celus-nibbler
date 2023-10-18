@@ -57,6 +57,7 @@ unidecode = "~1.3.4"
 isbnlib = "~3.10.14"
 jellyfish = "~0.9.0"
 typing-extensions = "~4.6.1"
+xlrd = { version="~2.0.1", optional = true }
 
 [tool.poetry.dev-dependencies]
 black = "23.7.0"
@@ -67,6 +68,9 @@ pytest = "~7.1.2"
 pytest-cov = "~3.0.0"
 ruff = "~0.0.261"
 tox = "~3.25.0"
+
+[tool.poetry.extras]
+xls = ["xlrd"]
 
 [tool.poetry.plugins]
 

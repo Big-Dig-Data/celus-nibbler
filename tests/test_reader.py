@@ -7,6 +7,7 @@ from celus_nibbler.reader import (
     CsvSheetReader,
     JsonCounter5Reader,
     JsonCounter5SheetReader,
+    XlsReader,
     XlsxReader,
 )
 
@@ -316,6 +317,32 @@ class TestXlsxReader:
 
     def test_iteration(self):
         sheets = XlsxReader(self.file_path)
+        for i, row in enumerate(sheets[0]):
+            assert row == self.data_list[0][i]
+
+
+class TestXlsReader:
+    file_path = Path(__file__).parent / 'data/reader/test-simple.xls'
+    data_list = [
+        [
+            ['', '2023-09-01 00:00:00', '2023-10-01 00:00:00', '2023-11-01 00:00:00'],
+            ['A', '1.0', '', '3.145'],
+            ['B', '1.2', '3.0', '3.999'],
+            ['C', '3.0', '4.0', '8.99999'],
+            ['', 'True', 'False', 'True'],
+        ],
+    ]
+
+    def test_indexing(self):
+        sheets = XlsReader(self.file_path)
+        for sheet_idx, sheet in enumerate(sheets):
+            for row_idx in range(len(sheet)):
+                assert sheets[sheet_idx][row_idx] == self.data_list[sheet_idx][row_idx]
+        with pytest.raises(IndexError):
+            assert sheets[0][row_idx + 1]
+
+    def test_iteration(self):
+        sheets = XlsReader(self.file_path)
         for i, row in enumerate(sheets[0]):
             assert row == self.data_list[0][i]
 
