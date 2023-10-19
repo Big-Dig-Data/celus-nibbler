@@ -49,6 +49,9 @@ class SheetReader(metaclass=ABCMeta):
     def close(self):
         pass
 
+    def dict_reader(self) -> 'DictReader':
+        return DictReader(SheetReaderWithLineNum(self))
+
 
 class CsvSheetReader(SheetReader):
     """
@@ -241,6 +244,9 @@ class JsonCounter5SheetReader(SheetReader):
     def close(self):
         self.file.close()
 
+    def dict_reader(self):
+        raise NotImplementedError()
+
 
 class TableReader(metaclass=ABCMeta):
     """
@@ -430,3 +436,26 @@ else:
 
         def __iter__(self):
             return self.sheets.__iter__()
+
+
+class SheetReaderWithLineNum:
+    def __init__(self, sheet_reader: SheetReader):
+        self.sheet_reader = sheet_reader
+        self.line_num = 0
+
+    def __next__(self):
+        next_element = next(self.sheet_reader)
+        self.line_num += 1
+        return next_element
+
+
+class DictReader(csv.DictReader):
+    """Try to wrap csv.DictReader arond SheetReader"""
+
+    def __init__(self, sheet_reader: 'SheetReaderWithLineNum'):
+        self.reader = sheet_reader
+        self._fieldnames = None
+        self.restkey = None
+        self.restval = None
+        self.dialect = 'excel'
+        self.line_num = 0

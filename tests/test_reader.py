@@ -64,6 +64,18 @@ class TestCsvSheetReader:
         reader = CsvSheetReader(0, None, sheet_csv, window_size=window_size)
         assert len(reader) == 5
 
+    @pytest.mark.parametrize("window_size", [2, 100])
+    def test_dict_reader(self, window_size, sheet_csv):
+        reader = CsvSheetReader(0, None, sheet_csv, window_size=window_size)
+        dict_reader = reader.dict_reader()
+        assert dict_reader.fieldnames == ["Name", "Values"]
+        assert [e for e in dict_reader] == [
+            {"Name": "First", "Values": "1"},
+            {"Name": "Second", "Values": "2"},
+            {"Name": "Third", "Values": "3"},
+            {"Name": "Fourth", "Values": "4"},
+        ]
+
 
 class TestJsonSheetReader:
     @pytest.mark.parametrize("window_size", [2, 100])
@@ -274,6 +286,12 @@ class TestJsonSheetReader:
         reader = JsonCounter5SheetReader(sheet_json, window_size=window_size)
         assert len(reader) == 3
 
+    @pytest.mark.parametrize("window_size", [2, 100])
+    def test_dict_reader(self, window_size, sheet_json):
+        reader = JsonCounter5SheetReader(sheet_json, window_size=window_size)
+        with pytest.raises(NotImplementedError):
+            reader.dict_reader()
+
 
 class TestCsvReader:
     data_csv = b'a,b,c\n1,3,4\nhi,there,"how are you?"\n'
@@ -291,6 +309,14 @@ class TestCsvReader:
         sheets = CsvReader(self.data_csv)
         for i, row in enumerate(sheets[0]):
             assert row == self.data_list[0][i]
+
+    def test_dict_reader(self):
+        sheets = CsvReader(self.data_csv)
+        reader = sheets[0].dict_reader()
+        assert [e for e in reader] == [
+            {"a": "1", "b": "3", "c": "4"},
+            {"a": "hi", "b": "there", "c": "how are you?"},
+        ]
 
 
 class TestXlsxReader:
@@ -320,6 +346,18 @@ class TestXlsxReader:
         for i, row in enumerate(sheets[0]):
             assert row == self.data_list[0][i]
 
+    def test_dict_reader(self):
+        sheets = XlsxReader(self.file_path)
+        reader = sheets[0].dict_reader()
+        assert [e for e in reader] == [
+            {"a": "1", "b": "3", "c": "4"},
+            {"a": "hi", "b": "there", "c": "how are you?"},
+            {"a": "", "b": "", "c": ""},
+            {"a": "", "b": "", "c": ""},
+            {"a": "another", "b": "", "c": ""},
+            {"a": "Extra", "b": "line", "c": "present"},
+        ]
+
 
 class TestXlsReader:
     file_path = Path(__file__).parent / 'data/reader/test-simple.xls'
@@ -345,6 +383,36 @@ class TestXlsReader:
         sheets = XlsReader(self.file_path)
         for i, row in enumerate(sheets[0]):
             assert row == self.data_list[0][i]
+
+    def test_dict_reader(self):
+        sheets = XlsReader(self.file_path)
+        reader = sheets[0].dict_reader()
+        assert [e for e in reader] == [
+            {
+                "": "A",
+                "2023-09-01 00:00:00": "1.0",
+                "2023-10-01 00:00:00": "",
+                "2023-11-01 00:00:00": "3.145",
+            },
+            {
+                "": "B",
+                "2023-09-01 00:00:00": "1.2",
+                "2023-10-01 00:00:00": "3.0",
+                "2023-11-01 00:00:00": "3.999",
+            },
+            {
+                "": "C",
+                "2023-09-01 00:00:00": "3.0",
+                "2023-10-01 00:00:00": "4.0",
+                "2023-11-01 00:00:00": "8.99999",
+            },
+            {
+                "": "",
+                "2023-09-01 00:00:00": "True",
+                "2023-10-01 00:00:00": "False",
+                "2023-11-01 00:00:00": "True",
+            },
+        ]
 
 
 class TestJsonCounter5Reader:
@@ -419,6 +487,11 @@ class TestJsonCounter5Reader:
         sheets = JsonCounter5Reader(sheet_json.read())
         for idx, item in enumerate(sheets[0]):
             assert item == self.data_list[idx]
+
+    def test_dict_reader(self, sheet_json):
+        sheets = JsonCounter5Reader(sheet_json.read())
+        with pytest.raises(NotImplementedError):
+            sheets[0].dict_reader()
 
 
 class TestEncoding:
