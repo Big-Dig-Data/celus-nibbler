@@ -7,7 +7,7 @@ import tempfile
 from abc import ABCMeta, abstractmethod
 from collections import deque
 from functools import lru_cache
-from io import BytesIO, StringIO
+from io import BufferedIOBase, BytesIO, RawIOBase, StringIO, TextIOBase, TextIOWrapper
 from typing import IO, Any, Dict, List, Optional, Sequence, Union
 
 import openpyxl
@@ -267,7 +267,7 @@ class CsvReader(TableReader):
     Reads CSV file in stream mode
     """
 
-    def __init__(self, source: Union[bytes, str, pathlib.Path]):
+    def __init__(self, source: Union[IO, bytes, str, pathlib.Path]):
         # detect encoding
         file: IO[str]
         delimiters = None
@@ -277,7 +277,7 @@ class CsvReader(TableReader):
             file = StringIO(source.decode(encoding or "utf8"))
         elif isinstance(source, (str, pathlib.Path)):
             source = pathlib.Path(source)  # make user that source is Path
-            with open(source, "rb") as f:
+            with source.open("rb") as f:
                 encoding = detect_file_encoding(f)
             logger.debug("Encoding '%s' was found for csv file", encoding)
 
@@ -286,6 +286,14 @@ class CsvReader(TableReader):
                 delimiters = "\t"
 
             file = open(source, "r", encoding=encoding)
+        elif isinstance(source, (RawIOBase, BufferedIOBase)):
+            encoding = detect_file_encoding(source)
+            logger.debug("Encoding '%s' was found for csv data", encoding)
+            file = TextIOWrapper(source, encoding=encoding)
+        elif isinstance(source, TextIOBase):
+            # Opened as a text file => don't try to detect encoding
+            file = source
+            encoding = file.encoding
         else:
             raise NotImplementedError()
 
@@ -303,37 +311,34 @@ class XlsxReader(TableReader):
     Reads XLSX file in stream mode (TODO verify this)
     """
 
-    def __init__(self, source: Union[str, pathlib.Path]):
-        with open(source, "rb") as file:
-            workbook = openpyxl.load_workbook(
-                file, read_only=True, data_only=True, keep_links=False
-            )
-            self.sheets = []
+    def __init__(self, source: Union[str, pathlib.Path, RawIOBase, BufferedIOBase]):
+        workbook = openpyxl.load_workbook(source, read_only=True, data_only=True, keep_links=False)
+        self.sheets = []
 
-            # Store each sheet as temporary CSV file
-            for idx, sheet in enumerate(workbook.worksheets):
-                # For some reason in it necessary to reset dimension for some files
-                # which display that only a single cell is present in the data
-                if sheet.calculate_dimension(force=True) == "A1:A1":
-                    sheet.reset_dimensions()
+        # Store each sheet as temporary CSV file
+        for idx, sheet in enumerate(workbook.worksheets):
+            # For some reason in it necessary to reset dimension for some files
+            # which display that only a single cell is present in the data
+            if sheet.calculate_dimension(force=True) == "A1:A1":
+                sheet.reset_dimensions()
 
-                # write data to csv
-                f = tempfile.TemporaryFile("w+")
-                # unix dialect escapes all by default
-                dialect = csv.get_dialect("unix")
-                writer = csv.writer(f, dialect=dialect)
-                row_length = 0
-                for row in sheet.rows:
-                    # Make sure that length of the row is extending
-                    current_length = len(row)
-                    row_length = max(row_length, current_length)
-                    extra_cells = [''] * (row_length - current_length)
+            # write data to csv
+            f = tempfile.TemporaryFile("w+")
+            # unix dialect escapes all by default
+            dialect = csv.get_dialect("unix")
+            writer = csv.writer(f, dialect=dialect)
+            row_length = 0
+            for row in sheet.rows:
+                # Make sure that length of the row is extending
+                current_length = len(row)
+                row_length = max(row_length, current_length)
+                extra_cells = [''] * (row_length - current_length)
 
-                    writer.writerow([cell.value for cell in row] + extra_cells)
-                f.seek(0)
-                self.sheets.append(CsvSheetReader(idx, workbook.sheetnames[idx], f, dialect="unix"))
+                writer.writerow([cell.value for cell in row] + extra_cells)
+            f.seek(0)
+            self.sheets.append(CsvSheetReader(idx, workbook.sheetnames[idx], f, dialect="unix"))
 
-            workbook.close()
+        workbook.close()
 
     def __getitem__(self, item) -> SheetReader:
         return self.sheets[item]
@@ -384,35 +389,38 @@ else:
         Reads XLS file it probably loads entire file into memory
         """
 
-        def __init__(self, source: Union[str, pathlib.Path]):
-            with open(source, "rb") as file:
-                workbook = xlrd.open_workbook(file_contents=file.read())
-                self.sheets = []
+        def __init__(self, source: Union[str, pathlib.Path, RawIOBase, BufferedIOBase]):
+            if isinstance(source, (RawIOBase, BufferedIOBase)):
+                workbook = xlrd.open_workbook(file_contents=source.read())
+            else:
+                workbook = xlrd.open_workbook(filename=source)
 
-                # Store each sheet as temporary CSV file
-                for idx in range(workbook.nsheets):
-                    sheet = workbook.sheet_by_index(idx)
+            self.sheets = []
 
-                    # write data to csv
-                    f = tempfile.TemporaryFile("w+")
-                    # unix dialect escapes all by default
-                    dialect = csv.get_dialect("unix")
-                    writer = csv.writer(f, dialect=dialect)
-                    row_length = sheet.ncols
-                    for rx in range(sheet.nrows):
-                        row = sheet.row(rx)
+            # Store each sheet as temporary CSV file
+            for idx in range(workbook.nsheets):
+                sheet = workbook.sheet_by_index(idx)
 
-                        # Make sure that length of the row is extending
-                        current_length = len(row)
-                        extra_cells = [''] * (row_length - current_length)
+                # write data to csv
+                f = tempfile.TemporaryFile("w+")
+                # unix dialect escapes all by default
+                dialect = csv.get_dialect("unix")
+                writer = csv.writer(f, dialect=dialect)
+                row_length = sheet.ncols
+                for rx in range(sheet.nrows):
+                    row = sheet.row(rx)
 
-                        writer.writerow([self._cell_to_str(cell) for cell in row] + extra_cells)
-                    f.seek(0)
+                    # Make sure that length of the row is extending
+                    current_length = len(row)
+                    extra_cells = [''] * (row_length - current_length)
 
-                    self.sheets.append(CsvSheetReader(idx, sheet.name, f, dialect="unix"))
-                    workbook.unload_sheet(idx)
+                    writer.writerow([self._cell_to_str(cell) for cell in row] + extra_cells)
+                f.seek(0)
 
-                workbook.release_resources()
+                self.sheets.append(CsvSheetReader(idx, sheet.name, f, dialect="unix"))
+                workbook.unload_sheet(idx)
+
+            workbook.release_resources()
 
         def _cell_to_str(self, cell: xlrd.sheet.Cell) -> str:
             if cell.ctype in [xlrd.XL_CELL_EMPTY, xlrd.XL_CELL_BLANK, xlrd.XL_CELL_ERROR]:

@@ -1,3 +1,4 @@
+from io import BytesIO
 from pathlib import Path
 
 import pytest
@@ -293,30 +294,41 @@ class TestJsonSheetReader:
             reader.dict_reader()
 
 
+def no_io_wrapper(io):
+    return io
+
+
 class TestCsvReader:
     data_csv = b'a,b,c\n1,3,4\nhi,there,"how are you?"\n'
     data_list = [[['a', 'b', 'c'], ['1', '3', '4'], ['hi', 'there', 'how are you?']]]
 
-    def test_indexing(self):
-        sheets = CsvReader(self.data_csv)
+    @pytest.mark.parametrize("io_wrapper", [no_io_wrapper, BytesIO])
+    def test_indexing(self, io_wrapper):
+        sheets = CsvReader(io_wrapper(self.data_csv))
         for idx in range(3):
             assert sheets[0][idx] == self.data_list[0][idx]
 
         with pytest.raises(IndexError):
             assert sheets[0][3]
 
-    def test_iteration(self):
-        sheets = CsvReader(self.data_csv)
+    @pytest.mark.parametrize("io_wrapper", [no_io_wrapper, BytesIO])
+    def test_iteration(self, io_wrapper):
+        sheets = CsvReader(io_wrapper(self.data_csv))
         for i, row in enumerate(sheets[0]):
             assert row == self.data_list[0][i]
 
-    def test_dict_reader(self):
-        sheets = CsvReader(self.data_csv)
+    @pytest.mark.parametrize("io_wrapper", [no_io_wrapper, BytesIO])
+    def test_dict_reader(self, io_wrapper):
+        sheets = CsvReader(io_wrapper(self.data_csv))
         reader = sheets[0].dict_reader()
         assert [e for e in reader] == [
             {"a": "1", "b": "3", "c": "4"},
             {"a": "hi", "b": "there", "c": "how are you?"},
         ]
+
+
+def open_file_binary(path):
+    return open(path, "rb")
 
 
 class TestXlsxReader:
@@ -333,21 +345,24 @@ class TestXlsxReader:
         ],
     ]
 
-    def test_indexing(self):
-        sheets = XlsxReader(self.file_path)
+    @pytest.mark.parametrize("io_wrapper", [no_io_wrapper, open_file_binary])
+    def test_indexing(self, io_wrapper):
+        sheets = XlsxReader(io_wrapper(self.file_path))
         for sheet_idx, sheet in enumerate(sheets):
             for row_idx in range(len(sheet)):
                 assert sheets[sheet_idx][row_idx] == self.data_list[sheet_idx][row_idx]
         with pytest.raises(IndexError):
             assert sheets[0][row_idx + 1]
 
-    def test_iteration(self):
-        sheets = XlsxReader(self.file_path)
+    @pytest.mark.parametrize("io_wrapper", [no_io_wrapper, open_file_binary])
+    def test_iteration(self, io_wrapper):
+        sheets = XlsxReader(io_wrapper(self.file_path))
         for i, row in enumerate(sheets[0]):
             assert row == self.data_list[0][i]
 
-    def test_dict_reader(self):
-        sheets = XlsxReader(self.file_path)
+    @pytest.mark.parametrize("io_wrapper", [no_io_wrapper, open_file_binary])
+    def test_dict_reader(self, io_wrapper):
+        sheets = XlsxReader(io_wrapper(self.file_path))
         reader = sheets[0].dict_reader()
         assert [e for e in reader] == [
             {"a": "1", "b": "3", "c": "4"},
@@ -371,21 +386,24 @@ class TestXlsReader:
         ],
     ]
 
-    def test_indexing(self):
-        sheets = XlsReader(self.file_path)
+    @pytest.mark.parametrize("io_wrapper", [no_io_wrapper, open_file_binary])
+    def test_indexing(self, io_wrapper):
+        sheets = XlsReader(io_wrapper(self.file_path))
         for sheet_idx, sheet in enumerate(sheets):
             for row_idx in range(len(sheet)):
                 assert sheets[sheet_idx][row_idx] == self.data_list[sheet_idx][row_idx]
         with pytest.raises(IndexError):
             assert sheets[0][row_idx + 1]
 
-    def test_iteration(self):
-        sheets = XlsReader(self.file_path)
+    @pytest.mark.parametrize("io_wrapper", [no_io_wrapper, open_file_binary])
+    def test_iteration(self, io_wrapper):
+        sheets = XlsReader(io_wrapper(self.file_path))
         for i, row in enumerate(sheets[0]):
             assert row == self.data_list[0][i]
 
-    def test_dict_reader(self):
-        sheets = XlsReader(self.file_path)
+    @pytest.mark.parametrize("io_wrapper", [no_io_wrapper, open_file_binary])
+    def test_dict_reader(self, io_wrapper):
+        sheets = XlsReader(io_wrapper(self.file_path))
         reader = sheets[0].dict_reader()
         assert [e for e in reader] == [
             {
