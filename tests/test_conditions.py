@@ -137,34 +137,41 @@ def test_stemmer(csv_sheet_reader):
 
 
 @pytest.mark.parametrize(
-    "coord,data,result",
+    "coord,date_format,data,result",
     (
         # Coord iso format
-        (Coord(0, 0), "2021", True),
-        (Coord(0, 0), "2021-01", True),
-        (Coord(0, 0), "2021-01", True),
-        (Coord(0, 0), "2021-01-01", True),
-        (Coord(0, 0), "2021-12-31", True),
-        (Coord(0, 0), "2021-11-31", False),
+        (Coord(0, 0), None, "2021", True),
+        (Coord(0, 0), None, "2021-01", True),
+        (Coord(0, 0), None, "2021-01", True),
+        (Coord(0, 0), None, "2021-01-01", True),
+        (Coord(0, 0), None, "2021-12-31", True),
+        (Coord(0, 0), None, "2021-11-31", False),
         # Coord US/EU
-        (Coord(0, 0), "01/2021", True),
-        (Coord(0, 0), "01/01/2021", True),
-        (Coord(0, 0), "12/31/2021", True),
-        (Coord(0, 0), "31/12/2021", True),
-        (Coord(0, 0), "11/31/2021", False),
-        (Coord(0, 0), "31/11/2021", False),
+        (Coord(0, 0), None, "01/2021", True),
+        (Coord(0, 0), None, "01/01/2021", True),
+        (Coord(0, 0), None, "12/31/2021", True),
+        (Coord(0, 0), None, "31/12/2021", True),
+        (Coord(0, 0), None, "11/31/2021", False),
+        (Coord(0, 0), None, "31/11/2021", False),
         # CoordRange
-        (CoordRange(Coord(0, 1), Direction.LEFT), "2021,Total", True),
-        (CoordRange(Coord(0, 1), Direction.RIGHT), "2021,Total", False),
-        (CoordRange(Coord(0, 1), Direction.LEFT), "11/31/2021,Total", False),
+        (CoordRange(Coord(0, 1), Direction.LEFT), None, "2021,Total", True),
+        (CoordRange(Coord(0, 1), Direction.RIGHT), None, "2021,Total", False),
+        (CoordRange(Coord(0, 1), Direction.LEFT), None, "11/31/2021,Total", False),
         # OutOfBounds
-        (CoordRange(Coord(1, 1), Direction.LEFT), "2021,Total", False),
-        (Coord(0, 1), "2021", False),
+        (CoordRange(Coord(1, 1), Direction.LEFT), None, "2021,Total", False),
+        (Coord(0, 1), None, "2021", False),
+        # With date format set
+        (Coord(0, 0), "%Y", "2021", True),
+        (Coord(0, 0), "%Y-%m", "2021", False),
+        (Coord(0, 0), "%b-%Y", "Jan-2021", True),
+        (Coord(0, 0), "%b-%Y", "Led-2021", False),
+        (Coord(0, 0), "%Y-%m", "2021-01", True),
+        (Coord(0, 0), "%Y-%m", "2021-1", True),
     ),
 )
-def test_is_date(coord, data, result, csv_sheet_generator):
+def test_is_date(coord, date_format, data, result, csv_sheet_generator):
     reader = csv_sheet_generator(data)
-    assert IsDateCondition(coord).check(reader) is result
+    assert IsDateCondition(coord, date_format).check(reader) is result
 
 
 def test_serialization():

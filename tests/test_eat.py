@@ -83,7 +83,9 @@ def test_eat():
         "parsers_info": {
             "static.counter4.JR2.Tabular": [
                 {
-                    "code": "report-name-not-in-header",
+                    "code": "wrong-report-type",
+                    "expected": "Journal Report 2 (R4)",
+                    "found": "Institution_Name",
                 }
             ],
             "static.counter5.TR.Tabular": [

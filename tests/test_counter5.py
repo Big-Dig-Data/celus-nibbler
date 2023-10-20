@@ -4,7 +4,7 @@ import pathlib
 import pytest
 
 from celus_nibbler import eat
-from celus_nibbler.errors import NoParserMatchesHeuristics
+from celus_nibbler.errors import NoParserMatchesHeuristics, TableException
 
 
 @pytest.mark.parametrize(
@@ -511,7 +511,7 @@ from celus_nibbler.errors import NoParserMatchesHeuristics
         ),
     ),
 )
-def test_tsv(platform, file, parser, heuristics, success, extras):
+def test_success(platform, file, parser, heuristics, success, extras):
     source_path = pathlib.Path(__file__).parent / 'data/counter' / file
     output_path = pathlib.Path(__file__).parent / 'data/counter' / f"{file}.out"
 
@@ -530,3 +530,24 @@ def test_tsv(platform, file, parser, heuristics, success, extras):
 
         with pytest.raises(StopIteration):
             assert next(reader) is None, "No more date present in the file"
+
+
+@pytest.mark.parametrize(
+    "file,exception",
+    [
+        (
+            "5/errors/TR-wrong_months1.tsv",
+            TableException(reason="no-counter-header-found", sheet=0),
+        ),
+        (
+            "5/errors/TR-wrong_months2.tsv",
+            TableException(reason="no-counter-header-found", sheet=0),
+        ),
+    ],
+)
+def test_error(file, exception):
+    source_path = pathlib.Path(__file__).parent / 'data/counter' / file
+    poop = eat(source_path, 'Platform1', check_platform=False)[0]
+    with pytest.raises(type(exception)) as exc:
+        list(poop.records())
+    assert exc.value == exception

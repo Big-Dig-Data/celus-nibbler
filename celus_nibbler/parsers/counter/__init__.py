@@ -1,5 +1,6 @@
 import itertools
 import logging
+import re
 import typing
 from functools import lru_cache
 
@@ -77,30 +78,38 @@ class CounterHeaderArea(BaseDateArea):
     def dimensions(self) -> typing.List[str]:
         return [e[0] for e in self.DIMENSION_NAMES_MAP]
 
+    def date_check(self, coord):
+        if re.match(r"^\d+$", coord.content(self.sheet)):
+            return False
+        return IsDateCondition(coord=coord).check(self.sheet)
+
     @property
     @lru_cache
     def header_row(self) -> CoordRange:
         """Find the line where counter header is"""
-        # Right now it picks a first row with more than one column were the last column
-        # is a date
+        # Right now it checks whether a single continuous date area is present
 
         for idx in range(self.MAX_HEADER_ROW):
             crange = CoordRange(Coord(idx, self.HEADER_DATE_COL_START), Direction.RIGHT)
 
-            last = None
+            matching = None
+            twice = False
             for cell in crange:
                 try:
-                    content = cell.content(self.sheet)
-                    if content and content.strip():
-                        last = cell
+                    if self.date_check(cell):
+                        if matching is False:
+                            twice = True
+                        matching = True
+                    else:
+                        if matching is not None:
+                            matching = False
                 except TableException as e:
                     if e.action == TableException.Action.STOP:
                         break  # last cell reached
                     raise
 
-            if last:
-                if IsDateCondition(coord=last).check(self.sheet):
-                    return CoordRange(Coord(idx, 0), Direction.RIGHT)
+            if matching is not None and not twice:
+                return CoordRange(Coord(idx, 0), Direction.RIGHT)
 
         raise TableException(
             sheet=self.sheet.sheet_idx,
@@ -112,7 +121,7 @@ class CounterHeaderArea(BaseDateArea):
     def data_headers(self):
         # First date which is parsed in the header
         for cell in itertools.islice(self.header_row, 1, None):
-            if not IsDateCondition(coord=cell).check(self.sheet):
+            if not self.date_check(coord=cell):
                 continue
 
             first_data_cell = CoordRange(cell, Direction.DOWN)[1]

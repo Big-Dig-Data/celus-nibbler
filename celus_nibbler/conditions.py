@@ -85,8 +85,16 @@ class RegexCondition(ArithmeticsMixin, BaseCondition, JsonEncorder):
 @dataclass(config=PydanticConfig)
 class IsDateCondition(ArithmeticsMixin, BaseCondition, JsonEncorder):
     coord: typing.Union[Coord, CoordRange]
+    date_format: typing.Optional[str] = None
 
     kind: typing.Literal["is_date"] = "is_date"
+
+    @property
+    def validator_class(self) -> typing.Type[validators.BaseValueModel]:
+        if not self.date_format:
+            return validators.Date
+        else:
+            return validators.gen_date_format_validator(self.date_format)
 
     def check(self, sheet: SheetReader, row_offset: typing.Optional[int] = None) -> bool:
         # Deal with offsets
@@ -100,7 +108,7 @@ class IsDateCondition(ArithmeticsMixin, BaseCondition, JsonEncorder):
                 try:
                     content = c.content(sheet)
                     content = content and content.strip()
-                    validators.Date(value=content)
+                    self.validator_class(value=content)
                 except ValidationError:
                     continue
                 except (TableException, IndexError):
@@ -112,7 +120,7 @@ class IsDateCondition(ArithmeticsMixin, BaseCondition, JsonEncorder):
         try:
             content = coord.content(sheet)
             content = content and content.strip()
-            validators.Date(value=content)
+            self.validator_class(value=content)
         except (TableException, ValidationError, IndexError):
             return False
 
