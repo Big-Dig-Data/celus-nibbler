@@ -69,7 +69,6 @@ class CsvSheetReader(SheetReader):
         name: Optional[str],
         file: IO[str],
         window_size: int = WINDOW_SIZE,
-        delimiters: Optional[str] = None,
         dialect: Optional[str] = None,
     ):
         self.name = name
@@ -268,7 +267,6 @@ class CsvReader(TableReader):
 
     def __init__(self, source: Union[IO, bytes, str, pathlib.Path]):
         file: IO[str]
-        delimiters = None
         if isinstance(source, bytes):
             encoding = detect_file_encoding(io.BytesIO(source))
             logger.debug("Encoding '%s' was found for csv data", encoding)
@@ -278,11 +276,6 @@ class CsvReader(TableReader):
             with source.open("rb") as f:
                 encoding = detect_file_encoding(f)
             logger.debug("Encoding '%s' was found for csv file", encoding)
-
-            # Determine delimiters based on the source name
-            if source.suffix == ".tsv":
-                delimiters = "\t"
-
             file = open(source, "r", encoding=encoding)
         elif isinstance(source, (RawIOBase, BufferedIOBase)):
             encoding = detect_file_encoding(source)
@@ -294,7 +287,7 @@ class CsvReader(TableReader):
         else:
             raise NotImplementedError()
 
-        self.sheets = [CsvSheetReader(0, None, file, delimiters=delimiters)]
+        self.sheets = [CsvSheetReader(0, None, file)]
 
     def __getitem__(self, item) -> SheetReader:
         return self.sheets[item]
