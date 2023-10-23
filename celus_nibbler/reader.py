@@ -12,7 +12,7 @@ from typing import IO, Any, Dict, List, Optional, Sequence, Union
 
 import openpyxl
 from celus_nigiri.counter5 import Counter5ReportBase
-from celus_nigiri.csv_detect import DEFAULT_ENCODING, detect_csv_dialect, detect_file_encoding
+from celus_nigiri.csv_detect import detect_csv_dialect, detect_file_encoding
 
 logger = logging.getLogger(__name__)
 
@@ -68,7 +68,6 @@ class CsvSheetReader(SheetReader):
         sheet_idx: int,
         name: Optional[str],
         file: IO[str],
-        encoding: str = DEFAULT_ENCODING,
         window_size: int = WINDOW_SIZE,
         delimiters: Optional[str] = None,
         dialect: Optional[str] = None,
@@ -268,7 +267,6 @@ class CsvReader(TableReader):
     """
 
     def __init__(self, source: Union[IO, bytes, str, pathlib.Path]):
-        # detect encoding
         file: IO[str]
         delimiters = None
         if isinstance(source, bytes):
@@ -293,11 +291,10 @@ class CsvReader(TableReader):
         elif isinstance(source, TextIOBase):
             # Opened as a text file => don't try to detect encoding
             file = source
-            encoding = file.encoding
         else:
             raise NotImplementedError()
 
-        self.sheets = [CsvSheetReader(0, None, file, encoding, delimiters=delimiters)]
+        self.sheets = [CsvSheetReader(0, None, file, delimiters=delimiters)]
 
     def __getitem__(self, item) -> SheetReader:
         return self.sheets[item]
