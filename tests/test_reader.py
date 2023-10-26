@@ -1,4 +1,4 @@
-from io import BytesIO
+from io import BytesIO, StringIO
 from pathlib import Path
 
 import pytest
@@ -300,26 +300,82 @@ def no_io_wrapper(io):
 
 class TestCsvReader:
     data_csv = b'a,b,c\n1,3,4\nhi,there,"how are you?"\n'
+    text_csv = data_csv.decode()
     data_list = [[['a', 'b', 'c'], ['1', '3', '4'], ['hi', 'there', 'how are you?']]]
 
-    @pytest.mark.parametrize("io_wrapper", [no_io_wrapper, BytesIO])
-    def test_indexing(self, io_wrapper):
-        sheets = CsvReader(io_wrapper(self.data_csv))
+    @pytest.mark.parametrize(
+        "io_wrapper,data",
+        [
+            (no_io_wrapper, data_csv),
+            (BytesIO, data_csv),
+            (StringIO, text_csv),
+        ],
+    )
+    def test_indexing(self, io_wrapper, data):
+        source = io_wrapper(data)
+        sheets = CsvReader(source)
         for idx in range(3):
             assert sheets[0][idx] == self.data_list[0][idx]
 
         with pytest.raises(IndexError):
             assert sheets[0][3]
 
-    @pytest.mark.parametrize("io_wrapper", [no_io_wrapper, BytesIO])
-    def test_iteration(self, io_wrapper):
-        sheets = CsvReader(io_wrapper(self.data_csv))
+        del sheets
+
+        # Retry to see whether the code handles opened files correctly
+        # - it should not close them
+        sheets = CsvReader(source)
+        for idx in range(3):
+            assert sheets[0][idx] == self.data_list[0][idx]
+
+        with pytest.raises(IndexError):
+            assert sheets[0][3]
+
+    @pytest.mark.parametrize(
+        "io_wrapper,data",
+        [
+            (no_io_wrapper, data_csv),
+            (BytesIO, data_csv),
+            (StringIO, text_csv),
+        ],
+    )
+    def test_iteration(self, io_wrapper, data):
+        source = io_wrapper(data)
+        sheets = CsvReader(source)
         for i, row in enumerate(sheets[0]):
             assert row == self.data_list[0][i]
 
-    @pytest.mark.parametrize("io_wrapper", [no_io_wrapper, BytesIO])
-    def test_dict_reader(self, io_wrapper):
-        sheets = CsvReader(io_wrapper(self.data_csv))
+        del sheets
+
+        # Retry to see whether the code handles opened files correctly
+        # - it should not close them
+        sheets = CsvReader(source)
+        for i, row in enumerate(sheets[0]):
+            assert row == self.data_list[0][i]
+
+    @pytest.mark.parametrize(
+        "io_wrapper,data",
+        [
+            (no_io_wrapper, data_csv),
+            (BytesIO, data_csv),
+            (StringIO, text_csv),
+        ],
+    )
+    def test_dict_reader(self, io_wrapper, data):
+        source = io_wrapper(data)
+        sheets = CsvReader(source)
+        reader = sheets[0].dict_reader()
+        assert [e for e in reader] == [
+            {"a": "1", "b": "3", "c": "4"},
+            {"a": "hi", "b": "there", "c": "how are you?"},
+        ]
+
+        del sheets
+        del reader
+
+        # Retry to see whether the code handles opened files correctly
+        # - it should not close them
+        sheets = CsvReader(source)
         reader = sheets[0].dict_reader()
         assert [e for e in reader] == [
             {"a": "1", "b": "3", "c": "4"},

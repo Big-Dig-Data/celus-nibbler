@@ -17,6 +17,20 @@ from celus_nigiri.csv_detect import detect_csv_dialect, detect_file_encoding
 logger = logging.getLogger(__name__)
 
 
+class _TextIOWrapperNoClose(TextIOWrapper):
+    """Wrapper around TextIOWrapper which can't be closed
+
+    Usually TextIOWrapper closes the opened file when it is discarded in `__del__` method.
+    This behaviour is not desired, because the underlying file can't be reused afterwards
+
+    This class simply supresses such behaviour
+    """
+
+    def __del__(self):
+        # Override __del__ method of parent and do nothing
+        pass
+
+
 class SheetReader(metaclass=ABCMeta):
     @property
     @abstractmethod
@@ -280,7 +294,7 @@ class CsvReader(TableReader):
         elif isinstance(source, (RawIOBase, BufferedIOBase)):
             encoding = detect_file_encoding(source)
             logger.debug("Encoding '%s' was found for csv data", encoding)
-            file = TextIOWrapper(source, encoding=encoding)
+            file = _TextIOWrapperNoClose(source, encoding=encoding)
         elif isinstance(source, TextIOBase):
             # Opened as a text file => don't try to detect encoding
             file = source
