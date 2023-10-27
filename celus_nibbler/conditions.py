@@ -1,7 +1,7 @@
 import typing
 from abc import ABCMeta, abstractmethod
 
-from jellyfish import porter_stem
+from nltk import stem
 from pydantic import Field, ValidationError
 from pydantic.dataclasses import dataclass, rebuild_dataclass
 from typing_extensions import Annotated
@@ -12,6 +12,8 @@ from .coordinates import Coord, CoordRange
 from .errors import TableException
 from .reader import SheetReader
 from .utils import JsonEncorder, PydanticConfig
+
+stemmer = stem.PorterStemmer()
 
 
 class BaseCondition(metaclass=ABCMeta):
@@ -137,7 +139,7 @@ class StemmerCondition(ArithmeticsMixin, BaseCondition, JsonEncorder):
     kind: typing.Literal["stemmer"] = "stemmer"
 
     def _convert(self, text: str) -> str:
-        return porter_stem(unidecode(text.strip()).lower())
+        return stemmer.stem(unidecode(text.strip()).lower())
 
     def __post_init__(self):
         self.content = self._convert(self.content)
