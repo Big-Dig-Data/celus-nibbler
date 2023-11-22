@@ -41,11 +41,11 @@ def write_batch(
     records: typing.List[CounterRecord],
     dimensions: typing.List[str],
     title_ids: typing.List[str],
-    months: typing.List[date],
+    months: typing.List[str],
 ):
     months_dict = {e: "" for e in months}
     for r in records:
-        months_dict[r.start] = r.value
+        months_dict[r.start.strftime("%Y-%m")] = r.value
     writer.writerow(
         [r.title, r.organization]
         + [r.title_ids[ti] for ti in title_ids]
@@ -150,10 +150,10 @@ def parse(options, platform, dynamic_parsers):
                 elif options.counter_like_output:
                     header = (
                         ["title", "organization"]
-                        + poop.title_ids
-                        + poop.dimensions
+                        + list(poop.title_ids)
+                        + list(poop.dimensions)
                         + ["metric"]
-                        + poop.months
+                        + list(poop.months)
                     )
                 else:
                     header = [
@@ -170,14 +170,13 @@ def parse(options, platform, dynamic_parsers):
                 writer = csv.writer(sys.stdout, dialect="unix")
                 if header:
                     writer.writerow(header)
+                records = (e[1] for e in poop.records_basic())
                 records = (
-                    CounterOrdering().aggregate(poop.records_basic())
-                    if options.counter_like_output
-                    else poop.records_basic()
+                    CounterOrdering().aggregate(records) if options.counter_like_output else records
                 )
                 last_rec = None
                 batch = []
-                for idx, record in records:
+                for record in records:
                     if options.no_output:
                         # Just go through the records and suppress any output
                         pass

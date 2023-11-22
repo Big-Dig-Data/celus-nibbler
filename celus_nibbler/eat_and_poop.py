@@ -268,7 +268,7 @@ class Poop:
 
     @property
     def title_ids(self):
-        return self.get_stats().title_ids()
+        return self.get_stats().title_ids
 
     @property
     def months(self):
