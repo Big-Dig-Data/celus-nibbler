@@ -47,9 +47,9 @@ def write_batch(
     for r in records:
         months_dict[r.start.strftime("%Y-%m")] = r.value
     writer.writerow(
-        [r.title, r.organization]
-        + [r.title_ids[ti] for ti in title_ids]
-        + [r.dimension_data[d] for d in dimensions]
+        [r.organization, r.title]
+        + [r.title_ids.get(ti, "") for ti in title_ids]
+        + [r.dimension_data.get(d, "") for d in dimensions]
         + [r.metric]
         + [months_dict[k] for k in sorted(months)]
     )
@@ -149,10 +149,10 @@ def parse(options, platform, dynamic_parsers):
                     header = None
                 elif options.counter_like_output:
                     header = (
-                        ["title", "organization"]
+                        ["Institution_Name", "Title"]
                         + list(poop.title_ids)
                         + list(poop.dimensions)
-                        + ["metric"]
+                        + ["Metric_Type"]
                         + list(poop.months)
                     )
                 else:
