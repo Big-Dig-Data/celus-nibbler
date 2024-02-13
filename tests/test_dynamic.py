@@ -331,6 +331,13 @@ from celus_nibbler.parsers.dynamic import gen_parser
             "dynamic.non_counter.simple_format.metrics-to-skip2",
             True,
         ),
+        (
+            "Platform1",
+            "ignore-second-row",
+            "csv",
+            "dynamic.non_counter.ignore_second_row.ignore_second_row",
+            False,
+        ),
     ),
 )
 def test_dynamic(platform, filename, ext, parser, ignore_order):

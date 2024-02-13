@@ -148,6 +148,7 @@ class ExtractParams(JsonEncorder):
     suffix: str = ""
     special_extraction: SpecialExtraction = SpecialExtraction.NO
     on_validation_error: TableException.Action = TableException.Action.FAIL
+    max_idx: typing.Optional[int] = None
 
 
 class ContentExtractorMixin:
@@ -206,6 +207,17 @@ class ContentExtractorMixin:
             source = self.source
 
         source = source[idx]
+
+        if self.extract_params.max_idx is not None:
+            if idx > self.extract_params.max_idx:
+                raise TableException(
+                    row=getattr(source, 'row', None),
+                    col=getattr(source, 'col', None),
+                    sheet=sheet.sheet_idx,
+                    reason='out-of-bounds',
+                    action=TableException.Action.STOP,
+                )
+
         if (
             source == self._last_source
             and self._last_sheet_idx == sheet.sheet_idx

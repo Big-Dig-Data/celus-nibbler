@@ -1,0 +1,68 @@
+{
+  "kind": "non_counter.date_based",
+  "version": 1,
+  "parser_name": "ignore_second_row",
+  "data_format": {
+    "name": "ignore_second_row"
+  },
+  "platforms": [
+    "Platform1",
+    "Platform2"
+  ],
+  "metrics_to_skip": [],
+  "titles_to_skip": [],
+  "dimensions_to_skip": {},
+  "metric_aliases": [],
+  "dimension_aliases": [],
+  "heuristics": {
+    "conds": [
+      {
+        "pattern": "IIII",
+        "coord": {
+          "row": 0,
+          "col": 0
+        },
+        "kind": "regex"
+      }
+    ],
+    "kind": "and"
+  },
+  "areas": [
+    {
+      "data_headers": {
+        "roles": [
+            {
+                "source": {
+                    "coord": {
+                      "row": 1,
+                      "col": 0
+                    },
+                    "direction": "right"
+                },
+                "role": "date"
+            }
+        ],
+        "data_direction": "down",
+        "data_cells": {
+          "coord": {
+            "row": 2,
+            "col": 0
+          },
+          "direction": "right"
+        },
+        "data_extract_params": {
+            "max_idx": 0
+        }
+      },
+      "titles": null,
+      "metrics": {
+        "source": {
+          "value": "Met"
+        }
+      },
+      "title_ids": [],
+      "dimensions": [],
+      "kind": "non_counter.date_based"
+    }
+  ]
+}
