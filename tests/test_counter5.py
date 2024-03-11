@@ -543,6 +543,10 @@ def test_success(platform, file, parser, heuristics, success, extras):
             "5/errors/TR-wrong_months2.tsv",
             TableException(reason="no-counter-header-found", sheet=0),
         ),
+        (
+            "5/errors/TR-exclude_monthly_details.csv",
+            TableException(reason="counter-header-without-monthly-details", sheet=0, row=13),
+        ),
     ],
 )
 def test_error(file, exception):

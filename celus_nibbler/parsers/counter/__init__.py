@@ -94,8 +94,10 @@ class CounterHeaderArea(BaseDateArea):
 
             matching = None
             twice = False
+            last_content = None
             for cell in crange:
                 try:
+                    last_content = cell.content(self.sheet).strip() or last_content
                     if self.date_check(cell):
                         if matching is False:
                             twice = True
@@ -110,6 +112,17 @@ class CounterHeaderArea(BaseDateArea):
 
             if matching is not None and not twice:
                 return CoordRange(Coord(idx, 0), Direction.RIGHT)
+
+            if not matching and last_content == "Reporting_Period_Total":
+                # When no months are found with the row which ends with
+                # "Reporting_Period_Total" it means that
+                # Exclude_Monthly_Details=True was used during report
+                # creation -> we should raise a special exception in that case
+                raise TableException(
+                    row=idx,
+                    sheet=self.sheet.sheet_idx,
+                    reason="counter-header-without-monthly-details",
+                )
 
         raise TableException(
             sheet=self.sheet.sheet_idx,
