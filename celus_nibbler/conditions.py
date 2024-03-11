@@ -35,7 +35,7 @@ class ArithmeticsMixin:
 
 @dataclass(config=PydanticConfig)
 class NegCondition(ArithmeticsMixin, BaseCondition, JsonEncorder):
-    cond: 'Condition'
+    cond: "Condition"
 
     kind: typing.Literal["neg"] = "neg"
 
@@ -45,7 +45,7 @@ class NegCondition(ArithmeticsMixin, BaseCondition, JsonEncorder):
 
 @dataclass(config=PydanticConfig)
 class AndCondition(ArithmeticsMixin, BaseCondition, JsonEncorder):
-    conds: typing.List['Condition']
+    conds: typing.List["Condition"]
 
     kind: typing.Literal["and"] = "and"
 
@@ -55,7 +55,7 @@ class AndCondition(ArithmeticsMixin, BaseCondition, JsonEncorder):
 
 @dataclass(config=PydanticConfig)
 class OrCondition(ArithmeticsMixin, BaseCondition, JsonEncorder):
-    conds: typing.List['Condition']
+    conds: typing.List["Condition"]
 
     kind: typing.Literal["or"] = "or"
 
@@ -199,7 +199,7 @@ Condition = Annotated[
         SheetNameRegexCondition,
         SheetIdxCondition,
     ],
-    Field(discriminator='kind'),
+    Field(discriminator="kind"),
 ]
 
 

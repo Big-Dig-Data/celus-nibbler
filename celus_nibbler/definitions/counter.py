@@ -223,7 +223,7 @@ CounterAreaDefinition = Annotated[
         TRAreaDefinition,
         IR_M1AreaDefinition,
     ],
-    Field(discriminator='kind'),
+    Field(discriminator="kind"),
 ]
 
 

@@ -15,8 +15,8 @@ from . import CounterHeaderArea
 class Counter5HeaderArea(CounterHeaderArea):
     HEADER_DATE_COL_START = 3
     METRIC_COLUMN_NAMES = ["Metric_Type", "Metric Type"]
-    TITLE_COLUMN_NAMES = ['Title']
-    ORGANIZATION_COLUMN_NAMES = ['Institution_Name', 'Institution Name']
+    TITLE_COLUMN_NAMES = ["Title"]
+    ORGANIZATION_COLUMN_NAMES = ["Institution_Name", "Institution Name"]
 
 
 class Counter5ParserAnalyzeMixin:
@@ -117,7 +117,7 @@ class DR(BaseCounter5Parser):
             ("Platform", {"Platform"}),
             ("Publisher", {"Publisher"}),
         ]
-        TITLE_COLUMN_NAMES = ['Title', 'Database']
+        TITLE_COLUMN_NAMES = ["Title", "Database"]
 
     areas = [Area]
 
@@ -308,6 +308,6 @@ class IR_M1(BaseCounter5Parser):
             ("Platform", {"Platform"}),
             ("Publisher", {"Publisher"}),
         ]
-        TITLE_COLUMN_NAMES = ['Title', 'Item']
+        TITLE_COLUMN_NAMES = ["Title", "Item"]
 
     areas = [Area]

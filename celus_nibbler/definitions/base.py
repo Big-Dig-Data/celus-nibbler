@@ -47,5 +47,5 @@ class BaseAreaDefinition(metaclass=abc.ABCMeta):
 
     def make_aggregator(self) -> BaseAggregator:
         return (
-            SameAggregator() if getattr(self, 'aggregate_same_records', False) else NoAggregator()
+            SameAggregator() if getattr(self, "aggregate_same_records", False) else NoAggregator()
         )

@@ -227,8 +227,8 @@ from celus_nibbler.errors import NoParserMatchesHeuristics, TableException
     ),
 )
 def test_success(platform, file, parser, heuristics, success, extras):
-    source_path = pathlib.Path(__file__).parent / 'data/counter' / file
-    output_path = pathlib.Path(__file__).parent / 'data/counter' / f"{file}.out"
+    source_path = pathlib.Path(__file__).parent / "data/counter" / file
+    output_path = pathlib.Path(__file__).parent / "data/counter" / f"{file}.out"
 
     poop = eat(source_path, platform, parsers=[parser], use_heuristics=heuristics)[0]
 
@@ -262,8 +262,8 @@ def test_success(platform, file, parser, heuristics, success, extras):
     ],
 )
 def test_error(file, exception):
-    source_path = pathlib.Path(__file__).parent / 'data/counter' / file
-    poop = eat(source_path, 'Platform1', check_platform=False)[0]
+    source_path = pathlib.Path(__file__).parent / "data/counter" / file
+    poop = eat(source_path, "Platform1", check_platform=False)[0]
     with pytest.raises(type(exception)) as exc:
         list(poop.records())
     assert exc.value == exception

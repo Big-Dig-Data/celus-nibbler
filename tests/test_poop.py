@@ -6,7 +6,7 @@ from celus_nibbler.eat_and_poop import StatUnit
 
 
 def test_extra_poop_info():
-    file_path = pathlib.Path(__file__).parent / 'data/counter/4/BR1-a.tsv'
+    file_path = pathlib.Path(__file__).parent / "data/counter/4/BR1-a.tsv"
 
     poops = eat(file_path, "Ovid", parsers=["static.counter4.BR1.Tabular"])
     assert poops and len(poops) == 1
@@ -25,9 +25,9 @@ def test_extra_poop_info():
             "2018-11": StatUnit(count=2, sum=0),
             "2018-12": StatUnit(count=2, sum=13),
         },
-        metrics={'Book Title Requests': StatUnit(count=24, sum=38)},
+        metrics={"Book Title Requests": StatUnit(count=24, sum=38)},
         organizations={
-            '': PoopOrganizationStats(
+            "": PoopOrganizationStats(
                 months={
                     "2018-01": StatUnit(count=2, sum=3),
                     "2018-02": StatUnit(count=2, sum=2),
@@ -42,7 +42,7 @@ def test_extra_poop_info():
                     "2018-11": StatUnit(count=2, sum=0),
                     "2018-12": StatUnit(count=2, sum=13),
                 },
-                metrics={'Book Title Requests': StatUnit(count=24, sum=38)},
+                metrics={"Book Title Requests": StatUnit(count=24, sum=38)},
                 titles={"Title1": StatUnit(count=12, sum=32), "Title2": StatUnit(count=12, sum=6)},
                 title_ids={"ISBN"},
                 dimensions={
@@ -73,8 +73,8 @@ def test_extra_poop_info():
     assert poops[0].sheet_idx == 0
     assert poops[0].get_months() == [[date(2018, i, 1) for i in range(1, 13)]]
 
-    for file in ['BR1-empty1.tsv', 'BR1-empty2.tsv']:
-        file_path = pathlib.Path(__file__).parent / 'data/counter/4/' / file
+    for file in ["BR1-empty1.tsv", "BR1-empty2.tsv"]:
+        file_path = pathlib.Path(__file__).parent / "data/counter/4/" / file
 
         poops = eat(file_path, "Ovid", parsers=["static.counter4.BR1.Tabular"])
         assert poops and len(poops) == 1
@@ -84,7 +84,7 @@ def test_extra_poop_info():
 
 
 def test_poop_offset_limit():
-    file_path = pathlib.Path(__file__).parent / 'data/counter/4/BR1-a.tsv'
+    file_path = pathlib.Path(__file__).parent / "data/counter/4/BR1-a.tsv"
     poops = eat(file_path, "Ovid", parsers=["static.counter4.BR1.Tabular"])
     assert poops and len(poops) == 1
 
@@ -124,9 +124,9 @@ def test_poop_offset_limit():
             "2018-11": StatUnit(count=2, sum=0),
             "2018-12": StatUnit(count=2, sum=13),
         },
-        metrics={'Book Title Requests': StatUnit(count=24, sum=38)},
+        metrics={"Book Title Requests": StatUnit(count=24, sum=38)},
         organizations={
-            '': PoopOrganizationStats(
+            "": PoopOrganizationStats(
                 months={
                     "2018-01": StatUnit(count=2, sum=3),
                     "2018-02": StatUnit(count=2, sum=2),
@@ -141,7 +141,7 @@ def test_poop_offset_limit():
                     "2018-11": StatUnit(count=2, sum=0),
                     "2018-12": StatUnit(count=2, sum=13),
                 },
-                metrics={'Book Title Requests': StatUnit(count=24, sum=38)},
+                metrics={"Book Title Requests": StatUnit(count=24, sum=38)},
                 titles={"Title1": StatUnit(count=12, sum=32), "Title2": StatUnit(count=12, sum=6)},
                 title_ids={"ISBN"},
                 dimensions={
@@ -187,9 +187,9 @@ def test_poop_offset_limit():
             "2018-11": StatUnit(count=1, sum=0),
             "2018-12": StatUnit(count=1, sum=6),
         },
-        metrics={'Book Title Requests': StatUnit(count=12, sum=6)},
+        metrics={"Book Title Requests": StatUnit(count=12, sum=6)},
         organizations={
-            '': PoopOrganizationStats(
+            "": PoopOrganizationStats(
                 months={
                     "2018-01": StatUnit(count=1, sum=0),
                     "2018-02": StatUnit(count=1, sum=0),
@@ -204,7 +204,7 @@ def test_poop_offset_limit():
                     "2018-11": StatUnit(count=1, sum=0),
                     "2018-12": StatUnit(count=1, sum=6),
                 },
-                metrics={'Book Title Requests': StatUnit(count=12, sum=6)},
+                metrics={"Book Title Requests": StatUnit(count=12, sum=6)},
                 titles={"Title2": StatUnit(count=12, sum=6)},
                 title_ids={"ISBN"},
                 dimensions={
@@ -246,9 +246,9 @@ def test_poop_offset_limit():
             "2018-09": StatUnit(count=1, sum=0),
             "2018-10": StatUnit(count=1, sum=0),
         },
-        metrics={'Book Title Requests': StatUnit(count=10, sum=25)},
+        metrics={"Book Title Requests": StatUnit(count=10, sum=25)},
         organizations={
-            '': PoopOrganizationStats(
+            "": PoopOrganizationStats(
                 months={
                     "2018-01": StatUnit(count=1, sum=3),
                     "2018-02": StatUnit(count=1, sum=2),
@@ -261,7 +261,7 @@ def test_poop_offset_limit():
                     "2018-09": StatUnit(count=1, sum=0),
                     "2018-10": StatUnit(count=1, sum=0),
                 },
-                metrics={'Book Title Requests': StatUnit(count=10, sum=25)},
+                metrics={"Book Title Requests": StatUnit(count=10, sum=25)},
                 titles={"Title1": StatUnit(count=10, sum=25)},
                 title_ids={"ISBN"},
                 dimensions={
@@ -299,9 +299,9 @@ def test_poop_offset_limit():
             "2018-11": StatUnit(count=1, sum=0),
             "2018-12": StatUnit(count=1, sum=6),
         },
-        metrics={'Book Title Requests': StatUnit(count=6, sum=6)},
+        metrics={"Book Title Requests": StatUnit(count=6, sum=6)},
         organizations={
-            '': PoopOrganizationStats(
+            "": PoopOrganizationStats(
                 months={
                     "2018-07": StatUnit(count=1, sum=0),
                     "2018-08": StatUnit(count=1, sum=0),
@@ -310,7 +310,7 @@ def test_poop_offset_limit():
                     "2018-11": StatUnit(count=1, sum=0),
                     "2018-12": StatUnit(count=1, sum=6),
                 },
-                metrics={'Book Title Requests': StatUnit(count=6, sum=6)},
+                metrics={"Book Title Requests": StatUnit(count=6, sum=6)},
                 titles={"Title2": StatUnit(count=6, sum=6)},
                 title_ids={"ISBN"},
                 dimensions={
@@ -351,7 +351,7 @@ def test_stats():
             "2020-01": StatUnit(count=1, sum=1),
             "2020-02": StatUnit(count=1, sum=1),
         },
-        metrics={'M1': StatUnit(count=1, sum=1), 'M2': StatUnit(count=1, sum=1)},
+        metrics={"M1": StatUnit(count=1, sum=1), "M2": StatUnit(count=1, sum=1)},
         titles={"T1": StatUnit(count=1, sum=1), "T2": StatUnit(count=1, sum=1)},
         title_ids={"ISBN", "URI"},
         dimensions={
@@ -365,7 +365,7 @@ def test_stats():
             "2020-01": StatUnit(count=2, sum=2),
             "2020-02": StatUnit(count=2, sum=2),
         },
-        metrics={'M1': StatUnit(count=2, sum=2), 'M2': StatUnit(count=2, sum=2)},
+        metrics={"M1": StatUnit(count=2, sum=2), "M2": StatUnit(count=2, sum=2)},
         titles={"T1": StatUnit(count=2, sum=2), "T2": StatUnit(count=2, sum=2)},
         title_ids={"ISBN", "URI"},
         dimensions={
@@ -392,7 +392,7 @@ def test_stats():
             "2020-02": StatUnit(count=2, sum=2),
             "2020-03": StatUnit(count=2, sum=2),
         },
-        metrics={'M2': StatUnit(count=2, sum=2), 'M3': StatUnit(count=2, sum=2)},
+        metrics={"M2": StatUnit(count=2, sum=2), "M3": StatUnit(count=2, sum=2)},
         titles={"T2": StatUnit(count=2, sum=2), "T3": StatUnit(count=2, sum=2)},
         title_ids={"ISBN", "DOI"},
         dimensions={
@@ -406,7 +406,7 @@ def test_stats():
             "2020-02": StatUnit(count=3, sum=3),
             "2020-03": StatUnit(count=3, sum=3),
         },
-        metrics={'M2': StatUnit(count=3, sum=3), 'M3': StatUnit(count=3, sum=3)},
+        metrics={"M2": StatUnit(count=3, sum=3), "M3": StatUnit(count=3, sum=3)},
         titles={"T2": StatUnit(count=3, sum=3), "T3": StatUnit(count=3, sum=3)},
         title_ids={"ISBN", "DOI"},
         dimensions={
@@ -435,7 +435,7 @@ def test_stats():
             "2020-01": StatUnit(count=1, sum=1),
             "2020-02": StatUnit(count=1, sum=1),
         },
-        metrics={'M1': StatUnit(count=1, sum=1), 'M2': StatUnit(count=1, sum=1)},
+        metrics={"M1": StatUnit(count=1, sum=1), "M2": StatUnit(count=1, sum=1)},
         titles={"T1": StatUnit(count=1, sum=1), "T2": StatUnit(count=1, sum=1)},
         title_ids={"ISBN", "URI"},
         dimensions={
@@ -451,9 +451,9 @@ def test_stats():
             "2020-03": StatUnit(count=2, sum=2),
         },
         metrics={
-            'M1': StatUnit(count=2, sum=2),
-            'M2': StatUnit(count=4, sum=4),
-            'M3': StatUnit(count=2, sum=2),
+            "M1": StatUnit(count=2, sum=2),
+            "M2": StatUnit(count=4, sum=4),
+            "M3": StatUnit(count=2, sum=2),
         },
         titles={
             "T1": StatUnit(count=2, sum=2),
@@ -472,7 +472,7 @@ def test_stats():
             "2020-02": StatUnit(count=3, sum=3),
             "2020-03": StatUnit(count=3, sum=3),
         },
-        metrics={'M2': StatUnit(count=3, sum=3), 'M3': StatUnit(count=3, sum=3)},
+        metrics={"M2": StatUnit(count=3, sum=3), "M3": StatUnit(count=3, sum=3)},
         titles={"T2": StatUnit(count=3, sum=3), "T3": StatUnit(count=3, sum=3)},
         title_ids={"ISBN", "DOI"},
         dimensions={

@@ -10,10 +10,10 @@ from .utils import JsonEncorder, PydanticConfig
 
 
 class Direction(str, Enum):
-    LEFT = 'left'
-    RIGHT = 'right'
-    UP = 'up'
-    DOWN = 'down'
+    LEFT = "left"
+    RIGHT = "right"
+    UP = "up"
+    DOWN = "down"
 
 
 class Content(metaclass=abc.ABCMeta):
@@ -21,7 +21,7 @@ class Content(metaclass=abc.ABCMeta):
     def content(self, sheet: SheetReader):
         pass
 
-    def with_row_offset(self, row_offset: int) -> 'Content':
+    def with_row_offset(self, row_offset: int) -> "Content":
         return self
 
 
@@ -32,10 +32,10 @@ class Value(JsonEncorder, Content):
     def content(self, sheet: SheetReader):
         return self.value
 
-    def __next__(self) -> 'Value':
+    def __next__(self) -> "Value":
         return Value(self.value)
 
-    def __getitem__(self, item: int) -> 'Value':
+    def __getitem__(self, item: int) -> "Value":
         if isinstance(item, slice):
             raise NotImplementedError("Slicing is not supported use itertools and generators")
         if not isinstance(item, int):
@@ -54,10 +54,10 @@ class SheetAttr(JsonEncorder, Content):
     def __iter__(self):
         return self
 
-    def __next__(self) -> 'SheetAttr':
+    def __next__(self) -> "SheetAttr":
         return SheetAttr(self.sheet_attr)
 
-    def __getitem__(self, item: int) -> 'SheetAttr':
+    def __getitem__(self, item: int) -> "SheetAttr":
         if isinstance(item, slice):
             raise NotImplementedError("Slicing is not supported use itertools and generators")
         if not isinstance(item, int):
@@ -86,10 +86,10 @@ class Coord(JsonEncorder, Content):
     def __iter__(self):
         return self
 
-    def __next__(self) -> 'Coord':
+    def __next__(self) -> "Coord":
         return Coord(self.row, self.col)
 
-    def __getitem__(self, item: int) -> 'Coord':
+    def __getitem__(self, item: int) -> "Coord":
         if isinstance(item, slice):
             raise NotImplementedError("Slicing is not supported use itertools and generators")
         if not isinstance(item, int):
@@ -97,10 +97,10 @@ class Coord(JsonEncorder, Content):
 
         return next(self)
 
-    def __add__(self, other) -> 'Coord':
+    def __add__(self, other) -> "Coord":
         return Coord(self.row + other.row, self.col + other.col)
 
-    def with_row_offset(self, row_offset: int) -> 'Coord':
+    def with_row_offset(self, row_offset: int) -> "Coord":
         return Coord(self.row + row_offset, self.col)
 
 
@@ -147,7 +147,7 @@ class CoordRange(JsonEncorder, Content):
         self.distance = 0
         return self
 
-    def __next__(self) -> 'Coord':
+    def __next__(self) -> "Coord":
         col = self.coord.col
         row = self.coord.row
         if self.direction == Direction.LEFT:
@@ -187,10 +187,10 @@ class CoordRange(JsonEncorder, Content):
         except StopIteration:
             raise IndexError(f"{item} is not in range of {self}")
 
-    def skip(self, count: int) -> 'CoordRange':
+    def skip(self, count: int) -> "CoordRange":
         return CoordRange(self[count], self.direction)
 
-    def with_row_offset(self, row_offset: int) -> 'CoordRange':
+    def with_row_offset(self, row_offset: int) -> "CoordRange":
         return CoordRange(
             coord=self.coord.with_row_offset(row_offset),
             direction=self.direction,

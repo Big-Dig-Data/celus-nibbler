@@ -46,13 +46,13 @@ class StatUnit(JsonEncorder):
         self.count += 1
         self.sum += value
 
-    def __add__(self, other: 'StatUnit') -> 'StatUnit':
+    def __add__(self, other: "StatUnit") -> "StatUnit":
         return StatUnit(
             count=self.count + other.count,
             sum=self.sum + other.sum,
         )
 
-    def __iadd__(self, other: 'StatUnit'):
+    def __iadd__(self, other: "StatUnit"):
         self.sum += other.sum
         self.count += other.count
         return self
@@ -95,7 +95,7 @@ class PoopOrganizationStats(JsonEncorder):
 
         self.total.inc(record.value)
 
-    def __add__(self, other: 'PoopOrganizationStats') -> 'PoopOrganizationStats':
+    def __add__(self, other: "PoopOrganizationStats") -> "PoopOrganizationStats":
         result = PoopOrganizationStats()
         for month, data in list(self.months.items()) + list(other.months.items()):
             result.months[month] += data
@@ -143,7 +143,7 @@ class PoopStats(JsonEncorder):
     ] = Field(defaultdict(lambda: defaultdict(StatUnit)))
     total: StatUnit = Field(default_factory=lambda: StatUnit())
 
-    def __add__(self, other: 'PoopStats') -> 'PoopStats':
+    def __add__(self, other: "PoopStats") -> "PoopStats":
         result = PoopStats()
         for month, data in list(self.months.items()) + list(other.months.items()):
             result.months[month] += data
@@ -241,7 +241,7 @@ class Poop:
 
             return aggregator.aggregate(counter_records)
         else:
-            logger.warning('sheet %s has not been parsed', self.parser.sheet.sheet_idx + 1)
+            logger.warning("sheet %s has not been parsed", self.parser.sheet.sheet_idx + 1)
             return None
 
     def records_with_stats(
@@ -308,7 +308,7 @@ def findparser(
     ]
 
     if len(parser_classes) < 1:
-        logger.warning('there is no parser which expects your platform %s', platform)
+        logger.warning("there is no parser which expects your platform %s", platform)
         raise NoParserForPlatformFound(sheet.sheet_idx)
 
     parser_classes = [
@@ -317,7 +317,7 @@ def findparser(
         if type(sheet) in parser.sheet_reader_classes()
     ]
     if len(parser_classes) < 1:
-        logger.warning('no parser found for reader %s', type(sheet))
+        logger.warning("no parser found for reader %s", type(sheet))
         raise NoParserForFileTypeFound(sheet.sheet_idx)
 
     parser_instances = [(name, parser(sheet, platform=platform)) for name, parser in parser_classes]
@@ -329,29 +329,29 @@ def findparser(
         parser_instances_filtered = parser_instances
 
     if len(parser_instances_filtered) < 1:
-        logger.warning('no parser found')
+        logger.warning("no parser found")
         raise NoParserMatchesHeuristics(
             sheet.sheet_idx,
             parsers_info={name: parser.analyze() for name, parser in parser_instances},
         )
 
     elif len(parser_instances_filtered) > 1:
-        logger.warning('%s more than one parser found', len(parser_classes))
+        logger.warning("%s more than one parser found", len(parser_classes))
         raise MultipleParsersFound(sheet.sheet_idx, *(e[0] for e in parser_classes))
 
     name, parser = parser_instances_filtered[0]
-    logger.info('Parser used: %s', name)
+    logger.info("Parser used: %s", name)
     return parser
 
 
 def read_file(file_path: pathlib.Path) -> TableReader:
-    if file_path.suffix.lower() in ['.csv', '.tsv']:
+    if file_path.suffix.lower() in [".csv", ".tsv"]:
         return CsvReader(file_path)
-    elif file_path.suffix.lower() == '.xlsx':
+    elif file_path.suffix.lower() == ".xlsx":
         return XlsxReader(file_path)
-    elif XlsReader and file_path.suffix.lower() in ['.xls', '.xlsb']:
+    elif XlsReader and file_path.suffix.lower() in [".xls", ".xlsb"]:
         return XlsReader(file_path)
-    elif file_path.suffix.lower() == '.json':
+    elif file_path.suffix.lower() == ".json":
         return JsonCounter5Reader(file_path)
 
     raise WrongFileFormatError(file_path, file_path.suffix)
@@ -375,7 +375,7 @@ def eat(
     reader = read_file(file_path)
     poops = []
     for sheet in reader:
-        logger.info('Digesting sheet %d', sheet.sheet_idx)
+        logger.info("Digesting sheet %d", sheet.sheet_idx)
         try:
             parser = findparser(
                 sheet, platform, parsers, check_platform, use_heuristics, dynamic_parsers
@@ -383,7 +383,7 @@ def eat(
             poops.append(Poop(parser))
         except (NoParserFound, MultipleParsersFound) as e:
             logger.warning(
-                'parser has not been chosen for sheet %s, the sheet wont be parsed',
+                "parser has not been chosen for sheet %s, the sheet wont be parsed",
                 sheet.sheet_idx + 1,
             )
             poops.append(e)

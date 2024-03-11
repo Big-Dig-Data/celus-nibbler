@@ -341,9 +341,9 @@ from celus_nibbler.parsers.dynamic import gen_parser
     ),
 )
 def test_dynamic(platform, filename, ext, parser, ignore_order):
-    definition_path = pathlib.Path(__file__).parent / 'data/dynamic' / f"{filename}.json"
-    input_path = pathlib.Path(__file__).parent / 'data/dynamic' / f"{filename}.{ext}"
-    output_path = pathlib.Path(__file__).parent / 'data/dynamic' / f"{filename}.{ext}.out"
+    definition_path = pathlib.Path(__file__).parent / "data/dynamic" / f"{filename}.json"
+    input_path = pathlib.Path(__file__).parent / "data/dynamic" / f"{filename}.{ext}"
+    output_path = pathlib.Path(__file__).parent / "data/dynamic" / f"{filename}.{ext}.out"
 
     with definition_path.open() as f:
         definition = json.load(f)
@@ -457,8 +457,8 @@ def test_dynamic(platform, filename, ext, parser, ignore_order):
     ),
 )
 def test_dynamic_errors(platform, name, ext, parser, exception):
-    definition_path = pathlib.Path(__file__).parent / 'data/dynamic/errors' / f"{name}.json"
-    input_path = pathlib.Path(__file__).parent / 'data/dynamic/errors' / f"{name}.{ext}"
+    definition_path = pathlib.Path(__file__).parent / "data/dynamic/errors" / f"{name}.json"
+    input_path = pathlib.Path(__file__).parent / "data/dynamic/errors" / f"{name}.{ext}"
 
     with definition_path.open() as f:
         definition = json.load(f)

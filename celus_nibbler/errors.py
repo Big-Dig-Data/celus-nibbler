@@ -68,7 +68,7 @@ class JsonException(NibblerError):
         pass
 
     def __str__(self):
-        return f'json format error: {self.reason}'
+        return f"json format error: {self.reason}"
 
     def __repr__(self):
         return f"{self.__class__.__name__}(reason={self.reason})"
@@ -110,7 +110,7 @@ class TableException(NibblerError):
         laymancount_row = self.row + 1 if self.row is not None else "unspecified"
         laymancount_col = self.col + 1 if self.col is not None else "unspecified"
         colletters_explanation = (
-            f" (col \"{colnum_to_colletters(laymancount_col)}\" if using software for table sheets)"
+            f' (col "{colnum_to_colletters(laymancount_col)}" if using software for table sheets)'
             if self.col is not None
             else ""
         )

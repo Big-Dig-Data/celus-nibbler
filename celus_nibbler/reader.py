@@ -63,7 +63,7 @@ class SheetReader(metaclass=ABCMeta):
     def close(self):
         pass
 
-    def dict_reader(self) -> 'DictReader':
+    def dict_reader(self) -> "DictReader":
         return DictReader(SheetReaderWithLineNum(self))
 
 
@@ -336,7 +336,7 @@ class XlsxReader(TableReader):
                 # Make sure that length of the row is extending
                 current_length = len(row)
                 row_length = max(row_length, current_length)
-                extra_cells = [''] * (row_length - current_length)
+                extra_cells = [""] * (row_length - current_length)
 
                 writer.writerow([cell.value for cell in row] + extra_cells)
             f.seek(0)
@@ -371,7 +371,7 @@ class JsonCounter5Reader(TableReader):
             source = pathlib.Path(source)  # make user that source is Path
             file = open(source, "rb")
         else:
-            raise ValueError('source')
+            raise ValueError("source")
 
         self.sheets = [JsonCounter5SheetReader(file)]
 
@@ -416,7 +416,7 @@ else:
 
                     # Make sure that length of the row is extending
                     current_length = len(row)
-                    extra_cells = [''] * (row_length - current_length)
+                    extra_cells = [""] * (row_length - current_length)
 
                     writer.writerow([self._cell_to_str(cell) for cell in row] + extra_cells)
                 f.seek(0)
@@ -439,7 +439,7 @@ else:
                 return str(cell.value)
             elif cell.ctype == xlrd.XL_CELL_DATE:
                 # value is float
-                return xlrd.xldate.xldate_as_datetime(cell.value, 0).isoformat(sep=' ')
+                return xlrd.xldate.xldate_as_datetime(cell.value, 0).isoformat(sep=" ")
 
             raise NotImplementedError()
 
@@ -464,10 +464,10 @@ class SheetReaderWithLineNum:
 class DictReader(csv.DictReader):
     """Try to wrap csv.DictReader arond SheetReader"""
 
-    def __init__(self, sheet_reader: 'SheetReaderWithLineNum'):
+    def __init__(self, sheet_reader: "SheetReaderWithLineNum"):
         self.reader = sheet_reader
         self._fieldnames = None
         self.restkey = None
         self.restval = None
-        self.dialect = 'excel'
+        self.dialect = "excel"
         self.line_num = 0

@@ -10,8 +10,8 @@ from pydantic.dataclasses import dataclass as pydantic_dataclass
 
 from .utils import COMMON_DATE_FORMATS, PydanticConfig
 
-issn_matcher = re.compile(r'(\d{4})-?(\d{3}[\dXx])')
-issn_number_matcher = re.compile(r'^\d{0,7}[\dXx]$')
+issn_matcher = re.compile(r"(\d{4})-?(\d{3}[\dXx])")
+issn_number_matcher = re.compile(r"^\d{0,7}[\dXx]$")
 
 
 @pydantic_dataclass(config=PydanticConfig)
@@ -44,16 +44,16 @@ def issn(issn: str) -> str:
 
 
 def issn_strict(issn: str) -> str:
-    clean = ''.join(issn.split())  # remove all whitespace
+    clean = "".join(issn.split())  # remove all whitespace
 
     if m := issn_matcher.search(clean):
         # upper() because 'X' can be also lowercase
-        return m.group(1) + '-' + m.group(2).upper()
+        return m.group(1) + "-" + m.group(2).upper()
 
     # sometimes the leading zeros are missing, so we add them
     if issn_number_matcher.match(clean):
-        clean = (8 - len(clean)) * '0' + clean
-        return clean[:4] + '-' + clean[4:].upper()
+        clean = (8 - len(clean)) * "0" + clean
+        return clean[:4] + "-" + clean[4:].upper()
 
     raise ValueError(f'Invalid ISSN: "{issn}"')
 
@@ -62,7 +62,7 @@ def issn_strict(issn: str) -> str:
 class Value(BaseValueModel):
     value: Union[NonNegativeInt, NonNegativeFloat]
 
-    _stripped_value = field_validator('value', mode='before')(stripped)
+    _stripped_value = field_validator("value", mode="before")(stripped)
 
     @field_validator("value")
     def non_negative(cls, value: Union[NonNegativeInt, NonNegativeFloat]) -> int:
@@ -100,7 +100,7 @@ def gen_default_validator(
 class CommaSeparatedNumberValidator(BaseValueModel):
     value: Any
 
-    @field_validator("value", mode='before')
+    @field_validator("value", mode="before")
     def comma_separeted_number(cls, value: str) -> str:
         return Value(value=value.replace(",", "")).value
 
@@ -109,7 +109,7 @@ class CommaSeparatedNumberValidator(BaseValueModel):
 class MinutesToSecondsValidator(BaseValueModel):
     value: Union[NonNegativeInt, NonNegativeFloat]
 
-    @field_validator("value", mode='after')
+    @field_validator("value", mode="after")
     def minutes_to_seconds(cls, value: Union[float, int]) -> int:
         return round(value * 60)
 
@@ -118,33 +118,33 @@ class MinutesToSecondsValidator(BaseValueModel):
 class Organization(BaseValueModel):
     value: str
 
-    _not_none_organization = field_validator('value')(not_none)
-    _stripped_organization = field_validator('value')(stripped)
-    _non_empty_organization = field_validator('value')(non_empty)
+    _not_none_organization = field_validator("value")(not_none)
+    _stripped_organization = field_validator("value")(stripped)
+    _non_empty_organization = field_validator("value")(non_empty)
 
 
 @pydantic_dataclass(config=PydanticConfig)
 class Platform(BaseValueModel):
     value: str
 
-    _stripped_platform = field_validator('value')(stripped)
-    _non_empty_platform = field_validator('value')(non_empty)
+    _stripped_platform = field_validator("value")(stripped)
+    _non_empty_platform = field_validator("value")(non_empty)
 
 
 @pydantic_dataclass(config=PydanticConfig)
 class Dimension(BaseValueModel):
     value: str
 
-    _stripped_dimension = field_validator('value')(stripped)
+    _stripped_dimension = field_validator("value")(stripped)
 
 
 @pydantic_dataclass(config=PydanticConfig)
 class Metric(BaseValueModel):
     value: str
 
-    _not_none_metic = field_validator('value')(not_none)
-    _stripped_metric = field_validator('value')(stripped)
-    _non_empty_metric = field_validator('value')(non_empty)
+    _not_none_metic = field_validator("value")(not_none)
+    _stripped_metric = field_validator("value")(stripped)
+    _non_empty_metric = field_validator("value")(non_empty)
 
     @field_validator("value")
     def not_digit(cls, metric: str) -> str:
@@ -157,7 +157,7 @@ class Metric(BaseValueModel):
 class Title(BaseValueModel):
     value: Optional[str]
 
-    _stripped_title = field_validator('value')(stripped)
+    _stripped_title = field_validator("value")(stripped)
 
 
 parserinfo_us = datetimes_parser.parserinfo(dayfirst=False)  # prefer US variant
@@ -168,15 +168,15 @@ parserinfo_eu = datetimes_parser.parserinfo(dayfirst=True)  # prefer EU variant
 class Date(BaseValueModel):
     value: datetime.date
 
-    _not_none_date = field_validator('value', mode='before')(not_none)
-    _stripped_date = field_validator('value', mode='before')(stripped)
-    _non_empty_date = field_validator('value', mode='before')(non_empty)
+    _not_none_date = field_validator("value", mode="before")(not_none)
+    _stripped_date = field_validator("value", mode="before")(stripped)
+    _non_empty_date = field_validator("value", mode="before")(non_empty)
 
     @classmethod
     def parserinfo(cls):
         return parserinfo_us
 
-    @field_validator("value", mode='before')
+    @field_validator("value", mode="before")
     def to_datetime(cls, date: str) -> datetime.datetime:
         if not date:
             raise ValueError("no-date-provided")
@@ -208,11 +208,11 @@ def gen_date_format_validator(pattern: str) -> Type[BaseValueModel]:
     class DateFormat(BaseValueModel):
         value: datetime.date
 
-        _not_none_date = field_validator('value', mode='before')(not_none)
-        _stripped_date = field_validator('value', mode='before')(stripped)
-        _non_empty_date = field_validator('value', mode='before')(non_empty)
+        _not_none_date = field_validator("value", mode="before")(not_none)
+        _stripped_date = field_validator("value", mode="before")(stripped)
+        _non_empty_date = field_validator("value", mode="before")(non_empty)
 
-        @field_validator("value", mode='before')
+        @field_validator("value", mode="before")
         def to_datetime(cls, date: str) -> datetime.datetime:
             if not date:
                 raise ValueError("no-date-provided")
@@ -257,7 +257,7 @@ class StrictISBN(BaseValueModel):
 
     @field_validator("value")
     def check_isbn(cls, isbn: str) -> str:
-        isbns = get_isbnlike(isbn, level='strict')
+        isbns = get_isbnlike(isbn, level="strict")
 
         if not isbns:
             raise ValueError("isbn-not-valid")
@@ -278,7 +278,7 @@ class StrictISBN13(BaseValueModel):
 
     @field_validator("value")
     def check_isbn(cls, isbn: str) -> str:
-        isbns = get_isbnlike(isbn, level='strict')
+        isbns = get_isbnlike(isbn, level="strict")
 
         if not isbns:
             raise ValueError("isbn13-not-valid")
@@ -299,7 +299,7 @@ class StrictISBN10(BaseValueModel):
 
     @field_validator("value")
     def check_isbn(cls, isbn: str) -> str:
-        isbns = get_isbnlike(isbn, level='strict')
+        isbns = get_isbnlike(isbn, level="strict")
 
         if not isbns:
             raise ValueError("isbn10-not-valid")
@@ -318,28 +318,28 @@ class StrictISBN10(BaseValueModel):
 class ISSN(BaseValueModel):
     value: str
 
-    _issn_format = field_validator('value')(issn)
+    _issn_format = field_validator("value")(issn)
 
 
 @pydantic_dataclass(config=PydanticConfig)
 class StrictISSN(BaseValueModel):
     value: str
 
-    _issn_format = field_validator('value')(issn_strict)
+    _issn_format = field_validator("value")(issn_strict)
 
 
 @pydantic_dataclass(config=PydanticConfig)
 class EISSN(BaseValueModel):
     value: str
 
-    _issn_format = field_validator('value')(issn)
+    _issn_format = field_validator("value")(issn)
 
 
 @pydantic_dataclass(config=PydanticConfig)
 class StrictEISSN(BaseValueModel):
     value: str
 
-    _issn_format = field_validator('value')(issn_strict)
+    _issn_format = field_validator("value")(issn_strict)
 
 
 @pydantic_dataclass(config=PydanticConfig)

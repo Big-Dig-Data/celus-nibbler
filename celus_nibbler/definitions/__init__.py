@@ -20,7 +20,7 @@ AreaDefinition = Annotated[
         CelusFormatAreaDefinition,
         GenericAreaDefinition,
     ],
-    Field(discriminator='kind'),
+    Field(discriminator="kind"),
 ]
 
 
@@ -47,7 +47,7 @@ DefinitionAnotation = Annotated[
         CelusFormatParserDefinition,
         GenericDefinition,
     ],
-    Field(discriminator='kind'),
+    Field(discriminator="kind"),
 ]
 
 
@@ -60,15 +60,15 @@ class Definition(JsonEncorder, RootModel):
 
 
 __all__ = [
-    'AreaDefinition',
-    'Definition',
-    'DateBasedAreaDefinition',
-    'DateBasedDefinition',
-    'DateMetricBasedAreaDefinition',
-    'DateMetricBasedDefinition',
-    'MetricBasedAreaDefinition',
-    'MetricBasedDefinition',
-    'BaseParserDefinition',
-    'CelusFormatAreaDefinition',
-    'CelusFormatParserDefinition',
+    "AreaDefinition",
+    "Definition",
+    "DateBasedAreaDefinition",
+    "DateBasedDefinition",
+    "DateMetricBasedAreaDefinition",
+    "DateMetricBasedDefinition",
+    "MetricBasedAreaDefinition",
+    "MetricBasedDefinition",
+    "BaseParserDefinition",
+    "CelusFormatAreaDefinition",
+    "CelusFormatParserDefinition",
 ]

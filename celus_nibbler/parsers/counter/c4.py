@@ -85,7 +85,7 @@ class BaseCounter4Parser(BaseTabularParser):
 
 
 class BR1(BaseCounter4Parser):
-    REPORT_TYPE_NAME = 'Book Report 1 (R4)'
+    REPORT_TYPE_NAME = "Book Report 1 (R4)"
 
     data_format = DataFormatDefinition(name="BR1")
 
@@ -100,7 +100,7 @@ class BR1(BaseCounter4Parser):
     heuristics = RegexCondition(re.compile(r"^Book Report 1 \(R4\)"), Coord(0, 0))
 
     class Area(CounterHeaderArea):
-        TITLE_COLUMN_NAMES = ['Book']
+        TITLE_COLUMN_NAMES = ["Book"]
 
         def prepare_record(self, *args, **kwargs) -> CounterRecord:
             res = super().prepare_record(*args, **kwargs)
@@ -111,7 +111,7 @@ class BR1(BaseCounter4Parser):
 
 
 class BR2(BaseCounter4Parser):
-    REPORT_TYPE_NAME = 'Book Report 2 (R4)'
+    REPORT_TYPE_NAME = "Book Report 2 (R4)"
 
     data_format = DataFormatDefinition(name="BR2")
 
@@ -130,7 +130,7 @@ class BR2(BaseCounter4Parser):
     heuristics = RegexCondition(re.compile(r"^Book Report 2 \(R4\)"), Coord(0, 0))
 
     class Area(CounterHeaderArea):
-        TITLE_COLUMN_NAMES = ['Book']
+        TITLE_COLUMN_NAMES = ["Book"]
 
         def prepare_record(self, *args, **kwargs) -> CounterRecord:
             res = super().prepare_record(*args, **kwargs)
@@ -141,7 +141,7 @@ class BR2(BaseCounter4Parser):
 
 
 class BR3(BaseCounter4Parser):
-    REPORT_TYPE_NAME = 'Book Report 3 (R4)'
+    REPORT_TYPE_NAME = "Book Report 3 (R4)"
 
     data_format = DataFormatDefinition(name="BR3")
 
@@ -159,14 +159,14 @@ class BR3(BaseCounter4Parser):
     heuristics = RegexCondition(re.compile(r"^Book Report 3 \(R4\)"), Coord(0, 0))
 
     class Area(CounterHeaderArea):
-        TITLE_COLUMN_NAMES = ['Book']
+        TITLE_COLUMN_NAMES = ["Book"]
         METRIC_COLUMN_NAMES = ["Access Denied Category"]
 
     areas = [Area]
 
 
 class DB1(BaseCounter4Parser):
-    REPORT_TYPE_NAME = 'Database Report 1 (R4)'
+    REPORT_TYPE_NAME = "Database Report 1 (R4)"
 
     data_format = DataFormatDefinition(name="DB1")
 
@@ -182,14 +182,14 @@ class DB1(BaseCounter4Parser):
     heuristics = RegexCondition(re.compile(r"^Database Report 1 \(R4\)"), Coord(0, 0))
 
     class Area(CounterHeaderArea):
-        TITLE_COLUMN_NAMES = ['Database']
+        TITLE_COLUMN_NAMES = ["Database"]
         METRIC_COLUMN_NAMES = ["User Activity"]
 
     areas = [Area]
 
 
 class DB2(BaseCounter4Parser):
-    REPORT_TYPE_NAME = 'Database Report 2 (R4)'
+    REPORT_TYPE_NAME = "Database Report 2 (R4)"
 
     data_format = DataFormatDefinition(name="DB2")
 
@@ -201,14 +201,14 @@ class DB2(BaseCounter4Parser):
     heuristics = RegexCondition(re.compile(r"^Database Report 2 \(R4\)"), Coord(0, 0))
 
     class Area(CounterHeaderArea):
-        TITLE_COLUMN_NAMES = ['Database']
+        TITLE_COLUMN_NAMES = ["Database"]
         METRIC_COLUMN_NAMES = ["Access denied category"]
 
     areas = [Area]
 
 
 class PR1(BaseCounter4Parser):
-    REPORT_TYPE_NAME = 'Platform Report 1 (R4)'
+    REPORT_TYPE_NAME = "Platform Report 1 (R4)"
 
     data_format = DataFormatDefinition(name="PR1")
 
@@ -229,7 +229,7 @@ class PR1(BaseCounter4Parser):
 
 
 class JR1(BaseCounter4Parser):
-    REPORT_TYPE_NAME = 'Journal Report 1 (R4)'
+    REPORT_TYPE_NAME = "Journal Report 1 (R4)"
 
     data_format = DataFormatDefinition(name="JR1")
 
@@ -282,7 +282,7 @@ class JR1(BaseCounter4Parser):
     heuristics = RegexCondition(re.compile(r"^Journal Report 1 \(R4\)"), Coord(0, 0))
 
     class Area(CounterHeaderArea):
-        TITLE_COLUMN_NAMES = ['Journal']
+        TITLE_COLUMN_NAMES = ["Journal"]
 
         def prepare_record(self, *args, **kwargs) -> CounterRecord:
             res = super().prepare_record(*args, **kwargs)
@@ -293,7 +293,7 @@ class JR1(BaseCounter4Parser):
 
 
 class JR1a(BaseCounter4Parser):
-    REPORT_TYPE_NAME = 'Journal Report 1a (R4)'
+    REPORT_TYPE_NAME = "Journal Report 1a (R4)"
 
     data_format = DataFormatDefinition(name="JR1a")
 
@@ -306,7 +306,7 @@ class JR1a(BaseCounter4Parser):
     heuristics = RegexCondition(re.compile(r"^Journal Report 1a \(R4\)"), Coord(0, 0))
 
     class Area(CounterHeaderArea):
-        TITLE_COLUMN_NAMES = ['Journal']
+        TITLE_COLUMN_NAMES = ["Journal"]
 
         def prepare_record(self, *args, **kwargs) -> CounterRecord:
             res = super().prepare_record(*args, **kwargs)
@@ -317,7 +317,7 @@ class JR1a(BaseCounter4Parser):
 
 
 class JR1GOA(BaseCounter4Parser):
-    REPORT_TYPE_NAME = 'Journal Report 1 GOA (R4)'
+    REPORT_TYPE_NAME = "Journal Report 1 GOA (R4)"
 
     data_format = DataFormatDefinition(name="JR1GOA")
 
@@ -337,7 +337,7 @@ class JR1GOA(BaseCounter4Parser):
     heuristics = RegexCondition(re.compile(r"^Journal Report 1 GOA \(R4\)"), Coord(0, 0))
 
     class Area(CounterHeaderArea):
-        TITLE_COLUMN_NAMES = ['Journal']
+        TITLE_COLUMN_NAMES = ["Journal"]
 
         def prepare_record(self, *args, **kwargs) -> CounterRecord:
             res = super().prepare_record(*args, **kwargs)
@@ -348,7 +348,7 @@ class JR1GOA(BaseCounter4Parser):
 
 
 class JR2(BaseCounter4Parser):
-    REPORT_TYPE_NAME = 'Journal Report 2 (R4)'
+    REPORT_TYPE_NAME = "Journal Report 2 (R4)"
 
     data_format = DataFormatDefinition(name="JR2")
 
@@ -401,14 +401,14 @@ class JR2(BaseCounter4Parser):
     ]
 
     class Area(CounterHeaderArea):
-        TITLE_COLUMN_NAMES = ['Journal']
+        TITLE_COLUMN_NAMES = ["Journal"]
         METRIC_COLUMN_NAMES = ["Access Denied Category"]
 
     areas = [Area]
 
 
 class MR1(BaseCounter4Parser):
-    REPORT_TYPE_NAME = 'Multimedia Report 1 (R4)'
+    REPORT_TYPE_NAME = "Multimedia Report 1 (R4)"
 
     data_format = DataFormatDefinition(name="MR1")
 
@@ -423,7 +423,7 @@ class MR1(BaseCounter4Parser):
             ("Content Provider", {"Content Provider"}),
             ("Platform", {"Platform"}),
         ]
-        TITLE_COLUMN_NAMES = ['Collection']
+        TITLE_COLUMN_NAMES = ["Collection"]
 
         def prepare_record(self, *args, **kwargs) -> CounterRecord:
             res = super().prepare_record(*args, **kwargs)

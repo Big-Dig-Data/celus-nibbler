@@ -90,15 +90,15 @@ def test_date_based_area_definition():
                 "suffix": "",
                 "on_validation_error": "stop",
             },
-            'rules': [
+            "rules": [
                 {
-                    'condition': None,
-                    'role_extract_params_override': None,
-                    'on_condition_failed': 'stop',
-                    'on_condition_passed': 'proceed',
-                    'on_error': 'stop',
-                    'role_idx': None,
-                    'role_source_offset': 0,
+                    "condition": None,
+                    "role_extract_params_override": None,
+                    "on_condition_failed": "stop",
+                    "on_condition_passed": "proceed",
+                    "on_error": "stop",
+                    "role_idx": None,
+                    "role_source_offset": 0,
                 }
             ],
             "condition": None,
@@ -544,15 +544,15 @@ def test_date_based_definition():
                         "suffix": "",
                         "on_validation_error": "stop",
                     },
-                    'rules': [
+                    "rules": [
                         {
-                            'condition': None,
-                            'role_extract_params_override': None,
-                            'on_condition_failed': 'stop',
-                            'on_condition_passed': 'proceed',
-                            'on_error': 'stop',
-                            'role_idx': None,
-                            'role_source_offset': 0,
+                            "condition": None,
+                            "role_extract_params_override": None,
+                            "on_condition_failed": "stop",
+                            "on_condition_passed": "proceed",
+                            "on_error": "stop",
+                            "role_idx": None,
+                            "role_source_offset": 0,
                         }
                     ],
                     "condition": None,
@@ -682,5 +682,5 @@ def test_date_based_definition():
         "available_metrics": None,
         "on_metric_check_failed": "skip",
         "titles_to_skip": [],
-        'possible_row_offsets': [0],
+        "possible_row_offsets": [0],
     }

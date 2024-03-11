@@ -28,8 +28,8 @@ from celus_nibbler import Poop, eat
     ],
 )
 def test_non_counter(platform, file, parser, poops_presence, heuristics, ignore_order):
-    source_path = pathlib.Path(__file__).parent / 'data/non_counter' / file
-    output_path = pathlib.Path(__file__).parent / 'data/non_counter' / f"{file}.out"
+    source_path = pathlib.Path(__file__).parent / "data/non_counter" / file
+    output_path = pathlib.Path(__file__).parent / "data/non_counter" / f"{file}.out"
 
     with output_path.open() as f:
         reader = csv.reader(f)

@@ -9,7 +9,7 @@ from celus_nibbler.errors import (
 
 
 def test_eat():
-    file_path = pathlib.Path(__file__).parent / 'data/counter/4/BR1-a.tsv'
+    file_path = pathlib.Path(__file__).parent / "data/counter/4/BR1-a.tsv"
 
     # Default call
     poops = eat(file_path, "Ovid")
@@ -68,7 +68,7 @@ def test_eat():
 
     # Parser with mismatched heuristics
     poops = eat(
-        pathlib.Path(__file__).parent / 'data/counter/5/DR-a.tsv',
+        pathlib.Path(__file__).parent / "data/counter/5/DR-a.tsv",
         "Ovid",
         check_platform=False,
         parsers=[
@@ -141,7 +141,7 @@ def test_eat():
 
 
 def test_parsers_info_of_c5_json():
-    file_path = pathlib.Path(__file__).parent / 'data/counter/5/TR_J1-sample.json'
+    file_path = pathlib.Path(__file__).parent / "data/counter/5/TR_J1-sample.json"
 
     poops = eat(
         file_path,

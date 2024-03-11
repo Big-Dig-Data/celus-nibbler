@@ -301,7 +301,7 @@ def no_io_wrapper(io):
 class TestCsvReader:
     data_csv = b'a,b,c\n1,3,4\nhi,there,"how are you?"\n'
     text_csv = data_csv.decode()
-    data_list = [[['a', 'b', 'c'], ['1', '3', '4'], ['hi', 'there', 'how are you?']]]
+    data_list = [[["a", "b", "c"], ["1", "3", "4"], ["hi", "there", "how are you?"]]]
 
     @pytest.mark.parametrize(
         "io_wrapper,data",
@@ -388,16 +388,16 @@ def open_file_binary(path):
 
 
 class TestXlsxReader:
-    file_path = Path(__file__).parent / 'data/reader/test-simple.xlsx'
+    file_path = Path(__file__).parent / "data/reader/test-simple.xlsx"
     data_list = [
         [
-            ['a', 'b', 'c'],
-            ['1', '3', '4'],
-            ['hi', 'there', 'how are you?'],
-            ['', '', ''],
-            ['', '', ''],
-            ['another', '', ''],
-            ['Extra', 'line', 'present'],
+            ["a", "b", "c"],
+            ["1", "3", "4"],
+            ["hi", "there", "how are you?"],
+            ["", "", ""],
+            ["", "", ""],
+            ["another", "", ""],
+            ["Extra", "line", "present"],
         ],
     ]
 
@@ -431,14 +431,14 @@ class TestXlsxReader:
 
 
 class TestXlsReader:
-    file_path = Path(__file__).parent / 'data/reader/test-simple.xls'
+    file_path = Path(__file__).parent / "data/reader/test-simple.xls"
     data_list = [
         [
-            ['', '2023-09-01 00:00:00', '2023-10-01 00:00:00', '2023-11-01 00:00:00'],
-            ['A', '1.0', '', '3.145'],
-            ['B', '1.2', '3.0', '3.999'],
-            ['C', '3.0', '4.0', '8.99999'],
-            ['', 'True', 'False', 'True'],
+            ["", "2023-09-01 00:00:00", "2023-10-01 00:00:00", "2023-11-01 00:00:00"],
+            ["A", "1.0", "", "3.145"],
+            ["B", "1.2", "3.0", "3.999"],
+            ["C", "3.0", "4.0", "8.99999"],
+            ["", "True", "False", "True"],
         ],
     ]
 
@@ -569,8 +569,8 @@ class TestJsonCounter5Reader:
 
 
 class TestEncoding:
-    utf8_path = Path(__file__).parent / 'data/reader/utf8.csv'
-    cp1250_path = Path(__file__).parent / 'data/reader/cp1250.csv'
+    utf8_path = Path(__file__).parent / "data/reader/utf8.csv"
+    cp1250_path = Path(__file__).parent / "data/reader/cp1250.csv"
     output = [
         [
             ["Žluťoučký kůń", "1"],
@@ -590,14 +590,14 @@ class TestEncoding:
         ],
     )
     def test_encoding(self, encoding):
-        path = Path(__file__).parent / f'data/reader/{encoding}.csv'
+        path = Path(__file__).parent / f"data/reader/{encoding}.csv"
         sheets = CsvReader(path)
         for i, row in enumerate(sheets[0]):
             assert row == self.output[0][i]
 
 
 class TestTsv:
-    sample_path = Path(__file__).parent / 'data/reader/sample.tsv'
+    sample_path = Path(__file__).parent / "data/reader/sample.tsv"
 
     def test_tsv(self):
         self.sample_path

@@ -116,7 +116,7 @@ def gen_argument_parser(parsers: typing.List[str]) -> argparse.ArgumentParser:
         default=False,
         help="Parses the entire file without producing any data output (useful for benchmarks)",
     )
-    parser.add_argument("file", nargs='*')
+    parser.add_argument("file", nargs="*")
     parser.add_argument("--profile", dest="profile", action="store_true", default=False)
 
     return parser

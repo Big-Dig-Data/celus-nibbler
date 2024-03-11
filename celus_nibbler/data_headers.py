@@ -40,7 +40,7 @@ Role = Annotated[
         VoidSource,
         ValueSource,
     ],
-    Field(discriminator='role'),
+    Field(discriminator="role"),
 ]
 
 
@@ -82,7 +82,7 @@ class ArithmeticsMixin:
 
 @pydantic_dataclass(config=PydanticConfig)
 class DataHeaderNegCondition(ArithmeticsMixin, DataHeaderBaseCondition, JsonEncorder):
-    cond: 'DataHeaderCondition'
+    cond: "DataHeaderCondition"
 
     kind: typing.Literal["neg"] = "neg"
 
@@ -92,7 +92,7 @@ class DataHeaderNegCondition(ArithmeticsMixin, DataHeaderBaseCondition, JsonEnco
 
 @pydantic_dataclass(config=PydanticConfig)
 class DataHeaderAndCondition(ArithmeticsMixin, DataHeaderBaseCondition, JsonEncorder):
-    conds: typing.List['DataHeaderCondition']
+    conds: typing.List["DataHeaderCondition"]
 
     kind: typing.Literal["and"] = "and"
 
@@ -102,7 +102,7 @@ class DataHeaderAndCondition(ArithmeticsMixin, DataHeaderBaseCondition, JsonEnco
 
 @pydantic_dataclass(config=PydanticConfig)
 class DataHeaderOrCondition(ArithmeticsMixin, DataHeaderBaseCondition, JsonEncorder):
-    conds: typing.List['DataHeaderCondition']
+    conds: typing.List["DataHeaderCondition"]
 
     kind: typing.Literal["or"] = "or"
 
@@ -144,7 +144,7 @@ DataHeaderCondition = Annotated[
         DataHeaderRegexCondition,
         DataHeaderIndexCondition,
     ],
-    Field(discriminator='kind'),
+    Field(discriminator="kind"),
 ]
 
 
@@ -159,7 +159,7 @@ class DataHeaderAction(Enum):
     SKIP = "skip"
     STOP = "stop"
 
-    def merge(self, dha: 'DataHeaderAction') -> 'DataHeaderAction':
+    def merge(self, dha: "DataHeaderAction") -> "DataHeaderAction":
         if self == DataHeaderAction.PROCEED:
             return dha
         elif self == DataHeaderAction.BYPASS:
@@ -287,7 +287,7 @@ class DataHeaders(JsonEncorder):
         row_offset: typing.Optional[int],
         get_metric_name: typing.Callable[[str], str],
         check_metric_name: typing.Callable[[str, str], None],
-    ) -> typing.Tuple[int, typing.List['DataCells']]:
+    ) -> typing.Tuple[int, typing.List["DataCells"]]:
         res: typing.List[DataCells] = []
 
         # Derive row offset

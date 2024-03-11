@@ -177,12 +177,12 @@ def test_is_date(coord, date_format, data, result, csv_sheet_generator):
 def test_serialization():
     regex = RegexCondition("1234", Coord(0, 1))
     regex_dict = json.loads(regex.json())
-    assert regex_dict == {'coord': {'col': 1, 'row': 0}, 'kind': 'regex', 'pattern': '1234'}
+    assert regex_dict == {"coord": {"col": 1, "row": 0}, "kind": "regex", "pattern": "1234"}
     assert regex == RegexCondition.parse(regex_dict)
 
     stemmer = StemmerCondition("1234", Coord(1, 2))
     stemmer_dict = json.loads(stemmer.json())
-    assert stemmer_dict == {'coord': {'col': 2, 'row': 1}, 'kind': 'stemmer', 'content': '1234'}
+    assert stemmer_dict == {"coord": {"col": 2, "row": 1}, "kind": "stemmer", "content": "1234"}
     assert stemmer == StemmerCondition.parse(stemmer_dict)
 
     regex2 = RegexCondition("5678", Coord(3, 2))

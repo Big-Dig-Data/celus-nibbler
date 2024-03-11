@@ -26,7 +26,7 @@ def csv_sheet_generator():
 @pytest.fixture()
 def sheet_json():
     return BytesIO(
-        b'''\
+        b"""\
 {
   "Report_Header": {
     "Created": "2020-01-01T00:00:00Z",
@@ -171,5 +171,5 @@ def sheet_json():
     }
   ]
 }
-'''
+"""
     )

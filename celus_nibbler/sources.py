@@ -33,7 +33,7 @@ class TitleIdKind(str, Enum):
         return self.value
 
     def validator_class(
-        self, opts: typing.Optional['IdValidatorOpts'] = None
+        self, opts: typing.Optional["IdValidatorOpts"] = None
     ) -> typing.Type[validators.BaseValueModel]:
         if self == TitleIdKind.ISBN:
             if not isinstance(opts, IdValidatorOptsISBN):
@@ -101,7 +101,7 @@ IdValidatorOpts = Annotated[
         IdValidatorOptsISSN,
         IdValidatorOptsEISSN,
     ],
-    Field(discriminator='type'),
+    Field(discriminator="type"),
 ]
 
 
@@ -211,10 +211,10 @@ class ContentExtractorMixin:
         if self.extract_params.max_idx is not None:
             if idx > self.extract_params.max_idx:
                 raise TableException(
-                    row=getattr(source, 'row', None),
-                    col=getattr(source, 'col', None),
+                    row=getattr(source, "row", None),
+                    col=getattr(source, "col", None),
                     sheet=sheet.sheet_idx,
-                    reason='out-of-bounds',
+                    reason="out-of-bounds",
                     action=TableException.Action.STOP,
                 )
 
@@ -260,18 +260,18 @@ class ContentExtractorMixin:
             else:
                 raise TableException(
                     content,
-                    row=getattr(source, 'row', None),
-                    col=getattr(source, 'col', None),
+                    row=getattr(source, "row", None),
+                    col=getattr(source, "col", None),
                     sheet=sheet.sheet_idx,
                     reason=e.title.lower(),
                     action=self.extract_params.on_validation_error,
                 ) from e
         except IndexError as e:
             raise TableException(
-                row=getattr(source, 'row', None),
-                col=getattr(source, 'col', None),
+                row=getattr(source, "row", None),
+                col=getattr(source, "col", None),
                 sheet=sheet.sheet_idx,
-                reason='out-of-bounds',
+                reason="out-of-bounds",
                 action=TableException.Action.STOP,
             ) from e
 
@@ -340,7 +340,7 @@ class TitleIdSource(JsonEncorder, ContentExtractorMixin):
     source: Source
     extract_params: ExtractParams = field(default_factory=lambda: ExtractParams())
     cleanup_during_header_processing: bool = True
-    fallback: typing.Optional['TitleIdSource'] = None
+    fallback: typing.Optional["TitleIdSource"] = None
     validator_opts: typing.Optional[IdValidatorOpts] = None
     role: typing.Literal[Role.TITLE_ID] = Role.TITLE_ID
 
@@ -380,8 +380,8 @@ class TitleIdSource(JsonEncorder, ContentExtractorMixin):
 
 @dataclass(config=PydanticConfig)
 class ComposedDate(JsonEncorder):
-    year: 'DateSource'
-    month: 'DateSource'
+    year: "DateSource"
+    month: "DateSource"
 
 
 @dataclass(config=PydanticConfig)
