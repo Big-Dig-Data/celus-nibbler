@@ -3,7 +3,7 @@ tests:run_tests:
   image: $IMAGE
   parallel:
     matrix:
-      - IMAGE: ['python:3.8', 'python:3.9']
+      - IMAGE: ['python:3.8', 'python:3.9', 'python:3.10']
   needs: []
   before_script:
     - curl -sSL https://install.python-poetry.org | python3 -
