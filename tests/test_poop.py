@@ -45,6 +45,8 @@ def test_extra_poop_info():
                 metrics={"Book Title Requests": StatUnit(count=24, sum=38)},
                 titles={"Title1": StatUnit(count=12, sum=32), "Title2": StatUnit(count=12, sum=6)},
                 title_ids={"ISBN"},
+                items={"": StatUnit(count=24, sum=38)},
+                item_ids=set(),
                 dimensions={
                     "Platform": {
                         "Ovid": StatUnit(count=24, sum=38),
@@ -59,6 +61,8 @@ def test_extra_poop_info():
         },
         titles={"Title1": StatUnit(count=12, sum=32), "Title2": StatUnit(count=12, sum=6)},
         title_ids={"ISBN"},
+        items={"": StatUnit(count=24, sum=38)},
+        item_ids=set(),
         dimensions={
             "Platform": {
                 "Ovid": StatUnit(count=24, sum=38),
@@ -144,6 +148,8 @@ def test_poop_offset_limit():
                 metrics={"Book Title Requests": StatUnit(count=24, sum=38)},
                 titles={"Title1": StatUnit(count=12, sum=32), "Title2": StatUnit(count=12, sum=6)},
                 title_ids={"ISBN"},
+                items={"": StatUnit(count=24, sum=38)},
+                item_ids=set(),
                 dimensions={
                     "Platform": {
                         "Ovid": StatUnit(count=24, sum=38),
@@ -158,6 +164,8 @@ def test_poop_offset_limit():
         },
         titles={"Title1": StatUnit(count=12, sum=32), "Title2": StatUnit(count=12, sum=6)},
         title_ids={"ISBN"},
+        items={"": StatUnit(count=24, sum=38)},
+        item_ids=set(),
         dimensions={
             "Platform": {
                 "Ovid": StatUnit(count=24, sum=38),
@@ -207,6 +215,8 @@ def test_poop_offset_limit():
                 metrics={"Book Title Requests": StatUnit(count=12, sum=6)},
                 titles={"Title2": StatUnit(count=12, sum=6)},
                 title_ids={"ISBN"},
+                items={"": StatUnit(count=12, sum=6)},
+                item_ids=set(),
                 dimensions={
                     "Platform": {
                         "Ovid": StatUnit(count=12, sum=6),
@@ -220,6 +230,8 @@ def test_poop_offset_limit():
         },
         titles={"Title2": StatUnit(count=12, sum=6)},
         title_ids={"ISBN"},
+        items={"": StatUnit(count=12, sum=6)},
+        item_ids=set(),
         dimensions={
             "Platform": {
                 "Ovid": StatUnit(count=12, sum=6),
@@ -264,6 +276,8 @@ def test_poop_offset_limit():
                 metrics={"Book Title Requests": StatUnit(count=10, sum=25)},
                 titles={"Title1": StatUnit(count=10, sum=25)},
                 title_ids={"ISBN"},
+                items={"": StatUnit(count=10, sum=25)},
+                item_ids=set(),
                 dimensions={
                     "Platform": {
                         "Ovid": StatUnit(count=10, sum=25),
@@ -277,6 +291,8 @@ def test_poop_offset_limit():
         },
         titles={"Title1": StatUnit(count=10, sum=25)},
         title_ids={"ISBN"},
+        items={"": StatUnit(count=10, sum=25)},
+        item_ids=set(),
         dimensions={
             "Platform": {
                 "Ovid": StatUnit(count=10, sum=25),
@@ -313,6 +329,8 @@ def test_poop_offset_limit():
                 metrics={"Book Title Requests": StatUnit(count=6, sum=6)},
                 titles={"Title2": StatUnit(count=6, sum=6)},
                 title_ids={"ISBN"},
+                items={"": StatUnit(count=6, sum=6)},
+                item_ids=set(),
                 dimensions={
                     "Platform": {
                         "Ovid": StatUnit(count=6, sum=6),
@@ -326,6 +344,8 @@ def test_poop_offset_limit():
         },
         titles={"Title2": StatUnit(count=6, sum=6)},
         title_ids={"ISBN"},
+        items={"": StatUnit(count=6, sum=6)},
+        item_ids=set(),
         dimensions={
             "Platform": {
                 "Ovid": StatUnit(count=6, sum=6),
@@ -354,6 +374,8 @@ def test_stats():
         metrics={"M1": StatUnit(count=1, sum=1), "M2": StatUnit(count=1, sum=1)},
         titles={"T1": StatUnit(count=1, sum=1), "T2": StatUnit(count=1, sum=1)},
         title_ids={"ISBN", "URI"},
+        items={"I1": StatUnit(count=1, sum=1), "I2": StatUnit(count=1, sum=1)},
+        item_ids={"Proprietary"},
         dimensions={
             "D1": {"aaa": StatUnit(count=1, sum=1), "bbb": StatUnit(count=1, sum=1)},
             "D2": {"aaa": StatUnit(count=2, sum=2)},
@@ -368,6 +390,8 @@ def test_stats():
         metrics={"M1": StatUnit(count=2, sum=2), "M2": StatUnit(count=2, sum=2)},
         titles={"T1": StatUnit(count=2, sum=2), "T2": StatUnit(count=2, sum=2)},
         title_ids={"ISBN", "URI"},
+        items={"I1": StatUnit(count=2, sum=2), "I2": StatUnit(count=2, sum=2)},
+        item_ids={"Proprietary"},
         dimensions={
             "D1": {"aaa": StatUnit(count=2, sum=2), "bbb": StatUnit(count=2, sum=2)},
             "D2": {"aaa": StatUnit(count=4, sum=4)},
@@ -395,6 +419,8 @@ def test_stats():
         metrics={"M2": StatUnit(count=2, sum=2), "M3": StatUnit(count=2, sum=2)},
         titles={"T2": StatUnit(count=2, sum=2), "T3": StatUnit(count=2, sum=2)},
         title_ids={"ISBN", "DOI"},
+        items={"I2": StatUnit(count=2, sum=2), "I3": StatUnit(count=2, sum=2)},
+        item_ids={"DOI"},
         dimensions={
             "D1": {"aaa": StatUnit(count=4, sum=4)},
             "D2": {"aaa": StatUnit(count=2, sum=2), "bbb": StatUnit(count=2, sum=2)},
@@ -409,6 +435,8 @@ def test_stats():
         metrics={"M2": StatUnit(count=3, sum=3), "M3": StatUnit(count=3, sum=3)},
         titles={"T2": StatUnit(count=3, sum=3), "T3": StatUnit(count=3, sum=3)},
         title_ids={"ISBN", "DOI"},
+        items={"I2": StatUnit(count=3, sum=3), "I3": StatUnit(count=3, sum=3)},
+        item_ids={"DOI"},
         dimensions={
             "D1": {"aaa": StatUnit(count=6, sum=6)},
             "D2": {"aaa": StatUnit(count=3, sum=3), "bbb": StatUnit(count=3, sum=3)},
@@ -438,6 +466,8 @@ def test_stats():
         metrics={"M1": StatUnit(count=1, sum=1), "M2": StatUnit(count=1, sum=1)},
         titles={"T1": StatUnit(count=1, sum=1), "T2": StatUnit(count=1, sum=1)},
         title_ids={"ISBN", "URI"},
+        items={"I1": StatUnit(count=1, sum=1), "I2": StatUnit(count=1, sum=1)},
+        item_ids={"Proprietary"},
         dimensions={
             "D1": {"aaa": StatUnit(count=1, sum=1), "bbb": StatUnit(count=1, sum=1)},
             "D2": {"aaa": StatUnit(count=2, sum=2)},
@@ -461,6 +491,12 @@ def test_stats():
             "T3": StatUnit(count=2, sum=2),
         },
         title_ids={"ISBN", "DOI", "URI"},
+        items={
+            "I1": StatUnit(count=2, sum=2),
+            "I2": StatUnit(count=4, sum=4),
+            "I3": StatUnit(count=2, sum=2),
+        },
+        item_ids={"Proprietary", "DOI"},
         dimensions={
             "D1": {"aaa": StatUnit(count=6, sum=6), "bbb": StatUnit(count=2, sum=2)},
             "D2": {"aaa": StatUnit(count=6, sum=6), "bbb": StatUnit(count=2, sum=2)},
@@ -475,6 +511,8 @@ def test_stats():
         metrics={"M2": StatUnit(count=3, sum=3), "M3": StatUnit(count=3, sum=3)},
         titles={"T2": StatUnit(count=3, sum=3), "T3": StatUnit(count=3, sum=3)},
         title_ids={"ISBN", "DOI"},
+        items={"I2": StatUnit(count=3, sum=3), "I3": StatUnit(count=3, sum=3)},
+        item_ids={"DOI"},
         dimensions={
             "D1": {"aaa": StatUnit(count=6, sum=6)},
             "D2": {"aaa": StatUnit(count=3, sum=3), "bbb": StatUnit(count=3, sum=3)},

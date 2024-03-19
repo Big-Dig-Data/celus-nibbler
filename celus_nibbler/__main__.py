@@ -41,6 +41,7 @@ def write_batch(
     records: typing.List[CounterRecord],
     dimensions: typing.List[str],
     title_ids: typing.List[str],
+    item_ids: typing.List[str],
     months: typing.List[str],
 ):
     months_dict = {e: "" for e in months}
@@ -49,6 +50,8 @@ def write_batch(
     writer.writerow(
         [r.organization, r.title]
         + [r.title_ids.get(ti, "") for ti in title_ids]
+        + [r.item]
+        + [r.item_ids.get(ii, "") for ii in item_ids]
         + [r.dimension_data.get(d, "") for d in dimensions]
         + [r.metric]
         + [months_dict[k] for k in sorted(months)]
@@ -144,6 +147,7 @@ def parse(options, platform, dynamic_parsers):
                     print(f"Metrics: {stat_dict['metrics']}", file=sys.stderr)
                     print(f"Dimensions: {stat_dict['dimensions']}", file=sys.stderr)
                     print(f"Title ids: {stat_dict['title_ids']}", file=sys.stderr)
+                    print(f"Item ids: {stat_dict['item_ids']}", file=sys.stderr)
 
                 if options.no_output:
                     header = None
@@ -161,9 +165,11 @@ def parse(options, platform, dynamic_parsers):
                         "end",
                         "organization",
                         "title",
-                        "metric",
-                        "dimensions",
                         "title_ids",
+                        "item",
+                        "item_ids",
+                        "dimensions",
+                        "metric",
                         "value",
                     ]
 
@@ -194,6 +200,7 @@ def parse(options, platform, dynamic_parsers):
                                 batch,
                                 stat_dict["dimensions"].keys(),
                                 stat_dict["title_ids"],
+                                stat_dict["item_ids"],
                                 stat_dict["months"].keys(),
                             )
                             batch = [record]
@@ -207,6 +214,7 @@ def parse(options, platform, dynamic_parsers):
                         batch,
                         stat_dict["dimensions"].keys(),
                         stat_dict["title_ids"],
+                        stat_dict["item_ids"],
                         stat_dict["months"].keys(),
                     )
 

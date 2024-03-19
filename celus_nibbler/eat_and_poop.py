@@ -73,6 +73,10 @@ class PoopOrganizationStats(JsonEncorder):
         default_factory=lambda: defaultdict(StatUnit)
     )
     title_ids: typing.Set[str] = Field(default_factory=lambda: set())
+    items: typing.DefaultDict[str, AnnotatedStatUnit] = Field(
+        default_factory=lambda: defaultdict(StatUnit)
+    )
+    item_ids: typing.Set[str] = Field(default_factory=lambda: set())
     dimensions: typing.DefaultDict[
         str,
         Annotated[
@@ -86,9 +90,13 @@ class PoopOrganizationStats(JsonEncorder):
         self.months[record.start.strftime("%Y-%m")].inc(record.value)
         self.metrics[record.metric or ""].inc(record.value)
         self.titles[record.title or ""].inc(record.value)
+        self.items[record.item or ""].inc(record.value)
 
         for title_id in record.title_ids.keys():
             self.title_ids.add(title_id)
+
+        for item_id in record.item_ids.keys():
+            self.item_ids.add(item_id)
 
         for dimension_name, dimension in record.dimension_data.items():
             self.dimensions[dimension_name][dimension].inc(record.value)
@@ -106,6 +114,9 @@ class PoopOrganizationStats(JsonEncorder):
         for title, data in list(self.titles.items()) + list(other.titles.items()):
             result.titles[title] += data
 
+        for item, data in list(self.items.items()) + list(other.items.items()):
+            result.items[item] += data
+
         for dimension_name, dimensions in list(self.dimensions.items()) + list(
             other.dimensions.items()
         ):
@@ -113,6 +124,7 @@ class PoopOrganizationStats(JsonEncorder):
                 result.dimensions[dimension_name][dimension] += data
 
         result.title_ids = self.title_ids | other.title_ids
+        result.item_ids = self.item_ids | other.item_ids
 
         result.total = self.total + other.total
         return result
@@ -134,6 +146,10 @@ class PoopStats(JsonEncorder):
         default_factory=lambda: defaultdict(StatUnit)
     )
     title_ids: typing.Set[str] = Field(default_factory=lambda: set())
+    items: typing.DefaultDict[str, AnnotatedStatUnit] = Field(
+        default_factory=lambda: defaultdict(StatUnit)
+    )
+    item_ids: typing.Set[str] = Field(default_factory=lambda: set())
     dimensions: typing.DefaultDict[
         str,
         Annotated[
@@ -159,6 +175,9 @@ class PoopStats(JsonEncorder):
         for title, data in list(self.titles.items()) + list(other.titles.items()):
             result.titles[title] += data
 
+        for item, data in list(self.items.items()) + list(other.items.items()):
+            result.items[item] += data
+
         for dimension_name, dimensions in list(self.dimensions.items()) + list(
             other.dimensions.items()
         ):
@@ -166,6 +185,7 @@ class PoopStats(JsonEncorder):
                 result.dimensions[dimension_name][dimension] += data
 
         result.title_ids = self.title_ids | other.title_ids
+        result.item_ids = self.item_ids | other.item_ids
 
         result.total = self.total + other.total
         return result
@@ -175,9 +195,13 @@ class PoopStats(JsonEncorder):
         self.metrics[record.metric or ""].inc(record.value)
         self.organizations[record.organization or ""].process_record(record)
         self.titles[record.title or ""].inc(record.value)
+        self.items[record.item or ""].inc(record.value)
 
         for title_id in record.title_ids.keys():
             self.title_ids.add(title_id)
+
+        for item_id in record.item_ids.keys():
+            self.item_ids.add(item_id)
 
         for dimension_name, dimension in record.dimension_data.items():
             self.dimensions[dimension_name][dimension].inc(record.value)
@@ -269,6 +293,10 @@ class Poop:
     @property
     def title_ids(self):
         return self.get_stats().title_ids
+
+    @property
+    def item_ids(self):
+        return self.get_stats().item_ids
 
     @property
     def months(self):
