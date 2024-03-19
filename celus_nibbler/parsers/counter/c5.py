@@ -304,10 +304,12 @@ class IR_M1(BaseCounter5Parser):
     )
 
     class Area(Counter5HeaderArea):
+        title_source = None
+        title_ids_sources = {}
         DIMENSION_NAMES_MAP = [
             ("Platform", {"Platform"}),
             ("Publisher", {"Publisher"}),
         ]
-        TITLE_COLUMN_NAMES = ["Title", "Item"]
+        ITEM_COLUMN_NAMES = ["Title", "Item"]
 
     areas = [Area]

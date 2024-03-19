@@ -15,6 +15,8 @@ from celus_nibbler.reader import CsvSheetReader, JsonCounter5SheetReader, SheetR
 from celus_nibbler.sources import (
     DateSource,
     DimensionSource,
+    ItemIdSource,
+    ItemSource,
     MetricSource,
     OrganizationSource,
     SpecialExtraction,
@@ -73,6 +75,8 @@ class BaseTabularArea(BaseArea):
     date_source: typing.Optional[DateSource] = None
     title_source: typing.Optional[TitleSource] = None
     title_ids_sources: typing.Dict[str, TitleIdSource] = {}
+    item_source: typing.Optional[ItemSource] = None
+    item_ids_sources: typing.Dict[str, ItemIdSource] = {}
     dimensions_sources: typing.Dict[str, DimensionSource] = {}
     metric_source: typing.Optional[MetricSource] = None
     current_row_offset: int = 0
@@ -308,6 +312,7 @@ class BaseTabularParser(BaseParser):
         # so it can be reused in the for-cycle
         dimensions_sources = list(area.dimensions_sources.items())
         title_ids_sources = area.title_ids_sources
+        item_ids_sources = area.item_ids_sources
         metrics_to_skip = [e.lower() for e in self.metrics_to_skip]
         titles_to_skip = [e.lower() for e in self.titles_to_skip]
         dimensions_to_skip = {k: [e.lower() for e in v] for k, v in self.dimensions_to_skip.items()}
@@ -322,6 +327,11 @@ class BaseTabularParser(BaseParser):
                         continue
                 else:
                     title = None
+
+                if area.item_source:
+                    item = area.item_source.extract(self.sheet, idx, row_offset=row_offset)
+                else:
+                    item = None
 
                 if area.metric_source:
                     orig_metric = area.metric_source.extract(self.sheet, idx, row_offset=row_offset)
@@ -365,11 +375,17 @@ class BaseTabularParser(BaseParser):
                     dimension_data[self.get_dimension_name(k)] = dimension_text
 
                 title_ids = {}
+                item_ids = {}
                 for key in IDS:
                     if title_source := title_ids_sources.get(key):
                         value = title_source.extract(self.sheet, idx, row_offset=row_offset)
                         if value:
                             title_ids[title_source.last_key] = value
+
+                    if item_source := item_ids_sources.get(key):
+                        value = item_source.extract(self.sheet, idx, row_offset=row_offset)
+                        if value:
+                            item_ids[item_source.last_key] = value
 
             except TableException as e:
                 if e.action == TableException.Action.SKIP:
@@ -395,8 +411,10 @@ class BaseTabularParser(BaseParser):
                         organization=organization,
                         metric=metric,
                         title=title,
+                        item=item,
                         dimension_data=dimension_data,
                         title_ids=title_ids,
+                        item_ids=item_ids,
                         start=start_month(date) if date else None,
                         end=end_month(date) if date else None,
                     )

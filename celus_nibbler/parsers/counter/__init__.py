@@ -13,8 +13,11 @@ from celus_nibbler.sources import (
     DateSource,
     DimensionSource,
     ExtractParams,
+    ItemIdSource,
+    ItemSource,
     MetricSource,
     OrganizationSource,
+    TitleIdKind,
     TitleIdSource,
     TitleSource,
 )
@@ -57,6 +60,7 @@ class CounterHeaderArea(BaseDateArea):
     ]
 
     TITLE_COLUMN_NAMES: typing.List[str] = []
+    ITEM_COLUMN_NAMES: typing.List[str] = []
     ORGANIZATION_COLUMN_NAMES: typing.List[str] = []
     METRIC_COLUMN_NAMES: typing.List[str] = []
 
@@ -71,6 +75,8 @@ class CounterHeaderArea(BaseDateArea):
     )
     TITLE_EXTRACT_PARAMS: ExtractParams = ExtractParams()
     TITLE_IDS_EXTRACT_PARAMS: typing.Dict[str, ExtractParams] = {}
+    ITEM_EXTRACT_PARAMS: ExtractParams = ExtractParams()
+    ITEM_IDS_EXTRACT_PARAMS: typing.Dict[str, ExtractParams] = {}
     DIMENSIONS_EXTRACT_PARAMS: typing.Dict[str, ExtractParams] = {}
 
     @property
@@ -194,17 +200,17 @@ class CounterHeaderArea(BaseDateArea):
             content = content.strip()
 
             if content in self.DOI_NAMES:
-                name = "DOI"
+                name = TitleIdKind.DOI
             elif content in self.ISBN_NAMES:
-                name = "ISBN"
+                name = TitleIdKind.ISBN
             elif content.strip() in self.ISSN_NAMES:
-                name = "Print_ISSN"
+                name = TitleIdKind.Print_ISSN
             elif content.strip() in self.EISSN_NAMES:
-                name = "Online_ISSN"
+                name = TitleIdKind.Online_ISSN
             elif content.strip() in self.PROPRIETARY_NAMES:
-                name = "Proprietary"
+                name = TitleIdKind.Proprietary
             elif content.strip() in self.URI_NAMES:
-                name = "URI"
+                name = TitleIdKind.URI
             else:
                 # empty or other field
                 continue
@@ -214,7 +220,76 @@ class CounterHeaderArea(BaseDateArea):
                 CoordRange(cell, Direction.DOWN).skip(1),
                 extract_params=self.TITLE_IDS_EXTRACT_PARAMS.get(name, ExtractParams()),
             )
-            ids_sources[name] = source
+            ids_sources[str(name)] = source
+
+        return ids_sources
+
+    @property
+    @lru_cache
+    def item_source(self) -> typing.Optional[ItemSource]:
+        if not self.ITEM_COLUMN_NAMES:
+            # Need to have item column defined
+            return None
+
+        for cell in self.header_row:
+            try:
+                content = cell.content(self.sheet)
+            except TableException as e:
+                if e.action == TableException.Action.STOP:
+                    break  # last cell reached
+
+            if content.strip() in self.ITEM_COLUMN_NAMES:
+                return ItemSource(
+                    CoordRange(cell, Direction.DOWN).skip(1),
+                    extract_params=self.ITEM_EXTRACT_PARAMS,
+                )
+
+        # title column was not found, assuming that first column is the title
+        return ItemSource(
+            CoordRange(self.header_row[0], Direction.DOWN).skip(1),
+            extract_params=self.ITEM_EXTRACT_PARAMS,
+        )
+
+    @property
+    @lru_cache
+    def item_ids_sources(self) -> typing.Dict[str, ItemIdSource]:
+        if not self.ITEM_COLUMN_NAMES:
+            # Need to have item column defined
+            return {}
+
+        ids_sources = {}
+        for cell in self.header_row:
+            try:
+                content = cell.content(self.sheet)
+            except TableException as e:
+                if e.action == TableException.Action.STOP:
+                    break  # last cell reached
+
+            # Validate name
+            content = content.strip()
+
+            if content in self.DOI_NAMES:
+                name = TitleIdKind.DOI
+            elif content in self.ISBN_NAMES:
+                name = TitleIdKind.ISBN
+            elif content.strip() in self.ISSN_NAMES:
+                name = TitleIdKind.Print_ISSN
+            elif content.strip() in self.EISSN_NAMES:
+                name = TitleIdKind.Online_ISSN
+            elif content.strip() in self.PROPRIETARY_NAMES:
+                name = TitleIdKind.Proprietary
+            elif content.strip() in self.URI_NAMES:
+                name = TitleIdKind.URI
+            else:
+                # empty or other field
+                continue
+
+            source = ItemIdSource(
+                name,
+                CoordRange(cell, Direction.DOWN).skip(1),
+                extract_params=self.ITEM_IDS_EXTRACT_PARAMS.get(name, ExtractParams()),
+            )
+            ids_sources[str(name)] = source
 
         return ids_sources
 

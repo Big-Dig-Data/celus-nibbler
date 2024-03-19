@@ -379,6 +379,16 @@ class TitleIdSource(JsonEncorder, ContentExtractorMixin):
 
 
 @dataclass(config=PydanticConfig)
+class ItemSource(TitleSource):
+    pass
+
+
+@dataclass(config=PydanticConfig)
+class ItemIdSource(TitleIdSource):
+    pass
+
+
+@dataclass(config=PydanticConfig)
 class ComposedDate(JsonEncorder):
     year: "DateSource"
     month: "DateSource"
