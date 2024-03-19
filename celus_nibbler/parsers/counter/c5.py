@@ -312,4 +312,60 @@ class IR_M1(BaseCounter5Parser):
         ]
         ITEM_COLUMN_NAMES = ["Title", "Item"]
 
+        ITEM_DOI_NAMES = Counter5HeaderArea.TITLE_DOI_NAMES
+        ITEM_ISBN_NAMES = Counter5HeaderArea.TITLE_ISBN_NAMES
+        ITEM_ISSN_NAMES = Counter5HeaderArea.TITLE_ISSN_NAMES
+        ITEM_EISSN_NAMES = Counter5HeaderArea.TITLE_EISSN_NAMES
+        ITEM_URI_NAMES = Counter5HeaderArea.TITLE_URI_NAMES
+        ITEM_PROPRIETARY_NAMES = Counter5HeaderArea.TITLE_PROPRIETARY_NAMES
+
+    areas = [Area]
+
+
+class IR(BaseCounter5Parser):
+    data_format = DataFormatDefinition(name="IR")
+
+    titles_to_skip: typing.List[str] = []
+    items_to_skip: typing.List[str] = ["Total", "All"]
+
+    platforms = [
+        "IEEEXplore",
+        "JSTOR",
+        "OUP",
+        "Ovid",
+        "Sage",
+    ]
+    heuristics = (
+        RegexCondition(re.compile(r"^Report_Name$"), Coord(0, 0))
+        & RegexCondition(re.compile(r"^Report_ID$"), Coord(1, 0))
+        & RegexCondition(re.compile(r"^IR$"), Coord(1, 1))
+    )
+
+    class Area(Counter5HeaderArea):
+        DIMENSION_NAMES_MAP = [
+            ("Article_Version", {"Article Version", "Article_Version"}),
+            ("Access_Type", {"Access Type", "Access_Type"}),
+            ("Access_Method", {"Access_Method", "Access Method"}),
+            ("Data_Type", {"Data Type", "Data_Type"}),
+            ("YOP", {"YOP", "Year of Publication", "Year_of_Publication"}),
+            ("Platform", {"Platform"}),
+            ("Publisher", {"Publisher"}),
+        ]
+        TITLE_COLUMN_NAMES = ["Parent_Title"]
+        ITEM_COLUMN_NAMES = ["Title", "Item"]
+
+        ITEM_DOI_NAMES = Counter5HeaderArea.TITLE_DOI_NAMES
+        ITEM_ISBN_NAMES = Counter5HeaderArea.TITLE_ISBN_NAMES
+        ITEM_ISSN_NAMES = Counter5HeaderArea.TITLE_ISSN_NAMES
+        ITEM_EISSN_NAMES = Counter5HeaderArea.TITLE_EISSN_NAMES
+        ITEM_URI_NAMES = Counter5HeaderArea.TITLE_URI_NAMES
+        ITEM_PROPRIETARY_NAMES = Counter5HeaderArea.TITLE_PROPRIETARY_NAMES
+
+        TITLE_DOI_NAMES = {"Parent_DOI"}
+        TITLE_ISBN_NAMES = {"Parent_ISBN"}
+        TITLE_ISSN_NAMES = {"Parent_Print_ISSN"}
+        TITLE_EISSN_NAMES = {"Parent_Online_ISSN"}
+        TITLE_URI_NAMES = {"Parent_URI"}
+        TITLE_PROPRIETARY_NAMES = {"Parent_Proprietary_ID"}
+
     areas = [Area]

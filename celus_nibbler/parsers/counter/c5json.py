@@ -6,6 +6,7 @@ from celus_nigiri import CounterRecord
 from celus_nigiri.counter5 import (
     Counter5DRReport,
     Counter5IRM1Report,
+    Counter5IRReport,
     Counter5PRReport,
     Counter5ReportBase,
     Counter5TRReport,
@@ -64,6 +65,10 @@ class NigiriIR_M1Area(NigiriBaseArea):
     nigiri_report_class = Counter5IRM1Report
 
 
+class NigiriIRArea(NigiriBaseArea):
+    nigiri_report_class = Counter5IRReport
+
+
 class BaseCounter5JsonParser(c5tabular.Counter5ParserAnalyzeMixin, BaseJsonParser):
     @property
     def name(self):
@@ -111,3 +116,11 @@ class IR_M1(BaseCounter5JsonParser):
     data_format = DataFormatDefinition(name="IR_M1")
 
     areas = [NigiriIR_M1Area]
+
+
+class IR(BaseCounter5JsonParser):
+    heuristics = SheetExtraCondition(field_name="Report_ID", value="IR")
+    platforms = c5tabular.IR.platforms
+    data_format = DataFormatDefinition(name="IR")
+
+    areas = [NigiriIRArea]

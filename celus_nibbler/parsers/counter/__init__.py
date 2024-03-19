@@ -28,32 +28,38 @@ logger = logging.getLogger(__name__)
 class CounterHeaderArea(BaseDateArea):
     HEADER_DATE_COL_START = 1
     MAX_HEADER_ROW = 50
-    DOI_NAMES = {
+    TITLE_DOI_NAMES = {
         "Book DOI",
         "DOI",
         "Journal DOI",
     }
-    ISBN_NAMES = {"ISBN"}
-    ISSN_NAMES = {
+    TITLE_ISBN_NAMES = {"ISBN"}
+    TITLE_ISSN_NAMES = {
         "ISSN",
         "Print ISSN",
         "Print_ISSN",
         "Printed_ISSN",
         "Printed ISSN",
     }
-    URI_NAMES = {
+    TITLE_URI_NAMES = {
         "URI",
     }
-    EISSN_NAMES = {
+    TITLE_EISSN_NAMES = {
         "Online ISSN",
         "Online_ISSN",
     }
-    PROPRIETARY_NAMES = {
+    TITLE_PROPRIETARY_NAMES = {
         "Proprietary",
         "Proprietary ID",
         "Proprietary_ID",
         "Proprietary Identifier",
     }
+    ITEM_DOI_NAMES: typing.Set[str] = set()
+    ITEM_ISBN_NAMES: typing.Set[str] = set()
+    ITEM_ISSN_NAMES: typing.Set[str] = set()
+    ITEM_URI_NAMES: typing.Set[str] = set()
+    ITEM_EISSN_NAMES: typing.Set[str] = set()
+    ITEM_PROPRIETARY_NAMES: typing.Set[str] = set()
     DIMENSION_NAMES_MAP = [
         ("Publisher", {"Publisher"}),
         ("Platform", {"Platform"}),
@@ -199,17 +205,17 @@ class CounterHeaderArea(BaseDateArea):
             # Validate name
             content = content.strip()
 
-            if content in self.DOI_NAMES:
+            if content in self.TITLE_DOI_NAMES:
                 name = TitleIdKind.DOI
-            elif content in self.ISBN_NAMES:
+            elif content in self.TITLE_ISBN_NAMES:
                 name = TitleIdKind.ISBN
-            elif content.strip() in self.ISSN_NAMES:
+            elif content.strip() in self.TITLE_ISSN_NAMES:
                 name = TitleIdKind.Print_ISSN
-            elif content.strip() in self.EISSN_NAMES:
+            elif content.strip() in self.TITLE_EISSN_NAMES:
                 name = TitleIdKind.Online_ISSN
-            elif content.strip() in self.PROPRIETARY_NAMES:
+            elif content.strip() in self.TITLE_PROPRIETARY_NAMES:
                 name = TitleIdKind.Proprietary
-            elif content.strip() in self.URI_NAMES:
+            elif content.strip() in self.TITLE_URI_NAMES:
                 name = TitleIdKind.URI
             else:
                 # empty or other field
@@ -268,17 +274,17 @@ class CounterHeaderArea(BaseDateArea):
             # Validate name
             content = content.strip()
 
-            if content in self.DOI_NAMES:
+            if content in self.ITEM_DOI_NAMES:
                 name = TitleIdKind.DOI
-            elif content in self.ISBN_NAMES:
+            elif content in self.ITEM_ISBN_NAMES:
                 name = TitleIdKind.ISBN
-            elif content.strip() in self.ISSN_NAMES:
+            elif content.strip() in self.ITEM_ISSN_NAMES:
                 name = TitleIdKind.Print_ISSN
-            elif content.strip() in self.EISSN_NAMES:
+            elif content.strip() in self.ITEM_EISSN_NAMES:
                 name = TitleIdKind.Online_ISSN
-            elif content.strip() in self.PROPRIETARY_NAMES:
+            elif content.strip() in self.ITEM_PROPRIETARY_NAMES:
                 name = TitleIdKind.Proprietary
-            elif content.strip() in self.URI_NAMES:
+            elif content.strip() in self.ITEM_URI_NAMES:
                 name = TitleIdKind.URI
             else:
                 # empty or other field

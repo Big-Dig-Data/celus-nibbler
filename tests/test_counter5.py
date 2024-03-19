@@ -509,6 +509,59 @@ from celus_nibbler.errors import NoParserMatchesHeuristics, TableException
                 "Reporting_Period": "Begin_Date=2016-01-01; End_Date=2016-03-31",
             },
         ),
+        (
+            "JSTOR",
+            "5/IR-sample.tsv",
+            "static.counter5.IR.Tabular",
+            True,
+            True,
+            {
+                "Created": "2019-04-25T11:38:17Z",
+                "Created_By": "Sample Institutional Repository",
+                "Institution_ID": "ISNI:1234123412341234",
+                "Institution_Name": "Client Demo Site",
+                "Release": "5",
+                "Report_ID": "IR",
+                "Report_Attributes": (
+                    "Attributes_To_Show=Authors|Publication_Date|Article_Version|"
+                    "Data_Type|YOP|Access_Type|Access_Method; "
+                    "Include_Parent_Details=True"
+                ),
+                "Report_Name": "Item Master Report",
+                "Reporting_Period": "Begin_Date=2016-01-01; End_Date=2016-03-31",
+            },
+        ),
+        (
+            "JSTOR",
+            "5/IR-sample.json",
+            "static.counter5.IR.Json",
+            True,
+            True,
+            {
+                "Created": "2019-04-25T11:38:17Z",
+                "Created_By": "Sample Institutional Repository",
+                "Customer_ID": "demo-1234",
+                "Institution_ID": [{"Type": "ISNI", "Value": "1234123412341234"}],
+                "Institution_Name": "Client Demo Site",
+                "Release": "5",
+                "Report_ID": "IR",
+                "Report_Filters": [
+                    {"Name": "Begin_Date", "Value": "2016-01-01"},
+                    {"Name": "End_Date", "Value": "2016-03-31"},
+                ],
+                "Report_Attributes": [
+                    {
+                        "Name": "Attributes_To_Show",
+                        "Value": (
+                            "Authors|Publication_Date|Article_Version|"
+                            "Data_Type|YOP|Access_Type|Access_Method"
+                        ),
+                    },
+                    {"Name": "Include_Parent_Details", "Value": "True"},
+                ],
+                "Report_Name": "Item Master Report",
+            },
+        ),
     ),
 )
 def test_success(platform, file, parser, heuristics, success, extras):

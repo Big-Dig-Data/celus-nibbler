@@ -144,6 +144,7 @@ class BaseParser(metaclass=ABCMeta):
     available_metrics: typing.Optional[typing.List[str]] = None
     on_metric_check_failed: TableException.Action = TableException.Action.SKIP
     titles_to_skip: typing.List[str] = ["Total"]
+    items_to_skip: typing.List[str] = ["Total"]
     dimensions_to_skip: typing.Dict[str, typing.List[str]] = {"Platform": ["Total"]}
     heuristics: typing.Optional[BaseCondition] = None
     metric_aliases: typing.Dict[str, str] = {}
@@ -315,6 +316,7 @@ class BaseTabularParser(BaseParser):
         item_ids_sources = area.item_ids_sources
         metrics_to_skip = [e.lower() for e in self.metrics_to_skip]
         titles_to_skip = [e.lower() for e in self.titles_to_skip]
+        items_to_skip = [e.lower() for e in self.items_to_skip]
         dimensions_to_skip = {k: [e.lower() for e in v] for k, v in self.dimensions_to_skip.items()}
         metric_value_extraction_overrides = self.metric_value_extraction_overrides
 
@@ -330,6 +332,8 @@ class BaseTabularParser(BaseParser):
 
                 if area.item_source:
                     item = area.item_source.extract(self.sheet, idx, row_offset=row_offset)
+                    if item is not None and item.lower() in items_to_skip:
+                        continue
                 else:
                     item = None
 

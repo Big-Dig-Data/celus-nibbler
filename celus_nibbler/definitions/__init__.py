@@ -43,6 +43,7 @@ DefinitionAnotation = Annotated[
         counter.DRDefinition,
         counter.PRDefinition,
         counter.IR_M1Definition,
+        counter.IRDefinition,
         MetricBasedDefinition,
         CelusFormatParserDefinition,
         GenericDefinition,
