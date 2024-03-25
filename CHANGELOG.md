@@ -4,6 +4,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [11.0.0] - 2024-03-25
+
+### Fixed
+- counter-like output of nibbler-eat
+
+### Added
+- limit the number of lines parsed via ExtractParams.max_idx
+- display better exception when Exclude_Monthly_Details=True is used for C5 reports
+- parser for C5 IR reports
+
+### Changed
+- pydantic updated to 2.6.4
+- make conter-like output look more like counter data
+- use ruff instead of black
+- become compatible with nigiri >=2.0.0
+- in item parsing of IR_M1 reports use CounterRecord.item instead of CounterRecord.title
+
 
 ## [10.1.3] - 2023-11-13
 
