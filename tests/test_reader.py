@@ -3,6 +3,7 @@ from pathlib import Path
 
 import pytest
 
+from celus_nibbler.errors import XlsError
 from celus_nibbler.reader import (
     CsvReader,
     CsvSheetReader,
@@ -487,6 +488,18 @@ class TestXlsReader:
                 "2023-11-01 00:00:00": "True",
             },
         ]
+
+    @pytest.mark.parametrize("io_wrapper", [no_io_wrapper, open_file_binary])
+    def test_xls_error(self, io_wrapper, monkeypatch):
+        from celus_nibbler.reader import xlrd
+
+        def raise_error(*args, **kwargs):
+            raise xlrd.compdoc.CompDocError("inner XLS error")
+
+        monkeypatch.setattr(xlrd, "open_workbook", raise_error)
+
+        with pytest.raises(XlsError):
+            XlsReader(io_wrapper(self.file_path))
 
 
 class TestJsonCounter5Reader:

@@ -58,6 +58,14 @@ class WrongFileFormatError(NibblerError):
         )
 
 
+class XlsError(NibblerError):
+    def __init__(self, xls_exception):
+        self.xls_exception = xls_exception
+
+    def __str__(self):
+        return f'XLS Exception: "{self.xls_exception}"'
+
+
 class JsonException(NibblerError):
     """
     Error while parsing JSON format

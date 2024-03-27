@@ -14,6 +14,8 @@ import openpyxl
 from celus_nigiri.counter5 import Counter5ReportBase
 from celus_nigiri.csv_detect import detect_csv_dialect, detect_file_encoding
 
+from .errors import XlsError
+
 logger = logging.getLogger(__name__)
 
 
@@ -394,37 +396,40 @@ else:
         """
 
         def __init__(self, source: Union[str, pathlib.Path, RawIOBase, BufferedIOBase]):
-            if isinstance(source, (RawIOBase, BufferedIOBase)):
-                workbook = xlrd.open_workbook(file_contents=source.read())
-            else:
-                workbook = xlrd.open_workbook(filename=source)
+            try:
+                if isinstance(source, (RawIOBase, BufferedIOBase)):
+                    workbook = xlrd.open_workbook(file_contents=source.read())
+                else:
+                    workbook = xlrd.open_workbook(filename=source)
 
-            self.sheets = []
+                self.sheets = []
 
-            # Store each sheet as temporary CSV file
-            for idx in range(workbook.nsheets):
-                sheet = workbook.sheet_by_index(idx)
+                # Store each sheet as temporary CSV file
+                for idx in range(workbook.nsheets):
+                    sheet = workbook.sheet_by_index(idx)
 
-                # write data to csv
-                f = tempfile.TemporaryFile("w+")
-                # unix dialect escapes all by default
-                dialect = csv.get_dialect("unix")
-                writer = csv.writer(f, dialect=dialect)
-                row_length = sheet.ncols
-                for rx in range(sheet.nrows):
-                    row = sheet.row(rx)
+                    # write data to csv
+                    f = tempfile.TemporaryFile("w+")
+                    # unix dialect escapes all by default
+                    dialect = csv.get_dialect("unix")
+                    writer = csv.writer(f, dialect=dialect)
+                    row_length = sheet.ncols
+                    for rx in range(sheet.nrows):
+                        row = sheet.row(rx)
 
-                    # Make sure that length of the row is extending
-                    current_length = len(row)
-                    extra_cells = [""] * (row_length - current_length)
+                        # Make sure that length of the row is extending
+                        current_length = len(row)
+                        extra_cells = [""] * (row_length - current_length)
 
-                    writer.writerow([self._cell_to_str(cell) for cell in row] + extra_cells)
-                f.seek(0)
+                        writer.writerow([self._cell_to_str(cell) for cell in row] + extra_cells)
+                    f.seek(0)
 
-                self.sheets.append(CsvSheetReader(idx, sheet.name, f, dialect="unix"))
-                workbook.unload_sheet(idx)
+                    self.sheets.append(CsvSheetReader(idx, sheet.name, f, dialect="unix"))
+                    workbook.unload_sheet(idx)
 
-            workbook.release_resources()
+                workbook.release_resources()
+            except xlrd.compdoc.CompDocError as e:
+                raise XlsError(e) from e
 
         def _cell_to_str(self, cell: xlrd.sheet.Cell) -> str:
             if cell.ctype in [xlrd.XL_CELL_EMPTY, xlrd.XL_CELL_BLANK, xlrd.XL_CELL_ERROR]:
