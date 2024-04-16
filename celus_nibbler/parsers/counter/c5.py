@@ -347,6 +347,7 @@ class IR(BaseCounter5Parser):
             ("Access_Type", {"Access Type", "Access_Type"}),
             ("Access_Method", {"Access_Method", "Access Method"}),
             ("Data_Type", {"Data Type", "Data_Type"}),
+            ("Parent_Data_Type", {"Parent Data Type", "Parent_Data_Type"}),
             ("YOP", {"YOP", "Year of Publication", "Year_of_Publication"}),
             ("Platform", {"Platform"}),
             ("Publisher", {"Publisher"}),
