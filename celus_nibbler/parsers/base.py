@@ -349,6 +349,7 @@ class BaseTabularParser(BaseParser):
                     date = None
 
                 dimension_data = {}
+                skip = False
                 for k, dimension_source in dimensions_sources:
                     dimension_text = dimension_source.extract(
                         self.sheet,
@@ -360,9 +361,12 @@ class BaseTabularParser(BaseParser):
                         dimension_text is not None
                         and dimension_text.lower() in dimensions_to_skip.get(k, [])
                     ):
-                        continue
-
+                        skip = True
+                        break
                     dimension_data[self.get_dimension_name(k)] = dimension_text
+
+                if skip:
+                    continue
 
                 title_ids = {}
                 for key in IDS:
