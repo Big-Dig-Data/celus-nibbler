@@ -8,11 +8,15 @@ from celus_nibbler.data_headers import DataHeaders
 from celus_nibbler.errors import TableException
 from celus_nibbler.parsers.base import BaseHeaderArea, BaseTabularParser
 from celus_nibbler.sources import (
+    AuthorsSource,
     DateSource,
     DimensionSource,
     ExtractParams,
+    ItemIdSource,
+    ItemSource,
     MetricSource,
     OrganizationSource,
+    PublicationDateSource,
     TitleIdSource,
     TitleSource,
 )
@@ -24,10 +28,14 @@ logger = logging.getLogger(__name__)
 
 class BaseCelusFormatArea(BaseHeaderArea):
     title_column_names: typing.List[str] = []
+    item_column_names: typing.List[str] = []
     organization_column_names: typing.List[str] = []
     metric_column_names: typing.List[str] = []
     default_metric: typing.Optional[str] = None
     title_ids_mapping: typing.Dict[str, str] = {}
+    item_ids_mapping: typing.Dict[str, str] = {}
+    item_publication_date_column_names: typing.List[str] = []
+    item_authors_column_names: typing.List[str] = []
     dimension_mapping: typing.Dict[str, str] = {}
     value_extract_params: ExtractParams = ExtractParams()
 
@@ -40,6 +48,9 @@ class BaseCelusFormatArea(BaseHeaderArea):
         # it to influence other parsers
         self.title_ids_sources = {}
         self.dimensions_sources = {}
+        self.item_ids_sources = {}
+        self.item_publication_date_source = None
+        self.item_authors_source = None
 
         date_source = None
         for cell in CoordRange(Coord(0, 0), Direction.RIGHT):
@@ -64,6 +75,11 @@ class BaseCelusFormatArea(BaseHeaderArea):
                     self.title_source = TitleSource(source=data_source)
                     continue
 
+                # Try item
+                if content in self.item_column_names:
+                    self.item_source = ItemSource(source=data_source)
+                    continue
+
                 # Try metric
                 if content in self.metric_column_names:
                     self.metric_source = MetricSource(source=data_source)
@@ -74,6 +90,16 @@ class BaseCelusFormatArea(BaseHeaderArea):
                     self.organization_source = OrganizationSource(source=data_source)
                     continue
 
+                # Try item authors
+                if content in self.item_authors_column_names:
+                    self.item_authors_source = AuthorsSource(source=data_source)
+                    continue
+
+                # Try item publication date
+                if content in self.item_publication_date_column_names:
+                    self.item_publication_date_source = PublicationDateSource(source=data_source)
+                    continue
+
                 # Try dimensions
                 if name := self.dimension_mapping.get(content):
                     self.dimensions_sources[name] = DimensionSource(name=name, source=data_source)
@@ -82,6 +108,11 @@ class BaseCelusFormatArea(BaseHeaderArea):
                 # Try title ids
                 if name := self.title_ids_mapping.get(content):
                     self.title_ids_sources[name] = TitleIdSource(name=name, source=data_source)
+                    continue
+
+                # Try title ids
+                if name := self.item_ids_mapping.get(content):
+                    self.item_ids_sources[name] = ItemIdSource(name=name, source=data_source)
                     continue
 
                 # Unknown column

@@ -20,7 +20,10 @@
   "areas": [
     {
       "kind": "non_counter.celus_format",
-      "title_column_names": ["Item"],
+      "title_column_names": ["Title"],
+      "item_column_names": ["Item"],
+      "item_authors_column_names": ["Authors"],
+      "item_publication_date_column_names": ["PubD"],
       "metric_column_names": ["Metric"],
       "default_metric": "MD",
       "organization_column_names": ["Institution"],
@@ -30,6 +33,10 @@
       },
       "title_ids_mapping": {
         "ISBN": "ISBN",
+        "eissn": "Online_ISSN"
+      },
+      "item_ids_mapping": {
+        "doi": "DOI",
         "eissn": "Online_ISSN"
       },
       "value_extract_params": {

@@ -135,6 +135,8 @@ class Role(str, Enum):
     METRIC = "metric"
     ORGANIZATION = "organization"
     VOID = "void"
+    AUTHORS = "authors"
+    PUBLICATION_DATE = "publication_date"
 
 
 @dataclass(config=PydanticConfig)
@@ -233,7 +235,9 @@ class ContentExtractorMixin:
             if validator := self.get_validator(validator):
                 if self.extract_params.default is not None:
                     res = validators.gen_default_validator(
-                        validator, self.extract_params.default, self.extract_params.blank_values
+                        validator,
+                        self.extract_params.default,
+                        self.extract_params.blank_values,
                     )(value=content).value
                 elif self.extract_params.skip_validation:
                     res = (content or "").strip()
@@ -427,8 +431,8 @@ class DateSource(JsonEncorder, ContentExtractorMixin):
         row_offset: typing.Optional[int] = None,
     ) -> typing.Any:
         if self.composed:
-            year_date = self.composed.year.extract(sheet, idx, row_offset)
-            month_date = self.composed.month.extract(sheet, idx, row_offset)
+            year_date = self.composed.year.extract(sheet, idx, row_offset=row_offset)
+            month_date = self.composed.month.extract(sheet, idx, row_offset=row_offset)
             return date(year_date.year, month_date.month, 1)
         else:
             return super().extract(sheet, idx, validator, row_offset)
@@ -459,3 +463,24 @@ class VoidSource(JsonEncorder, ContentExtractorMixin):
     extract_params: ExtractParams = field(default_factory=lambda: ExtractParams())
     cleanup_during_header_processing: bool = True
     role: typing.Literal[Role.VOID] = Role.VOID
+
+
+@dataclass(config=PydanticConfig)
+class AuthorsSource(JsonEncorder, ContentExtractorMixin):
+    source: Source
+    extract_params: ExtractParams = field(default_factory=lambda: ExtractParams())
+    cleanup_during_header_processing: bool = True
+    role: typing.Literal[Role.AUTHORS] = Role.AUTHORS
+
+    def get_validator(
+        self, validator: typing.Optional[typing.Type[validators.BaseValueModel]]
+    ) -> typing.Optional[typing.Type[validators.BaseValueModel]]:
+        return validators.AuthorsValidator
+
+
+@dataclass(config=PydanticConfig)
+class PublicationDateSource(JsonEncorder, ContentExtractorMixin):
+    source: Source
+    extract_params: ExtractParams = field(default_factory=lambda: ExtractParams())
+    cleanup_during_header_processing: bool = True
+    role: typing.Literal[Role.PUBLICATION_DATE] = Role.PUBLICATION_DATE

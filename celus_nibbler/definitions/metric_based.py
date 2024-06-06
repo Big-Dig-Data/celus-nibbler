@@ -6,11 +6,18 @@ from pydantic.dataclasses import dataclass
 from celus_nibbler.conditions import Condition
 from celus_nibbler.data_headers import DataFormatDefinition, DataHeaders
 from celus_nibbler.errors import TableException
-from celus_nibbler.parsers.non_counter.metric_based import BaseMetricArea, MetricBasedParser
+from celus_nibbler.parsers.non_counter.metric_based import (
+    BaseMetricArea,
+    MetricBasedParser,
+)
 from celus_nibbler.sources import (
+    AuthorsSource,
     DateSource,
     DimensionSource,
+    ItemIdSource,
+    ItemSource,
     OrganizationSource,
+    PublicationDateSource,
     SpecialExtraction,
     TitleIdSource,
     TitleSource,
@@ -26,6 +33,10 @@ class MetricBasedAreaDefinition(JsonEncorder, BaseAreaDefinition):
     dates: DateSource
     titles: typing.Optional[TitleSource] = None
     title_ids: typing.List[TitleIdSource] = field(default_factory=lambda: [])
+    items: typing.Optional[ItemSource] = None
+    item_ids: typing.List[ItemIdSource] = field(default_factory=lambda: [])
+    item_publication_date: typing.Optional[PublicationDateSource] = None
+    item_authors: typing.Optional[AuthorsSource] = None
     dimensions: typing.List[DimensionSource] = field(default_factory=lambda: [])
     organizations: typing.Optional[OrganizationSource] = None
     aggregate_same_records: bool = True
@@ -37,6 +48,10 @@ class MetricBasedAreaDefinition(JsonEncorder, BaseAreaDefinition):
         dates = self.dates
         titles = self.titles
         title_ids = self.title_ids
+        items = self.items
+        item_ids = self.item_ids
+        item_publication_date = self.item_publication_date
+        item_authors = self.item_authors
         dimensions = self.dimensions
         organizations = self.organizations
 
@@ -45,10 +60,17 @@ class MetricBasedAreaDefinition(JsonEncorder, BaseAreaDefinition):
             organization_source = organizations
             date_source = dates
             title_source = titles
+            item_source = items
+            item_publication_date_source = item_publication_date
+            item_authors_source = item_authors
 
             @property
             def title_ids_sources(self) -> typing.Dict[str, TitleIdSource]:
                 return {e.name: e for e in title_ids}
+
+            @property
+            def item_ids_sources(self) -> typing.Dict[str, ItemIdSource]:
+                return {e.name: e for e in item_ids}
 
             @property
             def dimensions_sources(self) -> typing.Dict[str, DimensionSource]:

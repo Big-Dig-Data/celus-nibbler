@@ -361,6 +361,8 @@ class IR(BaseCounter5Parser):
         ITEM_EISSN_NAMES = Counter5HeaderArea.TITLE_EISSN_NAMES
         ITEM_URI_NAMES = Counter5HeaderArea.TITLE_URI_NAMES
         ITEM_PROPRIETARY_NAMES = Counter5HeaderArea.TITLE_PROPRIETARY_NAMES
+        ITEM_AUTHORS_NAMES = {"Authors"}
+        ITEM_PUBLICATION_DATE_NAMES = {"Publication_Date"}
 
         TITLE_DOI_NAMES = {"Parent_DOI"}
         TITLE_ISBN_NAMES = {"Parent_ISBN"}

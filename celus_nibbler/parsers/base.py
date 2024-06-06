@@ -13,12 +13,14 @@ from celus_nibbler.data_headers import DataCells, DataFormatDefinition, DataHead
 from celus_nibbler.errors import TableException
 from celus_nibbler.reader import CsvSheetReader, JsonCounter5SheetReader, SheetReader
 from celus_nibbler.sources import (
+    AuthorsSource,
     DateSource,
     DimensionSource,
     ItemIdSource,
     ItemSource,
     MetricSource,
     OrganizationSource,
+    PublicationDateSource,
     SpecialExtraction,
     TitleIdSource,
     TitleSource,
@@ -77,6 +79,8 @@ class BaseTabularArea(BaseArea):
     title_ids_sources: typing.Dict[str, TitleIdSource] = {}
     item_source: typing.Optional[ItemSource] = None
     item_ids_sources: typing.Dict[str, ItemIdSource] = {}
+    item_publication_date_source: typing.Optional[PublicationDateSource] = None
+    item_authors_source: typing.Optional[AuthorsSource] = None
     dimensions_sources: typing.Dict[str, DimensionSource] = {}
     metric_source: typing.Optional[MetricSource] = None
     current_row_offset: int = 0
@@ -314,6 +318,8 @@ class BaseTabularParser(BaseParser):
         dimensions_sources = list(area.dimensions_sources.items())
         title_ids_sources = area.title_ids_sources
         item_ids_sources = area.item_ids_sources
+        item_authors_source = area.item_authors_source
+        item_publication_date_source = area.item_publication_date_source
         metrics_to_skip = [e.lower() for e in self.metrics_to_skip]
         titles_to_skip = [e.lower() for e in self.titles_to_skip]
         items_to_skip = [e.lower() for e in self.items_to_skip]
@@ -395,6 +401,20 @@ class BaseTabularParser(BaseParser):
                         if value:
                             item_ids[item_source.last_key] = value
 
+                if item_publication_date_source:
+                    item_publication_date = item_publication_date_source.extract(
+                        self.sheet, idx, row_offset=row_offset
+                    )
+                else:
+                    item_publication_date = None
+
+                if item_authors_source:
+                    item_authors = item_authors_source.extract(
+                        self.sheet, idx, row_offset=row_offset
+                    )
+                else:
+                    item_authors = None
+
             except TableException as e:
                 if e.action == TableException.Action.SKIP:
                     continue
@@ -406,7 +426,8 @@ class BaseTabularParser(BaseParser):
             for data_cell in data_cells:
                 try:
                     value_validator = metric_value_extraction_overrides.get(
-                        data_cell.header_data.metric or metric or "", SpecialExtraction.NO
+                        data_cell.header_data.metric or metric or "",
+                        SpecialExtraction.NO,
                     ).get_validator()
 
                     # No need to consider offset here, it was already been
@@ -423,6 +444,8 @@ class BaseTabularParser(BaseParser):
                         dimension_data=dimension_data,
                         title_ids=title_ids,
                         item_ids=item_ids,
+                        item_publication_date=item_publication_date,
+                        item_authors=item_authors,
                         start=start_month(date) if date else None,
                         end=end_month(date) if date else None,
                     )

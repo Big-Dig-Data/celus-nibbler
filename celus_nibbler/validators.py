@@ -1,8 +1,9 @@
 import datetime
 import re
 from functools import lru_cache
-from typing import Any, Optional, Tuple, Type, Union
+from typing import Any, List, Optional, Tuple, Type, Union
 
+from celus_nigiri.record import Author
 from dateutil import parser as datetimes_parser
 from isbnlib import get_isbnlike, is_isbn10, is_isbn13
 from pydantic import NonNegativeFloat, NonNegativeInt, field_validator
@@ -345,3 +346,28 @@ class StrictEISSN(BaseValueModel):
 @pydantic_dataclass(config=PydanticConfig)
 class ProprietaryID(BaseValueModel):
     value: str
+
+
+@pydantic_dataclass(config=PydanticConfig)
+class AuthorsValidator(BaseValueModel):
+    value: str
+
+    AUTHOR_REGEX = re.compile(r"^([^\(]+)\s+\(([a-zA-Z]+):([^\)]+)\)$")
+
+    @field_validator("value")
+    def authors(cls, authors: str) -> List[Author]:
+        res = []
+        splitted_authors = [e.strip() for e in authors.split(";")]
+        for sa in splitted_authors:
+            if match := cls.AUTHOR_REGEX.match(sa):
+                name, kind, code = match.groups()
+                if kind == "ISNI":
+                    res.append(Author(name=name, ISNI=code))
+                elif kind == "ORCID":
+                    res.append(Author(name=name, ORCID=code))
+                else:
+                    res.append(Author(name=name))
+            else:
+                res.append(Author(name=sa))
+
+        return res

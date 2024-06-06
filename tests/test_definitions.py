@@ -159,6 +159,23 @@ def test_date_based_area_definition():
             "cleanup_during_header_processing": True,
             "role": Role.METRIC,
         },
+        "titles": {
+            "source": {"coord": {"row": 2, "col": 0}, "direction": "down", "max_count": None},
+            "extract_params": {
+                "blank_values": [None, ""],
+                "regex": None,
+                "default": None,
+                "last_value_as_default": False,
+                "max_idx": None,
+                "skip_validation": False,
+                "special_extraction": "no",
+                "prefix": "",
+                "suffix": "",
+                "on_validation_error": "fail",
+            },
+            "cleanup_during_header_processing": True,
+            "role": Role.TITLE,
+        },
         "title_ids": [
             {
                 "name": "ISBN",
@@ -181,23 +198,10 @@ def test_date_based_area_definition():
                 "role": Role.TITLE_ID,
             }
         ],
-        "titles": {
-            "source": {"coord": {"row": 2, "col": 0}, "direction": "down", "max_count": None},
-            "extract_params": {
-                "blank_values": [None, ""],
-                "regex": None,
-                "default": None,
-                "last_value_as_default": False,
-                "max_idx": None,
-                "skip_validation": False,
-                "special_extraction": "no",
-                "prefix": "",
-                "suffix": "",
-                "on_validation_error": "fail",
-            },
-            "cleanup_during_header_processing": True,
-            "role": Role.TITLE,
-        },
+        "items": None,
+        "item_ids": [],
+        "item_authors": None,
+        "item_publication_date": None,
         "organizations": None,
         "aggregate_same_records": False,
     }
@@ -274,6 +278,27 @@ def test_errors():
                     },
                     "role": Role.METRIC,
                 },
+                "titles": {
+                    "source": {
+                        "coord": {"row": 2, "col": 0},
+                        "direction": "down",
+                        "max_count": None,
+                    },
+                    "extract_params": {
+                        "blank_values": [None, ""],
+                        "regex": None,
+                        "default": None,
+                        "last_value_as_default": False,
+                        "max_idx": None,
+                        "skip_validation": False,
+                        "special_extraction": "no",
+                        "prefix": "",
+                        "suffix": "",
+                        "on_validation_error": "fail",
+                    },
+                    "cleanup_during_header_processing": True,
+                    "role": Role.TITLE,
+                },
                 "title_ids": [
                     {
                         "name": "ISBN",
@@ -299,27 +324,10 @@ def test_errors():
                         "role": Role.TITLE_ID,
                     }
                 ],
-                "titles": {
-                    "source": {
-                        "coord": {"row": 2, "col": 0},
-                        "direction": "down",
-                        "max_count": None,
-                    },
-                    "extract_params": {
-                        "blank_values": [None, ""],
-                        "regex": None,
-                        "default": None,
-                        "last_value_as_default": False,
-                        "max_idx": None,
-                        "skip_validation": False,
-                        "special_extraction": "no",
-                        "prefix": "",
-                        "suffix": "",
-                        "on_validation_error": "fail",
-                    },
-                    "cleanup_during_header_processing": True,
-                    "role": Role.TITLE,
-                },
+                "items": None,
+                "item_ids": [],
+                "item_authors": None,
+                "item_publication_date": None,
                 "aggregate_same_records": False,
             }
         )
@@ -434,6 +442,10 @@ def test_errors():
                         "role": Role.TITLE_ID,
                     }
                 ],
+                "items": None,
+                "item_ids": [],
+                "item_authors": None,
+                "item_publication_date": None,
                 "aggregate_same_records": False,
             }
         )
@@ -672,6 +684,10 @@ def test_date_based_definition():
                         "role": Role.TITLE_ID,
                     },
                 ],
+                "items": None,
+                "item_ids": [],
+                "item_authors": None,
+                "item_publication_date": None,
                 "organizations": None,
                 "aggregate_same_records": False,
             },

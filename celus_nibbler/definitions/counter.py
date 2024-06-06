@@ -38,13 +38,15 @@ class BaseCounterAreaDefinition(BaseAreaDefinition):
     organization_column: typing.Optional[typing.List[str]] = None
     metric_column: typing.Optional[typing.List[str]] = None
     title_column: typing.Optional[typing.List[str]] = None
-
+    item_column: typing.Optional[typing.List[str]] = None
     organization_extract_params: typing.Optional[ExtractParams] = None
     metric_extract_params: typing.Optional[ExtractParams] = None
     date_extract_params: typing.Optional[ExtractParams] = None
     data_extract_params: typing.Optional[ExtractParams] = None
     title_extract_params: typing.Optional[ExtractParams] = None
     title_ids_extract_params: typing.Optional[typing.Dict[str, ExtractParams]] = None
+    item_extract_params: typing.Optional[ExtractParams] = None
+    item_ids_extract_params: typing.Optional[typing.Dict[str, ExtractParams]] = None
     dimensions_extract_params: typing.Optional[typing.Dict[str, ExtractParams]] = None
     aggregate_same_records: bool = False
 
@@ -63,6 +65,8 @@ def gen_area(
             METRIC_COLUMN_NAMES = definition.metric_column
         if definition.title_column is not None:
             TITLE_COLUMN_NAMES = definition.title_column
+        if definition.item_column is not None:
+            ITEM_COLUMN_NAMES = definition.item_column
 
         # Extra params
         if definition.organization_extract_params is not None:
@@ -77,6 +81,10 @@ def gen_area(
             TITLE_EXTRACT_PARAMS = definition.title_extract_params
         if definition.title_ids_extract_params is not None:
             TITLE_IDS_EXTRACT_PARAMS = definition.title_ids_extract_params
+        if definition.item_extract_params is not None:
+            ITEM_EXTRACT_PARAMS = definition.item_extract_params
+        if definition.item_ids_extract_params is not None:
+            ITEM_IDS_EXTRACT_PARAMS = definition.item_ids_extract_params
         if definition.dimensions_extract_params is not None:
             DIMENSIONS_EXTRACT_PARAMS = definition.dimensions_extract_params
 

@@ -10,6 +10,7 @@ from celus_nibbler.data_headers import DataHeaders
 from celus_nibbler.errors import TableException
 from celus_nibbler.parsers.non_counter.date_based import BaseDateArea
 from celus_nibbler.sources import (
+    AuthorsSource,
     DateSource,
     DimensionSource,
     ExtractParams,
@@ -17,6 +18,7 @@ from celus_nibbler.sources import (
     ItemSource,
     MetricSource,
     OrganizationSource,
+    PublicationDateSource,
     TitleIdKind,
     TitleIdSource,
     TitleSource,
@@ -60,6 +62,8 @@ class CounterHeaderArea(BaseDateArea):
     ITEM_URI_NAMES: typing.Set[str] = set()
     ITEM_EISSN_NAMES: typing.Set[str] = set()
     ITEM_PROPRIETARY_NAMES: typing.Set[str] = set()
+    ITEM_PUBLICATION_DATE_NAMES: typing.Set[str] = set()
+    ITEM_AUTHORS_NAMES: typing.Set[str] = set()
     DIMENSION_NAMES_MAP = [
         ("Publisher", {"Publisher"}),
         ("Platform", {"Platform"}),
@@ -298,6 +302,38 @@ class CounterHeaderArea(BaseDateArea):
             ids_sources[str(name)] = source
 
         return ids_sources
+
+    @property
+    @lru_cache
+    def item_authors_source(self) -> typing.Optional[AuthorsSource]:
+        if not self.ITEM_AUTHORS_NAMES:
+            return None
+
+        for cell in self.header_row:
+            try:
+                content = cell.content(self.sheet)
+            except TableException as e:
+                if e.action == TableException.Action.STOP:
+                    break  # last cell reached
+
+            if content.strip() in self.ITEM_AUTHORS_NAMES:
+                return AuthorsSource(CoordRange(cell, Direction.DOWN).skip(1))
+
+    @property
+    @lru_cache
+    def item_publication_date_source(self) -> typing.Optional[PublicationDateSource]:
+        if not self.ITEM_PUBLICATION_DATE_NAMES:
+            return None
+
+        for cell in self.header_row:
+            try:
+                content = cell.content(self.sheet)
+            except TableException as e:
+                if e.action == TableException.Action.STOP:
+                    break  # last cell reached
+
+            if content.strip() in self.ITEM_PUBLICATION_DATE_NAMES:
+                return PublicationDateSource(CoordRange(cell, Direction.DOWN).skip(1))
 
     @property
     @lru_cache

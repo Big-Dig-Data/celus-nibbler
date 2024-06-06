@@ -168,6 +168,8 @@ def parse(options, platform, dynamic_parsers):
                         "title_ids",
                         "item",
                         "item_ids",
+                        "item_publication_date",
+                        "item_authors",
                         "dimensions",
                         "metric",
                         "value",

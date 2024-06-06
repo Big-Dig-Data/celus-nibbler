@@ -20,10 +20,14 @@ from .base import BaseAreaDefinition, BaseNonCounterParserDefinition
 @dataclass(config=PydanticConfig)
 class CelusFormatAreaDefinition(JsonEncorder, BaseAreaDefinition):
     title_column_names: typing.List[str] = field(default_factory=lambda: [])
+    item_column_names: typing.List[str] = field(default_factory=lambda: [])
     organization_column_names: typing.List[str] = field(default_factory=lambda: [])
     metric_column_names: typing.List[str] = field(default_factory=lambda: [])
     default_metric: typing.Optional[str] = None
     title_ids_mapping: typing.Dict[str, str] = field(default_factory=lambda: {})
+    item_ids_mapping: typing.Dict[str, str] = field(default_factory=lambda: {})
+    item_publication_date_column_names: typing.List[str] = field(default_factory=lambda: [])
+    item_authors_column_names: typing.List[str] = field(default_factory=lambda: [])
     dimension_mapping: typing.Dict[str, str] = field(default_factory=lambda: {})
     value_extract_params: ExtractParams = field(default_factory=lambda: ExtractParams())
     aggregate_same_records: bool = False
@@ -33,10 +37,14 @@ class CelusFormatAreaDefinition(JsonEncorder, BaseAreaDefinition):
     def make_area(self):
         class Area(BaseCelusFormatArea):
             title_column_names = self.title_column_names
+            item_column_names = self.item_column_names
             organization_column_names = self.organization_column_names
             metric_column_names = self.metric_column_names
             default_metric = self.default_metric
             title_ids_mapping = self.title_ids_mapping
+            item_ids_mapping = self.item_ids_mapping
+            item_publication_date_column_names = self.item_publication_date_column_names
+            item_authors_column_names = self.item_authors_column_names
             dimension_mapping = self.dimension_mapping
             value_extract_params = self.value_extract_params
             aggregator = self.make_aggregator()

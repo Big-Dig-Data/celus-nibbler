@@ -9,10 +9,14 @@ from celus_nibbler.errors import TableException
 from celus_nibbler.parsers.base import BaseArea, BaseTabularParser
 from celus_nibbler.parsers.non_counter.generic import BaseGenericArea
 from celus_nibbler.sources import (
+    AuthorsSource,
     DateSource,
     DimensionSource,
+    ItemIdSource,
+    ItemSource,
     MetricSource,
     OrganizationSource,
+    PublicationDateSource,
     SpecialExtraction,
     TitleIdSource,
     TitleSource,
@@ -29,6 +33,10 @@ class GenericAreaDefinition(JsonEncorder, BaseAreaDefinition):
     dates: typing.Optional[DateSource] = None
     titles: typing.Optional[TitleSource] = None
     title_ids: typing.List[TitleIdSource] = field(default_factory=lambda: [])
+    items: typing.Optional[ItemSource] = None
+    item_ids: typing.List[ItemIdSource] = field(default_factory=lambda: [])
+    item_publication_date: typing.Optional[PublicationDateSource] = None
+    item_authors: typing.Optional[AuthorsSource] = None
     dimensions: typing.List[DimensionSource] = field(default_factory=lambda: [])
     organizations: typing.Optional[OrganizationSource] = None
     aggregate_same_records: bool = False
@@ -40,6 +48,10 @@ class GenericAreaDefinition(JsonEncorder, BaseAreaDefinition):
         headers = self.data_headers
         titles = self.titles
         title_ids = self.title_ids
+        items = self.items
+        item_ids = self.item_ids
+        item_publication_date = self.item_publication_date
+        item_authors = self.item_authors
         dimensions = self.dimensions
         metrics = self.metrics
         organizations = self.organizations
@@ -50,12 +62,19 @@ class GenericAreaDefinition(JsonEncorder, BaseAreaDefinition):
             date_source = dates
             organization_source = organizations
             title_source = titles
+            item_source = items
+            item_publication_date_source = item_publication_date
+            item_authors_source = item_authors
             metric_source = metrics
             aggregator = self.make_aggregator()
 
             @property
             def title_ids_sources(self) -> typing.Dict[str, TitleIdSource]:
                 return {e.name: e for e in title_ids}
+
+            @property
+            def item_ids_sources(self) -> typing.Dict[str, ItemIdSource]:
+                return {e.name: e for e in item_ids}
 
             @property
             def dimensions_sources(self) -> typing.Dict[str, DimensionSource]:
