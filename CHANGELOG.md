@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [11.2.0] - 2024-06-11
+
+### Added
+- parse item_authors and item_publication_date
+- make sure that item_* are included in all parsers
+
+
 ## [11.1.2] - 2024-05-10
 
 ### Changed
