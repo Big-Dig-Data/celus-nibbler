@@ -45,6 +45,9 @@ class Counter5ParserAnalyzeMixin:
 
 
 class BaseCounter5Parser(Counter5ParserAnalyzeMixin, BaseTabularParser):
+    titles_to_skip: typing.List[str] = []
+    items_to_skip: typing.List[str] = []
+
     data_format: DataFormatDefinition
     Area: typing.Type[CounterHeaderArea]
 
@@ -86,8 +89,6 @@ class BaseCounter5Parser(Counter5ParserAnalyzeMixin, BaseTabularParser):
 
 class DR(BaseCounter5Parser):
     data_format = DataFormatDefinition(name="DR")
-
-    titles_to_skip: typing.List[str] = ["Total", "All Databases", ""]
 
     platforms = [
         "AAAS",
@@ -191,8 +192,6 @@ class PR(BaseCounter5Parser):
 class TR(BaseCounter5Parser):
     data_format = DataFormatDefinition(name="TR")
 
-    titles_to_skip: typing.List[str] = ["Total", "All Titles", ""]
-
     platforms = [
         "AAAS",
         "AACN",
@@ -282,8 +281,6 @@ class TR(BaseCounter5Parser):
 class IR_M1(BaseCounter5Parser):
     data_format = DataFormatDefinition(name="IR_M1")
 
-    titles_to_skip: typing.List[str] = ["Total", "All", ""]
-
     platforms = [
         "Access Medicine",
         "Adam Matthew Digital",
@@ -324,9 +321,6 @@ class IR_M1(BaseCounter5Parser):
 
 class IR(BaseCounter5Parser):
     data_format = DataFormatDefinition(name="IR")
-
-    titles_to_skip: typing.List[str] = []
-    items_to_skip: typing.List[str] = ["Total", "All"]
 
     platforms = [
         "IEEEXplore",
