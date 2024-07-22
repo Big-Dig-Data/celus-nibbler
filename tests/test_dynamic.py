@@ -345,6 +345,13 @@ from celus_nibbler.parsers.dynamic import gen_parser
             "dynamic.non_counter.simple_format.dimension_skip",
             False,
         ),
+        (
+            "Platform1",
+            "metrics-fallback",
+            "csv",
+            "dynamic.non_counter.simple_format.metrics-fallback",
+            False,
+        ),
     ),
 )
 def test_dynamic(platform, filename, ext, parser, ignore_order):

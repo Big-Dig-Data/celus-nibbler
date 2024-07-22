@@ -157,6 +157,7 @@ class ContentExtractorMixin:
     source: Source
     extract_params: ExtractParams
     cleanup_during_header_processing: bool
+    fallback: typing.Optional["ContentExtractorMixin"]
     role: Role
     _last_sheet_idx = None
     _last_source = None
@@ -186,9 +187,16 @@ class ContentExtractorMixin:
         validator: typing.Optional[typing.Type[validators.BaseValueModel]] = None,
         row_offset: typing.Optional[int] = None,
     ) -> typing.Any:
-        value = self._extract(sheet, idx, validator, row_offset)
-        if self.extract_params.last_value_as_default:
-            self.extract_params.default = value
+        try:
+            value = self._extract(sheet, idx, validator, row_offset)
+            if self.extract_params.last_value_as_default:
+                self.extract_params.default = value
+
+        except TableException as e:
+            if e.action == TableException.Action.PASS and self.fallback:
+                return self.fallback.extract(sheet, idx, validator, row_offset)
+            else:
+                raise
         return value
 
     def get_validator(
@@ -294,6 +302,7 @@ class DimensionSource(JsonEncorder, ContentExtractorMixin):
     name: str
     source: Source
     extract_params: ExtractParams = field(default_factory=lambda: ExtractParams())
+    fallback: typing.Optional["DimensionSource"] = None
     cleanup_during_header_processing: bool = True
     role: typing.Literal[Role.DIMENSION] = Role.DIMENSION
 
@@ -306,6 +315,7 @@ class DimensionSource(JsonEncorder, ContentExtractorMixin):
 class MetricSource(JsonEncorder, ContentExtractorMixin):
     source: Source
     extract_params: ExtractParams = field(default_factory=lambda: ExtractParams())
+    fallback: typing.Optional["MetricSource"] = None
     cleanup_during_header_processing: bool = True
     role: typing.Literal[Role.METRIC] = Role.METRIC
 
@@ -318,6 +328,7 @@ class MetricSource(JsonEncorder, ContentExtractorMixin):
 class OrganizationSource(JsonEncorder, ContentExtractorMixin):
     source: Source
     extract_params: ExtractParams = field(default_factory=lambda: ExtractParams())
+    fallback: typing.Optional["OrganizationSource"] = None
     cleanup_during_header_processing: bool = True
     role: typing.Literal[Role.ORGANIZATION] = Role.ORGANIZATION
 
@@ -330,6 +341,7 @@ class OrganizationSource(JsonEncorder, ContentExtractorMixin):
 class TitleSource(JsonEncorder, ContentExtractorMixin):
     source: Source
     extract_params: ExtractParams = field(default_factory=lambda: ExtractParams())
+    fallback: typing.Optional["TitleSource"] = None
     cleanup_during_header_processing: bool = True
     role: typing.Literal[Role.TITLE] = Role.TITLE
 
@@ -367,18 +379,15 @@ class TitleIdSource(JsonEncorder, ContentExtractorMixin):
         row_offset: typing.Optional[int] = None,
     ) -> typing.Any:
         self._last_key = None
+        res = super().extract(sheet, idx, validator, row_offset)
+        # Update last key from fallback
+        if fallback := self.fallback:
+            if last_key := fallback._last_key:
+                self._last_key = last_key
+                fallback._last_key = None  # clean fallback
+                return res
 
-        try:
-            res = super().extract(sheet, idx, validator, row_offset)
-            self._last_key = self.name
-
-        except TableException as e:
-            if e.action == TableException.Action.PASS and self.fallback:
-                res = self.fallback.extract(sheet, idx, validator, row_offset)
-                self._last_key = self.fallback.last_key
-            else:
-                raise
-
+        self._last_key = self.name
         return res
 
 
@@ -402,6 +411,7 @@ class ComposedDate(JsonEncorder):
 class DateSource(JsonEncorder, ContentExtractorMixin):
     source: Source
     extract_params: ExtractParams = field(default_factory=lambda: ExtractParams())
+    fallback: typing.Optional["DateSource"] = None
     cleanup_during_header_processing: bool = True
     preferred_date_format: DateFormat = DateFormat.US
     composed: typing.Optional[ComposedDate] = None
@@ -444,6 +454,7 @@ rebuild_dataclass(ComposedDate, force=True)
 @dataclass(config=PydanticConfig)
 class ValueSource(JsonEncorder, ContentExtractorMixin):
     source: Source
+    fallback: typing.Optional["ValueSource"] = None
     allow_negative: bool = False
     extract_params: ExtractParams = field(default_factory=lambda: ExtractParams())
     cleanup_during_header_processing: bool = True
@@ -461,6 +472,7 @@ class ValueSource(JsonEncorder, ContentExtractorMixin):
 class VoidSource(JsonEncorder, ContentExtractorMixin):
     source: Source
     extract_params: ExtractParams = field(default_factory=lambda: ExtractParams())
+    fallback: typing.Optional["VoidSource"] = None
     cleanup_during_header_processing: bool = True
     role: typing.Literal[Role.VOID] = Role.VOID
 
@@ -469,6 +481,7 @@ class VoidSource(JsonEncorder, ContentExtractorMixin):
 class AuthorsSource(JsonEncorder, ContentExtractorMixin):
     source: Source
     extract_params: ExtractParams = field(default_factory=lambda: ExtractParams())
+    fallback: typing.Optional["AuthorsSource"] = None
     cleanup_during_header_processing: bool = True
     role: typing.Literal[Role.AUTHORS] = Role.AUTHORS
 
@@ -482,5 +495,6 @@ class AuthorsSource(JsonEncorder, ContentExtractorMixin):
 class PublicationDateSource(JsonEncorder, ContentExtractorMixin):
     source: Source
     extract_params: ExtractParams = field(default_factory=lambda: ExtractParams())
+    fallback: typing.Optional["PublicationDateSource"] = None
     cleanup_during_header_processing: bool = True
     role: typing.Literal[Role.PUBLICATION_DATE] = Role.PUBLICATION_DATE
