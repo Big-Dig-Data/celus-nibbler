@@ -43,14 +43,10 @@ IDS = {
 class BaseArea(metaclass=ABCMeta):
     aggregator: BaseAggregator = NoAggregator()
 
-    def __init__(self, sheet: SheetReader, platform: str):
+    def __init__(self, sheet: SheetReader, platform: str, **extras):
         self.sheet = sheet
         self.platform = platform
-        self.setup()
-
-    def setup(self):
-        """To be overiden. It should serve to read fixed variables from the list"""
-        pass
+        self.extras = extras
 
     def prepare_record(
         self,
@@ -59,13 +55,17 @@ class BaseArea(metaclass=ABCMeta):
         return record
 
     @abstractmethod
-    def get_months(self, row_offset: typing.Optional[int]) -> typing.List[datetime.date]:
+    def get_months(self) -> typing.List[datetime.date]:
         pass
 
     @property
     @abstractmethod
     def dimensions(self) -> typing.List[str]:
         pass
+
+    @classmethod
+    def make_areas(cls, sheet, platform: str, **extras) -> typing.List["BaseArea"]:
+        return [cls(sheet, platform, **extras)]
 
 
 class BaseJsonArea(BaseArea):
@@ -83,16 +83,49 @@ class BaseTabularArea(BaseArea):
     item_authors_source: typing.Optional[AuthorsSource] = None
     dimensions_sources: typing.Dict[str, DimensionSource] = {}
     metric_source: typing.Optional[MetricSource] = None
-    current_row_offset: int = 0
+    row_offset: int = 0
+    max_areas_generated: typing.Optional[int] = 1
+    min_valid_areas: int = 1
+
+    def __init__(self, sheet: SheetReader, platform: str, initial_row_offset: int = 0, **extras):
+        super().__init__(sheet, platform)
+        # The offset of area is initially set to parser's offset
+        self.row_offset = initial_row_offset
 
     @abstractmethod
     def find_data_cells(
         self,
-        row_offset: typing.Optional[int],
         get_metric_name: typing.Callable[[str], str],
         check_metric_name: typing.Callable[[str, str], None],
     ) -> typing.List[DataCells]:
         pass
+
+    @classmethod
+    def make_areas(
+        cls, sheet, platform: str, initial_row_offset: int = 0, **extras
+    ) -> typing.List["BaseArea"]:
+        logger.debug("Preparing areas for %s", cls)
+        areas: typing.List["BaseTabularArea"] = []
+        row_offset = initial_row_offset
+        while not cls.max_areas_generated or len(areas) < cls.max_areas_generated:
+            area = cls(sheet, platform, initial_row_offset=row_offset)
+            try:
+                # Try to detect the header
+                area.find_data_cells(lambda x: x, lambda x, y: None)
+            except TableException as e:
+                # expect at least min_valid_areas => gracefully stop
+                if e.reason == "no-header-data-found" and cls.min_valid_areas <= len(areas):
+                    break
+                # Otherwise raise and error
+                raise
+
+            logger.debug("Area with offset %d was prepared for %s", row_offset, cls)
+            areas.append(area)
+
+            # Recalculate offset
+            row_offset = area.row_offset + 1
+
+        return areas
 
 
 class BaseHeaderArea(BaseTabularArea):
@@ -103,14 +136,13 @@ class BaseHeaderArea(BaseTabularArea):
 
     def find_data_cells(
         self,
-        row_offset: typing.Optional[int],
         get_metric_name: typing.Callable[[str], str],
         check_metric_name: typing.Callable[[str, str], None],
     ) -> typing.List[DataCells]:
         offset, data_cells = self.data_headers.find_data_cells(
-            self.sheet, row_offset, get_metric_name, check_metric_name
+            self.sheet, self.row_offset, get_metric_name, check_metric_name
         )
-        self.current_row_offset = offset
+        self.row_offset = offset  # Update detected offset
         return data_cells
 
     def _get_months_from_column(
@@ -134,13 +166,8 @@ class BaseHeaderArea(BaseTabularArea):
 
         return list(res)
 
-    def _get_months_from_header(
-        self, row_offset: typing.Optional[int]
-    ) -> typing.List[datetime.date]:
-        return [
-            e.header_data.start
-            for e in self.find_data_cells(row_offset, lambda x, y: y, lambda x, y: None)
-        ]
+    def _get_months_from_header(self) -> typing.List[datetime.date]:
+        return [e.header_data.start for e in self.find_data_cells(lambda x: x, lambda x: None)]
 
 
 class BaseParser(metaclass=ABCMeta):
@@ -155,7 +182,7 @@ class BaseParser(metaclass=ABCMeta):
     metric_value_extraction_overrides: typing.Dict[str, SpecialExtraction] = {}
     dimension_aliases: typing.Dict[str, str] = {}
     possible_row_offsets: typing.List[int] = [0]
-    current_row_offset: int = 0
+    row_offset: int = 0
 
     @classmethod
     @abstractmethod
@@ -180,7 +207,11 @@ class BaseParser(metaclass=ABCMeta):
 
     def get_areas(self) -> typing.List[BaseArea]:
         """List of all data source areas withing the sheet"""
-        return [area_class(self.sheet, self.platform) for area_class in self.areas]
+        return list(
+            itertools.chain(
+                *(area_class.make_areas(self.sheet, self.platform) for area_class in self.areas)
+            )
+        )
 
     def __init__(self, sheet: SheetReader, platform: str):
         self.sheet = sheet
@@ -191,7 +222,7 @@ class BaseParser(metaclass=ABCMeta):
             for row_offset in self.possible_row_offsets:
                 if self.heuristics.check(self.sheet, row_offset):
                     # Set detect offset to be used later
-                    self.current_row_offset = row_offset
+                    self.row_offset = row_offset
                     return True
             return False
         return True
@@ -231,7 +262,7 @@ class BaseParser(metaclass=ABCMeta):
         pass
 
     def get_months(self) -> typing.List[typing.List[datetime.date]]:
-        return [e.get_months(self.current_row_offset) for e in self.get_areas()]
+        return [e.get_months() for e in self.get_areas()]
 
     def get_extras(self) -> dict:
         return {}
@@ -259,6 +290,19 @@ class BaseTabularParser(BaseParser):
     dimensions_validators: typing.Dict[str, typing.Type[validators.BaseValueModel]] = {
         "Platform": validators.Platform,
     }
+
+    def get_areas(self) -> typing.List[BaseArea]:
+        # We need to override this method to inject row_offset
+        return list(
+            itertools.chain(
+                *(
+                    area_class.make_areas(
+                        self.sheet, self.platform, initial_row_offset=self.row_offset
+                    )
+                    for area_class in self.areas
+                )
+            )
+        )
 
     @classmethod
     def sheet_reader_classes(cls):
@@ -303,15 +347,13 @@ class BaseTabularParser(BaseParser):
                     self.on_metric_check_failed,
                 )
 
-            data_cells = area.find_data_cells(
-                self.current_row_offset, self.get_metric_name, check_metric_name
-            )
+            data_cells = area.find_data_cells(self.get_metric_name, check_metric_name)
         except TableException as e:
             if e.action == TableException.Action.FAIL:
                 raise
 
-        # Add area offset to offset
-        row_offset = self.current_row_offset + area.current_row_offset
+        # Area offset should be absolute
+        row_offset = area.row_offset
 
         # Store title_ids and dimensions sources
         # so it can be reused in the for-cycle

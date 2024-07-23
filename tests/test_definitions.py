@@ -209,6 +209,8 @@ def test_date_based_area_definition():
         "item_publication_date": None,
         "organizations": None,
         "aggregate_same_records": False,
+        "max_areas_generated": 1,
+        "min_valid_areas": 1,
     }
 
     converted_definition = DateBasedAreaDefinition.parse(definition_dict)
@@ -336,6 +338,8 @@ def test_errors():
                 "item_authors": None,
                 "item_publication_date": None,
                 "aggregate_same_records": False,
+                "max_areas_generated": 1,
+                "min_valid_areas": 1,
             }
         )
 
@@ -457,6 +461,8 @@ def test_errors():
                 "item_authors": None,
                 "item_publication_date": None,
                 "aggregate_same_records": False,
+                "max_areas_generated": 1,
+                "min_valid_areas": 1,
             }
         )
 
@@ -705,6 +711,8 @@ def test_date_based_definition():
                 "item_publication_date": None,
                 "organizations": None,
                 "aggregate_same_records": False,
+                "max_areas_generated": 1,
+                "min_valid_areas": 1,
             },
         ],
         "metric_aliases": [],

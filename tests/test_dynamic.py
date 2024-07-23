@@ -352,6 +352,13 @@ from celus_nibbler.parsers.dynamic import gen_parser
             "dynamic.non_counter.simple_format.metrics-fallback",
             False,
         ),
+        (
+            "Platform1",
+            "dynamic_areas",
+            "csv",
+            "dynamic.non_counter.simple_format.dynamic_areas",
+            False,
+        ),
     ),
 )
 def test_dynamic(platform, filename, ext, parser, ignore_order):
@@ -370,12 +377,15 @@ def test_dynamic(platform, filename, ext, parser, ignore_order):
         reader = csv.reader(f)
         if ignore_order:
             reader = iter(sorted(reader))
+
         poops = eat(input_path, platform, parsers=[parser], dynamic_parsers=dynamic_parsers)
+
         for poop in [poop for poop in poops if isinstance(poop, Poop)]:
             # Aggregated records might be out of order, we need to sort it first
             records = (
                 sorted(poop.records(), key=lambda x: x.as_csv()) if ignore_order else poop.records()
             )
+            records = list(records)
 
             for idx, record in enumerate(records):
                 in_file = next(reader)
@@ -467,6 +477,13 @@ def test_dynamic(platform, filename, ext, parser, ignore_order):
             "csv",
             "dynamic.non_counter.simple_format.available-metrics2-fail",
             TableException(sheet=0, reason="wrong-metric-found", value="Metric3"),
+        ),
+        (
+            "Platform1",
+            "dynamic_areas-min_valid",
+            "csv",
+            "dynamic.non_counter.simple_format.dynamic_areas-min_valid",
+            TableException(sheet=0, reason="no-header-data-found", row=2, col=1),
         ),
     ),
 )

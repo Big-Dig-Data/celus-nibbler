@@ -165,11 +165,11 @@ class BaseCelusFormatArea(BaseHeaderArea):
 
     def dimensions(self) -> typing.List[str]:
         # populate dimensions_sources
-        self.find_data_cells(self.sheet, self.current_row_offset, lambda x, y: y, lambda x, y: None)
+        self.find_data_cells(self.sheet, lambda x: x, lambda x: None)
         return list(self.dimensions_sources.keys())
 
-    def get_months(self, row_offset: typing.Optional[int]) -> typing.List[datetime.date]:
-        return self._get_months_from_header(row_offset)
+    def get_months(self) -> typing.List[datetime.date]:
+        return self._get_months_from_header()
 
 
 class BaseCelusFormatParser(BaseNonCounterParser, BaseTabularParser):

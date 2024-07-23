@@ -270,7 +270,7 @@ class DataHeaders(JsonEncorder):
 
         # Iterate until condition matches or an exception is raised
         for offset in range(
-            initial_row_offset, MAX_HEADER_OFFSET_LOOKUP_COUNT + initial_row_offset
+            initial_row_offset, min(MAX_HEADER_OFFSET_LOOKUP_COUNT + initial_row_offset, len(sheet))
         ):
             try:
                 if self.condition.check(sheet, offset):
@@ -278,7 +278,7 @@ class DataHeaders(JsonEncorder):
 
             except TableException as e:
                 raise TableException(
-                    row=None, col=None, sheet=e.sheet, reason="failed-to-detect-data-header"
+                    row=None, col=None, sheet=e.sheet, reason="no-header-data-found"
                 ) from e
 
     def find_data_cells(
@@ -378,7 +378,7 @@ class DataHeaders(JsonEncorder):
                 reason="no-header-data-found",
             )
 
-        return absolute_row_offset - (row_offset or 0), res
+        return absolute_row_offset, res
 
 
 @dataclass

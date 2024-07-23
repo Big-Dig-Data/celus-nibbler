@@ -167,8 +167,10 @@ class CsvSheetReader(SheetReader):
         else:
             raise StopIteration
 
+    @lru_cache
     def __len__(self):
         res = 0
+        self.update_window(0)
         while self.window:
             res += len(self.window)
             self.update_window(self.window_start + self.window_size)

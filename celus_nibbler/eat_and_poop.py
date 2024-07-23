@@ -349,12 +349,12 @@ def findparser(
         raise NoParserForFileTypeFound(sheet.sheet_idx)
 
     parser_instances = [(name, parser(sheet, platform=platform)) for name, parser in parser_classes]
-    if use_heuristics:
-        parser_instances_filtered = [
-            (name, parser) for (name, parser) in parser_instances if parser.heuristic_check()
-        ]
-    else:
-        parser_instances_filtered = parser_instances
+    parser_instances_filtered = [
+        (name, parser)
+        for (name, parser) in parser_instances
+        if parser.heuristic_check() or not use_heuristics
+        # Note that we need to always perform heuristic check in order to calculate dynamic offsets
+    ]
 
     if len(parser_instances_filtered) < 1:
         logger.warning("no parser found")

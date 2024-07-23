@@ -36,6 +36,8 @@ class DateMetricBasedAreaDefinition(JsonEncorder, BaseAreaDefinition):
     organizations: typing.Optional[OrganizationSource] = None
     dimensions: typing.List[DimensionSource] = field(default_factory=lambda: [])
     aggregate_same_records: bool = True
+    max_areas_generated: typing.Optional[int] = 1
+    min_valid_areas: typing.Optional[int] = 1
 
     kind: typing.Literal["non_counter.date_metric_based"] = "non_counter.date_metric_based"
 
@@ -49,6 +51,8 @@ class DateMetricBasedAreaDefinition(JsonEncorder, BaseAreaDefinition):
         item_authors = self.item_authors
         dimensions = self.dimensions
         organizations = self.organizations
+        self_max_areas_generated = self.max_areas_generated
+        self_min_valid_areas = self.min_valid_areas
 
         class Area(BaseDateMetricArea):
             data_headers = headers
@@ -57,6 +61,8 @@ class DateMetricBasedAreaDefinition(JsonEncorder, BaseAreaDefinition):
             item_source = items
             item_publication_date_source = item_publication_date
             item_authors_source = item_authors
+            max_areas_generated = self_max_areas_generated
+            min_valid_areas = self_min_valid_areas
 
             @property
             def title_ids_sources(self) -> typing.Dict[str, TitleIdSource]:

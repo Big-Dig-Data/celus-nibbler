@@ -26,8 +26,8 @@ logger = logging.getLogger(__name__)
 class BaseDateMetricArea(BaseHeaderArea, metaclass=ABCMeta):
     aggregator = SameAggregator()
 
-    def get_months(self, row_offset: typing.Optional[int]) -> typing.List[datetime.date]:
-        return self._get_months_from_header(row_offset)
+    def get_months(self) -> typing.List[datetime.date]:
+        return self._get_months_from_header()
 
 
 class DateMetricBasedParser(BaseNonCounterParser):

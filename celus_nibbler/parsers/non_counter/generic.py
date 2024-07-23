@@ -8,12 +8,12 @@ from .base import BaseNonCounterParser
 
 
 class BaseGenericArea(BaseHeaderArea, metaclass=ABCMeta):
-    def get_months(self, row_offset: typing.Optional[int]) -> typing.List[datetime.date]:
+    def get_months(self) -> typing.List[datetime.date]:
         if self.date_source is None:
             # Extract months from header_data
-            return self._get_months_from_column(row_offset)
+            return self._get_months_from_column()
         else:
-            return self._get_months_from_header(row_offset)
+            return self._get_months_from_header()
 
 
 class BaseGenericParser(BaseNonCounterParser):
