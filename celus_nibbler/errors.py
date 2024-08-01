@@ -217,3 +217,7 @@ class SameRecordsInOutput(RecordError):
 
 class NegativeValueInOutput(RecordError):
     pass
+
+
+class MissingDateInOutput(RecordError):
+    pass

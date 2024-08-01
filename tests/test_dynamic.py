@@ -8,7 +8,12 @@ from celus_nigiri import CounterRecord
 
 from celus_nibbler import Poop, eat
 from celus_nibbler.definitions import Definition
-from celus_nibbler.errors import NegativeValueInOutput, SameRecordsInOutput, TableException
+from celus_nibbler.errors import (
+    MissingDateInOutput,
+    NegativeValueInOutput,
+    SameRecordsInOutput,
+    TableException,
+)
 from celus_nibbler.parsers import available_parsers
 from celus_nibbler.parsers.dynamic import gen_parser
 
@@ -484,6 +489,21 @@ def test_dynamic(platform, filename, ext, parser, ignore_order):
             "csv",
             "dynamic.non_counter.simple_format.dynamic_areas-min_valid",
             TableException(sheet=0, reason="no-header-data-found", row=2, col=1),
+        ),
+        (
+            "Platform1",
+            "missing-dates",
+            "csv",
+            "dynamic.non_counter.simple_format.missing-dates",
+            MissingDateInOutput(
+                idx=0,
+                record=CounterRecord(
+                    start=None,
+                    end=None,
+                    metric="M1",
+                    value=1,
+                ),
+            ),
         ),
     ),
 )

@@ -10,7 +10,7 @@ from celus_nibbler import validators
 from celus_nibbler.aggregator import BaseAggregator, NoAggregator
 from celus_nibbler.conditions import BaseCondition
 from celus_nibbler.data_headers import DataCells, DataFormatDefinition, DataHeaders
-from celus_nibbler.errors import TableException
+from celus_nibbler.errors import MissingDateInOutput, TableException
 from celus_nibbler.reader import CsvSheetReader, JsonCounter5SheetReader, SheetReader
 from celus_nibbler.sources import (
     AuthorsSource,
@@ -53,6 +53,14 @@ class BaseArea(metaclass=ABCMeta):
         record: CounterRecord,
     ) -> CounterRecord:
         return record
+
+    def check_record(
+        self,
+        idx: int,
+        record: CounterRecord,
+    ):
+        if record.start is None:
+            raise MissingDateInOutput(idx, record)
 
     @abstractmethod
     def get_months(self) -> typing.List[datetime.date]:
@@ -335,6 +343,7 @@ class BaseTabularParser(BaseParser):
     def _parse_area(
         self, area: BaseTabularArea
     ) -> typing.Generator[typing.Tuple[int, CounterRecord], None, None]:
+        count = 0
         metrics_to_skip = [e.lower() for e in self.metrics_to_skip]
         try:
 
@@ -494,7 +503,9 @@ class BaseTabularParser(BaseParser):
                     record = data_cell.merge_into_record(record)
                     record = area.prepare_record(record)
                     logger.debug("Parsed %s", record)
+                    area.check_record(count, record)
                     yield record
+                    count += 1
 
                 except TableException as e:
                     if e.action == TableException.Action.SKIP:
