@@ -182,7 +182,12 @@ class DataHeaderRule(JsonEncorder):
     role_source_offset: int = 0
 
     def process(
-        self, sheet: SheetReader, idx: int, role: Role, row_offset: typing.Optional[int]
+        self,
+        sheet: SheetReader,
+        idx: int,
+        role: Role,
+        parser_row_offset: typing.Optional[int],
+        area_row_offset: typing.Optional[int],
     ) -> typing.Tuple[DataHeaderAction, typing.Optional[typing.Any]]:
         if role.cleanup_during_header_processing:
             role = deepcopy(role)
@@ -191,7 +196,12 @@ class DataHeaderRule(JsonEncorder):
             role.extract_params = deepcopy(self.role_extract_params_override)
 
         try:
-            value = role.extract(sheet, idx + self.role_source_offset, row_offset=row_offset)
+            value = role.extract(
+                sheet,
+                idx + self.role_source_offset,
+                parser_row_offset=parser_row_offset,
+                area_row_offset=area_row_offset,
+            )
             if self.condition is None or self.condition.check(value, idx):
                 return self.on_condition_passed, value
             else:
@@ -262,36 +272,42 @@ class DataHeaders(JsonEncorder):
         return DataHeaderAction.PROCEED
 
     def prepare_row_offset(
-        self, sheet: SheetReader, initial_row_offset: typing.Optional[int]
+        self, sheet: SheetReader, parser_row_offset: typing.Optional[int]
     ) -> int:
+        parser_row_offset = parser_row_offset or 0
         if not self.condition:
             # No condition specified -> use initial
-            return initial_row_offset or 0
+            return parser_row_offset
 
         # Iterate until condition matches or an exception is raised
-        for offset in range(
-            initial_row_offset, min(MAX_HEADER_OFFSET_LOOKUP_COUNT + initial_row_offset, len(sheet))
+        for area_offset in range(
+            parser_row_offset, min(MAX_HEADER_OFFSET_LOOKUP_COUNT + parser_row_offset, len(sheet))
         ):
             try:
-                if self.condition.check(sheet, offset):
-                    return offset
+                if self.condition.check(sheet, parser_row_offset, area_offset):
+                    return area_offset
 
             except TableException as e:
                 raise TableException(
                     row=None, col=None, sheet=e.sheet, reason="no-header-data-found"
                 ) from e
 
-    def find_data_cells(
+        # no offset found
+        raise TableException(
+            row=None, col=None, sheet=sheet.sheet_idx, reason="no-header-data-found"
+        )
+
+    def detect_data_cells(
         self,
         sheet: SheetReader,
-        row_offset: typing.Optional[int],
+        parser_row_offset: typing.Optional[int],
         get_metric_name: typing.Callable[[str], str],
         check_metric_name: typing.Callable[[str, str], None],
     ) -> typing.Tuple[int, typing.List["DataCells"]]:
         res: typing.List[DataCells] = []
 
         # Derive row offset
-        absolute_row_offset = self.prepare_row_offset(sheet, row_offset)
+        area_row_offset = self.prepare_row_offset(sheet, parser_row_offset)
 
         # When role with ValueSource is present make it value_source
         # for all other roles
@@ -328,7 +344,9 @@ class DataHeaders(JsonEncorder):
                     if rule.role_idx and role_idx != rule.role_idx:
                         # Skip rules which doesn't match index
                         continue
-                    cur_action, value = rule.process(sheet, idx, role, absolute_row_offset)
+                    cur_action, value = rule.process(
+                        sheet, idx, role, parser_row_offset, area_row_offset
+                    )
                     action = action.merge(cur_action)
 
                     if action != DataHeaderAction.PROCEED or value is not None:
@@ -375,7 +393,7 @@ class DataHeaders(JsonEncorder):
                 reason="no-header-data-found",
             )
 
-        return absolute_row_offset, res
+        return area_row_offset, res
 
 
 @dataclass

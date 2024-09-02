@@ -23,8 +23,10 @@ from .base import BaseNonCounterParser
 class BaseMetricArea(BaseHeaderArea, metaclass=ABCMeta):
     aggregator = SameAggregator()
 
-    def get_months(self, row_offset: typing.Optional[int]) -> typing.List[datetime.date]:
-        return self._get_months_from_column(row_offset)
+    def get_months(self) -> typing.List[datetime.date]:
+        # populate Area.row_offset
+        self.find_data_cells(lambda x: x, lambda x: None)
+        return self._get_months_from_column(0, self.row_offset)
 
 
 class MetricBasedParser(BaseNonCounterParser):

@@ -16,20 +16,33 @@ class Direction(str, Enum):
     DOWN = "down"
 
 
+class RelativeTo(str, Enum):
+    AREA = "area"
+    PARSER = "parser"
+    START = "start"
+
+
 class Content(metaclass=abc.ABCMeta):
     @abc.abstractmethod
-    def content(self, sheet: SheetReader):
+    def content(
+        self,
+        sheet: SheetReader,
+        parser_row_offset: typing.Optional[int] = None,
+        area_row_offset: typing.Optional[int] = None,
+    ):
         pass
-
-    def with_row_offset(self, row_offset: int) -> "Content":
-        return self
 
 
 @dataclass(config=PydanticConfig)
 class Value(JsonEncorder, Content):
     value: typing.Any
 
-    def content(self, sheet: SheetReader):
+    def content(
+        self,
+        sheet: SheetReader,
+        parser_row_offset: typing.Optional[int] = None,
+        area_row_offset: typing.Optional[int] = None,
+    ):
         return self.value
 
     def __next__(self) -> "Value":
@@ -48,7 +61,12 @@ class Value(JsonEncorder, Content):
 class SheetAttr(JsonEncorder, Content):
     sheet_attr: str
 
-    def content(self, sheet: SheetReader):
+    def content(
+        self,
+        sheet: SheetReader,
+        parser_row_offset: typing.Optional[int] = None,
+        area_row_offset: typing.Optional[int] = None,
+    ):
         return getattr(sheet, self.sheet_attr)
 
     def __iter__(self):
@@ -70,10 +88,29 @@ class SheetAttr(JsonEncorder, Content):
 class Coord(JsonEncorder, Content):
     row: int
     col: int
+    row_relative_to: RelativeTo = RelativeTo.AREA
 
-    def content(self, sheet: SheetReader):
+    def content(
+        self,
+        sheet: SheetReader,
+        parser_row_offset: typing.Optional[int] = None,
+        area_row_offset: typing.Optional[int] = None,
+    ):
         try:
-            return sheet[self.row][self.col]
+            if self.row_relative_to == RelativeTo.AREA:
+                if area_row_offset is None:
+                    raise RuntimeError(
+                        "Cord with row_relative_to area need to have area offset set"
+                    )
+                return sheet[self.row + area_row_offset][self.col]
+            elif self.row_relative_to == RelativeTo.PARSER:
+                if parser_row_offset is None:
+                    raise RuntimeError(
+                        "Cord with row_relative_to parser need to have parser offset set"
+                    )
+                return sheet[self.row + parser_row_offset][self.col]
+            elif self.row_relative_to == RelativeTo.START:
+                return sheet[self.row][self.col]
         except IndexError as e:
             raise TableException(
                 row=self.row,
@@ -87,7 +124,7 @@ class Coord(JsonEncorder, Content):
         return self
 
     def __next__(self) -> "Coord":
-        return Coord(self.row, self.col)
+        return Coord(self.row, self.col, self.row_relative_to)
 
     def __getitem__(self, item: int) -> "Coord":
         if isinstance(item, slice):
@@ -98,10 +135,7 @@ class Coord(JsonEncorder, Content):
         return next(self)
 
     def __add__(self, other) -> "Coord":
-        return Coord(self.row + other.row, self.col + other.col)
-
-    def with_row_offset(self, row_offset: int) -> "Coord":
-        return Coord(self.row + row_offset, self.col)
+        return Coord(self.row + other.row, self.col + other.col, self.row_relative_to)
 
 
 @dataclass(config=PydanticConfig)
@@ -110,8 +144,13 @@ class CoordRange(JsonEncorder, Content):
     direction: Direction
     max_count: typing.Optional[int] = None
 
-    def content(self, sheet: SheetReader):
-        return self[self.distance].content(sheet)
+    def content(
+        self,
+        sheet: SheetReader,
+        parser_row_offset: typing.Optional[int] = None,
+        area_row_offset: typing.Optional[int] = None,
+    ):
+        return self[self.distance].content(sheet, parser_row_offset, area_row_offset)
 
     def __contains__(self, item: Coord) -> bool:
         if not isinstance(item, Coord):
@@ -168,7 +207,7 @@ class CoordRange(JsonEncorder, Content):
             if self.max_count < self.distance:
                 raise StopIteration
 
-        return Coord(row, col)
+        return Coord(row, col, self.coord.row_relative_to)
 
     def __getitem__(self, item: int) -> Coord:
         if isinstance(item, slice):
@@ -189,10 +228,3 @@ class CoordRange(JsonEncorder, Content):
 
     def skip(self, count: int) -> "CoordRange":
         return CoordRange(self[count], self.direction)
-
-    def with_row_offset(self, row_offset: int) -> "CoordRange":
-        return CoordRange(
-            coord=self.coord.with_row_offset(row_offset),
-            direction=self.direction,
-            max_count=self.max_count,
-        )

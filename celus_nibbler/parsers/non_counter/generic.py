@@ -11,7 +11,9 @@ class BaseGenericArea(BaseHeaderArea, metaclass=ABCMeta):
     def get_months(self) -> typing.List[datetime.date]:
         if self.date_source is None:
             # Extract months from header_data
-            return self._get_months_from_column()
+            # populate Area.row_offset
+            self.find_data_cells(lambda x: x, lambda x: None)
+            return self._get_months_from_column(0, self.row_offset)
         else:
             return self._get_months_from_header()
 

@@ -147,21 +147,28 @@ class BaseHeaderArea(BaseTabularArea):
         get_metric_name: typing.Callable[[str], str],
         check_metric_name: typing.Callable[[str, str], None],
     ) -> typing.List[DataCells]:
-        offset, data_cells = self.data_headers.find_data_cells(
+        offset, data_cells = self.data_headers.detect_data_cells(
             self.sheet, self.row_offset, get_metric_name, check_metric_name
         )
         self.row_offset = offset  # Update detected offset
         return data_cells
 
     def _get_months_from_column(
-        self, row_offset: typing.Optional[int]
+        self,
+        parser_row_offset: typing.Optional[int],
+        area_row_offset: typing.Optional[int],
     ) -> typing.List[datetime.date]:
         """This will get all months from months column"""
 
         res = set()
         for idx in itertools.count(0):
             try:
-                date = self.date_source.extract(self.sheet, idx, row_offset=row_offset)
+                date = self.date_source.extract(
+                    self.sheet,
+                    idx,
+                    parser_row_offset=parser_row_offset,
+                    area_row_offset=area_row_offset,
+                )
                 res.add(date.replace(day=1))
 
             except TableException as e:
@@ -228,7 +235,11 @@ class BaseParser(metaclass=ABCMeta):
     def heuristic_check(self) -> bool:
         if self.heuristics:
             for row_offset in self.possible_row_offsets:
-                if self.heuristics.check(self.sheet, row_offset):
+                # Default Coord.row_relative_to is set to "area"
+                # and we don't want to override coords in heuristic definition
+                # to Coord.row_relative_to="parser", so we use area_row_offset
+                # not parser_row_offset
+                if self.heuristics.check(self.sheet, 0, row_offset):
                     # Set detect offset to be used later
                     self.row_offset = row_offset
                     return True
@@ -362,7 +373,8 @@ class BaseTabularParser(BaseParser):
                 raise
 
         # Area offset should be absolute
-        row_offset = area.row_offset
+        area_row_offset = area.row_offset
+        parser_row_offset = self.row_offset
 
         # Store title_ids and dimensions sources
         # so it can be reused in the for-cycle
@@ -381,21 +393,36 @@ class BaseTabularParser(BaseParser):
             try:
                 # iterates through ranges
                 if area.title_source:
-                    title = area.title_source.extract(self.sheet, idx, row_offset=row_offset)
+                    title = area.title_source.extract(
+                        self.sheet,
+                        idx,
+                        parser_row_offset=parser_row_offset,
+                        area_row_offset=area_row_offset,
+                    )
                     if title is not None and title.lower() in titles_to_skip:
                         continue
                 else:
                     title = None
 
                 if area.item_source:
-                    item = area.item_source.extract(self.sheet, idx, row_offset=row_offset)
+                    item = area.item_source.extract(
+                        self.sheet,
+                        idx,
+                        parser_row_offset=parser_row_offset,
+                        area_row_offset=area_row_offset,
+                    )
                     if item is not None and item.lower() in items_to_skip:
                         continue
                 else:
                     item = None
 
                 if area.metric_source:
-                    orig_metric = area.metric_source.extract(self.sheet, idx, row_offset=row_offset)
+                    orig_metric = area.metric_source.extract(
+                        self.sheet,
+                        idx,
+                        parser_row_offset=parser_row_offset,
+                        area_row_offset=area_row_offset,
+                    )
                     metric = self.get_metric_name(orig_metric)
                     self._metric_check(
                         metric,
@@ -409,13 +436,21 @@ class BaseTabularParser(BaseParser):
 
                 if area.organization_source:
                     organization = area.organization_source.extract(
-                        self.sheet, idx, row_offset=row_offset
+                        self.sheet,
+                        idx,
+                        parser_row_offset=parser_row_offset,
+                        area_row_offset=area_row_offset,
                     )
                 else:
                     organization = None
 
                 if area.date_source:
-                    date = area.date_source.extract(self.sheet, idx, row_offset=row_offset)
+                    date = area.date_source.extract(
+                        self.sheet,
+                        idx,
+                        parser_row_offset=parser_row_offset,
+                        area_row_offset=area_row_offset,
+                    )
                 else:
                     date = None
 
@@ -426,7 +461,8 @@ class BaseTabularParser(BaseParser):
                         self.sheet,
                         idx,
                         validator=self.dimensions_validators.get(k),
-                        row_offset=row_offset,
+                        parser_row_offset=parser_row_offset,
+                        area_row_offset=area_row_offset,
                     )
                     if (
                         dimension_text is not None
@@ -443,25 +479,41 @@ class BaseTabularParser(BaseParser):
                 item_ids = {}
                 for key in IDS:
                     if title_source := title_ids_sources.get(key):
-                        value = title_source.extract(self.sheet, idx, row_offset=row_offset)
+                        value = title_source.extract(
+                            self.sheet,
+                            idx,
+                            parser_row_offset=parser_row_offset,
+                            area_row_offset=area_row_offset,
+                        )
                         if value:
                             title_ids[title_source.last_key] = value
 
                     if item_source := item_ids_sources.get(key):
-                        value = item_source.extract(self.sheet, idx, row_offset=row_offset)
+                        value = item_source.extract(
+                            self.sheet,
+                            idx,
+                            parser_row_offset=parser_row_offset,
+                            area_row_offset=area_row_offset,
+                        )
                         if value:
                             item_ids[item_source.last_key] = value
 
                 if item_publication_date_source:
                     item_publication_date = item_publication_date_source.extract(
-                        self.sheet, idx, row_offset=row_offset
+                        self.sheet,
+                        idx,
+                        parser_row_offset=parser_row_offset,
+                        area_row_offset=area_row_offset,
                     )
                 else:
                     item_publication_date = None
 
                 if item_authors_source:
                     item_authors = item_authors_source.extract(
-                        self.sheet, idx, row_offset=row_offset
+                        self.sheet,
+                        idx,
+                        parser_row_offset=parser_row_offset,
+                        area_row_offset=area_row_offset,
                     )
                 else:
                     item_authors = None
@@ -485,7 +537,8 @@ class BaseTabularParser(BaseParser):
                         self.sheet,
                         idx,
                         validator=value_validator,
-                        row_offset=row_offset,
+                        parser_row_offset=parser_row_offset,
+                        area_row_offset=area_row_offset,
                     )
                     record = CounterRecord(
                         value=round(value),

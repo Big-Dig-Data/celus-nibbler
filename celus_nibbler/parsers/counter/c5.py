@@ -2,7 +2,7 @@ import re
 import typing
 
 from celus_nibbler.conditions import RegexCondition
-from celus_nibbler.coordinates import Coord, CoordRange, Direction
+from celus_nibbler.coordinates import Coord, CoordRange, Direction, RelativeTo
 from celus_nibbler.data_headers import DataFormatDefinition
 from celus_nibbler.errors import TableException
 from celus_nibbler.parsers.base import BaseTabularParser
@@ -69,12 +69,16 @@ class BaseCounter5Parser(Counter5ParserAnalyzeMixin, BaseTabularParser):
             return {}
 
         res = {}
-        for coord in CoordRange(Coord(col=col, row=row - 1), direction=Direction.UP):
+        for coord in CoordRange(
+            Coord(col=col, row=row - 1, row_relative_to=RelativeTo.START), direction=Direction.UP
+        ):
             try:
                 key = coord.content(self.sheet).strip()
                 if not key:
                     continue
-                right_coord = Coord(col=coord.col + 1, row=coord.row)
+                right_coord = Coord(
+                    col=coord.col + 1, row=coord.row, row_relative_to=RelativeTo.START
+                )
                 value = right_coord.content(self.sheet).strip()
                 res[key] = value
             except TableException:

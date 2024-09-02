@@ -4,7 +4,7 @@ import typing
 from celus_nigiri import CounterRecord
 
 from celus_nibbler.conditions import RegexCondition
-from celus_nibbler.coordinates import Coord
+from celus_nibbler.coordinates import Coord, RelativeTo
 from celus_nibbler.data_headers import DataFormatDefinition
 from celus_nibbler.errors import TableException
 from celus_nibbler.parsers.base import BaseTabularParser
@@ -44,7 +44,7 @@ class BaseCounter4Parser(BaseTabularParser):
         res = {}
         # use offsets to extract data
         for key, offset in self.HEADER_DATA_OFFSETS:
-            coord = Coord(row=row - offset, col=col)
+            coord = Coord(row=row - offset, col=col, row_relative_to=RelativeTo.START)
 
             if coord.row < 0:
                 # out of bounds
@@ -66,7 +66,7 @@ class BaseCounter4Parser(BaseTabularParser):
         except TableException:
             return [{"code": "header-row-not-found"}]
 
-        rtn_coord = Coord(col=col, row=row - 7)
+        rtn_coord = Coord(col=col, row=row - 7, row_relative_to=RelativeTo.START)
         if rtn_coord.row < 0:
             return [{"code": "report-name-not-in-header"}]
 

@@ -371,6 +371,13 @@ from celus_nibbler.parsers.dynamic import gen_parser
             "dynamic.non_counter.simple_format.dynamic_areas_value_offset",
             False,
         ),
+        (
+            "Platform1",
+            "dynamic_areas_coord_offsets",
+            "csv",
+            "dynamic.non_counter.simple_format.dynamic_areas_coord_offsets",
+            False,
+        ),
     ),
 )
 def test_dynamic(platform, filename, ext, parser, ignore_order):
@@ -495,7 +502,7 @@ def test_dynamic(platform, filename, ext, parser, ignore_order):
             "dynamic_areas-min_valid",
             "csv",
             "dynamic.non_counter.simple_format.dynamic_areas-min_valid",
-            TableException(sheet=0, reason="no-header-data-found", row=2, col=1),
+            TableException(sheet=0, reason="no-header-data-found"),
         ),
         (
             "Platform1",

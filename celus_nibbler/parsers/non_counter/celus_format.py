@@ -3,7 +3,7 @@ import datetime
 import logging
 import typing
 
-from celus_nibbler.coordinates import Coord, CoordRange, Direction, Value
+from celus_nibbler.coordinates import Coord, CoordRange, Direction, RelativeTo, Value
 from celus_nibbler.data_headers import DataHeaders
 from celus_nibbler.errors import TableException
 from celus_nibbler.parsers.base import BaseHeaderArea, BaseTabularParser
@@ -53,13 +53,15 @@ class BaseCelusFormatArea(BaseHeaderArea):
         self.item_authors_source = None
 
         date_source = None
-        for cell in CoordRange(Coord(0, 0), Direction.RIGHT):
+        for cell in CoordRange(Coord(0, 0, RelativeTo.START), Direction.RIGHT):
             data_source = CoordRange(cell, Direction.DOWN).skip(1)
             try:
                 # First try to extract date
                 try:
                     test_date_source = DateSource(CoordRange(cell, Direction.RIGHT))
-                    if test_date_source.extract(self.sheet, 0):
+                    if test_date_source.extract(
+                        self.sheet, idx=0, parser_row_offset=0, area_row_offset=0
+                    ):
                         # Set date source based on the first found date
                         if not date_source:
                             date_source = test_date_source

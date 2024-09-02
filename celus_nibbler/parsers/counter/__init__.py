@@ -5,7 +5,7 @@ import typing
 from functools import lru_cache
 
 from celus_nibbler.conditions import IsDateCondition
-from celus_nibbler.coordinates import Coord, CoordRange, Direction
+from celus_nibbler.coordinates import Coord, CoordRange, Direction, RelativeTo
 from celus_nibbler.data_headers import DataHeaders
 from celus_nibbler.errors import TableException
 from celus_nibbler.parsers.non_counter.date_based import BaseDateArea
@@ -106,7 +106,9 @@ class CounterHeaderArea(BaseDateArea):
         # Right now it checks whether a single continuous date area is present
 
         for idx in range(self.MAX_HEADER_ROW):
-            crange = CoordRange(Coord(idx, self.HEADER_DATE_COL_START), Direction.RIGHT)
+            crange = CoordRange(
+                Coord(idx, self.HEADER_DATE_COL_START, RelativeTo.START), Direction.RIGHT
+            )
 
             matching = None
             twice = False
@@ -127,7 +129,7 @@ class CounterHeaderArea(BaseDateArea):
                     raise
 
             if matching is not None and not twice:
-                return CoordRange(Coord(idx, 0), Direction.RIGHT)
+                return CoordRange(Coord(idx, 0, RelativeTo.START), Direction.RIGHT)
 
             if not matching and last_content == "Reporting_Period_Total":
                 # When no months are found with the row which ends with

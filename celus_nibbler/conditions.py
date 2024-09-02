@@ -18,7 +18,12 @@ stemmer = stem.PorterStemmer()
 
 class BaseCondition(metaclass=ABCMeta):
     @abstractmethod
-    def check(self, sheet: SheetReader, row_offset: typing.Optional[int] = None) -> bool:
+    def check(
+        self,
+        sheet: SheetReader,
+        parser_row_offset: typing.Optional[int] = None,
+        area_row_offset: typing.Optional[int] = None,
+    ) -> bool:
         pass
 
 
@@ -39,8 +44,13 @@ class NegCondition(ArithmeticsMixin, BaseCondition, JsonEncorder):
 
     kind: typing.Literal["neg"] = "neg"
 
-    def check(self, sheet: SheetReader, row_offset: typing.Optional[int] = None) -> bool:
-        return not self.cond.check(sheet, row_offset)
+    def check(
+        self,
+        sheet: SheetReader,
+        parser_row_offset: typing.Optional[int] = None,
+        area_row_offset: typing.Optional[int] = None,
+    ) -> bool:
+        return not self.cond.check(sheet, parser_row_offset, area_row_offset)
 
 
 @dataclass(config=PydanticConfig)
@@ -49,8 +59,13 @@ class AndCondition(ArithmeticsMixin, BaseCondition, JsonEncorder):
 
     kind: typing.Literal["and"] = "and"
 
-    def check(self, sheet: SheetReader, row_offset: typing.Optional[int] = None) -> bool:
-        return all(e.check(sheet, row_offset) for e in self.conds)
+    def check(
+        self,
+        sheet: SheetReader,
+        parser_row_offset: typing.Optional[int] = None,
+        area_row_offset: typing.Optional[int] = None,
+    ) -> bool:
+        return all(e.check(sheet, parser_row_offset, area_row_offset) for e in self.conds)
 
 
 @dataclass(config=PydanticConfig)
@@ -59,8 +74,13 @@ class OrCondition(ArithmeticsMixin, BaseCondition, JsonEncorder):
 
     kind: typing.Literal["or"] = "or"
 
-    def check(self, sheet: SheetReader, row_offset: typing.Optional[int] = None) -> bool:
-        return any(e.check(sheet, row_offset) for e in self.conds)
+    def check(
+        self,
+        sheet: SheetReader,
+        parser_row_offset: typing.Optional[int] = None,
+        area_row_offset: typing.Optional[int] = None,
+    ) -> bool:
+        return any(e.check(sheet, parser_row_offset, area_row_offset) for e in self.conds)
 
 
 @dataclass(config=PydanticConfig)
@@ -70,16 +90,26 @@ class RegexCondition(ArithmeticsMixin, BaseCondition, JsonEncorder):
 
     kind: typing.Literal["regex"] = "regex"
 
-    def check(self, sheet: SheetReader, row_offset: typing.Optional[int] = None) -> bool:
+    def check(
+        self,
+        sheet: SheetReader,
+        parser_row_offset: typing.Optional[int] = None,
+        area_row_offset: typing.Optional[int] = None,
+    ) -> bool:
         try:
             coord = self.coord
-            if row_offset:
-                coord = coord.with_row_offset(row_offset)
 
             if isinstance(coord, CoordRange):
-                return any(bool(self.pattern.match(coord.content(sheet))) for coord in coord)
+                return any(
+                    bool(
+                        self.pattern.match(coord.content(sheet, parser_row_offset, area_row_offset))
+                    )
+                    for coord in coord
+                )
 
-            return bool(self.pattern.match(coord.content(sheet)))
+            return bool(
+                self.pattern.match(coord.content(sheet, parser_row_offset, area_row_offset))
+            )
         except TableException:
             return False
 
@@ -98,17 +128,19 @@ class IsDateCondition(ArithmeticsMixin, BaseCondition, JsonEncorder):
         else:
             return validators.gen_date_format_validator(self.date_format)
 
-    def check(self, sheet: SheetReader, row_offset: typing.Optional[int] = None) -> bool:
-        # Deal with offsets
+    def check(
+        self,
+        sheet: SheetReader,
+        parser_row_offset: typing.Optional[int] = None,
+        area_row_offset: typing.Optional[int] = None,
+    ) -> bool:
         coord = self.coord
-        if row_offset:
-            coord = coord.with_row_offset(row_offset)
 
         # Handle coord ranges
         if isinstance(coord, CoordRange):
             for c in coord:
                 try:
-                    content = c.content(sheet)
+                    content = c.content(sheet, parser_row_offset, area_row_offset)
                     content = content and content.strip()
                     self.validator_class(value=content)
                 except ValidationError:
@@ -120,7 +152,7 @@ class IsDateCondition(ArithmeticsMixin, BaseCondition, JsonEncorder):
 
         # Handle single coord
         try:
-            content = coord.content(sheet)
+            content = coord.content(sheet, parser_row_offset, area_row_offset)
             content = content and content.strip()
             self.validator_class(value=content)
         except (TableException, ValidationError, IndexError):
@@ -144,13 +176,23 @@ class StemmerCondition(ArithmeticsMixin, BaseCondition, JsonEncorder):
     def __post_init__(self):
         self.content = self._convert(self.content)
 
-    def check(self, sheet: SheetReader, row_offset: typing.Optional[int] = None) -> bool:
+    def check(
+        self,
+        sheet: SheetReader,
+        parser_row_offset: typing.Optional[int] = None,
+        area_row_offset: typing.Optional[int] = None,
+    ) -> bool:
         try:
             if isinstance(self.coord, CoordRange):
                 return any(
-                    self._convert(coord.content(sheet)) == self.content for coord in self.coord
+                    self._convert(coord.content(sheet, parser_row_offset, area_row_offset))
+                    == self.content
+                    for coord in self.coord
                 )
-            return self._convert(self.coord.content(sheet)) == self.content
+            return (
+                self._convert(self.coord.content(sheet, parser_row_offset, area_row_offset))
+                == self.content
+            )
         except TableException:
             return False
 
@@ -163,7 +205,12 @@ class SheetNameRegexCondition(ArithmeticsMixin, BaseCondition, JsonEncorder):
 
     kind: typing.Literal["sheet_name"] = "sheet_name"
 
-    def check(self, sheet: SheetReader, row_offset: typing.Optional[int] = None) -> bool:
+    def check(
+        self,
+        sheet: SheetReader,
+        parser_row_offset: typing.Optional[int] = None,
+        area_row_offset: typing.Optional[int] = None,
+    ) -> bool:
         if sheet.name is not None:
             return bool(self.pattern.match(sheet.name))
         else:
@@ -179,7 +226,12 @@ class SheetIdxCondition(ArithmeticsMixin, BaseCondition, JsonEncorder):
 
     kind: typing.Literal["sheet_idx"] = "sheet_idx"
 
-    def check(self, sheet: SheetReader, row_offset: typing.Optional[int] = None) -> bool:
+    def check(
+        self,
+        sheet: SheetReader,
+        parser_row_offset: typing.Optional[int] = None,
+        area_row_offset: typing.Optional[int] = None,
+    ) -> bool:
         if self.min is not None and sheet.sheet_idx < self.min:
             return False
 
@@ -198,6 +250,7 @@ Condition = Annotated[
         StemmerCondition,
         SheetNameRegexCondition,
         SheetIdxCondition,
+        IsDateCondition,
     ],
     Field(discriminator="kind"),
 ]
@@ -212,7 +265,12 @@ class SheetExtraCondition(ArithmeticsMixin, BaseCondition, JsonEncorder):
 
     kind: typing.Literal["sheet_extra"] = "sheet_extra"
 
-    def check(self, sheet: SheetReader, row_offset: typing.Optional[int] = None) -> bool:
+    def check(
+        self,
+        sheet: SheetReader,
+        parser_row_offset: typing.Optional[int] = None,
+        area_row_offset: typing.Optional[int] = None,
+    ) -> bool:
         if sheet.extra is None:
             return False
         if self.field_name in sheet.extra:

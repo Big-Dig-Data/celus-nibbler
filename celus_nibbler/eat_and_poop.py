@@ -353,7 +353,7 @@ def findparser(
         (name, parser)
         for (name, parser) in parser_instances
         if parser.heuristic_check() or not use_heuristics
-        # Note that we need to always perform heuristic check in order to calculate dynamic offsets
+        # Note that we need to always perform heuristic check in order to calculate offsets
     ]
 
     if len(parser_instances_filtered) < 1:

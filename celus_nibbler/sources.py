@@ -163,8 +163,14 @@ class ContentExtractorMixin:
     _last_source = None
     _last_extracted = None
 
-    def content(self, sheet: SheetReader, source: Source) -> typing.Any:
-        content = source.content(sheet)
+    def content(
+        self,
+        sheet: SheetReader,
+        source: Source,
+        parser_row_offset: typing.Optional[int],
+        area_row_offset: typing.Optional[int],
+    ) -> typing.Any:
+        content = source.content(sheet, parser_row_offset, area_row_offset)
         if regex := self.extract_params.regex:
             if extracted := regex.search(content):
                 content = extracted.group(1)
@@ -185,16 +191,19 @@ class ContentExtractorMixin:
         sheet: SheetReader,
         idx: int,
         validator: typing.Optional[typing.Type[validators.BaseValueModel]] = None,
-        row_offset: typing.Optional[int] = None,
+        parser_row_offset: typing.Optional[int] = None,
+        area_row_offset: typing.Optional[int] = None,
     ) -> typing.Any:
         try:
-            value = self._extract(sheet, idx, validator, row_offset)
+            value = self._extract(sheet, idx, validator, parser_row_offset, area_row_offset)
             if self.extract_params.last_value_as_default:
                 self.extract_params.default = value
 
         except TableException as e:
             if e.action == TableException.Action.PASS and self.fallback:
-                return self.fallback.extract(sheet, idx, validator, row_offset)
+                return self.fallback.extract(
+                    sheet, idx, validator, parser_row_offset, area_row_offset
+                )
             else:
                 raise
         return value
@@ -209,14 +218,10 @@ class ContentExtractorMixin:
         sheet: SheetReader,
         idx: int,
         validator: typing.Optional[typing.Type[validators.BaseValueModel]] = None,
-        row_offset: typing.Optional[int] = None,
+        parser_row_offset: typing.Optional[int] = None,
+        area_row_offset: typing.Optional[int] = None,
     ) -> typing.Any:
-        if row_offset:
-            source = self.source.with_row_offset(row_offset)
-        else:
-            source = self.source
-
-        source = source[idx]
+        source = self.source[idx]
 
         if self.extract_params.max_idx is not None:
             if idx > self.extract_params.max_idx:
@@ -239,7 +244,7 @@ class ContentExtractorMixin:
             self._last_source = source
 
         try:
-            content = self.content(sheet, source)
+            content = self.content(sheet, source, parser_row_offset, area_row_offset)
             if validator := self.get_validator(validator):
                 if self.extract_params.default is not None:
                     res = validators.gen_default_validator(
@@ -376,10 +381,11 @@ class TitleIdSource(JsonEncorder, ContentExtractorMixin):
         sheet: SheetReader,
         idx: int,
         validator: typing.Optional[typing.Type[validators.BaseValueModel]] = None,
-        row_offset: typing.Optional[int] = None,
+        parser_row_offset: typing.Optional[int] = None,
+        area_row_offset: typing.Optional[int] = None,
     ) -> typing.Any:
         self._last_key = None
-        res = super().extract(sheet, idx, validator, row_offset)
+        res = super().extract(sheet, idx, validator, parser_row_offset, area_row_offset)
         # Update last key from fallback
         if fallback := self.fallback:
             if last_key := fallback._last_key:
@@ -438,14 +444,19 @@ class DateSource(JsonEncorder, ContentExtractorMixin):
         sheet: SheetReader,
         idx: int,
         validator: typing.Optional[typing.Type[validators.BaseValueModel]] = None,
-        row_offset: typing.Optional[int] = None,
+        parser_row_offset: typing.Optional[int] = None,
+        area_row_offset: typing.Optional[int] = None,
     ) -> typing.Any:
         if self.composed:
-            year_date = self.composed.year.extract(sheet, idx, row_offset=row_offset)
-            month_date = self.composed.month.extract(sheet, idx, row_offset=row_offset)
+            year_date = self.composed.year.extract(
+                sheet, idx, parser_row_offset=parser_row_offset, area_row_offset=area_row_offset
+            )
+            month_date = self.composed.month.extract(
+                sheet, idx, parser_row_offset=parser_row_offset, area_row_offset=area_row_offset
+            )
             return date(year_date.year, month_date.month, 1)
         else:
-            return super().extract(sheet, idx, validator, row_offset)
+            return super().extract(sheet, idx, validator, parser_row_offset, area_row_offset)
 
 
 rebuild_dataclass(ComposedDate, force=True)

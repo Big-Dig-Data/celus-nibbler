@@ -1,0 +1,109 @@
+{
+  "kind": "non_counter.generic",
+  "version": 1,
+  "parser_name": "dynamic_areas_coord_offsets",
+  "data_format": {
+    "name": "simple_format"
+  },
+  "platforms": [
+    "Platform1",
+    "Platform2"
+  ],
+  "metrics_to_skip": [],
+  "titles_to_skip": [],
+  "dimensions_to_skip": {},
+  "metric_aliases": [],
+  "dimension_aliases": [],
+  "possible_row_offsets": [0, 1, 2, 3],
+  "heuristics": {
+    "conds": [
+      {
+        "pattern": "Report",
+        "coord": {
+          "row": 0,
+          "col": 0
+        },
+        "kind": "regex"
+      }
+    ],
+    "kind": "and"
+  },
+  "areas": [
+    {
+      "max_areas_generated": null,
+      "data_headers": {
+        "roles": [
+            {
+                "source": {
+                    "coord": {
+                      "row": 0,
+                      "col": 0
+                    },
+                    "direction": "right"
+                },
+                "composed": {
+                    "year": {
+                        "source": {
+                          "row": 0,
+                          "col": 0
+                        },
+                        "date_pattern": "%Y",
+                        "role": "date"
+                    },
+                    "month": {
+                        "source": {
+                            "coord": {
+                              "row": 1,
+                              "col": 0
+                            },
+                            "direction": "right"
+                        },
+                        "date_pattern": "%b",
+                        "role": "date"
+                    }
+                },
+                "role": "date"
+            }
+        ],
+        "data_direction": "down",
+        "data_cells": {
+          "coord": {
+            "row": 2,
+            "col": 0
+          },
+          "direction": "right"
+        },
+        "condition": {
+          "conds": [
+            {
+              "kind": "is_date",
+              "date_format": "%Y",
+              "coord": {
+                "row": 0,
+                "col": 0
+              }
+            }
+          ],
+          "kind": "and"
+        }
+      },
+      "metrics": {
+        "source": {
+            "row": 1,
+            "col": 0,
+            "row_relative_to": "parser"
+        }
+      },
+      "organizations": {
+        "source": {
+            "row": 0,
+            "col": 0,
+            "row_relative_to": "start"
+        }
+      },
+      "title_ids": [],
+      "dimensions": [],
+      "kind": "non_counter.generic"
+    }
+  ]
+}

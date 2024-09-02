@@ -49,7 +49,7 @@ def test_date_based_area_definition():
             "roles": [
                 {
                     "source": {
-                        "coord": {"row": 1, "col": 5},
+                        "coord": {"row": 1, "col": 5, "row_relative_to": "area"},
                         "direction": "left",
                         "max_count": None,
                     },
@@ -75,7 +75,7 @@ def test_date_based_area_definition():
             ],
             "data_direction": "down",
             "data_cells": {
-                "coord": {"col": 5, "row": 2},
+                "coord": {"col": 5, "row": 2, "row_relative_to": "area"},
                 "direction": "left",
                 "max_count": None,
             },
@@ -108,7 +108,11 @@ def test_date_based_area_definition():
         "dimensions": [
             {
                 "name": "publisher",
-                "source": {"coord": {"row": 2, "col": 3}, "direction": "down", "max_count": None},
+                "source": {
+                    "coord": {"row": 2, "col": 3, "row_relative_to": "area"},
+                    "direction": "down",
+                    "max_count": None,
+                },
                 "extract_params": {
                     "blank_values": [None, ""],
                     "regex": None,
@@ -127,7 +131,11 @@ def test_date_based_area_definition():
             },
             {
                 "name": "platform",
-                "source": {"coord": {"row": 2, "col": 5}, "direction": "down", "max_count": None},
+                "source": {
+                    "coord": {"row": 2, "col": 5, "row_relative_to": "area"},
+                    "direction": "down",
+                    "max_count": None,
+                },
                 "extract_params": {
                     "blank_values": [None, ""],
                     "regex": None,
@@ -146,7 +154,11 @@ def test_date_based_area_definition():
             },
         ],
         "metrics": {
-            "source": {"coord": {"row": 2, "col": 4}, "direction": "down", "max_count": None},
+            "source": {
+                "coord": {"row": 2, "col": 4, "row_relative_to": "area"},
+                "direction": "down",
+                "max_count": None,
+            },
             "extract_params": {
                 "blank_values": [None, ""],
                 "regex": None,
@@ -164,7 +176,11 @@ def test_date_based_area_definition():
             "role": Role.METRIC,
         },
         "titles": {
-            "source": {"coord": {"row": 2, "col": 0}, "direction": "down", "max_count": None},
+            "source": {
+                "coord": {"row": 2, "col": 0, "row_relative_to": "area"},
+                "direction": "down",
+                "max_count": None,
+            },
             "extract_params": {
                 "blank_values": [None, ""],
                 "regex": None,
@@ -184,7 +200,11 @@ def test_date_based_area_definition():
         "title_ids": [
             {
                 "name": "ISBN",
-                "source": {"coord": {"row": 2, "col": 1}, "direction": "down", "max_count": None},
+                "source": {
+                    "coord": {"row": 2, "col": 1, "row_relative_to": "area"},
+                    "direction": "down",
+                    "max_count": None,
+                },
                 "extract_params": {
                     "blank_values": [None, ""],
                     "regex": None,
@@ -235,7 +255,7 @@ def test_errors():
                 "dates": {
                     "direction": "wrong",  # wrong direction
                     "source": {
-                        "coord": {"row": 1, "col": 5},
+                        "coord": {"row": 1, "col": 5, "row_relative_to": "area"},
                         "direction": "left",
                         "max_count": None,
                     },
@@ -249,7 +269,7 @@ def test_errors():
                     {
                         "name": "publisher",
                         "source": {
-                            "coord": {"row": 2, "col": 3},
+                            "coord": {"row": 2, "col": 3, "row_relative_to": "area"},
                             "direction": "down",
                             "max_count": None,
                         },
@@ -271,7 +291,7 @@ def test_errors():
                     {
                         "name": "platform",
                         "source": {
-                            "coord": {"row": 1, "col": 5},
+                            "coord": {"row": 1, "col": 5, "row_relative_to": "area"},
                             "direction": "down",
                             "max_count": None,
                         },
@@ -280,7 +300,7 @@ def test_errors():
                 ],
                 "metrics": {
                     "source": {
-                        "coord": {"row": 2, "col": 4},
+                        "coord": {"row": 2, "col": 4, "row_relative_to": "area"},
                         "direction": "down",
                         "max_count": None,
                     },
@@ -288,7 +308,7 @@ def test_errors():
                 },
                 "titles": {
                     "source": {
-                        "coord": {"row": 2, "col": 0},
+                        "coord": {"row": 2, "col": 0, "row_relative_to": "area"},
                         "direction": "down",
                         "max_count": None,
                     },
@@ -312,7 +332,7 @@ def test_errors():
                     {
                         "name": "ISBN",
                         "source": {
-                            "coord": {"row": 2, "col": 1},
+                            "coord": {"row": 2, "col": 1, "row_relative_to": "area"},
                             "direction": "down",
                             "max_count": None,
                         },
@@ -350,7 +370,7 @@ def test_errors():
                 "kind": "non_counter.date_based",
                 "dates": {
                     "source": {
-                        "coord": {"row": 1, "col": 6},
+                        "coord": {"row": 1, "col": 6, "row_relative_to": "area"},
                         "direction": "left",
                         "max_count": None,
                     },
@@ -364,7 +384,7 @@ def test_errors():
                     {
                         "name": "publisher",
                         "source": {
-                            "coord": {"row": 2, "col": 3},
+                            "coord": {"row": 2, "col": 3, "row_relative_to": "area"},
                             "direction": "down",
                             "max_count": None,
                         },
@@ -388,7 +408,7 @@ def test_errors():
                         "name": "platform",
                         "source": {
                             "direction": "down",
-                            "coord": {"row": 1, "col": 5},
+                            "coord": {"row": 1, "col": 5, "row_relative_to": "area"},
                             "max_count": None,
                         },
                         "extract_params": {
@@ -410,7 +430,7 @@ def test_errors():
                 ],
                 "metrics": {
                     "source": {
-                        "coord": {"row": 2, "col": 4},
+                        "coord": {"row": 2, "col": 4, "row_relative_to": "area"},
                         "direction": "down",
                         "max_count": None,
                     },
@@ -434,7 +454,7 @@ def test_errors():
                     {
                         "name": "ISBN",
                         "source": {
-                            "coord": {"row": 2, "col": 1},
+                            "coord": {"row": 2, "col": 1, "row_relative_to": "area"},
                             "direction": "down",
                             "max_count": None,
                         },
@@ -519,8 +539,16 @@ def test_date_based_definition():
         "dimension_aliases": [],
         "heuristics": {
             "conds": [
-                {"kind": "regex", "pattern": "AAA", "coord": {"col": 1, "row": 1}},
-                {"kind": "regex", "pattern": "BBB", "coord": {"col": 2, "row": 2}},
+                {
+                    "kind": "regex",
+                    "pattern": "AAA",
+                    "coord": {"col": 1, "row": 1, "row_relative_to": "area"},
+                },
+                {
+                    "kind": "regex",
+                    "pattern": "BBB",
+                    "coord": {"col": 2, "row": 2, "row_relative_to": "area"},
+                },
             ],
             "kind": "and",
         },
@@ -532,7 +560,7 @@ def test_date_based_definition():
                         {
                             "source": {
                                 "direction": "right",
-                                "coord": {"col": 5, "row": 1},
+                                "coord": {"col": 5, "row": 1, "row_relative_to": "area"},
                                 "max_count": None,
                             },
                             "extract_params": {
@@ -557,7 +585,7 @@ def test_date_based_definition():
                     ],
                     "data_direction": Direction.DOWN,
                     "data_cells": {
-                        "coord": {"col": 5, "row": 2},
+                        "coord": {"col": 5, "row": 2, "row_relative_to": "area"},
                         "direction": "right",
                         "max_count": None,
                     },
@@ -591,7 +619,7 @@ def test_date_based_definition():
                     {
                         "name": "publisher",
                         "source": {
-                            "coord": {"col": 3, "row": 2},
+                            "coord": {"col": 3, "row": 2, "row_relative_to": "area"},
                             "direction": "down",
                             "max_count": None,
                         },
@@ -614,7 +642,7 @@ def test_date_based_definition():
                     {
                         "name": "platform",
                         "source": {
-                            "coord": {"col": 5, "row": 2},
+                            "coord": {"col": 5, "row": 2, "row_relative_to": "area"},
                             "direction": "down",
                             "max_count": None,
                         },
@@ -637,7 +665,7 @@ def test_date_based_definition():
                 ],
                 "metrics": {
                     "source": {
-                        "coord": {"col": 4, "row": 2},
+                        "coord": {"col": 4, "row": 2, "row_relative_to": "area"},
                         "direction": "down",
                         "max_count": None,
                     },
@@ -659,7 +687,7 @@ def test_date_based_definition():
                 },
                 "titles": {
                     "source": {
-                        "coord": {"col": 0, "row": 2},
+                        "coord": {"col": 0, "row": 2, "row_relative_to": "area"},
                         "direction": "down",
                         "max_count": None,
                     },
@@ -683,7 +711,7 @@ def test_date_based_definition():
                     {
                         "name": "ISBN",
                         "source": {
-                            "coord": {"col": 1, "row": 2},
+                            "coord": {"col": 1, "row": 2, "row_relative_to": "area"},
                             "direction": "down",
                             "max_count": None,
                         },
