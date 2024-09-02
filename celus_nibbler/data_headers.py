@@ -309,9 +309,6 @@ class DataHeaders(JsonEncorder):
         for idx, cell in itertools.takewhile(
             lambda x: x[0] < MAX_DATA_CELLS, enumerate(self.data_cells)
         ):
-            if absolute_row_offset:
-                cell = cell.with_row_offset(absolute_row_offset)
-
             record = CounterRecord(value=0)
             action = DataHeaderAction.PROCEED
             store = False

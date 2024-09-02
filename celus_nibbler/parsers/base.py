@@ -481,10 +481,11 @@ class BaseTabularParser(BaseParser):
                         SpecialExtraction.NO,
                     ).get_validator()
 
-                    # No need to consider offset here, it was already been
-                    # derived in find_data_cells
                     value = data_cell.value_source.extract(
-                        self.sheet, idx, validator=value_validator
+                        self.sheet,
+                        idx,
+                        validator=value_validator,
+                        row_offset=row_offset,
                     )
                     record = CounterRecord(
                         value=round(value),

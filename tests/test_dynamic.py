@@ -364,6 +364,13 @@ from celus_nibbler.parsers.dynamic import gen_parser
             "dynamic.non_counter.simple_format.dynamic_areas",
             False,
         ),
+        (
+            "Platform1",
+            "dynamic_areas_value_offset",
+            "csv",
+            "dynamic.non_counter.simple_format.dynamic_areas_value_offset",
+            False,
+        ),
     ),
 )
 def test_dynamic(platform, filename, ext, parser, ignore_order):

@@ -1,0 +1,88 @@
+{
+  "kind": "non_counter.generic",
+  "version": 1,
+  "parser_name": "dynamic_areas_value_offset",
+  "data_format": {
+    "name": "simple_format"
+  },
+  "platforms": [
+    "Platform1",
+    "Platform2"
+  ],
+  "metrics_to_skip": [],
+  "titles_to_skip": [],
+  "dimensions_to_skip": {},
+  "metric_aliases": [],
+  "dimension_aliases": [],
+  "possible_row_offsets": [0, 1],
+  "heuristics": {
+    "conds": [
+      {
+        "pattern": "MY NAME",
+        "coord": {
+          "row": 0,
+          "col": 0
+        },
+        "kind": "regex"
+      }
+    ],
+    "kind": "and"
+  },
+  "areas": [
+    {
+      "data_headers": {
+        "roles": [
+          {
+            "role": "value",
+            "source": {
+               "coord": {
+                 "row": 1,
+                 "col": 1
+               },
+               "direction": "down"
+            }
+          }
+        ],
+        "data_direction": "down",
+        "data_cells": {
+          "coord": {
+            "row": 1,
+            "col": 1
+          },
+          "direction": "right"
+        },
+        "condition": {
+          "conds": [
+            {
+              "pattern": "Sessions",
+              "coord": {
+                "row": 0,
+                "col": 0
+              },
+              "kind": "regex"
+            }
+          ],
+          "kind": "and"
+        }
+      },
+      "metrics": {
+        "source": {
+          "row": 0,
+          "col": 0
+        }
+      },
+      "dates": {
+        "source": {
+          "coord": {
+            "row": 1,
+            "col": 0
+          },
+          "direction": "down"
+        }
+      },
+      "title_ids": [],
+      "dimensions": [],
+      "kind": "non_counter.generic"
+    }
+  ]
+}
