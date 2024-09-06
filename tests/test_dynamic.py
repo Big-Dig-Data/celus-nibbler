@@ -436,7 +436,7 @@ def test_dynamic(platform, filename, ext, parser, ignore_order):
             "metric_number",
             "csv",
             "dynamic.non_counter.simple_format.metric_number",
-            TableException(sheet=0, reason="metric", value="2", row=2, col=1),
+            TableException(sheet=0, reason="cant-be-digit", value="2", row=2, col=1),
         ),
         (
             "Platform1",
@@ -518,6 +518,20 @@ def test_dynamic(platform, filename, ext, parser, ignore_order):
                     value=1,
                 ),
             ),
+        ),
+        (
+            "Platform1",
+            "not-aligned-date-US",
+            "csv",
+            "dynamic.non_counter.simple_format.not-aligned-date-US",
+            TableException(sheet=0, reason="date-not-aligned", row=2, col=0, value="1/2/2020"),
+        ),
+        (
+            "Platform1",
+            "not-aligned-date-EU",
+            "csv",
+            "dynamic.non_counter.simple_format.not-aligned-date-EU",
+            TableException(sheet=0, reason="date-not-aligned", row=2, col=0, value="2/1/2020"),
         ),
     ),
 )

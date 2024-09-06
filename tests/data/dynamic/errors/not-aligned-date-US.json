@@ -1,7 +1,8 @@
+
 {
-  "kind": "non_counter.date_based",
+  "kind": "non_counter.generic",
   "version": 1,
-  "parser_name": "simple",
+  "parser_name": "not-aligned-date-US",
   "data_format": {
     "name": "simple_format"
   },
@@ -17,7 +18,7 @@
   "heuristics": {
     "conds": [
       {
-        "pattern": "Title",
+        "pattern": "Date",
         "coord": {
           "row": 0,
           "col": 0
@@ -25,34 +26,10 @@
         "kind": "regex"
       },
       {
-        "pattern": "ISSN",
+        "pattern": "Title",
         "coord": {
           "row": 0,
           "col": 1
-        },
-        "kind": "regex"
-      },
-      {
-        "pattern": "Platform",
-        "coord": {
-          "row": 0,
-          "col": 2
-        },
-        "kind": "regex"
-      },
-      {
-        "pattern": "YOP",
-        "coord": {
-          "row": 0,
-          "col": 3
-        },
-        "kind": "regex"
-      },
-      {
-        "pattern": "Metrics",
-        "coord": {
-          "row": 0,
-          "col": 4
         },
         "kind": "regex"
       }
@@ -71,8 +48,7 @@
                     },
                     "direction": "right"
                 },
-                "force_aligned": "true",
-                "role": "date"
+                "role": "metric"
             }
         ],
         "data_direction": "down",
@@ -88,19 +64,21 @@
         "source": {
           "coord": {
             "row": 1,
-            "col": 0
+            "col": 1
           },
           "direction": "down"
         }
       },
-      "metrics": {
+      "dates": {
         "source": {
           "coord": {
             "row": 1,
-            "col": 4
+            "col": 0
           },
           "direction": "down"
-        }
+        },
+        "preferred_date_format": "us",
+        "force_aligned": "true"
       },
       "title_ids": [
         {
@@ -108,7 +86,7 @@
           "source": {
             "coord": {
               "row": 1,
-              "col": 1
+              "col": 2
             },
             "direction": "down"
           }
@@ -120,7 +98,7 @@
           "source": {
             "coord": {
               "row": 1,
-              "col": 3
+              "col": 4
             },
             "direction": "down"
           }
@@ -130,13 +108,14 @@
           "source": {
             "coord": {
               "row": 1,
-              "col": 2
+              "col": 3
             },
             "direction": "down"
           }
         }
       ],
-      "kind": "non_counter.date_based"
+      "kind": "non_counter.generic"
     }
   ]
 }
+

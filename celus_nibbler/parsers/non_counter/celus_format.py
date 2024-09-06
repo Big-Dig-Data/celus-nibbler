@@ -67,7 +67,7 @@ class BaseCelusFormatArea(BaseHeaderArea):
                             date_source = test_date_source
                         continue
                 except TableException as e:
-                    if e.reason != "date":
+                    if e.reason != "cant-parse-date":
                         raise
 
                 content = cell.content(self.sheet)

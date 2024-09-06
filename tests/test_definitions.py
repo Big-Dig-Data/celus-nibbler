@@ -69,6 +69,7 @@ def test_date_based_area_definition():
                     "preferred_date_format": "us",
                     "cleanup_during_header_processing": True,
                     "composed": None,
+                    "force_aligned": False,
                     "date_pattern": None,
                     "role": Role.DATE,
                 }
@@ -262,6 +263,7 @@ def test_errors():
                     "preferred_date_format": "us",
                     "cleanup_during_header_processing": True,
                     "composed": None,
+                    "force_aligned": False,
                     "date_pattern": None,
                     "role": Role.DATE,
                 },
@@ -377,6 +379,7 @@ def test_errors():
                     "preferred_date_format": "us",
                     "cleanup_during_header_processing": True,
                     "composed": None,
+                    "force_aligned": False,
                     "date_pattern": None,
                     "role": Role.DATE,
                 },
@@ -579,6 +582,7 @@ def test_date_based_definition():
                             "preferred_date_format": "us",
                             "cleanup_during_header_processing": True,
                             "composed": None,
+                            "force_aligned": False,
                             "date_pattern": None,
                             "role": Role.DATE,
                         }

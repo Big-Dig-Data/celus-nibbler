@@ -275,12 +275,18 @@ class ContentExtractorMixin:
                     action=self.extract_params.on_validation_error,
                 )
             else:
+                reason = e.title.lower()
+                # Try to Extract reason from exception args if present
+                if ctx := e.errors()[0].get("ctx"):
+                    if error := ctx.get("error"):
+                        if args := error.args:
+                            reason = ",".join(args)
                 raise TableException(
                     content,
                     row=getattr(source, "row", None),
                     col=getattr(source, "col", None),
                     sheet=sheet.sheet_idx,
-                    reason=e.title.lower(),
+                    reason=reason,
                     action=self.extract_params.on_validation_error,
                 ) from e
         except IndexError as e:
@@ -422,6 +428,7 @@ class DateSource(JsonEncorder, ContentExtractorMixin):
     preferred_date_format: DateFormat = DateFormat.US
     composed: typing.Optional[ComposedDate] = None
     date_pattern: typing.Optional[str] = None
+    force_aligned: bool = False
     role: typing.Literal[Role.DATE] = Role.DATE
 
     @property
@@ -435,9 +442,15 @@ class DateSource(JsonEncorder, ContentExtractorMixin):
             return validators.gen_date_format_validator(date_pattern)
 
         if self.preferred_date_format == DateFormat.EU:
-            return validators.DateEU
+            if self.force_aligned:
+                return validators.DateEUAligned
+            else:
+                return validators.DateEU
         else:
-            return validators.Date
+            if self.force_aligned:
+                return validators.DateAligned
+            else:
+                return validators.Date
 
     def extract(
         self,

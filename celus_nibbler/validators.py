@@ -59,6 +59,12 @@ def issn_strict(issn: str) -> str:
     raise ValueError(f'Invalid ISSN: "{issn}"')
 
 
+def date_aligned(value: datetime.datetime) -> datetime.datetime:
+    if value.day != 1:
+        raise ValueError("date-not-aligned")
+    return value
+
+
 @pydantic_dataclass(config=PydanticConfig)
 class Value(BaseValueModel):
     value: Union[NonNegativeInt, NonNegativeFloat]
@@ -177,6 +183,10 @@ class Date(BaseValueModel):
     def parserinfo(cls):
         return parserinfo_us
 
+    @classmethod
+    def align_date(cls, input: datetime.datetime) -> datetime.datetime:
+        return input.replace(day=1)
+
     @field_validator("value", mode="before")
     def to_datetime(cls, date: str) -> datetime.datetime:
         if not date:
@@ -185,13 +195,13 @@ class Date(BaseValueModel):
         # Check for common formats (faster that dateutil)
         for fmt in COMMON_DATE_FORMATS:
             try:
-                return datetime.datetime.strptime(date, fmt).replace(day=1)
+                return cls.align_date(datetime.datetime.strptime(date, fmt))
             except ValueError:
                 pass
 
         # Try to parse date using dateutil for more obscure date formats
         try:
-            return datetimes_parser.parse(date, parserinfo=cls.parserinfo()).replace(day=1)
+            return cls.align_date(datetimes_parser.parse(date, parserinfo=cls.parserinfo()))
         except datetimes_parser.ParserError:
             raise ValueError("cant-parse-date")
 
@@ -201,6 +211,26 @@ class DateEU(Date):
     @classmethod
     def parserinfo(cls):
         return parserinfo_eu
+
+
+@pydantic_dataclass(config=PydanticConfig)
+class DateAligned(Date):
+    _date_aligned = field_validator("value", mode="after")(date_aligned)
+
+    @classmethod
+    def align_date(cls, input: datetime.datetime) -> datetime.datetime:
+        # Don't perfrom auto aligment
+        return input
+
+
+@pydantic_dataclass(config=PydanticConfig)
+class DateEUAligned(DateEU):
+    _date_aligned = field_validator("value", mode="after")(date_aligned)
+
+    @classmethod
+    def align_date(cls, input: datetime.datetime) -> datetime.datetime:
+        # Don't perfrom auto aligment
+        return input
 
 
 @lru_cache
