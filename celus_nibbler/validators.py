@@ -244,11 +244,12 @@ def gen_date_format_validator(pattern: str) -> Type[BaseValueModel]:
         _non_empty_date = field_validator("value", mode="before")(non_empty)
 
         @field_validator("value", mode="before")
-        def to_datetime(cls, date: str) -> datetime.datetime:
+        def to_datetime(cls, date: str) -> datetime.date:
             if not date:
                 raise ValueError("no-date-provided")
             try:
-                return datetime.datetime.strptime(date, pattern).replace(day=1)
+                parsed = datetime.datetime.strptime(date, pattern)
+                return datetime.date(year=parsed.year, month=parsed.month, day=1)
             except ValueError:
                 raise ValueError("cant-parse-date")
 
