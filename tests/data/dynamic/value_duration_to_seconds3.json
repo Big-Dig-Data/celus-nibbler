@@ -1,0 +1,78 @@
+{
+  "kind": "non_counter.generic",
+  "version": 1,
+  "parser_name": "value_duration_to_seconds3",
+  "data_format": {
+    "name":"duration_format"
+  },
+  "platforms": [
+    "Platform1",
+    "Platform2"
+  ],
+  "metrics_to_skip": [],
+  "titles_to_skip": [],
+  "dimensions_to_skip": {},
+  "metric_aliases": [
+      ["Duration", "Seconds"]
+  ],
+  "metric_value_extraction_overrides": {
+    "Seconds": "duration_to_seconds"
+  },
+  "dimension_aliases": [],
+  "heuristics": {
+    "conds": [
+      {
+        "pattern": "^Month$",
+        "coord": {
+          "row": 0,
+          "col": 0
+        },
+        "kind": "regex"
+      }
+    ],
+    "kind": "and"
+  },
+  "areas": [
+    {
+      "data_headers": {
+        "roles": [
+            {
+                "source": {
+                    "coord": {
+                      "row": 0,
+                      "col": 1
+                    },
+                    "direction": "right"
+                },
+                "role": "metric"
+            }
+        ],
+        "data_direction": "down",
+        "data_cells": {
+          "coord": {
+            "row": 1,
+            "col": 1
+          },
+          "direction": "right"
+        }
+      },
+      "dates": {
+          "source": {
+              "coord": {
+                  "row": 1,
+                  "col": 0
+              },
+              "direction": "down"
+          },
+          "extract_params": {
+              "on_validation_error": "stop"
+          },
+          "role": "date"
+      },
+      "titles": null,
+      "title_ids": [],
+      "dimensions": [],
+      "kind": "non_counter.generic"
+    }
+  ]
+}

@@ -215,6 +215,27 @@ from celus_nibbler.parsers.dynamic import gen_parser
             "dynamic.non_counter.minutes_format.value_minutes_to_seconds3",
             True,
         ),
+        (
+            "Platform1",
+            "value_duration_to_seconds",
+            "csv",
+            "dynamic.non_counter.duration_format.value_duration_to_seconds",
+            False,
+        ),
+        (
+            "Platform1",
+            "value_duration_to_seconds2",
+            "csv",
+            "dynamic.non_counter.duration_format.value_duration_to_seconds2",
+            False,
+        ),
+        (
+            "Platform1",
+            "value_duration_to_seconds3",
+            "csv",
+            "dynamic.non_counter.duration_format.value_duration_to_seconds3",
+            False,
+        ),
         ("Platform1", "simple-dates-US", "csv", "dynamic.non_counter.simple_format.simple", False),
         ("Platform1", "simple-dates-EU", "csv", "dynamic.non_counter.simple_format.simple", False),
         (
