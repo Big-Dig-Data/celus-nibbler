@@ -5,6 +5,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [11.4.0] - 2024-07-25
+
+### Added
+- different offsets bases for Coord ("start", "parser", "area")
+- validator to force aligned dates
+- validator to convert HH:MM:SS to seconds
+
+
+### Fixed
+- handle situation when there is no date in output CounterRecord more gracefully
+- dynamic area offset calculations
+- normalize date when it is parsed using date_pattern
+
+
 ## [11.3.0] - 2024-07-25
 
 ### Added
