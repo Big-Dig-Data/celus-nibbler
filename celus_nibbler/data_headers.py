@@ -328,6 +328,7 @@ class DataHeaders(JsonEncorder):
             record = CounterRecord(value=0)
             action = DataHeaderAction.PROCEED
             store = False
+            value = None
 
             value_source = ValueSource(
                 source=CoordRange(cell, self.data_direction),
