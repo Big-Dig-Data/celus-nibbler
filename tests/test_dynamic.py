@@ -359,6 +359,13 @@ from celus_nibbler.parsers.dynamic import gen_parser
         ),
         (
             "Platform1",
+            "metrics-max_idx",
+            "csv",
+            "dynamic.non_counter.simple_format.metrics-max_idx",
+            False,
+        ),
+        (
+            "Platform1",
             "ignore-second-row",
             "csv",
             "dynamic.non_counter.ignore_second_row.ignore_second_row",
