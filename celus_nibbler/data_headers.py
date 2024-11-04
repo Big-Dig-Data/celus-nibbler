@@ -4,6 +4,7 @@ import typing
 from abc import ABCMeta, abstractmethod
 from copy import deepcopy
 from dataclasses import asdict, dataclass, field, fields
+from datetime import date
 from enum import Enum
 
 from celus_nigiri import CounterRecord
@@ -45,8 +46,11 @@ Role = Annotated[
 
 
 COUNTER_RECORD_FIELD_NAMES = [f.name for f in fields(CounterRecord)]
+COUNTER_RECORD_FIELD_NAMES_DATES = ["start", "end"]
 COUNTER_RECORD_FIELD_NAMES_SIMPLE = [
-    f for f in COUNTER_RECORD_FIELD_NAMES if f not in ("value", "title_ids", "dimension_data")
+    f
+    for f in COUNTER_RECORD_FIELD_NAMES
+    if f not in ("value", "title_ids", "dimension_data", "start", "end")
 ]
 COUNTER_RECORD_FIELD_NAMES_NESTED = ["title_ids", "dimension_data"]
 
@@ -234,6 +238,9 @@ class DataHeaders(JsonEncorder):
         default_factory=lambda: ExtractParams(on_validation_error=TableException.Action.STOP)
     )
     data_allow_negative: bool = False
+    data_cells_options: "DataCellsOptions" = field(
+        default_factory=lambda: DataCellsOptions(use_header_year=True, use_header_month=True)
+    )
 
     rules: typing.List[DataHeaderRule] = Field(default_factory=lambda: [DataHeaderRule()])
     condition: typing.Optional[Condition] = None
@@ -318,6 +325,7 @@ class DataHeaders(JsonEncorder):
                     DataCells(
                         header_data=CounterRecord(value=0),
                         value_source=role,
+                        options=deepcopy(self.data_cells_options),
                     )
                 )
                 break
@@ -383,6 +391,7 @@ class DataHeaders(JsonEncorder):
                     DataCells(
                         record,
                         root_value_source or value_source,
+                        options=deepcopy(self.data_cells_options),
                     )
                 )
 
@@ -398,9 +407,16 @@ class DataHeaders(JsonEncorder):
 
 
 @dataclass
+class DataCellsOptions:
+    use_header_year: bool = True
+    use_header_month: bool = True
+
+
+@dataclass
 class DataCells:
     header_data: CounterRecord
     value_source: ValueSource
+    options: DataCellsOptions = field(default_factory=lambda: DataCellsOptions(False, False))
 
     def __iter__(self):
         return self.value_source.source.__iter__()
@@ -427,6 +443,33 @@ class DataCells:
     ) -> CounterRecord:
         # Update the input record instead creating new one
         # to avoid unnecessary alocation
+
+        # deal with updating date fields
+        # not that it can be updated partially (year from row, month from header)
+        if self.options.use_header_year and self.options.use_header_month:
+            for field_name in COUNTER_RECORD_FIELD_NAMES_DATES:
+                if new_value := getattr(self.header_data, field_name):
+                    setattr(record, field_name, new_value)
+        else:
+            for field_name in COUNTER_RECORD_FIELD_NAMES_DATES:
+                if record_date := getattr(record, field_name):
+                    if header_date := getattr(self.header_data, field_name):
+                        h_year = header_date.year
+                        h_month = header_date.month
+                        r_year = record_date.year
+                        r_month = record_date.month
+                        new_date = date(
+                            h_year if self.options.use_header_year else r_year,
+                            h_month if self.options.use_header_month else r_month,
+                            1,
+                        )
+                        if field_name == "end":
+                            new_date = end_month(new_date)
+                        setattr(record, field_name, new_date)
+                else:
+                    # record date empty use date from header regardless of use_header_*
+                    if new_value := getattr(self.header_data, field_name):
+                        setattr(record, field_name, new_value)
 
         # Update non-nested updatable fields
         for field_name in COUNTER_RECORD_FIELD_NAMES_SIMPLE:

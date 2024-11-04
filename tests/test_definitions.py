@@ -80,6 +80,10 @@ def test_date_based_area_definition():
                 "direction": "left",
                 "max_count": None,
             },
+            "data_cells_options": {
+                "use_header_year": True,
+                "use_header_month": True,
+            },
             "data_extract_params": {
                 "blank_values": [None, ""],
                 "regex": None,
@@ -592,6 +596,10 @@ def test_date_based_definition():
                         "coord": {"col": 5, "row": 2, "row_relative_to": "area"},
                         "direction": "right",
                         "max_count": None,
+                    },
+                    "data_cells_options": {
+                        "use_header_year": True,
+                        "use_header_month": True,
                     },
                     "data_extract_params": {
                         "blank_values": [None, ""],

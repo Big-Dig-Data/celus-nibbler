@@ -413,6 +413,13 @@ from celus_nibbler.parsers.dynamic import gen_parser
             "dynamic.non_counter.simple_format.datetime_dates",
             False,
         ),
+        (
+            "Platform1",
+            "year-column-month-row",
+            "csv",
+            "dynamic.non_counter.simple_format.year-column-month-row",
+            False,
+        ),
     ),
 )
 def test_dynamic(platform, filename, ext, parser, ignore_order):
