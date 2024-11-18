@@ -48,7 +48,7 @@ nibbler-eat = 'celus_nibbler.__main__:main'
 [tool.poetry.dependencies]
 python = "^3.8.9"
 
-celus-nigiri = "~3.0.0"
+celus-nigiri = "~3.1.0"
 diskcache = "~5.6.0"
 nltk = "~3.8.1"
 pydantic = "~2.7.2"
@@ -95,6 +95,15 @@ xls = ["xlrd"]
 "static.counter5.TR.Json" = "celus_nibbler.parsers.counter.c5json:TR"
 "static.counter5.IR_M1.Json" = "celus_nibbler.parsers.counter.c5json:IR_M1"
 "static.counter5.IR.Json" = "celus_nibbler.parsers.counter.c5json:IR"
+
+"static.counter51.DR.Tabular" = "celus_nibbler.parsers.counter.c51:DR"
+"static.counter51.PR.Tabular" = "celus_nibbler.parsers.counter.c51:PR"
+"static.counter51.TR.Tabular" = "celus_nibbler.parsers.counter.c51:TR"
+"static.counter51.IR.Tabular" = "celus_nibbler.parsers.counter.c51:IR"
+"static.counter51.DR.Json" = "celus_nibbler.parsers.counter.c51json:DR"
+"static.counter51.PR.Json" = "celus_nibbler.parsers.counter.c51json:PR"
+"static.counter51.TR.Json" = "celus_nibbler.parsers.counter.c51json:TR"
+"static.counter51.IR.Json" = "celus_nibbler.parsers.counter.c51json:IR"
 
 "static.non_counter.MY.MyMetricBased" = "celus_nibbler.parsers.non_counter.metric_based:MyMetricBasedParser"
 "static.non_counter.MY.MyDateMetricBased" = "celus_nibbler.parsers.non_counter.date_metric_based:MyDateMetricBasedParser"

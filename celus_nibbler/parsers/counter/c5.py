@@ -112,6 +112,8 @@ class DR(BaseCounter5Parser):
         RegexCondition(re.compile(r"^Report_Name$"), Coord(0, 0))
         & RegexCondition(re.compile(r"^Report_ID$"), Coord(1, 0))
         & RegexCondition(re.compile(r"^DR$"), Coord(1, 1))
+        & RegexCondition(re.compile(r"^Release$"), Coord(2, 0))
+        & RegexCondition(re.compile(r"^5$"), Coord(2, 1))
     )
 
     class Area(Counter5HeaderArea):
@@ -169,6 +171,8 @@ class PR(BaseCounter5Parser):
         RegexCondition(re.compile(r"^Report_Name$"), Coord(0, 0))
         & RegexCondition(re.compile(r"^Report_ID$"), Coord(1, 0))
         & RegexCondition(re.compile(r"^PR$"), Coord(1, 1))
+        & RegexCondition(re.compile(r"^Release$"), Coord(2, 0))
+        & RegexCondition(re.compile(r"^5$"), Coord(2, 1))
     )
 
     class Area(Counter5HeaderArea):
@@ -267,6 +271,8 @@ class TR(BaseCounter5Parser):
             RegexCondition(re.compile(r"^TR$"), Coord(1, 1))
             | RegexCondition(re.compile(r"^TR_B1$"), Coord(1, 1))
         )
+        & RegexCondition(re.compile(r"^Release$"), Coord(2, 0))
+        & RegexCondition(re.compile(r"^5$"), Coord(2, 1))
     )
 
     class Area(Counter5HeaderArea):
@@ -305,6 +311,8 @@ class IR_M1(BaseCounter5Parser):
         RegexCondition(re.compile(r"^Report_Name$"), Coord(0, 0))
         & RegexCondition(re.compile(r"^Report_ID$"), Coord(1, 0))
         & RegexCondition(re.compile(r"^IR_M1$"), Coord(1, 1))
+        & RegexCondition(re.compile(r"^Release$"), Coord(2, 0))
+        & RegexCondition(re.compile(r"^5$"), Coord(2, 1))
     )
 
     class Area(Counter5HeaderArea):
@@ -343,6 +351,8 @@ class IR(BaseCounter5Parser):
         RegexCondition(re.compile(r"^Report_Name$"), Coord(0, 0))
         & RegexCondition(re.compile(r"^Report_ID$"), Coord(1, 0))
         & RegexCondition(re.compile(r"^IR$"), Coord(1, 1))
+        & RegexCondition(re.compile(r"^Release$"), Coord(2, 0))
+        & RegexCondition(re.compile(r"^5$"), Coord(2, 1))
     )
 
     class Area(Counter5HeaderArea):

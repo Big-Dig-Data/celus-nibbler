@@ -241,21 +241,6 @@ class SheetIdxCondition(ArithmeticsMixin, BaseCondition, JsonEncorder):
         return True
 
 
-Condition = Annotated[
-    typing.Union[
-        NegCondition,
-        OrCondition,
-        AndCondition,
-        RegexCondition,
-        StemmerCondition,
-        SheetNameRegexCondition,
-        SheetIdxCondition,
-        IsDateCondition,
-    ],
-    Field(discriminator="kind"),
-]
-
-
 @dataclass(config=PydanticConfig)
 class SheetExtraCondition(ArithmeticsMixin, BaseCondition, JsonEncorder):
     """Checks whether sheet extra attribute matches"""
@@ -277,6 +262,22 @@ class SheetExtraCondition(ArithmeticsMixin, BaseCondition, JsonEncorder):
             return sheet.extra[self.field_name] == self.value
         else:
             return False
+
+
+Condition = Annotated[
+    typing.Union[
+        NegCondition,
+        OrCondition,
+        AndCondition,
+        RegexCondition,
+        StemmerCondition,
+        SheetNameRegexCondition,
+        SheetIdxCondition,
+        IsDateCondition,
+        SheetExtraCondition,
+    ],
+    Field(discriminator="kind"),
+]
 
 
 # Need to update forward refs

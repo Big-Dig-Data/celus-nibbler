@@ -1,15 +1,14 @@
 import logging
 from datetime import date
-from typing import Generator, List
+from typing import Generator, List, Set
 
 from celus_nigiri import CounterRecord
-from celus_nigiri.counter5 import (
-    Counter5DRReport,
-    Counter5IRM1Report,
-    Counter5IRReport,
-    Counter5PRReport,
-    Counter5ReportBase,
-    Counter5TRReport,
+from celus_nigiri.counter51 import (
+    Counter51DRReport,
+    Counter51IRReport,
+    Counter51PRReport,
+    Counter51ReportBase,
+    Counter51TRReport,
 )
 from pydantic import ValidationError
 
@@ -25,16 +24,9 @@ logger = logging.getLogger(__name__)
 
 
 class NigiriBaseArea(BaseJsonArea):
-    nigiri_report_class = Counter5ReportBase
+    nigiri_report_class = Counter51ReportBase
 
-    def get_months(self) -> List[date]:
-        months_str = set()
-        for item_dict in self.sheet:
-            for permformance_item in item_dict.get("Performance", []):
-                if period := permformance_item.get("Period"):
-                    if begin_date := period.get("Begin_Date"):
-                        months_str.add(begin_date)
-
+    def _convert_months_str_to_months(self, months_str: Set[str]) -> Set[date]:
         months = set()
         for month_str in months_str:
             try:
@@ -42,7 +34,16 @@ class NigiriBaseArea(BaseJsonArea):
             except ValidationError:
                 logger.warn("Wrong date in Report_Item: '%s'", month_str)
 
-        return sorted(list(months))
+        return months
+
+    def get_months(self) -> List[date]:
+        months_str: Set[str] = set()
+        for item_dict in self.sheet:
+            for ap in item_dict.get("Attribute_Performance", []):
+                for dates in ap.get("Performance", {}).values():
+                    months_str.update(dates.keys())
+
+        return sorted(list(self._convert_months_str_to_months(months_str)))
 
     @property
     def dimensions(self) -> List[str]:
@@ -50,29 +51,35 @@ class NigiriBaseArea(BaseJsonArea):
 
 
 class NigiriDRArea(NigiriBaseArea):
-    nigiri_report_class = Counter5DRReport
+    nigiri_report_class = Counter51DRReport
 
 
 class NigiriPRArea(NigiriBaseArea):
-    nigiri_report_class = Counter5PRReport
+    nigiri_report_class = Counter51PRReport
 
 
 class NigiriTRArea(NigiriBaseArea):
-    nigiri_report_class = Counter5TRReport
-
-
-class NigiriIR_M1Area(NigiriBaseArea):
-    nigiri_report_class = Counter5IRM1Report
+    nigiri_report_class = Counter51TRReport
 
 
 class NigiriIRArea(NigiriBaseArea):
-    nigiri_report_class = Counter5IRReport
+    nigiri_report_class = Counter51IRReport
+
+    def get_months(self) -> List[date]:
+        months_str: Set[str] = set()
+        for items_dict in self.sheet:
+            for item in items_dict.get("Items", []):
+                for ap in item.get("Attribute_Performance", []):
+                    for dates in ap.get("Performance", {}).values():
+                        months_str.update(dates.keys())
+
+        return sorted(list(self._convert_months_str_to_months(months_str)))
 
 
-class BaseCounter5JsonParser(c5tabular.Counter5ParserAnalyzeMixin, BaseJsonParser):
+class BaseCounter51JsonParser(c5tabular.Counter5ParserAnalyzeMixin, BaseJsonParser):
     @property
     def name(self):
-        return f"counter5.{self.data_format.name}"
+        return f"counter51.{self.data_format.name}"
 
     def _parse_area(self, area: BaseArea) -> Generator[CounterRecord, None, None]:
         if isinstance(area, NigiriBaseArea):
@@ -86,51 +93,41 @@ class BaseCounter5JsonParser(c5tabular.Counter5ParserAnalyzeMixin, BaseJsonParse
         return self.sheet.extra or {}
 
 
-class DR(BaseCounter5JsonParser):
+class DR(BaseCounter51JsonParser):
     heuristics = SheetExtraCondition(field_name="Report_ID", value="DR") & SheetExtraCondition(
-        field_name="Release", value="5"
+        field_name="Release", value="5.1"
     )
     platforms = c5tabular.DR.platforms
-    data_format = DataFormatDefinition(name="DR")
+    data_format = DataFormatDefinition(name="DR51")
 
     areas = [NigiriDRArea]
 
 
-class PR(BaseCounter5JsonParser):
+class PR(BaseCounter51JsonParser):
     heuristics = SheetExtraCondition(field_name="Report_ID", value="PR") & SheetExtraCondition(
-        field_name="Release", value="5"
+        field_name="Release", value="5.1"
     )
     platforms = c5tabular.PR.platforms
-    data_format = DataFormatDefinition(name="PR")
+    data_format = DataFormatDefinition(name="PR51")
 
     areas = [NigiriPRArea]
 
 
-class TR(BaseCounter5JsonParser):
+class TR(BaseCounter51JsonParser):
     heuristics = SheetExtraCondition(field_name="Report_ID", value="TR") & SheetExtraCondition(
-        field_name="Release", value="5"
+        field_name="Release", value="5.1"
     )
     platforms = c5tabular.TR.platforms
-    data_format = DataFormatDefinition(name="TR")
+    data_format = DataFormatDefinition(name="TR51")
 
     areas = [NigiriTRArea]
 
 
-class IR_M1(BaseCounter5JsonParser):
-    heuristics = SheetExtraCondition(field_name="Report_ID", value="IR_M1") & SheetExtraCondition(
-        field_name="Release", value="5"
-    )
-    platforms = c5tabular.IR_M1.platforms
-    data_format = DataFormatDefinition(name="IR_M1")
-
-    areas = [NigiriIR_M1Area]
-
-
-class IR(BaseCounter5JsonParser):
+class IR(BaseCounter51JsonParser):
     heuristics = SheetExtraCondition(field_name="Report_ID", value="IR") & SheetExtraCondition(
-        field_name="Release", value="5"
+        field_name="Release", value="5.1"
     )
     platforms = c5tabular.IR.platforms
-    data_format = DataFormatDefinition(name="IR")
+    data_format = DataFormatDefinition(name="IR51")
 
     areas = [NigiriIRArea]

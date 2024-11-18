@@ -12,7 +12,9 @@ from typing import IO, Any, Dict, List, Optional, Sequence, Union
 
 import openpyxl
 from celus_nigiri.counter5 import Counter5ReportBase
+from celus_nigiri.counter51 import Counter51PRReport
 from celus_nigiri.csv_detect import detect_csv_dialect, detect_file_encoding
+from celus_nigiri.exceptions import SushiException
 
 from .errors import XlsError
 
@@ -187,11 +189,19 @@ class JsonCounter5SheetReader(SheetReader):
     extra = None
 
     def reset(self):
-        report = Counter5ReportBase()
+        try:
+            # Try to parse counter 5 format first
+            report = Counter5ReportBase()
 
-        self.file.seek(0)
+            self.file.seek(0)
 
-        header, items = report.fd_to_dicts(self.file)
+            header, items = report.fd_to_dicts(self.file)
+        except SushiException:
+            # Perhaps it is counter 51
+            report = Counter51PRReport()
+
+            self.file.seek(0)
+            header, items = report.fd_to_dicts(self.file)
 
         self.items = items
         self.extra = header
@@ -357,15 +367,6 @@ class XlsxReader(TableReader):
 
 class JsonCounter5Reader(TableReader):
     """Reads JSON file (in Counter 5 format) in stream mode"""
-
-    def reset(self):
-        report = Counter5ReportBase()
-
-        with open(self.source, "rb") as file:
-            header, items = report.fd_to_dicts(file)
-
-        self.items = items
-        self.header = header
 
     def __init__(self, source: Union[str, pathlib.Path, bytes]):
         file: IO[bytes]
