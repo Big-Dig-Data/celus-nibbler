@@ -97,7 +97,7 @@ class BR1(BaseCounter4Parser):
         "Psychiatry Online",
         "ProQuest",
     ]
-    heuristics = RegexCondition(re.compile(r"^Book Report 1 \(R4\)"), Coord(0, 0))
+    heuristics = RegexCondition(re.compile(r"^Book Report 1\s*\(R4\)"), Coord(0, 0))
 
     class Area(CounterHeaderArea):
         TITLE_COLUMN_NAMES = ["Book"]
@@ -127,7 +127,7 @@ class BR2(BaseCounter4Parser):
         "Psychiatry Online",
         "AMS",
     ]
-    heuristics = RegexCondition(re.compile(r"^Book Report 2 \(R4\)"), Coord(0, 0))
+    heuristics = RegexCondition(re.compile(r"^Book Report 2\s*\(R4\)"), Coord(0, 0))
 
     class Area(CounterHeaderArea):
         TITLE_COLUMN_NAMES = ["Book"]
@@ -156,7 +156,7 @@ class BR3(BaseCounter4Parser):
         "SpringerLink",
         "WileyOnlineLibrary",
     ]
-    heuristics = RegexCondition(re.compile(r"^Book Report 3 \(R4\)"), Coord(0, 0))
+    heuristics = RegexCondition(re.compile(r"^Book Report 3\s*\(R4\)"), Coord(0, 0))
 
     class Area(CounterHeaderArea):
         TITLE_COLUMN_NAMES = ["Book"]
@@ -179,7 +179,7 @@ class DB1(BaseCounter4Parser):
         "Tandfonline",
         "WebOfKnowledge",
     ]
-    heuristics = RegexCondition(re.compile(r"^Database Report 1 \(R4\)"), Coord(0, 0))
+    heuristics = RegexCondition(re.compile(r"^Database Report 1\s*\(R4\)"), Coord(0, 0))
 
     class Area(CounterHeaderArea):
         TITLE_COLUMN_NAMES = ["Database"]
@@ -198,7 +198,7 @@ class DB2(BaseCounter4Parser):
         "ProQuest",
         "Tandfonline",
     ]
-    heuristics = RegexCondition(re.compile(r"^Database Report 2 \(R4\)"), Coord(0, 0))
+    heuristics = RegexCondition(re.compile(r"^Database Report 2\s*\(R4\)"), Coord(0, 0))
 
     class Area(CounterHeaderArea):
         TITLE_COLUMN_NAMES = ["Database"]
@@ -216,7 +216,7 @@ class PR1(BaseCounter4Parser):
         "ProQuest",
         "Tandfonline",
     ]
-    heuristics = RegexCondition(re.compile(r"^Platform Report 1 \(R4\)"), Coord(0, 0))
+    heuristics = RegexCondition(re.compile(r"^Platform Report 1\s*\(R4\)"), Coord(0, 0))
 
     class Area(CounterHeaderArea):
         METRIC_COLUMN_NAMES = ["User Activity"]
@@ -279,7 +279,7 @@ class JR1(BaseCounter4Parser):
         "WileyOnlineLibrary",
         "World Scientific",
     ]
-    heuristics = RegexCondition(re.compile(r"^Journal Report 1 \(R4\)"), Coord(0, 0))
+    heuristics = RegexCondition(re.compile(r"^Journal Report 1\s*\(R4\)"), Coord(0, 0))
 
     class Area(CounterHeaderArea):
         TITLE_COLUMN_NAMES = ["Journal"]
@@ -303,7 +303,7 @@ class JR1a(BaseCounter4Parser):
         "Ovid",
         "Sage",
     ]
-    heuristics = RegexCondition(re.compile(r"^Journal Report 1a \(R4\)"), Coord(0, 0))
+    heuristics = RegexCondition(re.compile(r"^Journal Report 1a\s*\(R4\)"), Coord(0, 0))
 
     class Area(CounterHeaderArea):
         TITLE_COLUMN_NAMES = ["Journal"]
@@ -334,7 +334,7 @@ class JR1GOA(BaseCounter4Parser):
         "Tandfonline",
         "World Scientific",
     ]
-    heuristics = RegexCondition(re.compile(r"^Journal Report 1 GOA \(R4\)"), Coord(0, 0))
+    heuristics = RegexCondition(re.compile(r"^Journal Report 1 GOA\s*\(R4\)"), Coord(0, 0))
 
     class Area(CounterHeaderArea):
         TITLE_COLUMN_NAMES = ["Journal"]
@@ -353,7 +353,7 @@ class JR2(BaseCounter4Parser):
     data_format = DataFormatDefinition(name="JR2")
 
     titles_to_skip: typing.List[str] = ["Total", "Total for all journals", ""]
-    heuristics = RegexCondition(re.compile(r"^Journal Report 2 \(R4\)"), Coord(0, 0))
+    heuristics = RegexCondition(re.compile(r"^Journal Report 2\s*\(R4\)"), Coord(0, 0))
     platforms = [
         "AACR",
         "AACN",
@@ -416,7 +416,7 @@ class MR1(BaseCounter4Parser):
     platforms = [
         "ProQuest",
     ]
-    heuristics = RegexCondition(re.compile(r"^Multimedia Report 1 \(R4\)"), Coord(0, 0))
+    heuristics = RegexCondition(re.compile(r"^Multimedia Report 1\s*\(R4\)"), Coord(0, 0))
 
     class Area(CounterHeaderArea):
         DIMENSION_NAMES_MAP = [
