@@ -332,7 +332,7 @@ def findparser(
     parser_classes = [
         (name, parser)
         for name, parser in get_parsers(parsers, dynamic_parsers)
-        if not check_platform or platform in parser.platforms
+        if not check_platform or parser.check_platform(platform)
     ]
 
     if len(parser_classes) < 1:

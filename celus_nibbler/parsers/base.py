@@ -247,10 +247,20 @@ class BaseParser(metaclass=ABCMeta):
         return True
 
     @property
+    @classmethod
     @abstractmethod
     def platforms(self) -> typing.List[str]:
         """List of available platforms (used for validation)"""
-        pass
+        return []
+
+    @classmethod
+    def check_platform(cls, platform: str):
+        if "*" in cls.platforms:
+            # '*' will match any platform
+            return True
+        if platform in cls.platforms:
+            return True
+        return False
 
     def _parse(self) -> typing.Generator[typing.Tuple[int, CounterRecord], None, None]:
         for idx, area in enumerate(self.get_areas()):

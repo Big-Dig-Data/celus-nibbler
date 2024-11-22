@@ -93,21 +93,7 @@ class DR(BaseCounter5Parser):
 
     titles_to_skip: typing.List[str] = ["Total", "All Databases", ""]
 
-    platforms = [
-        "AAAS",
-        "APA",
-        "ABC-Clio",
-        "Gale",
-        "Emerald",
-        "EbscoHost",
-        "MathSciNet",
-        "Ovid",
-        "ProQuest",
-        "Scopus",
-        "RCS",
-        "WileyOnlineLibrary",
-        "WebOfKnowledge",
-    ]
+    platforms = ["*"]
     heuristics = (
         RegexCondition(re.compile(r"^Report_Name$"), Coord(0, 0))
         & RegexCondition(re.compile(r"^Report_ID$"), Coord(1, 0))
@@ -131,42 +117,7 @@ class DR(BaseCounter5Parser):
 class PR(BaseCounter5Parser):
     data_format = DataFormatDefinition(name="PR")
 
-    platforms = [
-        "AAAS",
-        "ACS",
-        "Access Medicine",
-        "Annual Reviews",
-        "APA",
-        "APS",
-        "ABC-Clio",
-        "ASME",
-        "ASCE",
-        "Blood",
-        "CUP",
-        "Gale",
-        "Emerald",
-        "EbscoHost",
-        "ICE",
-        "IOP",
-        "IEEEXplore",
-        "JSTOR",
-        "MIT",
-        "MathSciNet",
-        "OSA",
-        "Ovid",
-        "OUP",
-        "Oxford_Music",
-        "ProQuest",
-        "ProQuestEbookCentral",
-        "Sage",
-        "ScienceDirect",
-        "Scitation",
-        "Scopus",
-        "RCS",
-        "T&F ebooks",
-        "WileyOnlineLibrary",
-        "WebOfKnowledge",
-    ]
+    platforms = ["*"]
     heuristics = (
         RegexCondition(re.compile(r"^Report_Name$"), Coord(0, 0))
         & RegexCondition(re.compile(r"^Report_ID$"), Coord(1, 0))
@@ -201,69 +152,7 @@ class TR(BaseCounter5Parser):
 
     titles_to_skip: typing.List[str] = ["Total", "All Titles", ""]
 
-    platforms = [
-        "AAAS",
-        "AACN",
-        "AACR",
-        "AAP",
-        "Access Medicine",
-        "ACM",
-        "ACS",
-        "AHA",
-        "AIM",
-        "Allen",
-        "Annual Reviews",
-        "AMS",
-        "APA",
-        "APS",
-        "ARRS",
-        "ASCE",
-        "ASME",
-        "AUA - American Urological Association",
-        "BioOne",
-        "BIR",
-        "Blood",
-        "BMJ",
-        "Bone and Joint Journal",
-        "CUP",
-        "CSIRO",
-        "Emerald",
-        "EbscoHost",
-        "Future Science",
-        "Gale",
-        "GSW",
-        "Health Affairs",
-        "ICE",
-        "IEEEXplore",
-        "IOP",
-        "JCO - Journal of Clinical Oncology",
-        "JNS - Journal of Neurosurgery",
-        "JOSPT",
-        "JSTOR",
-        "Liebert Online",
-        "MAG",
-        "MIT",
-        "Nature_com",
-        "NEJM",
-        "NRC Res. Press",
-        "Ovid",
-        "OUP",
-        "OSA",
-        "Physiology.org",
-        "ProQuest",
-        "ProQuestEbookCentral",
-        "RSC",
-        "Sage",
-        "ScienceDirect",
-        "Scitation",
-        "SpringerLink",
-        "WileyOnlineLibrary",
-        "Tandfonline",
-        "T&F ebooks",
-        "Topics in Spinal Cord Injury Rehabilitation",
-        "Thieme",
-    ]
-
+    platforms = ["*"]
     heuristics = (
         RegexCondition(re.compile(r"^Report_Name$"), Coord(0, 0))
         & RegexCondition(re.compile(r"^Report_ID$"), Coord(1, 0))
@@ -294,19 +183,7 @@ class IR_M1(BaseCounter5Parser):
 
     titles_to_skip: typing.List[str] = ["Total", "All", ""]
 
-    platforms = [
-        "Access Medicine",
-        "Adam Matthew Digital",
-        "AlexanderStreet",
-        "Artstor",
-        "Bloomsbury",
-        "Drama Online",
-        "Films on Demand",
-        "HistoryMakers",
-        "Infobase",
-        "JSTOR",
-        "ProQuest",
-    ]
+    platforms = ["*"]
     heuristics = (
         RegexCondition(re.compile(r"^Report_Name$"), Coord(0, 0))
         & RegexCondition(re.compile(r"^Report_ID$"), Coord(1, 0))
@@ -340,13 +217,7 @@ class IR(BaseCounter5Parser):
     titles_to_skip: typing.List[str] = []
     items_to_skip: typing.List[str] = ["Total", "All"]
 
-    platforms = [
-        "IEEEXplore",
-        "JSTOR",
-        "OUP",
-        "Ovid",
-        "Sage",
-    ]
+    platforms = ["*"]
     heuristics = (
         RegexCondition(re.compile(r"^Report_Name$"), Coord(0, 0))
         & RegexCondition(re.compile(r"^Report_ID$"), Coord(1, 0))

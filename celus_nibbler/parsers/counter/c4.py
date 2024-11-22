@@ -91,12 +91,7 @@ class BR1(BaseCounter4Parser):
 
     titles_to_skip: typing.List[str] = ["Total", "Total for all titles", ""]
 
-    platforms = [
-        "ACM",
-        "Ovid",
-        "Psychiatry Online",
-        "ProQuest",
-    ]
+    platforms = ["*"]
     heuristics = RegexCondition(re.compile(r"^Book Report 1\s*\(R4\)"), Coord(0, 0))
 
     class Area(CounterHeaderArea):
@@ -117,16 +112,7 @@ class BR2(BaseCounter4Parser):
 
     titles_to_skip: typing.List[str] = ["Total", "Total for all titles", ""]
 
-    platforms = [
-        "Access Medicine",
-        "ProQuestEbookCentral",
-        "APH",
-        "WileyOnlineLibrary",
-        "ProQuest",
-        "SpringerLink",
-        "Psychiatry Online",
-        "AMS",
-    ]
+    platforms = ["*"]
     heuristics = RegexCondition(re.compile(r"^Book Report 2\s*\(R4\)"), Coord(0, 0))
 
     class Area(CounterHeaderArea):
@@ -147,15 +133,7 @@ class BR3(BaseCounter4Parser):
 
     titles_to_skip: typing.List[str] = ["Total", "Total for all titles", ""]
 
-    platforms = [
-        "AMS",
-        "Ovid",
-        "ProQuest",
-        "Psychiatry Online",
-        "ScienceDirect",
-        "SpringerLink",
-        "WileyOnlineLibrary",
-    ]
+    platforms = ["*"]
     heuristics = RegexCondition(re.compile(r"^Book Report 3\s*\(R4\)"), Coord(0, 0))
 
     class Area(CounterHeaderArea):
@@ -171,14 +149,7 @@ class DB1(BaseCounter4Parser):
     data_format = DataFormatDefinition(name="DB1")
 
     titles_to_skip: typing.List[str] = ["Total", "Total for all databases", ""]
-    platforms = [
-        "Encyclopaedia Britannica",
-        "Journal of Clinical Psychiatry",
-        "Ovid",
-        "ProQuest",
-        "Tandfonline",
-        "WebOfKnowledge",
-    ]
+    platforms = ["*"]
     heuristics = RegexCondition(re.compile(r"^Database Report 1\s*\(R4\)"), Coord(0, 0))
 
     class Area(CounterHeaderArea):
@@ -194,10 +165,7 @@ class DB2(BaseCounter4Parser):
     data_format = DataFormatDefinition(name="DB2")
 
     titles_to_skip: typing.List[str] = ["Total", "Total for all databases", ""]
-    platforms = [
-        "ProQuest",
-        "Tandfonline",
-    ]
+    platforms = ["*"]
     heuristics = RegexCondition(re.compile(r"^Database Report 2\s*\(R4\)"), Coord(0, 0))
 
     class Area(CounterHeaderArea):
@@ -212,10 +180,7 @@ class PR1(BaseCounter4Parser):
 
     data_format = DataFormatDefinition(name="PR1")
 
-    platforms = [
-        "ProQuest",
-        "Tandfonline",
-    ]
+    platforms = ["*"]
     heuristics = RegexCondition(re.compile(r"^Platform Report 1\s*\(R4\)"), Coord(0, 0))
 
     class Area(CounterHeaderArea):
@@ -234,51 +199,7 @@ class JR1(BaseCounter4Parser):
     data_format = DataFormatDefinition(name="JR1")
 
     titles_to_skip: typing.List[str] = ["Total", "Total for all journals", ""]
-    platforms = [
-        "AACR",
-        "AACN",
-        "AAP",
-        "AASM",
-        "ACM",
-        "AJTMH",
-        "AHA",
-        "Allen",
-        "AMA",
-        "AMS",
-        "Annual Reviews",
-        "ARRS",
-        "Berghahn Journals",
-        "Bone and Joint Journal",
-        "CS",
-        "CSIRO",
-        "DeGruyter",
-        "Edinburgh University Press",
-        "Emerald",
-        "Gale",
-        "Health Affairs",
-        "IET",
-        "IOS Press",
-        "JCO - Journal of Clinical Oncology",
-        "JOSPT",
-        "JNS - Journal of Neurosurgery",
-        "Liebert Online",
-        "Journal of Clinical Psychiatry",
-        "MAG",
-        "Nature_com",
-        "OUP",
-        "Ovid",
-        "ProQuest",
-        "Psychiatry Online",
-        "Radiology & Radiographics",
-        "Sage",
-        "ScienceDirect",
-        "SpringerLink",
-        "Tandfonline",
-        "Thieme",
-        "Topics in Spinal Cord Injury Rehabilitation",
-        "WileyOnlineLibrary",
-        "World Scientific",
-    ]
+    platforms = ["*"]
     heuristics = RegexCondition(re.compile(r"^Journal Report 1\s*\(R4\)"), Coord(0, 0))
 
     class Area(CounterHeaderArea):
@@ -298,11 +219,7 @@ class JR1a(BaseCounter4Parser):
     data_format = DataFormatDefinition(name="JR1a")
 
     titles_to_skip: typing.List[str] = ["Total", "Total for all journals", ""]
-    platforms = [
-        "Liebert Online",
-        "Ovid",
-        "Sage",
-    ]
+    platforms = ["*"]
     heuristics = RegexCondition(re.compile(r"^Journal Report 1a\s*\(R4\)"), Coord(0, 0))
 
     class Area(CounterHeaderArea):
@@ -322,18 +239,7 @@ class JR1GOA(BaseCounter4Parser):
     data_format = DataFormatDefinition(name="JR1GOA")
 
     titles_to_skip: typing.List[str] = ["Total", "Total for all journals", ""]
-    platforms = [
-        "Journal of Clinical Psychiatry",
-        "Liebert Online",
-        "OUP",
-        "ProQuest",
-        "Psychiatry Online",
-        "Sage",
-        "ScienceDirect",
-        "SpringerLink",
-        "Tandfonline",
-        "World Scientific",
-    ]
+    platforms = ["*"]
     heuristics = RegexCondition(re.compile(r"^Journal Report 1 GOA\s*\(R4\)"), Coord(0, 0))
 
     class Area(CounterHeaderArea):
@@ -354,51 +260,7 @@ class JR2(BaseCounter4Parser):
 
     titles_to_skip: typing.List[str] = ["Total", "Total for all journals", ""]
     heuristics = RegexCondition(re.compile(r"^Journal Report 2\s*\(R4\)"), Coord(0, 0))
-    platforms = [
-        "AACR",
-        "AACN",
-        "AAP",
-        "AASM",
-        "ACM",
-        "AJTMH",
-        "AHA",
-        "Allen",
-        "AMA",
-        "AMS",
-        "Annual Reviews",
-        "ARRS",
-        "Berghahn Journals",
-        "Bone and Joint Journal",
-        "CS",
-        "CSIRO",
-        "DeGruyter",
-        "Edinburgh University Press",
-        "Emerald",
-        "Gale",
-        "Health Affairs",
-        "IET",
-        "IOS Press",
-        "JCO - Journal of Clinical Oncology",
-        "JOSPT",
-        "JNS - Journal of Neurosurgery",
-        "Liebert Online",
-        "Journal of Clinical Psychiatry",
-        "MAG",
-        "Nature_com",
-        "OUP",
-        "Ovid",
-        "ProQuest",
-        "Psychiatry Online",
-        "Radiology & Radiographics",
-        "Sage",
-        "ScienceDirect",
-        "SpringerLink",
-        "Tandfonline",
-        "Thieme",
-        "Topics in Spinal Cord Injury Rehabilitation",
-        "WileyOnlineLibrary",
-        "World Scientific",
-    ]
+    platforms = ["*"]
 
     class Area(CounterHeaderArea):
         TITLE_COLUMN_NAMES = ["Journal"]
@@ -413,9 +275,7 @@ class MR1(BaseCounter4Parser):
     data_format = DataFormatDefinition(name="MR1")
 
     titles_to_skip: typing.List[str] = ["Total", "Total for all collections", ""]
-    platforms = [
-        "ProQuest",
-    ]
+    platforms = ["*"]
     heuristics = RegexCondition(re.compile(r"^Multimedia Report 1\s*\(R4\)"), Coord(0, 0))
 
     class Area(CounterHeaderArea):
