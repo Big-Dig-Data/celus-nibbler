@@ -104,6 +104,3 @@ xls = ["xlrd"]
 "static.counter51.PR.Json" = "celus_nibbler.parsers.counter.c51json:PR"
 "static.counter51.TR.Json" = "celus_nibbler.parsers.counter.c51json:TR"
 "static.counter51.IR.Json" = "celus_nibbler.parsers.counter.c51json:IR"
-
-"static.non_counter.MY.MyMetricBased" = "celus_nibbler.parsers.non_counter.metric_based:MyMetricBasedParser"
-"static.non_counter.MY.MyDateMetricBased" = "celus_nibbler.parsers.non_counter.date_metric_based:MyDateMetricBasedParser"
