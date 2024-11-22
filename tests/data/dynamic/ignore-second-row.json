@@ -1,5 +1,5 @@
 {
-  "kind": "non_counter.date_based",
+  "kind": "non_counter.generic",
   "version": 1,
   "parser_name": "ignore_second_row",
   "data_format": {
@@ -62,7 +62,7 @@
       },
       "title_ids": [],
       "dimensions": [],
-      "kind": "non_counter.date_based"
+      "kind": "non_counter.generic"
     }
   ]
 }

@@ -1,5 +1,5 @@
 {
-  "kind": "non_counter.date_based",
+  "kind": "non_counter.generic",
   "version": 1,
   "parser_name": "dimension_skip",
   "data_format": {
@@ -137,7 +137,7 @@
           }
         }
       ],
-      "kind": "non_counter.date_based"
+      "kind": "non_counter.generic"
     }
   ]
 }

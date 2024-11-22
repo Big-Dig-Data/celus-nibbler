@@ -1,5 +1,5 @@
 {
-  "kind": "non_counter.date_based",
+  "kind": "non_counter.generic",
   "version": 1,
   "parser_name": "value_minutes_to_seconds",
   "data_format": {
@@ -126,7 +126,7 @@
           }
         }
       ],
-      "kind": "non_counter.date_based"
+      "kind": "non_counter.generic"
     }
   ]
 }

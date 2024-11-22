@@ -1,5 +1,5 @@
 {
-  "kind": "non_counter.date_based",
+  "kind": "non_counter.generic",
   "version": 1,
   "parser_name": "org_sheet_name",
   "data_format": {
@@ -139,7 +139,7 @@
           }
         }
       ],
-      "kind": "non_counter.date_based"
+      "kind": "non_counter.generic"
     }
   ]
 }

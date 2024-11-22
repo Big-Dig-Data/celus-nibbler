@@ -1,5 +1,5 @@
 {
-  "kind": "non_counter.metric_based",
+  "kind": "non_counter.generic",
   "version": 1,
   "parser_name": "available-metrics2",
   "data_format": {
@@ -71,7 +71,8 @@
       "titles": null,
       "title_ids": [],
       "dimensions": [],
-      "kind": "non_counter.metric_based"
+      "aggregate_same_records": true,
+      "kind": "non_counter.generic"
     }
   ]
 }

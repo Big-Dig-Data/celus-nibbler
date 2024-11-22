@@ -1,5 +1,5 @@
 {
-  "kind": "non_counter.metric_based",
+  "kind": "non_counter.generic",
   "version": 1,
   "parser_name": "my-metric-based",
   "data_format": {
@@ -90,7 +90,8 @@
           }
         }
       ],
-      "kind": "non_counter.metric_based"
+      "aggregate_same_records": true,
+      "kind": "non_counter.generic"
     }
   ]
 }

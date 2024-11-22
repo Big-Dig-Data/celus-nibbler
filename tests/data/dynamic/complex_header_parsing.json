@@ -1,5 +1,5 @@
 {
-  "kind": "non_counter.metric_based",
+  "kind": "non_counter.generic",
   "version": 1,
   "parser_name": "complex_header_parsing",
   "data_format": {
@@ -162,7 +162,8 @@
           }
         }
       ],
-      "kind": "non_counter.metric_based"
+      "aggregate_same_records": true,
+      "kind": "non_counter.generic"
     }
   ]
 }

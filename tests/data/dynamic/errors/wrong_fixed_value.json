@@ -1,5 +1,5 @@
 {
-  "kind": "non_counter.date_based",
+  "kind": "non_counter.generic",
   "parser_name": "wrong_fixed_value",
   "data_format": {
     "name":"simple_format"
@@ -80,7 +80,7 @@
           }
         }
       ],
-      "kind": "non_counter.date_based"
+      "kind": "non_counter.generic"
     }
   ]
 }

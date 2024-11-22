@@ -1,5 +1,5 @@
 {
-  "kind": "non_counter.date_based",
+  "kind": "non_counter.generic",
   "parser_name": "date_cells_out_of_range",
   "data_format": {
     "name":"simple_format"
@@ -73,7 +73,7 @@
           }
         }
       ],
-      "kind": "non_counter.date_based"
+      "kind": "non_counter.generic"
     }
   ]
 }
