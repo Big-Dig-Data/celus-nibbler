@@ -44,7 +44,6 @@ class GenericAreaDefinition(JsonEncorder, BaseAreaDefinition):
     min_valid_areas: typing.Optional[int] = 1
 
     kind: typing.Literal["non_counter.generic"] = "non_counter.generic"
-    version: typing.Literal[1] = 1
 
     def make_area(self) -> typing.Type[BaseArea]:
         headers = self.data_headers

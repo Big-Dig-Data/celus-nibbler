@@ -185,6 +185,11 @@ class BaseHeaderArea(BaseTabularArea):
         return [e.header_data.start for e in self.find_data_cells(lambda x: x, lambda x, y: None)]
 
 
+class BaseDateArea(BaseHeaderArea):
+    def get_months(self) -> typing.List[datetime.date]:
+        return self._get_months_from_header()
+
+
 class BaseParser(metaclass=ABCMeta):
     metrics_to_skip: typing.List[str] = ["Total"]
     available_metrics: typing.Optional[typing.List[str]] = None

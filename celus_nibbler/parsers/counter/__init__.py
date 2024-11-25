@@ -8,7 +8,7 @@ from celus_nibbler.conditions import IsDateCondition
 from celus_nibbler.coordinates import Coord, CoordRange, Direction, RelativeTo
 from celus_nibbler.data_headers import DataHeaders
 from celus_nibbler.errors import TableException
-from celus_nibbler.parsers.non_counter.date_based import BaseDateArea
+from celus_nibbler.parsers.non_counter.generic import BaseGenericArea
 from celus_nibbler.sources import (
     AuthorsSource,
     DateSource,
@@ -27,7 +27,7 @@ from celus_nibbler.sources import (
 logger = logging.getLogger(__name__)
 
 
-class CounterHeaderArea(BaseDateArea):
+class CounterHeaderArea(BaseGenericArea):
     HEADER_DATE_COL_START = 1
     MAX_HEADER_ROW = 50
     TITLE_DOI_NAMES = {

@@ -238,6 +238,7 @@ CounterAreaDefinition = Annotated[
         PRAreaDefinition,
         TRAreaDefinition,
         IR_M1AreaDefinition,
+        IRAreaDefinition,
     ],
     Field(discriminator="kind"),
 ]
@@ -461,3 +462,26 @@ class IRDefinition(JsonEncorder, BaseCounter5ParserDefinition):
 
     def make_parser(self):
         return gen_parser(IR, self)
+
+
+CounterDefinition = Annotated[
+    typing.Union[
+        BR1Definition,
+        BR2Definition,
+        BR3Definition,
+        DB1Definition,
+        DB2Definition,
+        JR1Definition,
+        JR1aDefinition,
+        JR1GOADefinition,
+        JR2Definition,
+        MR1Definition,
+        PR1Definition,
+        DRDefinition,
+        PRDefinition,
+        TRDefinition,
+        IR_M1Definition,
+        IRDefinition,
+    ],
+    Field(discriminator="kind"),
+]

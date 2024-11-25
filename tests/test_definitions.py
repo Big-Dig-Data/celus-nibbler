@@ -7,9 +7,10 @@ from celus_nibbler.conditions import AndCondition, RegexCondition
 from celus_nibbler.coordinates import Coord, CoordRange, Direction
 from celus_nibbler.data_headers import DataFormatDefinition, DataHeaders
 from celus_nibbler.definitions import (
-    DateBasedAreaDefinition,
-    DateBasedDefinition,
-    MetricBasedAreaDefinition,
+    BaseParserDefinition,
+    GenericAreaDefinition,
+    GenericDefinition,
+    get_all_definitions,
 )
 from celus_nibbler.sources import (
     DateSource,
@@ -21,9 +22,9 @@ from celus_nibbler.sources import (
 )
 
 
-def test_date_based_area_definition():
-    init_definition = DateBasedAreaDefinition(
-        kind="non_counter.date_based",
+def test_generic_area_definition():
+    init_definition = GenericAreaDefinition(
+        kind="non_counter.generic",
         data_headers=DataHeaders(
             roles=[
                 DateSource(source=CoordRange(Coord(1, 5), Direction.LEFT)),
@@ -44,7 +45,7 @@ def test_date_based_area_definition():
     definition_dict = json.loads(init_definition.json())
 
     assert definition_dict == {
-        "kind": "non_counter.date_based",
+        "kind": "non_counter.generic",
         "data_headers": {
             "roles": [
                 {
@@ -229,6 +230,7 @@ def test_date_based_area_definition():
             }
         ],
         "items": None,
+        "dates": None,
         "item_ids": [],
         "item_authors": None,
         "item_publication_date": None,
@@ -238,7 +240,7 @@ def test_date_based_area_definition():
         "min_valid_areas": 1,
     }
 
-    converted_definition = DateBasedAreaDefinition.parse(definition_dict)
+    converted_definition = GenericAreaDefinition.parse(definition_dict)
     assert converted_definition.dict() == init_definition.dict()
     assert converted_definition == init_definition
 
@@ -246,17 +248,17 @@ def test_date_based_area_definition():
 def test_errors():
     # Unknown definition
     with pytest.raises(ValidationError):
-        MetricBasedAreaDefinition.parse({"name": "unknown"})
+        GenericAreaDefinition.parse({"name": "unknown"})
 
     # Extra field
     with pytest.raises(ValidationError):
-        MetricBasedAreaDefinition.parse({"name": "dummy", "extra": 3})
+        GenericAreaDefinition.parse({"name": "dummy", "extra": 3})
 
     # Wrong field type
     with pytest.raises(ValidationError):
-        DateBasedAreaDefinition.parse(
+        GenericAreaDefinition.parse(
             {
-                "kind": "non_counter.date_based",
+                "kind": "non_counter.generic",
                 "dates": {
                     "direction": "wrong",  # wrong direction
                     "source": {
@@ -371,9 +373,9 @@ def test_errors():
 
     # Missing field
     with pytest.raises(ValidationError):
-        DateBasedAreaDefinition.parse(
+        GenericAreaDefinition.parse(
             {
-                "kind": "non_counter.date_based",
+                "kind": "non_counter.generic",
                 "dates": {
                     "source": {
                         "coord": {"row": 1, "col": 6, "row_relative_to": "area"},
@@ -494,8 +496,8 @@ def test_errors():
         )
 
 
-def test_date_based_definition():
-    init_definition = DateBasedDefinition(
+def test_generic_definition():
+    init_definition = GenericDefinition(
         parser_name="Parser1",
         data_format=DataFormatDefinition(name="Format1"),
         platforms=["Platform1", "Platform2"],
@@ -506,8 +508,8 @@ def test_date_based_definition():
             ]
         ),
         areas=[
-            DateBasedAreaDefinition(
-                kind="non_counter.date_based",
+            GenericAreaDefinition(
+                kind="non_counter.generic",
                 data_headers=DataHeaders(
                     roles=[
                         DateSource(
@@ -537,7 +539,7 @@ def test_date_based_definition():
     definition_dict = json.loads(init_definition.json())
 
     assert definition_dict == {
-        "kind": "non_counter.date_based",
+        "kind": "non_counter.generic",
         "version": 1,
         "parser_name": "Parser1",
         "data_format": {"name": "Format1", "id": None},
@@ -561,7 +563,7 @@ def test_date_based_definition():
         },
         "areas": [
             {
-                "kind": "non_counter.date_based",
+                "kind": "non_counter.generic",
                 "data_headers": {
                     "roles": [
                         {
@@ -749,6 +751,7 @@ def test_date_based_definition():
                 "item_ids": [],
                 "item_authors": None,
                 "item_publication_date": None,
+                "dates": None,
                 "organizations": None,
                 "aggregate_same_records": False,
                 "max_areas_generated": 1,
@@ -763,3 +766,9 @@ def test_date_based_definition():
         "titles_to_skip": [],
         "possible_row_offsets": [0],
     }
+
+
+def test_get_all_definitions():
+    definitions = get_all_definitions()
+    assert all(issubclass(e, BaseParserDefinition) for e in definitions)
+    assert all(hasattr(e, "kind") for e in definitions), "kind in definitions"

@@ -7,16 +7,27 @@ from ..utils import JsonEncorder
 from . import counter
 from .base import BaseParserDefinition
 from .celus_format import CelusFormatAreaDefinition, CelusFormatParserDefinition
-from .date_based import DateBasedAreaDefinition, DateBasedDefinition
-from .date_metric_based import DateMetricBasedAreaDefinition, DateMetricBasedDefinition
+from .counter import BaseCounterAreaDefinition, CounterDefinition
 from .generic import GenericAreaDefinition, GenericDefinition
-from .metric_based import MetricBasedAreaDefinition, MetricBasedDefinition
 
 AreaDefinition = Annotated[
     typing.Union[
-        DateBasedAreaDefinition,
-        DateMetricBasedAreaDefinition,
-        MetricBasedAreaDefinition,
+        counter.BR1AreaDefinition,
+        counter.BR2AreaDefinition,
+        counter.BR3AreaDefinition,
+        counter.DB1AreaDefinition,
+        counter.DB2AreaDefinition,
+        counter.JR1AreaDefinition,
+        counter.JR1aAreaDefinition,
+        counter.JR1GOAAreaDefinition,
+        counter.JR2AreaDefinition,
+        counter.MR1AreaDefinition,
+        counter.PR1AreaDefinition,
+        counter.TRAreaDefinition,
+        counter.IR_M1AreaDefinition,
+        counter.IRAreaDefinition,
+        counter.DRAreaDefinition,
+        counter.PRAreaDefinition,
         CelusFormatAreaDefinition,
         GenericAreaDefinition,
     ],
@@ -26,8 +37,6 @@ AreaDefinition = Annotated[
 
 DefinitionAnotation = Annotated[
     typing.Union[
-        DateBasedDefinition,
-        DateMetricBasedDefinition,
         counter.BR1Definition,
         counter.BR2Definition,
         counter.BR3Definition,
@@ -39,12 +48,11 @@ DefinitionAnotation = Annotated[
         counter.JR2Definition,
         counter.MR1Definition,
         counter.PR1Definition,
-        counter.TRDefinition,
         counter.DRDefinition,
         counter.PRDefinition,
+        counter.TRDefinition,
         counter.IR_M1Definition,
         counter.IRDefinition,
-        MetricBasedDefinition,
         CelusFormatParserDefinition,
         GenericDefinition,
     ],
@@ -62,14 +70,12 @@ class Definition(JsonEncorder, RootModel):
 
 __all__ = [
     "AreaDefinition",
+    "BaseCounterAreaDefinition",
+    "CounterDefinition",
     "Definition",
-    "DateBasedAreaDefinition",
-    "DateBasedDefinition",
-    "DateMetricBasedAreaDefinition",
-    "DateMetricBasedDefinition",
-    "MetricBasedAreaDefinition",
-    "MetricBasedDefinition",
     "BaseParserDefinition",
+    "GenericDefinition",
+    "GenericAreaDefinition",
     "CelusFormatAreaDefinition",
     "CelusFormatParserDefinition",
 ]
