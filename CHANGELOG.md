@@ -5,6 +5,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [11.5.0] - 2024-11-25
+
+### Added
+- test for max_id during metrics extraction
+- make it possible to extract year/month from row and other month/year from header
+- make C4 heuristics more tolerant
+- parsing of CONTER 5.1
+
+### Fixed
+- branch with undefined variable
+
+
 ## [11.4.0] - 2024-07-25
 
 ### Added
