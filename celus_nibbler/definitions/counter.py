@@ -10,7 +10,7 @@ from celus_nibbler.conditions import Condition
 from celus_nibbler.data_headers import DataFormatDefinition
 from celus_nibbler.errors import TableException
 from celus_nibbler.parsers.base import BaseArea, BaseParser
-from celus_nibbler.parsers.counter import CounterHeaderArea
+from celus_nibbler.parsers.counter import CounterHeaderArea, c51
 from celus_nibbler.parsers.counter.c4 import (
     BR1,
     BR2,
@@ -221,6 +221,38 @@ class PRAreaDefinition(BaseCounterAreaDefinition):
         return gen_area(PR.Area, self)
 
 
+@dataclass(config=PydanticConfig)
+class TR51AreaDefinition(BaseCounterAreaDefinition):
+    kind: typing.Literal["counter51.TR"] = "counter51.TR"
+
+    def make_area(self) -> typing.Type[CounterHeaderArea]:
+        return gen_area(c51.TR.Area, self)
+
+
+@dataclass(config=PydanticConfig)
+class IR51AreaDefinition(BaseCounterAreaDefinition):
+    kind: typing.Literal["counter51.IR"] = "counter51.IR"
+
+    def make_area(self) -> typing.Type[CounterHeaderArea]:
+        return gen_area(c51.IR.Area, self)
+
+
+@dataclass(config=PydanticConfig)
+class DR51AreaDefinition(BaseCounterAreaDefinition):
+    kind: typing.Literal["counter51.DR"] = "counter51.DR"
+
+    def make_area(self) -> typing.Type[CounterHeaderArea]:
+        return gen_area(c51.DR.Area, self)
+
+
+@dataclass(config=PydanticConfig)
+class PR51AreaDefinition(BaseCounterAreaDefinition):
+    kind: typing.Literal["counter51.PR"] = "counter51.PR"
+
+    def make_area(self) -> typing.Type[CounterHeaderArea]:
+        return gen_area(c51.PR.Area, self)
+
+
 CounterAreaDefinition = Annotated[
     typing.Union[
         BR1AreaDefinition,
@@ -239,6 +271,10 @@ CounterAreaDefinition = Annotated[
         TRAreaDefinition,
         IR_M1AreaDefinition,
         IRAreaDefinition,
+        DR51AreaDefinition,
+        PR51AreaDefinition,
+        TR51AreaDefinition,
+        IR51AreaDefinition,
     ],
     Field(discriminator="kind"),
 ]
@@ -276,6 +312,11 @@ class BaseCounter4ParserDefinition(BaseCounterParserDefinition):
 @dataclass(config=PydanticConfig)
 class BaseCounter5ParserDefinition(BaseCounterParserDefinition):
     group: str = "counter5"
+
+
+@dataclass(config=PydanticConfig)
+class BaseCounter51ParserDefinition(BaseCounterParserDefinition):
+    group: str = "counter51"
 
 
 def gen_parser(
@@ -464,6 +505,46 @@ class IRDefinition(JsonEncorder, BaseCounter5ParserDefinition):
         return gen_parser(IR, self)
 
 
+@dataclass(config=PydanticConfig)
+class TR51Definition(JsonEncorder, BaseCounter51ParserDefinition):
+    kind: typing.Literal["counter51.TR"] = "counter51.TR"
+    data_format: typing.Optional[DataFormatDefinition] = None
+    version: typing.Literal[1] = 1
+
+    def make_parser(self):
+        return gen_parser(c51.TR, self)
+
+
+@dataclass(config=PydanticConfig)
+class DR51Definition(JsonEncorder, BaseCounter51ParserDefinition):
+    kind: typing.Literal["counter51.DR"] = "counter51.DR"
+    data_format: typing.Optional[DataFormatDefinition] = None
+    version: typing.Literal[1] = 1
+
+    def make_parser(self):
+        return gen_parser(c51.DR, self)
+
+
+@dataclass(config=PydanticConfig)
+class PR51Definition(JsonEncorder, BaseCounter51ParserDefinition):
+    kind: typing.Literal["counter51.PR"] = "counter51.PR"
+    data_format: typing.Optional[DataFormatDefinition] = None
+    version: typing.Literal[1] = 1
+
+    def make_parser(self):
+        return gen_parser(c51.PR, self)
+
+
+@dataclass(config=PydanticConfig)
+class IR51Definition(JsonEncorder, BaseCounter51ParserDefinition):
+    kind: typing.Literal["counter51.IR"] = "counter51.IR"
+    data_format: typing.Optional[DataFormatDefinition] = None
+    version: typing.Literal[1] = 1
+
+    def make_parser(self):
+        return gen_parser(c51.IR, self)
+
+
 CounterDefinition = Annotated[
     typing.Union[
         BR1Definition,
@@ -482,6 +563,10 @@ CounterDefinition = Annotated[
         TRDefinition,
         IR_M1Definition,
         IRDefinition,
+        DR51Definition,
+        PR51Definition,
+        TR51Definition,
+        IR51Definition,
     ],
     Field(discriminator="kind"),
 ]

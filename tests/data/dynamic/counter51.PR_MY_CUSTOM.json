@@ -1,0 +1,48 @@
+{
+  "kind": "counter51.PR",
+  "parser_name": "PR_MY_CUSTOM",
+  "platforms": ["PlatformWithCustomPR"],
+  "data_format": {
+	  "name": "MY_PR"
+  },
+  "heuristics": {
+    "conds": [
+      {
+        "pattern": "Report_Name",
+        "coord": {
+          "row": 0,
+          "col": 0
+        },
+        "kind": "regex"
+      },
+      {
+        "pattern": "My Platform Report",
+        "coord": {
+          "row": 0,
+          "col": 1
+        },
+        "kind": "regex"
+      },
+      {
+        "pattern": "Institution_Name",
+        "coord": {
+          "row": 3,
+          "col": 0
+        },
+        "kind": "regex"
+      }
+    ],
+    "kind": "and"
+  },
+  "version": 1,
+  "areas": [
+    {
+      "metric_column": ["Metric"],
+      "data_extract_params": {
+        "default": 0,
+        "blank_values": [null, "", "zero"]
+      },
+      "kind": "counter51.PR"
+    }
+  ]
+}

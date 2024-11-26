@@ -72,6 +72,12 @@ from celus_nibbler.parsers.dynamic import gen_parser
             False,
         ),
         (
+            "counter51.PR_MY_CUSTOM",
+            "tsv",
+            "dynamic.counter51.MY_PR.PR_MY_CUSTOM",
+            False,
+        ),
+        (
             "non_counter/my-metric-based",
             "xlsx",
             "dynamic.non_counter.simple_format.my-metric-based",
