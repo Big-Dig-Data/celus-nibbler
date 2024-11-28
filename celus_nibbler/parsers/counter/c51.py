@@ -39,6 +39,18 @@ class TR(c5.TR):
         & RegexCondition(re.compile(r"^5.1$"), Coord(2, 1))
     )
 
+    class Area(c5.TR.Area):
+        DIMENSION_NAMES_MAP = [
+            ("Access_Type", {"Access Type", "Access_Type"}),
+            ("Access_Method", {"Access_Method", "Access Method"}),
+            ("Data_Type", {"Data Type", "Data_Type"}),
+            ("YOP", {"YOP", "Year of Publication", "Year_of_Publication"}),
+            ("Publisher", {"Publisher"}),
+            ("Platform", {"Platform"}),
+        ]
+
+    areas = [Area]
+
 
 class IR(c5.IR):
     data_format = DataFormatDefinition(name="IR51")
