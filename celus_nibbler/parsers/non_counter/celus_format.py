@@ -167,7 +167,7 @@ class BaseCelusFormatArea(BaseHeaderArea):
 
     def dimensions(self) -> typing.List[str]:
         # populate dimensions_sources
-        self.find_data_cells(self.sheet, lambda x: x, lambda x: None)
+        self.find_data_cells(self.sheet, lambda x: x, lambda x, y: None)
         return list(self.dimensions_sources.keys())
 
     def get_months(self) -> typing.List[datetime.date]:

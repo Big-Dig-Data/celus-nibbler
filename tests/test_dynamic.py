@@ -399,6 +399,9 @@ def test_dynamic(filename, ext, parser, ignore_order):
             )
             records = list(records)
 
+            # Just call get_months to see whether the function doesn't crash
+            poop.get_months()
+
             for idx, record in enumerate(records):
                 in_file = next(reader)
                 assert in_file == list(record.as_csv()), f"Compare {idx + 1}."

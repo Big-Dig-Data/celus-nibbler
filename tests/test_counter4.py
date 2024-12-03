@@ -1,5 +1,6 @@
 import csv
 import pathlib
+from datetime import date
 
 import pytest
 
@@ -8,7 +9,7 @@ from celus_nibbler.errors import NoParserMatchesHeuristics, TableException
 
 
 @pytest.mark.parametrize(
-    "file,parser,heuristics,success,extras",
+    "file,parser,heuristics,success,extras,months",
     (
         (
             "4/BR1-a.tsv",
@@ -20,9 +21,17 @@ from celus_nibbler.errors import NoParserMatchesHeuristics, TableException
                 "Created": "2020-01-01",
                 "Reporting_Period": "2018-01-01 to 2018-12-31",
             },
+            [date(2018, i, 1) for i in range(1, 13)],
         ),
-        ("4/BR1-b.tsv", "static.counter4.BR1.Tabular", False, True, {}),
-        ("4/BR1-b.tsv", "static.counter4.BR1.Tabular", True, False, {}),
+        (
+            "4/BR1-b.tsv",
+            "static.counter4.BR1.Tabular",
+            False,
+            True,
+            {},
+            [date(2018, i, 1) for i in range(1, 13)],
+        ),
+        ("4/BR1-b.tsv", "static.counter4.BR1.Tabular", True, False, {}, None),
         (
             "4/BR1-empty1.tsv",
             "static.counter4.BR1.Tabular",
@@ -33,6 +42,7 @@ from celus_nibbler.errors import NoParserMatchesHeuristics, TableException
                 "Created": "2020-01-01",
                 "Reporting_Period": "2018-01-01 to 2018-12-31",
             },
+            [date(2018, i, 1) for i in range(1, 13)],
         ),
         (
             "4/BR1-empty2.tsv",
@@ -44,6 +54,7 @@ from celus_nibbler.errors import NoParserMatchesHeuristics, TableException
                 "Created": "2020-01-01",
                 "Reporting_Period": "2018-01-01 to 2018-12-31",
             },
+            [date(2018, i, 1) for i in range(1, 13)],
         ),
         (
             "4/BR1-empty_values.csv",
@@ -55,6 +66,7 @@ from celus_nibbler.errors import NoParserMatchesHeuristics, TableException
                 "Created": "2020-01-01",
                 "Reporting_Period": "2018-01-01 to 2018-12-31",
             },
+            [date(2018, i, 1) for i in range(1, 13)],
         ),
         (
             "4/BR2-a.tsv",
@@ -66,9 +78,17 @@ from celus_nibbler.errors import NoParserMatchesHeuristics, TableException
                 "Created": "2020-01-01",
                 "Reporting_Period": "2017-01-01 to 2017-12-31",
             },
+            [date(2017, i, 1) for i in range(1, 13)],
         ),
-        ("4/BR2-b.tsv", "static.counter4.BR2.Tabular", False, True, {}),
-        ("4/BR2-b.tsv", "static.counter4.BR2.Tabular", True, False, {}),
+        (
+            "4/BR2-b.tsv",
+            "static.counter4.BR2.Tabular",
+            False,
+            True,
+            {},
+            [date(2017, i, 1) for i in range(1, 13)],
+        ),
+        ("4/BR2-b.tsv", "static.counter4.BR2.Tabular", True, False, {}, None),
         (
             "4/BR3-a.tsv",
             "static.counter4.BR3.Tabular",
@@ -79,9 +99,10 @@ from celus_nibbler.errors import NoParserMatchesHeuristics, TableException
                 "Created": "2022-04-01",
                 "Reporting_Period": "2022-03-01 to 2022-03-31",
             },
+            [date(2022, 3, 1)],
         ),
-        ("4/BR3-b.tsv", "static.counter4.BR3.Tabular", False, True, {}),
-        ("4/BR3-b.tsv", "static.counter4.BR3.Tabular", True, False, {}),
+        ("4/BR3-b.tsv", "static.counter4.BR3.Tabular", False, True, {}, [date(2022, 3, 1)]),
+        ("4/BR3-b.tsv", "static.counter4.BR3.Tabular", True, False, {}, None),
         (
             "4/DB1-a.tsv",
             "static.counter4.DB1.Tabular",
@@ -92,9 +113,10 @@ from celus_nibbler.errors import NoParserMatchesHeuristics, TableException
                 "Created": "2022-04-01",
                 "Reporting_Period": "2022-03-01 to 2022-03-31",
             },
+            [date(2022, 3, 1)],
         ),
-        ("4/DB1-b.tsv", "static.counter4.DB1.Tabular", False, True, {}),
-        ("4/DB1-b.tsv", "static.counter4.DB1.Tabular", True, False, {}),
+        ("4/DB1-b.tsv", "static.counter4.DB1.Tabular", False, True, {}, [date(2022, 3, 1)]),
+        ("4/DB1-b.tsv", "static.counter4.DB1.Tabular", True, False, {}, None),
         (
             "4/DB2-a.tsv",
             "static.counter4.DB2.Tabular",
@@ -105,9 +127,17 @@ from celus_nibbler.errors import NoParserMatchesHeuristics, TableException
                 "Created": "2012-07-01",
                 "Reporting_Period": "2012-01-01 to 2012-06-30",
             },
+            [date(2012, i, 1) for i in range(1, 7)],
         ),
-        ("4/DB2-b.tsv", "static.counter4.DB2.Tabular", False, True, {}),
-        ("4/DB2-b.tsv", "static.counter4.DB2.Tabular", True, False, {}),
+        (
+            "4/DB2-b.tsv",
+            "static.counter4.DB2.Tabular",
+            False,
+            True,
+            {},
+            [date(2012, i, 1) for i in range(1, 7)],
+        ),
+        ("4/DB2-b.tsv", "static.counter4.DB2.Tabular", True, False, {}, None),
         (
             "4/PR1-a.tsv",
             "static.counter4.PR1.Tabular",
@@ -118,9 +148,10 @@ from celus_nibbler.errors import NoParserMatchesHeuristics, TableException
                 "Created": "2022-04-01",
                 "Reporting_Period": "2022-03-01 to 2022-03-31",
             },
+            [date(2022, 3, 1)],
         ),
-        ("4/PR1-b.tsv", "static.counter4.PR1.Tabular", False, True, {}),
-        ("4/PR1-b.tsv", "static.counter4.PR1.Tabular", True, False, {}),
+        ("4/PR1-b.tsv", "static.counter4.PR1.Tabular", False, True, {}, [date(2022, 3, 1)]),
+        ("4/PR1-b.tsv", "static.counter4.PR1.Tabular", True, False, {}, None),
         (
             "4/PR1-c.tsv",
             "static.counter4.PR1.Tabular",
@@ -131,6 +162,7 @@ from celus_nibbler.errors import NoParserMatchesHeuristics, TableException
                 "Created": "2022-04-01",
                 "Reporting_Period": "2022-03-01 to 2022-03-31",
             },
+            [date(2022, 3, 1)],
         ),
         (
             "4/JR1-a.tsv",
@@ -142,9 +174,10 @@ from celus_nibbler.errors import NoParserMatchesHeuristics, TableException
                 "Created": "2022-04-01",
                 "Reporting_Period": "2022-03-01 to 2022-03-31",
             },
+            [date(2022, 3, 1)],
         ),
-        ("4/JR1-b.tsv", "static.counter4.JR1.Tabular", False, True, {}),
-        ("4/JR1-b.tsv", "static.counter4.JR1.Tabular", True, False, {}),
+        ("4/JR1-b.tsv", "static.counter4.JR1.Tabular", False, True, {}, [date(2022, 3, 1)]),
+        ("4/JR1-b.tsv", "static.counter4.JR1.Tabular", True, False, {}, None),
         (
             "4/JR1-d.csv",
             "static.counter4.JR1.Tabular",
@@ -155,6 +188,7 @@ from celus_nibbler.errors import NoParserMatchesHeuristics, TableException
                 "Created": "1/1/2023",
                 "Reporting_Period": "2022-01-01 to 2022-12-31",
             },
+            [date(2022, i, 1) for i in range(1, 13)],
         ),
         (
             "4/JR1a-a.tsv",
@@ -166,9 +200,17 @@ from celus_nibbler.errors import NoParserMatchesHeuristics, TableException
                 "Created": "2021-01-01",
                 "Reporting_Period": "2020-01-01 to 2020-09-30",
             },
+            [date(2020, i, 1) for i in range(1, 10)],
         ),
-        ("4/JR1a-b.tsv", "static.counter4.JR1a.Tabular", False, True, {}),
-        ("4/JR1a-b.tsv", "static.counter4.JR1a.Tabular", True, False, {}),
+        (
+            "4/JR1a-b.tsv",
+            "static.counter4.JR1a.Tabular",
+            False,
+            True,
+            {},
+            [date(2020, i, 1) for i in range(1, 10)],
+        ),
+        ("4/JR1a-b.tsv", "static.counter4.JR1a.Tabular", True, False, {}, None),
         (
             "4/JR1GOA-a.tsv",
             "static.counter4.JR1GOA.Tabular",
@@ -179,9 +221,10 @@ from celus_nibbler.errors import NoParserMatchesHeuristics, TableException
                 "Created": "2022-04-01",
                 "Reporting_Period": "2022-03-01 to 2022-03-31",
             },
+            [date(2022, 3, 1)],
         ),
-        ("4/JR1GOA-b.tsv", "static.counter4.JR1GOA.Tabular", False, True, {}),
-        ("4/JR1GOA-b.tsv", "static.counter4.JR1GOA.Tabular", True, False, {}),
+        ("4/JR1GOA-b.tsv", "static.counter4.JR1GOA.Tabular", False, True, {}, [date(2022, 3, 1)]),
+        ("4/JR1GOA-b.tsv", "static.counter4.JR1GOA.Tabular", True, False, {}, None),
         (
             "4/JR2-a.tsv",
             "static.counter4.JR2.Tabular",
@@ -192,9 +235,10 @@ from celus_nibbler.errors import NoParserMatchesHeuristics, TableException
                 "Created": "2022-04-01",
                 "Reporting_Period": "2022-03-01 to 2022-03-31",
             },
+            [date(2022, 3, 1)],
         ),
-        ("4/JR2-b.tsv", "static.counter4.JR2.Tabular", False, True, {}),
-        ("4/JR2-b.tsv", "static.counter4.JR2.Tabular", True, False, {}),
+        ("4/JR2-b.tsv", "static.counter4.JR2.Tabular", False, True, {}, [date(2022, 3, 1)]),
+        ("4/JR2-b.tsv", "static.counter4.JR2.Tabular", True, False, {}, None),
         (
             "4/MR1-a.tsv",
             "static.counter4.MR1.Tabular",
@@ -205,12 +249,20 @@ from celus_nibbler.errors import NoParserMatchesHeuristics, TableException
                 "Created": "2020-11-10",
                 "Reporting_Period": "2018-01-01 to 2018-12-31",
             },
+            [date(2018, i, 1) for i in range(1, 13)],
         ),
-        ("4/MR1-b.tsv", "static.counter4.MR1.Tabular", False, True, {}),
-        ("4/MR1-b.tsv", "static.counter4.MR1.Tabular", True, False, {}),
+        (
+            "4/MR1-b.tsv",
+            "static.counter4.MR1.Tabular",
+            False,
+            True,
+            {},
+            [date(2018, i, 1) for i in range(1, 13)],
+        ),
+        ("4/MR1-b.tsv", "static.counter4.MR1.Tabular", True, False, {}, None),
     ),
 )
-def test_success(file, parser, heuristics, success, extras):
+def test_success(file, parser, heuristics, success, extras, months):
     source_path = pathlib.Path(__file__).parent / "data/counter" / file
     output_path = pathlib.Path(__file__).parent / "data/counter" / f"{file}.out"
 
@@ -221,6 +273,7 @@ def test_success(file, parser, heuristics, success, extras):
         return
 
     assert poop.extras == extras
+    assert poop.get_months() == [months]
 
     with output_path.open() as f:
         reader = csv.reader(f)

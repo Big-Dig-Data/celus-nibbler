@@ -1,5 +1,6 @@
 import csv
 import pathlib
+from datetime import date
 
 import pytest
 
@@ -8,7 +9,7 @@ from celus_nibbler.errors import NoParserMatchesHeuristics, TableException
 
 
 @pytest.mark.parametrize(
-    "file,parser,heuristics,success,extras",
+    "file,parser,heuristics,success,extras,months",
     (
         (
             "5/DR-a.tsv",
@@ -31,9 +32,27 @@ from celus_nibbler.errors import NoParserMatchesHeuristics, TableException
                 "Report_Name": "Database Master Report",
                 "Reporting_Period": "Begin_Date=2019-10-01; End_Date=2022-02-28",
             },
+            [
+                *(date(2019, i, 1) for i in range(10, 13)),
+                *(date(2020, i, 1) for i in range(1, 13)),
+                *(date(2021, i, 1) for i in range(1, 13)),
+                *(date(2022, i, 1) for i in range(1, 3)),
+            ],
         ),
-        ("5/DR-b.tsv", "static.counter5.DR.Tabular", False, True, {}),
-        ("5/DR-b.tsv", "static.counter5.DR.Tabular", True, False, {}),
+        (
+            "5/DR-b.tsv",
+            "static.counter5.DR.Tabular",
+            False,
+            True,
+            {},
+            [
+                *(date(2019, i, 1) for i in range(10, 13)),
+                *(date(2020, i, 1) for i in range(1, 13)),
+                *(date(2021, i, 1) for i in range(1, 13)),
+                *(date(2022, i, 1) for i in range(1, 3)),
+            ],
+        ),
+        ("5/DR-b.tsv", "static.counter5.DR.Tabular", True, False, {}, None),
         (
             "5/DR-c.json",
             "static.counter5.DR.Json",
@@ -56,9 +75,10 @@ from celus_nibbler.errors import NoParserMatchesHeuristics, TableException
                 "Report_ID": "DR",
                 "Report_Name": "Database Master Report",
             },
+            [date(2020, 1, 1)],
         ),
-        ("5/DR-d.json", "static.counter5.DR.Json", False, True, {}),
-        ("5/DR-d.json", "static.counter5.DR.Json", True, False, {}),
+        ("5/DR-d.json", "static.counter5.DR.Json", False, True, {}, [date(2020, 1, 1)]),
+        ("5/DR-d.json", "static.counter5.DR.Json", True, False, {}, None),
         (
             "5/DR-e.csv",
             "static.counter5.DR.Tabular",
@@ -80,6 +100,12 @@ from celus_nibbler.errors import NoParserMatchesHeuristics, TableException
                 "Report_Name": "Database Master Report xxx",
                 "Reporting_Period": "Begin_Date=2019-10-01; End_Date=2022-02-28",
             },
+            [
+                *(date(2019, i, 1) for i in range(10, 13)),
+                *(date(2020, i, 1) for i in range(1, 13)),
+                *(date(2021, i, 1) for i in range(1, 13)),
+                *(date(2022, i, 1) for i in range(1, 3)),
+            ],
         ),
         (
             "5/DR-sample.tsv",
@@ -97,6 +123,7 @@ from celus_nibbler.errors import NoParserMatchesHeuristics, TableException
                 "Report_Name": "Database Master Report",
                 "Reporting_Period": "Begin_Date=2016-01-01; End_Date=2016-03-31",
             },
+            [date(2016, i, 1) for i in range(1, 4)],
         ),
         (
             "5/DR-f.tsv",
@@ -114,6 +141,7 @@ from celus_nibbler.errors import NoParserMatchesHeuristics, TableException
                 "Report_Name": "Database Master Report",
                 "Reporting_Period": "Begin_Date=2016-01-01; End_Date=2016-03-31",
             },
+            [date(2016, i, 1) for i in range(1, 4)],
         ),
         (
             "5/PR-a.tsv",
@@ -134,9 +162,23 @@ from celus_nibbler.errors import NoParserMatchesHeuristics, TableException
                 "Report_Name": "Platform Master Report",
                 "Reporting_Period": "Begin_Date=2021-12-01; End_Date=2022-04-30",
             },
+            [
+                date(2021, 12, 1),
+                *(date(2022, i, 1) for i in range(1, 5)),
+            ],
         ),
-        ("5/PR-b.tsv", "static.counter5.PR.Tabular", False, True, {}),
-        ("5/PR-b.tsv", "static.counter5.PR.Tabular", True, False, {}),
+        (
+            "5/PR-b.tsv",
+            "static.counter5.PR.Tabular",
+            False,
+            True,
+            {},
+            [
+                date(2021, 12, 1),
+                *(date(2022, i, 1) for i in range(1, 5)),
+            ],
+        ),
+        ("5/PR-b.tsv", "static.counter5.PR.Tabular", True, False, {}, None),
         (
             "5/PR-c.json",
             "static.counter5.PR.Json",
@@ -172,9 +214,10 @@ from celus_nibbler.errors import NoParserMatchesHeuristics, TableException
                 "Report_ID": "PR",
                 "Report_Name": "Platform Master Report",
             },
+            [date(2019, 4, 1)],
         ),
-        ("5/PR-d.json", "static.counter5.PR.Json", False, True, {}),
-        ("5/PR-d.json", "static.counter5.PR.Json", True, False, {}),
+        ("5/PR-d.json", "static.counter5.PR.Json", False, True, {}, [date(2019, 4, 1)]),
+        ("5/PR-d.json", "static.counter5.PR.Json", True, False, {}, None),
         (
             "5/PR-e.csv",
             "static.counter5.PR.Tabular",
@@ -195,6 +238,7 @@ from celus_nibbler.errors import NoParserMatchesHeuristics, TableException
                 "Report_Name": "Platform Master Report xxx",
                 "Reporting_Period": "Begin_Date=2020-01-01; End_Date=2020-12-31",
             },
+            [date(2020, i, 1) for i in range(1, 13)],
         ),
         (
             "5/PR-sample.tsv",
@@ -212,6 +256,7 @@ from celus_nibbler.errors import NoParserMatchesHeuristics, TableException
                 "Report_Name": "Platform Master Report",
                 "Reporting_Period": "Begin_Date=2016-01-01; End_Date=2016-03-31",
             },
+            [date(2016, i, 1) for i in range(1, 4)],
         ),
         (
             "5/PR-f.tsv",
@@ -229,6 +274,7 @@ from celus_nibbler.errors import NoParserMatchesHeuristics, TableException
                 "Report_Name": "Platform Master Report",
                 "Reporting_Period": "Begin_Date=2016-01-01; End_Date=2016-03-31",
             },
+            [date(2016, i, 1) for i in range(1, 4)],
         ),
         (
             "5/PR-g.tsv",
@@ -249,6 +295,7 @@ from celus_nibbler.errors import NoParserMatchesHeuristics, TableException
                 "Report_Name": "Platform Master Report",
                 "Reporting_Period": "Begin_Date=2021-12-01; End_Date=2022-04-30",
             },
+            [date(2021, 12, 1), *(date(2022, i, 1) for i in range(1, 5))],
         ),
         (
             "5/TR-a.tsv",
@@ -269,9 +316,17 @@ from celus_nibbler.errors import NoParserMatchesHeuristics, TableException
                 "Report_Name": "Title Master Report",
                 "Reporting_Period": "Begin_Date=2021-12-01; End_Date=2022-04-30",
             },
+            [date(2021, 12, 1), *(date(2022, i, 1) for i in range(1, 5))],
         ),
-        ("5/TR-b.tsv", "static.counter5.TR.Tabular", False, True, {}),
-        ("5/TR-b.tsv", "static.counter5.TR.Tabular", True, False, {}),
+        (
+            "5/TR-b.tsv",
+            "static.counter5.TR.Tabular",
+            False,
+            True,
+            {},
+            [date(2021, 12, 1), *(date(2022, i, 1) for i in range(1, 5))],
+        ),
+        ("5/TR-b.tsv", "static.counter5.TR.Tabular", True, False, {}, None),
         (
             "5/TR-c.json",
             "static.counter5.TR.Json",
@@ -305,9 +360,17 @@ from celus_nibbler.errors import NoParserMatchesHeuristics, TableException
                 "Report_ID": "TR",
                 "Report_Name": "Title Master Report",
             },
+            [*(date(2017, i, 1) for i in range(1, 13)), *(date(2018, i, 1) for i in range(1, 13))],
         ),
-        ("5/TR-d.json", "static.counter5.TR.Json", False, True, {}),
-        ("5/TR-d.json", "static.counter5.TR.Json", True, False, {}),
+        (
+            "5/TR-d.json",
+            "static.counter5.TR.Json",
+            False,
+            True,
+            {},
+            [date(2018, 11, 1)],
+        ),
+        ("5/TR-d.json", "static.counter5.TR.Json", True, False, {}, None),
         (
             "5/TR-e.tsv",
             "static.counter5.TR.Tabular",
@@ -327,6 +390,7 @@ from celus_nibbler.errors import NoParserMatchesHeuristics, TableException
                 "Report_Name": "Title Master Report xxx",
                 "Reporting_Period": "Begin_Date=2021-12-01; End_Date=2022-04-30",
             },
+            [date(2021, 12, 1), *(date(2022, i, 1) for i in range(1, 5))],
         ),
         (
             "5/TR-sample.tsv",
@@ -345,6 +409,7 @@ from celus_nibbler.errors import NoParserMatchesHeuristics, TableException
                 "Report_Name": "Title Master Report",
                 "Reporting_Period": "Begin_Date=2016-01-01; End_Date=2016-03-31",
             },
+            [date(2016, i, 1) for i in range(1, 4)],
         ),
         (
             "5/TR-f.tsv",
@@ -363,6 +428,7 @@ from celus_nibbler.errors import NoParserMatchesHeuristics, TableException
                 "Report_Name": "Title Master Report",
                 "Reporting_Period": "Begin_Date=2016-01-01; End_Date=2016-03-31",
             },
+            [date(2016, i, 1) for i in range(1, 4)],
         ),
         (
             "5/TR-with-organization.tsv",
@@ -381,6 +447,7 @@ from celus_nibbler.errors import NoParserMatchesHeuristics, TableException
                 "Report_Name": "Title Master Report",
                 "Reporting_Period": "Begin_Date=2016-01-01; End_Date=2016-03-31",
             },
+            [date(2016, i, 1) for i in range(1, 4)],
         ),
         (
             "5/TR_B1-a.xlsx",
@@ -402,6 +469,7 @@ from celus_nibbler.errors import NoParserMatchesHeuristics, TableException
                 "Report_Name": "Book Requests (Excluding OA_Gold)",
                 "Reporting_Period": "Begin_Date=2022-07-01; End_Date=2022-07-31",
             },
+            [date(2022, 7, 1)],
         ),
         (
             "5/IR_M1-a.csv",
@@ -422,9 +490,23 @@ from celus_nibbler.errors import NoParserMatchesHeuristics, TableException
                 "Report_Name": "Multimedia Item Requests xxx",
                 "Reporting_Period": "2021-07-01 to 2022-06-30",
             },
+            [
+                *(date(2022, i, 1) for i in range(7, 13)),
+                *(date(2023, i, 1) for i in range(1, 7)),
+            ],
         ),
-        ("5/IR_M1-b.csv", "static.counter5.IR_M1.Tabular", False, True, {}),
-        ("5/IR_M1-b.csv", "static.counter5.IR_M1.Tabular", True, False, {}),
+        (
+            "5/IR_M1-b.csv",
+            "static.counter5.IR_M1.Tabular",
+            False,
+            True,
+            {},
+            [
+                *(date(2022, i, 1) for i in range(7, 13)),
+                *(date(2023, i, 1) for i in range(1, 7)),
+            ],
+        ),
+        ("5/IR_M1-b.csv", "static.counter5.IR_M1.Tabular", True, False, {}, None),
         (
             "5/IR_M1-c.json",
             "static.counter5.IR_M1.Json",
@@ -448,9 +530,10 @@ from celus_nibbler.errors import NoParserMatchesHeuristics, TableException
                 "Report_ID": "IR_M1",
                 "Report_Name": "Multimedia Item Requests",
             },
+            [date(2022, 10, 1)],
         ),
-        ("5/IR_M1-d.json", "static.counter5.IR_M1.Json", False, True, {}),
-        ("5/IR_M1-d.json", "static.counter5.IR_M1.Json", True, False, {}),
+        ("5/IR_M1-d.json", "static.counter5.IR_M1.Json", False, True, {}, [date(2022, 10, 1)]),
+        ("5/IR_M1-d.json", "static.counter5.IR_M1.Json", True, False, {}, None),
         (
             "5/IR_M1-sample.tsv",
             "static.counter5.IR_M1.Tabular",
@@ -468,6 +551,7 @@ from celus_nibbler.errors import NoParserMatchesHeuristics, TableException
                 "Report_Name": "Multimedia Item Requests",
                 "Reporting_Period": "Begin_Date=2016-01-01; End_Date=2016-03-31",
             },
+            [date(2016, i, 1) for i in range(1, 4)],
         ),
         (
             "5/IR_M1-f.tsv",
@@ -486,6 +570,7 @@ from celus_nibbler.errors import NoParserMatchesHeuristics, TableException
                 "Report_Name": "Multimedia Item Requests",
                 "Reporting_Period": "Begin_Date=2016-01-01; End_Date=2016-03-31",
             },
+            [date(2016, i, 1) for i in range(1, 4)],
         ),
         (
             "5/IR-sample.tsv",
@@ -507,6 +592,7 @@ from celus_nibbler.errors import NoParserMatchesHeuristics, TableException
                 "Report_Name": "Item Master Report",
                 "Reporting_Period": "Begin_Date=2016-01-01; End_Date=2016-03-31",
             },
+            [date(2016, i, 1) for i in range(1, 4)],
         ),
         (
             "5/IR-sample.json",
@@ -537,10 +623,11 @@ from celus_nibbler.errors import NoParserMatchesHeuristics, TableException
                 ],
                 "Report_Name": "Item Master Report",
             },
+            [date(2016, i, 1) for i in range(1, 4)],
         ),
     ),
 )
-def test_success(file, parser, heuristics, success, extras):
+def test_success(file, parser, heuristics, success, extras, months):
     source_path = pathlib.Path(__file__).parent / "data/counter" / file
     output_path = pathlib.Path(__file__).parent / "data/counter" / f"{file}.out"
 
@@ -550,6 +637,7 @@ def test_success(file, parser, heuristics, success, extras):
         return
 
     assert poop.extras == extras
+    assert poop.get_months() == [months]
 
     with output_path.open() as f:
         reader = csv.reader(f)

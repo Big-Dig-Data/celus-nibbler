@@ -74,6 +74,9 @@
               "col": 1
             },
             "direction": "down"
+          },
+          "extract_params": {
+            "on_validation_error": "stop"
           }
       },
       "titles": null,

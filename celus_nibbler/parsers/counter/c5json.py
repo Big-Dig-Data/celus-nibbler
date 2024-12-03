@@ -11,6 +11,7 @@ from celus_nigiri.counter5 import (
     Counter5ReportBase,
     Counter5TRReport,
 )
+from celus_nigiri.utils import get_date_range
 from pydantic import ValidationError
 
 from celus_nibbler import validators
@@ -29,6 +30,24 @@ class NigiriBaseArea(BaseJsonArea):
 
     def get_months(self) -> List[date]:
         months_str = set()
+        if report_filters := self.sheet.extra.get("Report_Filters"):
+            begin = None
+            end = None
+            for rf in report_filters:
+                if rf.get("Name") == "Begin_Date":
+                    begin = rf.get("Value")
+                if rf.get("Name") == "End_Date":
+                    end = rf.get("Value")
+
+            if begin and end:
+                try:
+                    begin_date = validators.Date(value=begin).value
+                    end_date = validators.Date(value=end).value
+                    return get_date_range(begin_date, end_date)
+                except ValidationError:
+                    logger.warn("Wrong date in Report_Filters")
+
+        # No Report Filters detected => try to extract data from performance
         for item_dict in self.sheet:
             for permformance_item in item_dict.get("Performance", []):
                 if period := permformance_item.get("Period"):
