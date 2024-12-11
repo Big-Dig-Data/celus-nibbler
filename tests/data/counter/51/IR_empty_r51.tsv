@@ -1,0 +1,15 @@
+﻿Report_Name	Item Report																																								
+Report_ID	IR																																								
+Release	5.1																																								
+Institution_Name	Sample Institution																																								
+Institution_ID	ISNI:1234123412341234																																								
+Metric_Types																																									
+Report_Filters																																									
+Report_Attributes	Attributes_To_Show=Authors|Publication_Date|Article_Version|YOP|Access_Type|Access_Method; Include_Parent_Details=True																																								
+Exceptions																																									
+Reporting_Period	Begin_Date=2022-01-01; End_Date=2022-12-31																																								
+Created	2023-02-15T09:11:12Z																																								
+Created_By	Sample Publisher																																								
+Registry_Record	https://registry.projectcounter.org/platform/99999999-9999-9999-9999-999999999999																																								
+																																									
+Item	Publisher	Publisher_ID	Platform	Authors	Publication_Date	Article_Version	DOI	Proprietary_ID	ISBN	Print_ISSN	Online_ISSN	URI	Parent_Title	Parent_Authors	Parent_Publication_Date	Parent_Article_Version	Parent_Data_Type	Parent_DOI	Parent_Proprietary_ID	Parent_ISBN	Parent_Print_ISSN	Parent_Online_ISSN	Parent_URI	Data_Type	YOP	Access_Type	Access_Method	Metric_Type	Reporting_Period_Total	Jan-2022	Feb-2022	Mar-2022	Apr-2022	May-2022	Jun-2022	Jul-2022	Aug-2022	Sep-2022	Oct-2022	Nov-2022	Dec-2022

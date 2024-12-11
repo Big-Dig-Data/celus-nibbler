@@ -625,6 +625,111 @@ from celus_nibbler.errors import NoParserMatchesHeuristics, TableException
             },
             [date(2016, i, 1) for i in range(1, 4)],
         ),
+        (
+            "5/TR-sample.json",
+            "static.counter5.TR.Json",
+            True,
+            True,
+            {
+                "Created": "2019-04-25T11:39:56Z",
+                "Created_By": "Publisher Platform Delta",
+                "Customer_ID": "cid-123456",
+                "Institution_ID": [{"Type": "ISNI", "Value": "1234123412341234"}],
+                "Institution_Name": "Client Demo Site",
+                "Release": "5",
+                "Report_ID": "TR",
+                "Report_Filters": [
+                    {"Name": "Begin_Date", "Value": "2016-01-01"},
+                    {"Name": "End_Date", "Value": "2016-03-31"},
+                ],
+                "Report_Attributes": [
+                    {
+                        "Name": "Attributes_To_Show",
+                        "Value": "Data_Type|Section_Type|YOP|Access_Type|Access_Method",
+                    },
+                ],
+                "Report_Name": "Title Master Report",
+            },
+            [date(2016, i, 1) for i in range(1, 4)],
+        ),
+        (
+            "5/DR-sample.json",
+            "static.counter5.DR.Json",
+            True,
+            True,
+            {
+                "Created": "2019-04-25T11:35:16Z",
+                "Created_By": "Publisher Platform Alpha",
+                "Customer_ID": "ppa123456",
+                "Institution_ID": [{"Type": "ISNI", "Value": "1234123412341234"}],
+                "Institution_Name": "Client Demo Site",
+                "Release": "5",
+                "Report_ID": "DR",
+                "Report_Filters": [
+                    {"Name": "Begin_Date", "Value": "2016-01-01"},
+                    {"Name": "End_Date", "Value": "2016-03-31"},
+                ],
+                "Report_Attributes": [
+                    {
+                        "Name": "Attributes_To_Show",
+                        "Value": "Data_Type|Access_Method",
+                    },
+                ],
+                "Report_Name": "Database Master Report",
+            },
+            [date(2016, i, 1) for i in range(1, 4)],
+        ),
+        (
+            "5/PR-sample.json",
+            "static.counter5.PR.Json",
+            True,
+            True,
+            {
+                "Created": "2019-04-25T11:39:38Z",
+                "Created_By": "Sample Publisher",
+                "Customer_ID": "c123456",
+                "Institution_ID": [{"Type": "ISNI", "Value": "1234123412341234"}],
+                "Institution_Name": "Client Demo Site",
+                "Release": "5",
+                "Report_ID": "PR",
+                "Report_Filters": [
+                    {"Name": "Begin_Date", "Value": "2016-01-01"},
+                    {"Name": "End_Date", "Value": "2016-03-31"},
+                ],
+                "Report_Attributes": [
+                    {
+                        "Name": "Attributes_To_Show",
+                        "Value": "Data_Type|Access_Method",
+                    },
+                ],
+                "Report_Name": "Platform Master Report",
+            },
+            [date(2016, i, 1) for i in range(1, 4)],
+        ),
+        (
+            "5/IR_M1-sample.json",
+            "static.counter5.IR_M1.Json",
+            True,
+            True,
+            {
+                "Created": "2019-04-25T11:38:17Z",
+                "Created_By": "Sample Institutional Repository",
+                "Customer_ID": "demo-1234",
+                "Institution_ID": [{"Type": "ISNI", "Value": "1234123412341234"}],
+                "Institution_Name": "Client Demo Site",
+                "Release": "5",
+                "Report_ID": "IR_M1",
+                "Report_Filters": [
+                    {"Name": "Metric_Type", "Value": "Total_Item_Requests"},
+                    {"Name": "Data_Type", "Value": "Multimedia"},
+                    {"Name": "Access_Method", "Value": "Regular"},
+                    {"Name": "Begin_Date", "Value": "2016-01-01"},
+                    {"Name": "End_Date", "Value": "2016-03-31"},
+                ],
+                "Report_Name": "Multimedia Item Requests",
+            },
+            [date(2016, i, 1) for i in range(1, 4)],
+        ),
     ),
 )
 def test_success(file, parser, heuristics, success, extras, months):
@@ -647,6 +752,36 @@ def test_success(file, parser, heuristics, success, extras, months):
 
         with pytest.raises(StopIteration):
             assert next(reader) is None, "No more date present in the file"
+
+
+@pytest.mark.parametrize(
+    "file,parser,months",
+    (
+        ("5/DR-empty.tsv", "static.counter5.DR.Tabular", [date(2016, i, 1) for i in range(1, 4)]),
+        ("5/PR-empty.tsv", "static.counter5.PR.Tabular", [date(2016, i, 1) for i in range(1, 4)]),
+        ("5/TR-empty.tsv", "static.counter5.TR.Tabular", [date(2016, i, 1) for i in range(1, 4)]),
+        ("5/IR-empty.tsv", "static.counter5.IR.Tabular", [date(2016, i, 1) for i in range(1, 4)]),
+        (
+            "5/IR_M1-empty.tsv",
+            "static.counter5.IR_M1.Tabular",
+            [date(2016, i, 1) for i in range(1, 4)],
+        ),
+        ("5/DR-empty.json", "static.counter5.DR.Json", [date(2016, i, 1) for i in range(1, 4)]),
+        ("5/PR-empty.json", "static.counter5.PR.Json", [date(2016, i, 1) for i in range(1, 4)]),
+        ("5/TR-empty.json", "static.counter5.TR.Json", [date(2016, i, 1) for i in range(1, 4)]),
+        ("5/IR-empty.json", "static.counter5.IR.Json", [date(2016, i, 1) for i in range(1, 4)]),
+        (
+            "5/IR_M1-empty.json",
+            "static.counter5.IR_M1.Json",
+            [date(2016, i, 1) for i in range(1, 4)],
+        ),
+    ),
+)
+def test_empty(file, parser, months):
+    source_path = pathlib.Path(__file__).parent / "data/counter" / file
+    poop = eat(source_path, "Platform1", parsers=[parser])[0]
+    assert poop.get_months() == [months]
+    assert len([e for e in poop.records()]) == 0
 
 
 @pytest.mark.parametrize(

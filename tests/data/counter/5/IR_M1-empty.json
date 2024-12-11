@@ -1,0 +1,47 @@
+{
+  "Report_Header": {
+    "Report_Name": "Multimedia Item Requests",
+    "Report_ID": "IR_M1",
+    "Release": "5",
+    "Institution_Name": "Client Demo Site",
+    "Institution_ID": [
+      {
+        "Type": "ISNI",
+        "Value": "1234123412341234"
+      }
+    ],
+    "Customer_ID": "demo-1234",
+    "Report_Filters": [
+      {
+        "Name": "Metric_Type",
+        "Value": "Total_Item_Requests"
+      },
+      {
+        "Name": "Data_Type",
+        "Value": "Multimedia"
+      },
+      {
+        "Name": "Access_Method",
+        "Value": "Regular"
+      },
+      {
+        "Name": "Begin_Date",
+        "Value": "2016-01-01"
+      },
+      {
+        "Name": "End_Date",
+        "Value": "2016-03-31"
+      }
+    ],
+    "Created": "2019-04-25T11:38:17Z",
+    "Created_By": "Sample Institutional Repository",
+    "Exceptions": [
+      {
+        "Code": 3030,
+        "Message": "No Usage Available for Requested Dates",
+        "Data": "Requested data between 2016-01-01 and 2016-03-31"
+      }
+    ]
+  },
+  "Report_Items": []
+}

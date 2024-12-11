@@ -1,6 +1,6 @@
 import logging
 from datetime import date
-from typing import Generator, List, Set
+from typing import Generator, List, Optional, Set
 
 from celus_nigiri import CounterRecord
 from celus_nigiri.counter51 import (
@@ -10,6 +10,7 @@ from celus_nigiri.counter51 import (
     Counter51ReportBase,
     Counter51TRReport,
 )
+from celus_nigiri.utils import get_date_range
 from pydantic import ValidationError
 
 from celus_nibbler import validators
@@ -36,8 +37,25 @@ class NigiriBaseArea(BaseJsonArea):
 
         return months
 
+    def _get_months_from_header(self) -> Optional[List[date]]:
+        if report_filters := self.sheet.extra.get("Report_Filters"):
+            begin = report_filters.get("Begin_Date")
+            end = report_filters.get("End_Date")
+
+            if begin and end:
+                try:
+                    begin_date = validators.Date(value=begin).value
+                    end_date = validators.Date(value=end).value
+                    return get_date_range(begin_date, end_date)
+                except ValidationError:
+                    logger.warn("Wrong date in Report_Filters")
+        return None
+
     def get_months(self) -> List[date]:
         months_str: Set[str] = set()
+        if months := self._get_months_from_header():
+            return months
+
         for item_dict in self.sheet:
             for ap in item_dict.get("Attribute_Performance", []):
                 for dates in ap.get("Performance", {}).values():
@@ -67,6 +85,9 @@ class NigiriIRArea(NigiriBaseArea):
 
     def get_months(self) -> List[date]:
         months_str: Set[str] = set()
+        if months := self._get_months_from_header():
+            return months
+
         for items_dict in self.sheet:
             for item in items_dict.get("Items", []):
                 for ap in item.get("Attribute_Performance", []):

@@ -1,0 +1,41 @@
+{
+  "Report_Header": {
+    "Report_Name": "Title Master Report",
+    "Report_ID": "TR",
+    "Release": "5",
+    "Institution_Name": "Client Demo Site",
+    "Institution_ID": [
+      {
+        "Type": "ISNI",
+        "Value": "1234123412341234"
+      }
+    ],
+    "Customer_ID": "cid-123456",
+    "Report_Filters": [
+      {
+        "Name": "Begin_Date",
+        "Value": "2016-01-01"
+      },
+      {
+        "Name": "End_Date",
+        "Value": "2016-03-31"
+      }
+    ],
+    "Report_Attributes": [
+      {
+        "Name": "Attributes_To_Show",
+        "Value": "Data_Type|Section_Type|YOP|Access_Type|Access_Method"
+      }
+    ],
+    "Created": "2019-04-25T11:39:56Z",
+    "Created_By": "Publisher Platform Delta",
+    "Exceptions": [
+      {
+        "Code": 3030,
+        "Message": "No Usage Available for Requested Dates",
+        "Data": "Requested data between 2016-01-01 and 2016-03-31"
+      }
+    ]
+  },
+  "Report_Items": []
+}

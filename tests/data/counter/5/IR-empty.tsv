@@ -1,0 +1,14 @@
+﻿Report_Name	Item Master Report
+Report_ID	IR
+Release	5
+Institution_Name	Client Demo Site
+Institution_ID	ISNI:1234123412341234
+Metric_Types
+Report_Filters
+Report_Attributes	Attributes_To_Show=Authors|Publication_Date|Article_Version|Data_Type|YOP|Access_Type|Access_Method; Include_Parent_Details=True
+Exceptions
+Reporting_Period	Begin_Date=2016-01-01; End_Date=2016-03-31
+Created	2019-04-25T11:38:17Z
+Created_By	Sample Institutional Repository
+
+Item	Publisher	Publisher_ID	Platform	Authors	Publication_Date	Article_Version	DOI	Proprietary_ID	ISBN	Print_ISSN	Online_ISSN	URI	Parent_Title	Parent_Authors	Parent_Publication_Date	Parent_Article_Version	Parent_Data_Type	Parent_DOI	Parent_Proprietary_ID	Parent_ISBN	Parent_Print_ISSN	Parent_Online_ISSN	Parent_URI	Data_Type	YOP	Access_Type	Access_Method	Metric_Type	Reporting_Period_Total	Jan-2016	Feb-2016	Mar-2016

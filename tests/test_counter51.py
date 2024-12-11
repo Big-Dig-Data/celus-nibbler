@@ -209,3 +209,39 @@ def test_success(file, parser, success, extras):
 
         with pytest.raises(StopIteration):
             assert next(reader) is None, "No more date present in the file"
+
+
+@pytest.mark.parametrize(
+    "file,parser,months",
+    (
+        (
+            "51/DR_empty_r51.tsv",
+            "static.counter51.DR.Tabular",
+            [date(2022, i, 1) for i in range(1, 13)],
+        ),
+        (
+            "51/PR_empty_r51.tsv",
+            "static.counter51.PR.Tabular",
+            [date(2022, i, 1) for i in range(1, 13)],
+        ),
+        (
+            "51/TR_empty_r51.tsv",
+            "static.counter51.TR.Tabular",
+            [date(2022, i, 1) for i in range(1, 13)],
+        ),
+        (
+            "51/IR_empty_r51.tsv",
+            "static.counter51.IR.Tabular",
+            [date(2022, i, 1) for i in range(1, 13)],
+        ),
+        ("51/DR_empty_r51.json", "static.counter51.DR.Json", [date(2022, 1, 1)]),
+        ("51/PR_empty_r51.json", "static.counter51.PR.Json", [date(2022, 1, 1)]),
+        ("51/TR_empty_r51.json", "static.counter51.TR.Json", [date(2022, 1, 1)]),
+        ("51/IR_empty_r51.json", "static.counter51.IR.Json", [date(2022, 1, 1)]),
+    ),
+)
+def test_empty(file, parser, months):
+    source_path = pathlib.Path(__file__).parent / "data/counter" / file
+    poop = eat(source_path, "Platform1", parsers=[parser])[0]
+    assert poop.get_months() == [months]
+    assert len([e for e in poop.records()]) == 0
