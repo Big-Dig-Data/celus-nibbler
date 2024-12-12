@@ -5,6 +5,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [11.5.3] - 2024-12-12
+
+### Fixed
+- handling of empty C5 and C5.1 data files
+
+
 ## [11.5.2] - 2024-12-03
 
 ### Fixed
