@@ -1,0 +1,130 @@
+{
+  "kind": "non_counter.generic",
+  "version": 1,
+  "parser_name": "dimensions_validators",
+  "data_format": {
+    "name": "simple_format"
+  },
+  "platforms": [
+    "Platform1",
+    "Platform2"
+  ],
+  "metrics_to_skip": [],
+  "titles_to_skip": [],
+  "dimensions_to_skip": {
+      "Platform": ["Total"]
+  },
+  "dimensions_validators": {
+    "YOP": "yop"
+  },
+  "metric_aliases": [],
+  "dimension_aliases": [],
+  "heuristics": {
+    "conds": [
+      {
+        "pattern": "Title",
+        "coord": {
+          "row": 0,
+          "col": 0
+        },
+        "kind": "regex"
+      },
+      {
+        "pattern": "Platform",
+        "coord": {
+          "row": 0,
+          "col": 1
+        },
+        "kind": "regex"
+      },
+      {
+        "pattern": "YOP",
+        "coord": {
+          "row": 0,
+          "col": 2
+        },
+        "kind": "regex"
+      },
+      {
+        "pattern": "Metrics",
+        "coord": {
+          "row": 0,
+          "col": 3
+        },
+        "kind": "regex"
+      }
+    ],
+    "kind": "and"
+  },
+  "areas": [
+    {
+      "data_headers": {
+        "roles": [
+            {
+                "source": {
+                    "coord": {
+                      "row": 0,
+                      "col": 4
+                    },
+                    "direction": "right"
+                },
+                "role": "date"
+            }
+        ],
+        "data_direction": "down",
+        "data_cells": {
+          "coord": {
+            "row": 1,
+            "col": 4
+          },
+          "direction": "right"
+        }
+      },
+      "titles": {
+        "source": {
+          "coord": {
+            "row": 1,
+            "col": 0
+          },
+          "direction": "down"
+        }
+      },
+      "metrics": {
+        "source": {
+          "coord": {
+            "row": 1,
+            "col": 3
+          },
+          "direction": "down"
+        }
+      },
+      "title_ids": [],
+      "dimensions": [
+        {
+          "name": "YOP",
+          "source": {
+            "coord": {
+              "row": 1,
+              "col": 2
+            },
+            "direction": "down"
+          },
+          "extract_params": {
+            "on_validation_error": "skip"
+          }
+        },
+        {
+          "name": "Platform",
+          "source": {
+            "coord": {
+              "row": 1,
+              "col": 1
+            },
+            "direction": "down"
+          }
+        }
+      ],
+      "kind": "non_counter.generic"
+    }
+  ]
+}

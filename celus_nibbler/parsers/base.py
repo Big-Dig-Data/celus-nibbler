@@ -197,6 +197,7 @@ class BaseParser(metaclass=ABCMeta):
     titles_to_skip: typing.List[str] = ["Total"]
     items_to_skip: typing.List[str] = ["Total"]
     dimensions_to_skip: typing.Dict[str, typing.List[str]] = {"Platform": ["Total"]}
+    dimensions_validators: typing.Dict[str, typing.Type[validators.BaseValueModel]] = {}
     heuristics: typing.Optional[BaseCondition] = None
     metric_aliases: typing.Dict[str, str] = {}
     metric_value_extraction_overrides: typing.Dict[str, SpecialExtraction] = {}
@@ -321,10 +322,6 @@ class BaseJsonParser(BaseParser):
 
 
 class BaseTabularParser(BaseParser):
-    dimensions_validators: typing.Dict[str, typing.Type[validators.BaseValueModel]] = {
-        "Platform": validators.Platform,
-    }
-
     def get_areas(self) -> typing.List[BaseArea]:
         # We need to override this method to inject row_offset
         return list(

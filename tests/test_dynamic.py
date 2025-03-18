@@ -336,6 +336,12 @@ from celus_nibbler.parsers.dynamic import gen_parser
             False,
         ),
         (
+            "dimensions-validators",
+            "csv",
+            "dynamic.non_counter.simple_format.dimensions_validators",
+            False,
+        ),
+        (
             "metrics-fallback",
             "csv",
             "dynamic.non_counter.simple_format.metrics-fallback",

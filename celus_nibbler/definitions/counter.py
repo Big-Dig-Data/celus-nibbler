@@ -28,8 +28,9 @@ from celus_nibbler.parsers.counter.c4 import (
 from celus_nibbler.parsers.counter.c5 import DR, IR, IR_M1, PR, TR, BaseCounter5Parser
 from celus_nibbler.sources import ExtractParams, SpecialExtraction
 from celus_nibbler.utils import JsonEncorder, PydanticConfig
+from celus_nibbler.validators import validators
 
-from .base import BaseAreaDefinition, BaseParserDefinition
+from .base import BaseAreaDefinition, BaseParserDefinition, ValidatorChoices
 
 
 @dataclass(config=PydanticConfig)
@@ -296,6 +297,7 @@ class BaseCounterParserDefinition(BaseParserDefinition, metaclass=abc.ABCMeta):
     on_metric_check_failed: TableException.Action = TableException.Action.SKIP
     titles_to_skip: typing.List[str] = field(default_factory=lambda: [])
     dimensions_to_skip: typing.Dict[str, typing.List[str]] = field(default_factory=lambda: {})
+    dimensions_validators: typing.Dict[str, ValidatorChoices] = field(default_factory=lambda: {})
     metric_aliases: typing.List[typing.Tuple[str, str]] = field(default_factory=lambda: [])
     metric_value_extraction_overrides: typing.Dict[str, SpecialExtraction] = field(
         default_factory=lambda: {}
@@ -323,6 +325,12 @@ def gen_parser(
     base: typing.Union[typing.Type[BaseCounter4Parser], typing.Type[BaseCounter5Parser]],
     definition: BaseCounterParserDefinition,
 ) -> typing.Type[BaseParser]:
+    validators_map = {e.name: e for e in validators}
+    _dimension_validators = {
+        dimension_name: validators_map[validator_name]
+        for dimension_name, validator_name in definition.dimensions_validators.items()
+    }
+
     class Parser(base):
         data_format: DataFormatDefinition = (
             definition.data_format if definition.data_format else base.data_format
@@ -335,6 +343,7 @@ def gen_parser(
         on_metric_check_failed = definition.on_metric_check_failed or base.on_metric_check_failed
         titles_to_skip = definition.titles_to_skip or base.titles_to_skip
         dimensions_to_skip = definition.dimensions_to_skip or base.dimensions_to_skip
+        dimensions_validators = _dimension_validators
         metric_aliases = dict(definition.metric_aliases) or dict(base.metric_aliases)
         metric_value_extraction_overrides = dict(definition.metric_value_extraction_overrides)
         dimension_aliases = dict(definition.dimension_aliases) or dict(base.dimension_aliases)

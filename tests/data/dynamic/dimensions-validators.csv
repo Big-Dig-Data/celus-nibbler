@@ -1,0 +1,5 @@
+Title,Platform,YOP,Metrics,2020-01,2020-02,2020-03
+"T1","P1","","Sessions",1,2,3
+"T1","P1","20013","Denied",0,1,0
+"T2","","2013","Sessions",4,5,6
+"T2","","2013","Denied",3,0,2

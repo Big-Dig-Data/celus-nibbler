@@ -1,6 +1,7 @@
 import abc
 import typing
 from dataclasses import field
+from enum import Enum
 
 from celus_nibbler.aggregator import BaseAggregator, NoAggregator, SameAggregator
 from celus_nibbler.conditions import Condition
@@ -8,6 +9,9 @@ from celus_nibbler.data_headers import DataFormatDefinition
 from celus_nibbler.errors import TableException
 from celus_nibbler.parsers.base import BaseArea, BaseParser
 from celus_nibbler.sources import SpecialExtraction
+from celus_nibbler.validators import validators
+
+ValidatorChoices = Enum("ValidatorChoices", [(e.name, e.name) for e in validators])
 
 
 class BaseParserDefinition(metaclass=abc.ABCMeta):
@@ -33,6 +37,7 @@ class BaseNonCounterParserDefinition(BaseParserDefinition):
         default_factory=lambda: {}
     )
     dimension_aliases: typing.List[typing.Tuple[str, str]] = []
+    dimensions_validators: typing.Dict[str, ValidatorChoices] = {}
 
 
 class BaseAreaDefinition(metaclass=abc.ABCMeta):

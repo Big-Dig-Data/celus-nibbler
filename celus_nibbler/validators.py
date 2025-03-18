@@ -1,4 +1,5 @@
 import datetime
+import inspect
 import re
 from functools import lru_cache
 from typing import Any, List, Optional, Tuple, Type, Union
@@ -18,6 +19,7 @@ issn_number_matcher = re.compile(r"^\d{0,7}[\dXx]$")
 @pydantic_dataclass(config=PydanticConfig)
 class BaseValueModel:
     model_config = PydanticConfig
+    name = "base"
 
     value: Any
 
@@ -67,6 +69,7 @@ def date_aligned(value: datetime.datetime) -> datetime.datetime:
 
 @pydantic_dataclass(config=PydanticConfig)
 class Value(BaseValueModel):
+    name = "value"
     value: Union[NonNegativeInt, NonNegativeFloat]
 
     _stripped_value = field_validator("value", mode="before")(stripped)
@@ -78,6 +81,7 @@ class Value(BaseValueModel):
 
 @pydantic_dataclass(config=PydanticConfig)
 class ValueNegative(BaseValueModel):
+    name = "value_negative"
     value: Union[int, float]
 
     @field_validator("value")
@@ -91,6 +95,7 @@ def gen_default_validator(
 ) -> Type[BaseValueModel]:
     @pydantic_dataclass(config=PydanticConfig)
     class Validator(BaseValueModel):
+        name = f"{orig_validator.name}_default"
         value: Any
 
         @field_validator("value")
@@ -105,6 +110,7 @@ def gen_default_validator(
 
 @pydantic_dataclass(config=PydanticConfig)
 class CommaSeparatedNumberValidator(BaseValueModel):
+    name = "comma_separeted_number"
     value: Any
 
     @field_validator("value", mode="before")
@@ -114,6 +120,7 @@ class CommaSeparatedNumberValidator(BaseValueModel):
 
 @pydantic_dataclass(config=PydanticConfig)
 class MinutesToSecondsValidator(BaseValueModel):
+    name = "minutes_to_seconds"
     value: Union[NonNegativeInt, NonNegativeFloat]
 
     @field_validator("value", mode="after")
@@ -125,10 +132,11 @@ class MinutesToSecondsValidator(BaseValueModel):
 class DurationToSecondsValidator(BaseValueModel):
     """Converts HH:MM:SS to format to seconds"""
 
+    name = "duration_to_seconds"
     value: Union[NonNegativeInt, NonNegativeFloat]
 
     @field_validator("value", mode="before")
-    def minutes_to_seconds(cls, value: str) -> int:
+    def duration_to_seconds(cls, value: str) -> int:
         try:
             hours, minutes, seconds = value.split(":")
             return 60 * 60 * int(hours) + 60 * int(minutes) + int(seconds)
@@ -138,6 +146,7 @@ class DurationToSecondsValidator(BaseValueModel):
 
 @pydantic_dataclass(config=PydanticConfig)
 class Organization(BaseValueModel):
+    name = "organization"
     value: str
 
     _not_none_organization = field_validator("value")(not_none)
@@ -147,6 +156,7 @@ class Organization(BaseValueModel):
 
 @pydantic_dataclass(config=PydanticConfig)
 class Platform(BaseValueModel):
+    name = "platform"
     value: str
 
     _stripped_platform = field_validator("value")(stripped)
@@ -155,6 +165,7 @@ class Platform(BaseValueModel):
 
 @pydantic_dataclass(config=PydanticConfig)
 class Dimension(BaseValueModel):
+    name = "dimension"
     value: str
 
     _stripped_dimension = field_validator("value")(stripped)
@@ -162,6 +173,7 @@ class Dimension(BaseValueModel):
 
 @pydantic_dataclass(config=PydanticConfig)
 class Metric(BaseValueModel):
+    name = "metric"
     value: str
 
     _not_none_metic = field_validator("value")(not_none)
@@ -177,6 +189,7 @@ class Metric(BaseValueModel):
 
 @pydantic_dataclass(config=PydanticConfig)
 class Title(BaseValueModel):
+    name = "title"
     value: Optional[str]
 
     _stripped_title = field_validator("value")(stripped)
@@ -188,6 +201,7 @@ parserinfo_eu = datetimes_parser.parserinfo(dayfirst=True)  # prefer EU variant
 
 @pydantic_dataclass(config=PydanticConfig)
 class Date(BaseValueModel):
+    name = "date"
     value: datetime.date
 
     _not_none_date = field_validator("value", mode="before")(not_none)
@@ -223,6 +237,8 @@ class Date(BaseValueModel):
 
 @pydantic_dataclass(config=PydanticConfig)
 class DateEU(Date):
+    name = "date_eu"
+
     @classmethod
     def parserinfo(cls):
         return parserinfo_eu
@@ -230,6 +246,7 @@ class DateEU(Date):
 
 @pydantic_dataclass(config=PydanticConfig)
 class DateAligned(Date):
+    name = "date_aligned"
     _date_aligned = field_validator("value", mode="after")(date_aligned)
 
     @classmethod
@@ -240,6 +257,7 @@ class DateAligned(Date):
 
 @pydantic_dataclass(config=PydanticConfig)
 class DateEUAligned(DateEU):
+    name = "date_eu_aligned"
     _date_aligned = field_validator("value", mode="after")(date_aligned)
 
     @classmethod
@@ -252,6 +270,7 @@ class DateEUAligned(DateEU):
 def gen_date_format_validator(pattern: str) -> Type[BaseValueModel]:
     @pydantic_dataclass(config=PydanticConfig)
     class DateFormat(BaseValueModel):
+        name = "date_format"
         value: datetime.date
 
         _not_none_date = field_validator("value", mode="before")(not_none)
@@ -273,6 +292,7 @@ def gen_date_format_validator(pattern: str) -> Type[BaseValueModel]:
 
 @pydantic_dataclass(config=PydanticConfig)
 class DOI(BaseValueModel):
+    name = "doi"
     value: str
 
     @field_validator("value")
@@ -282,6 +302,7 @@ class DOI(BaseValueModel):
 
 @pydantic_dataclass(config=PydanticConfig)
 class URI(BaseValueModel):
+    name = "uri"
     value: str
 
     @field_validator("value")
@@ -291,6 +312,7 @@ class URI(BaseValueModel):
 
 @pydantic_dataclass(config=PydanticConfig)
 class ISBN(BaseValueModel):
+    name = "isbn"
     value: str
 
     @field_validator("value")
@@ -300,6 +322,7 @@ class ISBN(BaseValueModel):
 
 @pydantic_dataclass(config=PydanticConfig)
 class StrictISBN(BaseValueModel):
+    name = "isbn_strict"
     value: str
 
     @field_validator("value")
@@ -321,6 +344,7 @@ class StrictISBN(BaseValueModel):
 
 @pydantic_dataclass(config=PydanticConfig)
 class StrictISBN13(BaseValueModel):
+    name = "isbn13"
     value: str
 
     @field_validator("value")
@@ -342,6 +366,7 @@ class StrictISBN13(BaseValueModel):
 
 @pydantic_dataclass(config=PydanticConfig)
 class StrictISBN10(BaseValueModel):
+    name = "isbn10"
     value: str
 
     @field_validator("value")
@@ -363,6 +388,7 @@ class StrictISBN10(BaseValueModel):
 
 @pydantic_dataclass(config=PydanticConfig)
 class ISSN(BaseValueModel):
+    name = "issn"
     value: str
 
     _issn_format = field_validator("value")(issn)
@@ -370,6 +396,7 @@ class ISSN(BaseValueModel):
 
 @pydantic_dataclass(config=PydanticConfig)
 class StrictISSN(BaseValueModel):
+    name = "issn_strict"
     value: str
 
     _issn_format = field_validator("value")(issn_strict)
@@ -377,6 +404,7 @@ class StrictISSN(BaseValueModel):
 
 @pydantic_dataclass(config=PydanticConfig)
 class EISSN(BaseValueModel):
+    name = "eissn"
     value: str
 
     _issn_format = field_validator("value")(issn)
@@ -384,6 +412,7 @@ class EISSN(BaseValueModel):
 
 @pydantic_dataclass(config=PydanticConfig)
 class StrictEISSN(BaseValueModel):
+    name = "eissn_strict"
     value: str
 
     _issn_format = field_validator("value")(issn_strict)
@@ -391,11 +420,13 @@ class StrictEISSN(BaseValueModel):
 
 @pydantic_dataclass(config=PydanticConfig)
 class ProprietaryID(BaseValueModel):
+    name = "proprietary_id"
     value: str
 
 
 @pydantic_dataclass(config=PydanticConfig)
 class AuthorsValidator(BaseValueModel):
+    name = "authors"
     value: str
 
     AUTHOR_REGEX = re.compile(r"^([^\(]+)\s+\(([a-zA-Z]+):([^\)]+)\)$")
@@ -417,3 +448,21 @@ class AuthorsValidator(BaseValueModel):
                 res.append(Author(name=sa))
 
         return res
+
+
+@pydantic_dataclass(config=PydanticConfig)
+class YOPValidator(BaseValueModel):
+    name = "yop"
+    value: str
+
+    YOP_REGEX = re.compile(r"^\s*(\d{4})\s*$")
+
+    @field_validator("value")
+    def yop(cls, yop: str) -> List[Author]:
+        if not cls.YOP_REGEX.match(yop):
+            raise ValueError("not-yop")
+
+        return yop
+
+
+validators = [e for e in locals().values() if inspect.isclass(e) and issubclass(e, BaseValueModel)]

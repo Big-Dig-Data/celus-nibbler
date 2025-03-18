@@ -13,8 +13,9 @@ from celus_nibbler.parsers.non_counter.celus_format import (
 )
 from celus_nibbler.sources import ExtractParams, SpecialExtraction
 from celus_nibbler.utils import JsonEncorder, PydanticConfig
+from celus_nibbler.validators import validators
 
-from .base import BaseAreaDefinition, BaseNonCounterParserDefinition
+from .base import BaseAreaDefinition, BaseNonCounterParserDefinition, ValidatorChoices
 
 
 @dataclass(config=PydanticConfig)
@@ -64,6 +65,7 @@ class CelusFormatParserDefinition(BaseNonCounterParserDefinition, metaclass=abc.
     on_metric_check_failed: TableException.Action = TableException.Action.SKIP
     titles_to_skip: typing.List[str] = field(default_factory=lambda: [])
     dimensions_to_skip: typing.Dict[str, typing.List[str]] = field(default_factory=lambda: {})
+    dimensions_validators: typing.Dict[str, ValidatorChoices] = field(default_factory=lambda: {})
     metric_aliases: typing.List[typing.Tuple[str, str]] = field(default_factory=lambda: [])
     metric_value_extraction_overrides: typing.Dict[str, SpecialExtraction] = field(
         default_factory=lambda: {}
@@ -76,6 +78,12 @@ class CelusFormatParserDefinition(BaseNonCounterParserDefinition, metaclass=abc.
     version: typing.Literal[1] = 1
 
     def make_parser(self):
+        validators_map = {e.name: e for e in validators}
+        _dimension_validators = {
+            dimension_name: validators_map[validator_name]
+            for dimension_name, validator_name in self.dimensions_validators.items()
+        }
+
         class Parser(BaseCelusFormatParser):
             _definition = self
             data_format = _definition.data_format
@@ -88,6 +96,7 @@ class CelusFormatParserDefinition(BaseNonCounterParserDefinition, metaclass=abc.
             metrics_to_skip = self.metrics_to_skip
             titles_to_skip = self.titles_to_skip
             dimensions_to_skip = self.dimensions_to_skip
+            dimensions_validators = _dimension_validators
             available_metrics = self.available_metrics
             on_metric_check_failed = self.on_metric_check_failed
 

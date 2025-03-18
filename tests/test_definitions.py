@@ -545,6 +545,7 @@ def test_generic_definition():
         "data_format": {"name": "Format1", "id": None},
         "platforms": ["Platform1", "Platform2"],
         "dimensions_to_skip": {},
+        "dimensions_validators": {},
         "dimension_aliases": [],
         "heuristics": {
             "conds": [

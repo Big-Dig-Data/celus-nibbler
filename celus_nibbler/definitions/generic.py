@@ -22,8 +22,9 @@ from celus_nibbler.sources import (
     TitleSource,
 )
 from celus_nibbler.utils import JsonEncorder, PydanticConfig
+from celus_nibbler.validators import validators
 
-from .base import BaseAreaDefinition, BaseNonCounterParserDefinition
+from .base import BaseAreaDefinition, BaseNonCounterParserDefinition, ValidatorChoices
 
 
 @dataclass(config=PydanticConfig)
@@ -104,6 +105,7 @@ class GenericDefinition(JsonEncorder, BaseNonCounterParserDefinition):
     on_metric_check_failed: TableException.Action = TableException.Action.SKIP
     titles_to_skip: typing.List[str] = field(default_factory=lambda: [])
     dimensions_to_skip: typing.Dict[str, typing.List[str]] = field(default_factory=lambda: {})
+    dimensions_validators: typing.Dict[str, ValidatorChoices] = field(default_factory=lambda: {})
     metric_aliases: typing.List[typing.Tuple[str, str]] = field(default_factory=lambda: [])
     metric_value_extraction_overrides: typing.Dict[str, SpecialExtraction] = field(
         default_factory=lambda: {}
@@ -116,6 +118,12 @@ class GenericDefinition(JsonEncorder, BaseNonCounterParserDefinition):
     version: typing.Literal[1] = 1
 
     def make_parser(self):
+        validators_map = {e.name: e for e in validators}
+        _dimensions_validators = {
+            dimension_name: validators_map[validator_name.value]
+            for dimension_name, validator_name in self.dimensions_validators.items()
+        }
+
         class Parser(BaseTabularParser):
             _definition = self
 
@@ -131,6 +139,7 @@ class GenericDefinition(JsonEncorder, BaseNonCounterParserDefinition):
             on_metric_check_failed = _definition.on_metric_check_failed
             titles_to_skip = _definition.titles_to_skip
             dimensions_to_skip = _definition.dimensions_to_skip
+            dimensions_validators = _dimensions_validators
 
             metric_aliases = dict(_definition.metric_aliases)
             metric_value_extraction_overrides = dict(_definition.metric_value_extraction_overrides)
