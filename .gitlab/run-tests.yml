@@ -3,10 +3,13 @@ tests:run_tests:
   image: $IMAGE
   parallel:
     matrix:
-      - IMAGE: ['python:3.8', 'python:3.9', 'python:3.10']
+      - IMAGE: 'python:3.8'
+        POETRY_VERSION: 1.8.5
+      - IMAGE: 'python:3.9'
+      - IMAGE: 'python:3.10'
   needs: []
   before_script:
-    - curl -sSL https://install.python-poetry.org | python3 -
+    - curl -sSL https://install.python-poetry.org | POETRY_VERSION=${POETRY_VERSION} python3 -
     - export PATH="$HOME/.local/bin:$PATH"
     - poetry install -E xls
   script:
