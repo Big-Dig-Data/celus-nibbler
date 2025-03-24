@@ -165,6 +165,7 @@ class ContentExtractorMixin:
     _last_sheet_idx = None
     _last_source = None
     _last_extracted = None
+    _last_area_row_offset = None
 
     def content(
         self,
@@ -239,6 +240,7 @@ class ContentExtractorMixin:
         if (
             source == self._last_source
             and self._last_sheet_idx == sheet.sheet_idx
+            and self._last_area_row_offset == area_row_offset  # Should be in same area
             and self._last_extracted
         ):
             # Same value will be extracted from the same coord
@@ -304,6 +306,7 @@ class ContentExtractorMixin:
         # update last extracted
         self._last_extracted = res
         self._last_sheet_idx = sheet.sheet_idx
+        self._last_area_row_offset = area_row_offset
         return res
 
     @property

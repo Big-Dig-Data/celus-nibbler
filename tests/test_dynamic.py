@@ -366,6 +366,12 @@ from celus_nibbler.parsers.dynamic import gen_parser
             False,
         ),
         (
+            "dynamic_areas_fixed_area_offset",
+            "csv",
+            "dynamic.non_counter.simple_format.dynamic_areas_fixed_area_offset",
+            False,
+        ),
+        (
             "datetime_dates",
             "csv",
             "dynamic.non_counter.simple_format.datetime_dates",
@@ -404,6 +410,7 @@ def test_dynamic(filename, ext, parser, ignore_order):
             dynamic_parsers=dynamic_parsers,
         )
 
+        idx = 0
         for poop in [poop for poop in poops if isinstance(poop, Poop)]:
             # Aggregated records might be out of order, we need to sort it first
             records = (
@@ -414,12 +421,12 @@ def test_dynamic(filename, ext, parser, ignore_order):
             # Just call get_months to see whether the function doesn't crash
             poop.get_months()
 
-            for idx, record in enumerate(records):
+            for idx, record in enumerate(records, 1):
                 in_file = next(reader)
-                assert in_file == list(record.as_csv()), f"Compare {idx + 1}."
+                assert in_file == list(record.as_csv()), f"Compare {idx}."
 
         with pytest.raises(StopIteration):
-            assert next(reader) is None, "No more date present in the file"
+            assert next(reader) is None, f"No more date present in the file (read {idx})."
 
 
 @pytest.mark.parametrize(
