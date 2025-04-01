@@ -29,7 +29,7 @@ def profile(*args, **kwargs):
 
 PydanticConfig = ConfigDict(
     extra="forbid",
-    frozen=True,
+    frozen=False,
     undefined_types_warning=False,
     defer_build=True,
 )

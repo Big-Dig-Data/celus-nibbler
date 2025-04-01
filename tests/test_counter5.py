@@ -232,8 +232,7 @@ from celus_nibbler.errors import NoParserMatchesHeuristics, TableException
                 "Metric_Types": "",
                 "Release": "5",
                 "Report_Attributes": "Attributes_To_Show=Data_Type|Access_Method",
-                "Report_Filters": "Data_Type=Book|Database|Journal|Platform; "
-                "Access_Method=Regular",
+                "Report_Filters": "Data_Type=Book|Database|Journal|Platform; Access_Method=Regular",
                 "Report_ID": "PR",
                 "Report_Name": "Platform Master Report xxx",
                 "Reporting_Period": "Begin_Date=2020-01-01; End_Date=2020-12-31",
@@ -463,8 +462,7 @@ from celus_nibbler.errors import NoParserMatchesHeuristics, TableException
                 "Metric_Types": "Total_Item_Requests; Unique_Title_Requests",
                 "Release": "5",
                 "Report_Attributes": "",
-                "Report_Filters": "Access_Method=Regular; Access_Type=Controlled; "
-                "Data_Type=Book",
+                "Report_Filters": "Access_Method=Regular; Access_Type=Controlled; Data_Type=Book",
                 "Report_ID": "TR_B1",
                 "Report_Name": "Book Requests (Excluding OA_Gold)",
                 "Reporting_Period": "Begin_Date=2022-07-01; End_Date=2022-07-31",
