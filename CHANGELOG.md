@@ -5,6 +5,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [12.0.0] - 2025-04-03
+
+### Added
+- configurable dimension validators
+- YOP validator
+- COUNTER 5.1 parser definitions
+
+### Changed
+- removed deprecated date_based, metic_based and date_metric_based parsers
+
+### Fixed
+- content caching and dynamic areas extraction
+- use older version of poetry for python 3.8 in CI
+
+
 ## [11.5.3] - 2024-12-12
 
 ### Fixed
