@@ -129,6 +129,16 @@ class MinutesToSecondsValidator(BaseValueModel):
 
 
 @pydantic_dataclass(config=PydanticConfig)
+class HoursToSecondsValidator(BaseValueModel):
+    name = "hours_to_seconds"
+    value: Union[NonNegativeInt, NonNegativeFloat]
+
+    @field_validator("value", mode="after")
+    def hours_to_seconds(cls, value: Union[float, int]) -> int:
+        return round(value * 60 * 60)
+
+
+@pydantic_dataclass(config=PydanticConfig)
 class DurationToSecondsValidator(BaseValueModel):
     """Converts HH:MM:SS to format to seconds"""
 

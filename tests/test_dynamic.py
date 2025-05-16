@@ -196,6 +196,12 @@ from celus_nibbler.parsers.dynamic import gen_parser
             True,
         ),
         (
+            "value_hours_to_seconds",
+            "csv",
+            "dynamic.non_counter.hours_format.value_hours_to_seconds",
+            False,
+        ),
+        (
             "value_duration_to_seconds",
             "csv",
             "dynamic.non_counter.duration_format.value_duration_to_seconds",

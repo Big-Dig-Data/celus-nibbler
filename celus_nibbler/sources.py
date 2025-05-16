@@ -114,6 +114,7 @@ class SpecialExtraction(str, Enum):
     NO = "no"
     COMMA_SEPARATED_NUMBER = "comma_separated_number"
     MINUTES_TO_SECONDS = "minutes_to_seconds"
+    HOURS_TO_SECONDS = "hours_to_seconds"
     DURATION_TO_SECONDS = "duration_to_seconds"
 
     def get_validator(self) -> typing.Optional[typing.Type[validators.BaseValueModel]]:
@@ -123,6 +124,8 @@ class SpecialExtraction(str, Enum):
             return validators.CommaSeparatedNumberValidator
         elif self == SpecialExtraction.MINUTES_TO_SECONDS:
             return validators.MinutesToSecondsValidator
+        elif self == SpecialExtraction.HOURS_TO_SECONDS:
+            return validators.HoursToSecondsValidator
         elif self == SpecialExtraction.DURATION_TO_SECONDS:
             return validators.DurationToSecondsValidator
         else:
