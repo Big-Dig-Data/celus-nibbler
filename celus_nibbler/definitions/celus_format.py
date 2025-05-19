@@ -79,7 +79,7 @@ class CelusFormatParserDefinition(BaseNonCounterParserDefinition, metaclass=abc.
 
     def make_parser(self):
         validators_map = {e.name: e for e in validators}
-        _dimension_validators = {
+        _dimensions_validators = {
             dimension_name: validators_map[validator_name]
             for dimension_name, validator_name in self.dimensions_validators.items()
         }
@@ -96,7 +96,7 @@ class CelusFormatParserDefinition(BaseNonCounterParserDefinition, metaclass=abc.
             metrics_to_skip = self.metrics_to_skip
             titles_to_skip = self.titles_to_skip
             dimensions_to_skip = self.dimensions_to_skip
-            dimensions_validators = _dimension_validators
+            dimensions_validators = _dimensions_validators
             available_metrics = self.available_metrics
             on_metric_check_failed = self.on_metric_check_failed
 

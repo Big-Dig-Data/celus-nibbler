@@ -326,7 +326,7 @@ def gen_parser(
     definition: BaseCounterParserDefinition,
 ) -> typing.Type[BaseParser]:
     validators_map = {e.name: e for e in validators}
-    _dimension_validators = {
+    _dimensions_validators = {
         dimension_name: validators_map[validator_name]
         for dimension_name, validator_name in definition.dimensions_validators.items()
     }
@@ -343,7 +343,7 @@ def gen_parser(
         on_metric_check_failed = definition.on_metric_check_failed or base.on_metric_check_failed
         titles_to_skip = definition.titles_to_skip or base.titles_to_skip
         dimensions_to_skip = definition.dimensions_to_skip or base.dimensions_to_skip
-        dimensions_validators = _dimension_validators
+        dimensions_validators = _dimensions_validators
         metric_aliases = dict(definition.metric_aliases) or dict(base.metric_aliases)
         metric_value_extraction_overrides = dict(definition.metric_value_extraction_overrides)
         dimension_aliases = dict(definition.dimension_aliases) or dict(base.dimension_aliases)
