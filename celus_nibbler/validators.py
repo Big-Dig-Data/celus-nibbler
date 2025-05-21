@@ -67,6 +67,10 @@ def date_aligned(value: datetime.datetime) -> datetime.datetime:
     return value
 
 
+def remove_multiple_spaces(value: Optional[str]) -> str:
+    return value and re.sub(r"\s+", " ", value)
+
+
 @pydantic_dataclass(config=PydanticConfig)
 class Value(BaseValueModel):
     name = "value"
@@ -162,6 +166,7 @@ class Organization(BaseValueModel):
     _not_none_organization = field_validator("value")(not_none)
     _stripped_organization = field_validator("value")(stripped)
     _non_empty_organization = field_validator("value")(non_empty)
+    _remove_multiple_spaces = field_validator("value")(remove_multiple_spaces)
 
 
 @pydantic_dataclass(config=PydanticConfig)
@@ -179,6 +184,7 @@ class Dimension(BaseValueModel):
     value: str
 
     _stripped_dimension = field_validator("value")(stripped)
+    _remove_multiple_spaces = field_validator("value")(remove_multiple_spaces)
 
 
 @pydantic_dataclass(config=PydanticConfig)
@@ -189,6 +195,7 @@ class Metric(BaseValueModel):
     _not_none_metic = field_validator("value")(not_none)
     _stripped_metric = field_validator("value")(stripped)
     _non_empty_metric = field_validator("value")(non_empty)
+    _remove_multiple_spaces = field_validator("value")(remove_multiple_spaces)
 
     @field_validator("value")
     def not_digit(cls, metric: str) -> str:
@@ -203,6 +210,7 @@ class Title(BaseValueModel):
     value: Optional[str]
 
     _stripped_title = field_validator("value")(stripped)
+    _remove_multiple_spaces = field_validator("value")(remove_multiple_spaces)
 
 
 parserinfo_us = datetimes_parser.parserinfo(dayfirst=False)  # prefer US variant
