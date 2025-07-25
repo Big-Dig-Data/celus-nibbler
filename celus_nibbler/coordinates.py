@@ -90,30 +90,36 @@ class Coord(JsonEncorder, Content):
     col: int
     row_relative_to: RelativeTo = RelativeTo.AREA
 
+    def row_absolute(
+        self,
+        parser_row_offset: typing.Optional[int] = None,
+        area_row_offset: typing.Optional[int] = None,
+    ):
+        if self.row_relative_to == RelativeTo.AREA:
+            if area_row_offset is None:
+                raise RuntimeError("Cord with row_relative_to area need to have area offset set")
+            return self.row + area_row_offset
+        elif self.row_relative_to == RelativeTo.PARSER:
+            if parser_row_offset is None:
+                raise RuntimeError(
+                    "Cord with row_relative_to parser need to have parser offset set"
+                )
+            return self.row + parser_row_offset
+        elif self.row_relative_to == RelativeTo.START:
+            return self.row
+
     def content(
         self,
         sheet: SheetReader,
         parser_row_offset: typing.Optional[int] = None,
         area_row_offset: typing.Optional[int] = None,
     ):
+        row_absolute = self.row_absolute(parser_row_offset, area_row_offset)
         try:
-            if self.row_relative_to == RelativeTo.AREA:
-                if area_row_offset is None:
-                    raise RuntimeError(
-                        "Cord with row_relative_to area need to have area offset set"
-                    )
-                return sheet[self.row + area_row_offset][self.col]
-            elif self.row_relative_to == RelativeTo.PARSER:
-                if parser_row_offset is None:
-                    raise RuntimeError(
-                        "Cord with row_relative_to parser need to have parser offset set"
-                    )
-                return sheet[self.row + parser_row_offset][self.col]
-            elif self.row_relative_to == RelativeTo.START:
-                return sheet[self.row][self.col]
+            return sheet[row_absolute][self.col]
         except IndexError as e:
             raise TableException(
-                row=self.row,
+                row=row_absolute,
                 col=self.col,
                 sheet=sheet.sheet_idx,
                 reason="out-of-bounds",
@@ -151,6 +157,13 @@ class CoordRange(JsonEncorder, Content):
         area_row_offset: typing.Optional[int] = None,
     ):
         return self[self.distance].content(sheet, parser_row_offset, area_row_offset)
+
+    def row_absolute(
+        self,
+        parser_row_offset: typing.Optional[int] = None,
+        area_row_offset: typing.Optional[int] = None,
+    ):
+        return self[self.distance].row_absolute(parser_row_offset, area_row_offset)
 
     def __contains__(self, item: Coord) -> bool:
         if not isinstance(item, Coord):

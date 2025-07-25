@@ -1,0 +1,85 @@
+{
+  "kind": "non_counter.generic",
+  "version": 1,
+  "parser_name": "absolute_coords_in_exception",
+  "data_format": {
+    "name": "simple_format"
+  },
+  "platforms": [
+    "Platform1",
+    "Platform2"
+  ],
+  "metrics_to_skip": [],
+  "titles_to_skip": [],
+  "dimensions_to_skip": {},
+  "metric_aliases": [],
+  "dimension_aliases": [],
+  "possible_row_offsets": [0, 1],
+  "heuristics": {
+    "conds": [
+      {
+        "pattern": "PARSER",
+        "coord": {
+          "row": 0,
+          "col": 0
+        },
+        "kind": "regex"
+      }
+    ],
+    "kind": "and"
+  },
+  "areas": [
+    {
+      "data_headers": {
+        "roles": [
+            {
+                "source": {
+                    "coord": {
+                      "row": 1,
+                      "col": 1
+                    },
+                    "direction": "right"
+                },
+                "role": "date"
+            }
+        ],
+        "data_direction": "down",
+        "data_cells": {
+          "coord": {
+            "row": 2,
+            "col": 1
+          },
+          "direction": "right"
+        },
+        "data_extract_params": {
+            "on_validation_error": "fail"
+        },
+        "condition": {
+          "conds": [
+            {
+              "pattern": "AREA",
+              "coord": {
+                "row": 0,
+                "col": 0
+              },
+              "kind": "regex"
+            }
+          ],
+          "kind": "and"
+        }
+      },
+      "metrics": {
+        "source": {
+          "coord": {
+            "row": 2,
+            "col": 0
+          },
+          "direction": "down"
+        }
+      },
+      "title_ids": [],
+      "dimensions": [],
+      "kind": "non_counter.generic"
+    }
+  ]
+}

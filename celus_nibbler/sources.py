@@ -233,7 +233,10 @@ class ContentExtractorMixin:
         if self.extract_params.max_idx is not None:
             if idx > self.extract_params.max_idx:
                 raise TableException(
-                    row=getattr(source, "row", None),
+                    row=getattr(source, "row_absolute", lambda x, y: None)(
+                        parser_row_offset,
+                        area_row_offset,
+                    ),
                     col=getattr(source, "col", None),
                     sheet=sheet.sheet_idx,
                     reason="out-of-bounds",
@@ -291,7 +294,10 @@ class ContentExtractorMixin:
                             reason = ",".join(args)
                 raise TableException(
                     content,
-                    row=getattr(source, "row", None),
+                    row=getattr(source, "row_absolute", lambda x, y: None)(
+                        parser_row_offset,
+                        area_row_offset,
+                    ),
                     col=getattr(source, "col", None),
                     sheet=sheet.sheet_idx,
                     reason=reason,
@@ -299,7 +305,10 @@ class ContentExtractorMixin:
                 ) from e
         except IndexError as e:
             raise TableException(
-                row=getattr(source, "row", None),
+                row=getattr(source, "row_absolute", lambda x, y: None)(
+                    parser_row_offset,
+                    area_row_offset,
+                ),
                 col=getattr(source, "col", None),
                 sheet=sheet.sheet_idx,
                 reason="out-of-bounds",

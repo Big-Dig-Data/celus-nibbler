@@ -542,6 +542,18 @@ def test_dynamic(filename, ext, parser, ignore_order):
             "dynamic.non_counter.simple_format.not-aligned-date-EU",
             TableException(sheet=0, reason="date-not-aligned", row=2, col=0, value="2/1/2020"),
         ),
+        (
+            "absolute_coords_in_exception",
+            "csv",
+            "dynamic.non_counter.simple_format.absolute_coords_in_exception",
+            TableException(sheet=0, reason="value", value="X", row=5, col=2),
+        ),
+        (
+            "absolute_coords_in_exception2",
+            "csv",
+            "dynamic.non_counter.simple_format.absolute_coords_in_exception2",
+            TableException(sheet=0, reason="no-header-data-found", value=None, row=4, col=1),
+        ),
     ),
 )
 def test_dynamic_errors(name, ext, parser, exception):

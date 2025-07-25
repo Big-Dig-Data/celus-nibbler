@@ -397,7 +397,7 @@ class DataHeaders(JsonEncorder):
 
         if not res and len(self.roles) > 0:
             raise TableException(
-                row=self.data_cells.coord.row,
+                row=self.data_cells.coord.row_absolute(parser_row_offset, area_row_offset),
                 col=self.data_cells.coord.col,
                 sheet=sheet.sheet_idx,
                 reason="no-header-data-found",
