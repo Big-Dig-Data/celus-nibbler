@@ -76,14 +76,22 @@ class BaseCounter5Parser(Counter5ParserAnalyzeMixin, BaseTabularParser):
                 key = coord.content(self.sheet).strip()
                 if not key:
                     continue
+            except TableException:
+                continue
+
+            try:
                 right_coord = Coord(
                     col=coord.col + 1, row=coord.row, row_relative_to=RelativeTo.START
                 )
                 value = right_coord.content(self.sheet).strip()
-                res[key] = value
             except TableException:
-                # Ignore out of bounds
-                continue
+                # missing right cord => consider cell as empty
+                value = ""
+            res[key] = value
+
+        # Fix 5.0 => 5
+        if res.get("Release", "") == "5.0":
+            res["Release"] = "5"
 
         return res
 
@@ -99,7 +107,7 @@ class DR(BaseCounter5Parser):
         & RegexCondition(re.compile(r"^Report_ID$"), Coord(1, 0))
         & RegexCondition(re.compile(r"^DR$"), Coord(1, 1))
         & RegexCondition(re.compile(r"^Release$"), Coord(2, 0))
-        & RegexCondition(re.compile(r"^5$"), Coord(2, 1))
+        & RegexCondition(re.compile(r"^5(\.0)?$"), Coord(2, 1))
     )
 
     class Area(Counter5HeaderArea):
@@ -123,7 +131,7 @@ class PR(BaseCounter5Parser):
         & RegexCondition(re.compile(r"^Report_ID$"), Coord(1, 0))
         & RegexCondition(re.compile(r"^PR$"), Coord(1, 1))
         & RegexCondition(re.compile(r"^Release$"), Coord(2, 0))
-        & RegexCondition(re.compile(r"^5$"), Coord(2, 1))
+        & RegexCondition(re.compile(r"^5(\.0)?$"), Coord(2, 1))
     )
 
     class Area(Counter5HeaderArea):
@@ -161,7 +169,7 @@ class TR(BaseCounter5Parser):
             | RegexCondition(re.compile(r"^TR_B1$"), Coord(1, 1))
         )
         & RegexCondition(re.compile(r"^Release$"), Coord(2, 0))
-        & RegexCondition(re.compile(r"^5$"), Coord(2, 1))
+        & RegexCondition(re.compile(r"^5(\.0)?$"), Coord(2, 1))
     )
 
     class Area(Counter5HeaderArea):
@@ -189,7 +197,7 @@ class IR_M1(BaseCounter5Parser):
         & RegexCondition(re.compile(r"^Report_ID$"), Coord(1, 0))
         & RegexCondition(re.compile(r"^IR_M1$"), Coord(1, 1))
         & RegexCondition(re.compile(r"^Release$"), Coord(2, 0))
-        & RegexCondition(re.compile(r"^5$"), Coord(2, 1))
+        & RegexCondition(re.compile(r"^5(\.0)?$"), Coord(2, 1))
     )
 
     class Area(Counter5HeaderArea):
@@ -223,7 +231,7 @@ class IR(BaseCounter5Parser):
         & RegexCondition(re.compile(r"^Report_ID$"), Coord(1, 0))
         & RegexCondition(re.compile(r"^IR$"), Coord(1, 1))
         & RegexCondition(re.compile(r"^Release$"), Coord(2, 0))
-        & RegexCondition(re.compile(r"^5$"), Coord(2, 1))
+        & RegexCondition(re.compile(r"^5(\.0)?$"), Coord(2, 1))
     )
 
     class Area(Counter5HeaderArea):
