@@ -42,6 +42,7 @@ class Counter5ParserAnalyzeMixin:
                     "expected": self.data_format.name,
                 }
             ]
+        return []
 
 
 class BaseCounter5Parser(Counter5ParserAnalyzeMixin, BaseTabularParser):
