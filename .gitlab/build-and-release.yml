@@ -9,17 +9,13 @@ build:build:
   image: $IMAGE
   parallel:
     matrix:
-      - IMAGE: 'python:3.8'
-        POETRY_VERSION: 1.8.5
-      - IMAGE: 'python:3.9'
-      - IMAGE: 'python:3.10'
+      - IMAGE: ['python:3.8', 'python:3.9', 'python:3.10', 'python:3.11', 'python:3.12']
   needs: ["tests:run_tests", "lints:pre_commit"]
   before_script:
-    - curl -sSL https://install.python-poetry.org | POETRY_VERSION=${POETRY_VERSION} python3 -
+    - curl -LsSf https://astral.sh/uv/install.sh | sh
     - export PATH="$HOME/.local/bin:$PATH"
-    - pip install build
   script:
-    - python3 -m build --sdist --wheel
+    - uv build
   artifacts:
     paths:
       - dist/
@@ -30,6 +26,5 @@ release:publish:
   image: python:3
   needs: ["build:build"]
   script:
-    - pip install twine
-    - TWINE_PASSWORD=${CI_JOB_TOKEN} TWINE_USERNAME=gitlab-ci-token python -m twine upload --repository-url ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi dist/*
+    - uv publish --username gitlab-ci-token --password ${CI_JOB_TOKEN} --publish-url ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi
   <<: *version_tags_only

@@ -10,7 +10,7 @@ idea/
 *.swo
 *.swp
 .mypy_cache/
-poetry.lock
+uv.lock
 venv/
 .vscode/*
 *.log

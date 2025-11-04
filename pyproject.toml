@@ -1,6 +1,89 @@
+[project]
+name = "celus-nibbler"
+version = "12.2.3"
+description = "Counter-like data reader and processor."
+authors = [
+    { name = "Stepan Henek", email = "stepan@bigdigdata.com" },
+    { name = "Zbynek Vyhlas", email = "zbyneksmail@gmail.com" },
+]
+requires-python = ">=3.8.9,<4"
+license = "MIT"
+keywords = [
+    "parsing",
+    "counter5",
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Topic :: Software Development :: Libraries",
+]
+dependencies = [
+    "celus-nigiri>=4.0.0,<5",
+    "diskcache~=5.6.0",
+    "nltk~=3.9.1",
+    "pydantic~=2.10.6",
+    "python-dateutil~=2.9.0",
+    "openpyxl~=3.1.2",
+    "unidecode~=1.3.7",
+    "isbnlib~=3.10.14",
+    "typing-extensions~=4.13.0",
+]
+
+[project.optional-dependencies]
+xls = ["xlrd~=2.0.1"]
+
+[project.urls]
+Documentation = "https://gitlab.com/big-dig-data/celus-nibbler/-/blob/master/README.md"
+
+[project.scripts]
+nibbler-eat = "celus_nibbler.__main__:main"
+
+[project.entry-points.nibbler_parsers]
+"static.counter4.BR1.Tabular" = "celus_nibbler.parsers.counter.c4:BR1"
+"static.counter4.BR2.Tabular" = "celus_nibbler.parsers.counter.c4:BR2"
+"static.counter4.BR3.Tabular" = "celus_nibbler.parsers.counter.c4:BR3"
+"static.counter4.DB1.Tabular" = "celus_nibbler.parsers.counter.c4:DB1"
+"static.counter4.DB2.Tabular" = "celus_nibbler.parsers.counter.c4:DB2"
+"static.counter4.PR1.Tabular" = "celus_nibbler.parsers.counter.c4:PR1"
+"static.counter4.JR1.Tabular" = "celus_nibbler.parsers.counter.c4:JR1"
+"static.counter4.JR1a.Tabular" = "celus_nibbler.parsers.counter.c4:JR1a"
+"static.counter4.JR1GOA.Tabular" = "celus_nibbler.parsers.counter.c4:JR1GOA"
+"static.counter4.JR2.Tabular" = "celus_nibbler.parsers.counter.c4:JR2"
+"static.counter4.MR1.Tabular" = "celus_nibbler.parsers.counter.c4:MR1"
+"static.counter5.DR.Tabular" = "celus_nibbler.parsers.counter.c5:DR"
+"static.counter5.PR.Tabular" = "celus_nibbler.parsers.counter.c5:PR"
+"static.counter5.TR.Tabular" = "celus_nibbler.parsers.counter.c5:TR"
+"static.counter5.IR_M1.Tabular" = "celus_nibbler.parsers.counter.c5:IR_M1"
+"static.counter5.IR.Tabular" = "celus_nibbler.parsers.counter.c5:IR"
+"static.counter5.DR.Json" = "celus_nibbler.parsers.counter.c5json:DR"
+"static.counter5.PR.Json" = "celus_nibbler.parsers.counter.c5json:PR"
+"static.counter5.TR.Json" = "celus_nibbler.parsers.counter.c5json:TR"
+"static.counter5.IR_M1.Json" = "celus_nibbler.parsers.counter.c5json:IR_M1"
+"static.counter5.IR.Json" = "celus_nibbler.parsers.counter.c5json:IR"
+"static.counter51.DR.Tabular" = "celus_nibbler.parsers.counter.c51:DR"
+"static.counter51.PR.Tabular" = "celus_nibbler.parsers.counter.c51:PR"
+"static.counter51.TR.Tabular" = "celus_nibbler.parsers.counter.c51:TR"
+"static.counter51.IR.Tabular" = "celus_nibbler.parsers.counter.c51:IR"
+"static.counter51.DR.Json" = "celus_nibbler.parsers.counter.c51json:DR"
+"static.counter51.PR.Json" = "celus_nibbler.parsers.counter.c51json:PR"
+"static.counter51.TR.Json" = "celus_nibbler.parsers.counter.c51json:TR"
+"static.counter51.IR.Json" = "celus_nibbler.parsers.counter.c51json:IR"
+
+[dependency-groups]
+dev = [
+    "build~=1.2.2",
+    "mypy~=1.14.0",
+    "pre-commit~=3.5.0",
+    "pytest~=8.3.5",
+    "pytest-cov~=5.0.0",
+    "ruff~=0.11.2",
+]
+
 [build-system]
-requires = ["poetry>=1.1.6"]
-build-backend = "poetry.masonry.api"
+requires = ["uv_build>=0.9.7,<0.10.0"]
+build-backend = "uv_build"
+
+[tool.uv]
+package = true
 
 [tool.ruff]
 line-length = 100
@@ -28,79 +111,3 @@ plugins = "pydantic.mypy"
 
 [tool.pytest.ini_options]
 testpaths = "tests/"
-
-[tool.poetry]
-name = "celus-nibbler"
-version = "12.2.3"
-description = "Counter-like data reader and processor."
-authors = ["Stepan Henek <stepan@bigdigdata.com>", "Zbynek Vyhlas <zbyneksmail@gmail.com>"]
-license = "MIT"
-classifiers = [
-	"Programming Language :: Python :: 3",
-	"Topic :: Software Development :: Libraries"
-]
-keywords = ["parsing", "counter5"]
-documentation = "https://gitlab.com/big-dig-data/celus-nibbler/-/blob/master/README.md"
-
-[tool.poetry.scripts]
-nibbler-eat = 'celus_nibbler.__main__:main'
-
-[tool.poetry.dependencies]
-python = "^3.8.9"
-
-celus-nigiri = "^4.0.0"
-diskcache = "~5.6.0"
-nltk = "~3.9.1"
-pydantic = "~2.10.6"
-python-dateutil = "~2.9.0"
-openpyxl = "~3.1.2"
-unidecode = "~1.3.7"
-isbnlib = "~3.10.14"
-typing-extensions = "~4.13.0"
-xlrd = { version="~2.0.1", optional = true }
-
-[tool.poetry.dev-dependencies]
-build = "~1.2.2"
-mypy = "~1.14.0"
-pre-commit = "~3.5.0"
-pytest = "~8.3.5"
-pytest-cov = "~5.0.0"
-ruff = "~0.11.2"
-
-[tool.poetry.extras]
-xls = ["xlrd"]
-
-[tool.poetry.plugins]
-
-[tool.poetry.plugins."nibbler_parsers"]
-"static.counter4.BR1.Tabular" = "celus_nibbler.parsers.counter.c4:BR1"
-"static.counter4.BR2.Tabular" = "celus_nibbler.parsers.counter.c4:BR2"
-"static.counter4.BR3.Tabular" = "celus_nibbler.parsers.counter.c4:BR3"
-"static.counter4.DB1.Tabular" = "celus_nibbler.parsers.counter.c4:DB1"
-"static.counter4.DB2.Tabular" = "celus_nibbler.parsers.counter.c4:DB2"
-"static.counter4.PR1.Tabular" = "celus_nibbler.parsers.counter.c4:PR1"
-"static.counter4.JR1.Tabular" = "celus_nibbler.parsers.counter.c4:JR1"
-"static.counter4.JR1a.Tabular" = "celus_nibbler.parsers.counter.c4:JR1a"
-"static.counter4.JR1GOA.Tabular" = "celus_nibbler.parsers.counter.c4:JR1GOA"
-"static.counter4.JR2.Tabular" = "celus_nibbler.parsers.counter.c4:JR2"
-"static.counter4.MR1.Tabular" = "celus_nibbler.parsers.counter.c4:MR1"
-
-"static.counter5.DR.Tabular" = "celus_nibbler.parsers.counter.c5:DR"
-"static.counter5.PR.Tabular" = "celus_nibbler.parsers.counter.c5:PR"
-"static.counter5.TR.Tabular" = "celus_nibbler.parsers.counter.c5:TR"
-"static.counter5.IR_M1.Tabular" = "celus_nibbler.parsers.counter.c5:IR_M1"
-"static.counter5.IR.Tabular" = "celus_nibbler.parsers.counter.c5:IR"
-"static.counter5.DR.Json" = "celus_nibbler.parsers.counter.c5json:DR"
-"static.counter5.PR.Json" = "celus_nibbler.parsers.counter.c5json:PR"
-"static.counter5.TR.Json" = "celus_nibbler.parsers.counter.c5json:TR"
-"static.counter5.IR_M1.Json" = "celus_nibbler.parsers.counter.c5json:IR_M1"
-"static.counter5.IR.Json" = "celus_nibbler.parsers.counter.c5json:IR"
-
-"static.counter51.DR.Tabular" = "celus_nibbler.parsers.counter.c51:DR"
-"static.counter51.PR.Tabular" = "celus_nibbler.parsers.counter.c51:PR"
-"static.counter51.TR.Tabular" = "celus_nibbler.parsers.counter.c51:TR"
-"static.counter51.IR.Tabular" = "celus_nibbler.parsers.counter.c51:IR"
-"static.counter51.DR.Json" = "celus_nibbler.parsers.counter.c51json:DR"
-"static.counter51.PR.Json" = "celus_nibbler.parsers.counter.c51json:PR"
-"static.counter51.TR.Json" = "celus_nibbler.parsers.counter.c51json:TR"
-"static.counter51.IR.Json" = "celus_nibbler.parsers.counter.c51json:IR"
