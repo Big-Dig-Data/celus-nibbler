@@ -427,6 +427,8 @@ def test_dynamic(filename, ext, parser, ignore_order):
             # Just call get_months to see whether the function doesn't crash
             poop.get_months()
 
+            assert poop.parser.name == parser
+
             for idx, record in enumerate(records, 1):
                 in_file = next(reader)
                 assert in_file == list(record.as_csv()), f"Compare {idx}."

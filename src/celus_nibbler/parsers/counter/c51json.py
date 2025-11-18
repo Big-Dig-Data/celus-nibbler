@@ -100,7 +100,7 @@ class NigiriIRArea(NigiriBaseArea):
 class BaseCounter51JsonParser(c5tabular.Counter5ParserAnalyzeMixin, BaseJsonParser):
     @property
     def name(self):
-        return f"counter51.{self.data_format.name}"
+        return f"static.counter51.{self.data_format.name[:2]}.Json"
 
     def _parse_area(self, area: BaseArea) -> Generator[CounterRecord, None, None]:
         if isinstance(area, NigiriBaseArea):

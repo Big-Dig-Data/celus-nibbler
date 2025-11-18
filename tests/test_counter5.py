@@ -830,6 +830,7 @@ def test_empty(file, parser, months):
     poop = eat(source_path, "Platform1", parsers=[parser])[0]
     assert poop.get_months() == [months]
     assert len([e for e in poop.records()]) == 0
+    assert poop.parser.name == parser
 
 
 @pytest.mark.parametrize(

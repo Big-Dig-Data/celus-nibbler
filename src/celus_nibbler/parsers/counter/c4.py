@@ -29,7 +29,7 @@ class BaseCounter4Parser(BaseTabularParser):
 
     @property
     def name(self):
-        return f"counter4.{self.data_format.name}"
+        return f"static.counter4.{self.data_format.name}.Tabular"
 
     def get_extras(self) -> dict:
         area = self.Area(self.sheet, self.platform)

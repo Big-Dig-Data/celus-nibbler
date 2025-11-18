@@ -274,6 +274,7 @@ def test_success(file, parser, heuristics, success, extras, months):
 
     assert poop.extras == extras
     assert poop.get_months() == [months]
+    assert poop.parser.name == parser
 
     with output_path.open() as f:
         reader = csv.reader(f)

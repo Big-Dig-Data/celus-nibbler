@@ -54,7 +54,7 @@ class BaseCounter5Parser(Counter5ParserAnalyzeMixin, BaseTabularParser):
 
     @property
     def name(self):
-        return f"counter5.{self.data_format.name}"
+        return f"static.counter5.{self.data_format.name}.Tabular"
 
     def get_extras(self) -> dict:
         area = self.Area(self.sheet, self.platform)

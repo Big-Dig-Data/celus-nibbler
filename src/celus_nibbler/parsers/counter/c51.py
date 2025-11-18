@@ -7,7 +7,13 @@ from celus_nibbler.data_headers import DataFormatDefinition
 from . import c5
 
 
-class DR(c5.DR):
+class Counter51NameMixin:
+    @property
+    def name(self):
+        return f"static.counter51.{self.data_format.name[:2]}.Tabular"
+
+
+class DR(Counter51NameMixin, c5.DR):
     data_format = DataFormatDefinition(name="DR51")
     heuristics = (
         RegexCondition(re.compile(r"^Report_Name$"), Coord(0, 0))
@@ -18,7 +24,7 @@ class DR(c5.DR):
     )
 
 
-class PR(c5.PR):
+class PR(Counter51NameMixin, c5.PR):
     data_format = DataFormatDefinition(name="PR51")
     heuristics = (
         RegexCondition(re.compile(r"^Report_Name$"), Coord(0, 0))
@@ -29,7 +35,7 @@ class PR(c5.PR):
     )
 
 
-class TR(c5.TR):
+class TR(Counter51NameMixin, c5.TR):
     data_format = DataFormatDefinition(name="TR51")
     heuristics = (
         RegexCondition(re.compile(r"^Report_Name$"), Coord(0, 0))
@@ -52,7 +58,7 @@ class TR(c5.TR):
     areas = [Area]
 
 
-class IR(c5.IR):
+class IR(Counter51NameMixin, c5.IR):
     data_format = DataFormatDefinition(name="IR51")
     heuristics = (
         RegexCondition(re.compile(r"^Report_Name$"), Coord(0, 0))

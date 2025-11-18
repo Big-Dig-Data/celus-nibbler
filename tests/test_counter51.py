@@ -200,6 +200,7 @@ def test_success(file, parser, success, extras):
             date(2022, 12, 1),
         ]
     ]
+    assert poop.parser.name == parser
 
     with output_path.open() as f:
         reader = csv.reader(f)
@@ -245,3 +246,4 @@ def test_empty(file, parser, months):
     poop = eat(source_path, "Platform1", parsers=[parser])[0]
     assert poop.get_months() == [months]
     assert len([e for e in poop.records()]) == 0
+    assert poop.parser.name == parser
