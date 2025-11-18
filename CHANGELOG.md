@@ -5,6 +5,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [12.3.0] - 2025-11-18
+
+### Changed
+- Using uv instead of poetry
+
+### Fixed
+- poop.parser.name should contain a proper parser name
+
+
 ## [12.2.3] - 2025-09-24
 
 ### Fixed
