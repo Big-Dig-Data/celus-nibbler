@@ -205,8 +205,8 @@ class IR_M1(BaseCounter5Parser):
         title_source = None
         title_ids_sources = {}
         DIMENSION_NAMES_MAP = [
-            ("Platform", {"Platform"}),
             ("Publisher", {"Publisher"}),
+            ("Platform", {"Platform"}),
         ]
         ITEM_COLUMN_NAMES = ["Title", "Item"]
 

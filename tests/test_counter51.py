@@ -93,6 +93,29 @@ from celus_nibbler.errors import NoParserMatchesHeuristics
             },
         ),
         (
+            "51/IRM1_sample_r51.tsv",
+            "static.counter51.IR_M1.Tabular",
+            True,
+            {
+                "Created": "2023-02-15T09:11:12Z",
+                "Created_By": "Sample Publisher",
+                "Exceptions": "",
+                "Institution_ID": "ISNI:1234123412341234",
+                "Institution_Name": "Sample Institution",
+                "Metric_Types": "Total_Item_Requests; Unique_Item_Requests",
+                "Release": "5.1",
+                "Registry_Record": "https://registry.countermetrics.org/platform/99999999-9999-9999-9999-999999999999",
+                "Report_Attributes": "",
+                "Report_Filters": (
+                    "Data_Type=Audiovisual|Image|Interactive_Resource|Multimedia|Sound; "
+                    "Access_Method=Regular"
+                ),
+                "Report_ID": "IR_M1",
+                "Report_Name": "Multimedia Item Requests",
+                "Reporting_Period": "Begin_Date=2022-01-01; End_Date=2022-12-31",
+            },
+        ),
+        (
             "51/DR_sample_r51.json",
             "static.counter51.DR.Json",
             True,
@@ -172,6 +195,34 @@ from celus_nibbler.errors import NoParserMatchesHeuristics
                 "Report_Name": "Item Report",
             },
         ),
+        (
+            "51/IRM1_sample_r51.json",
+            "static.counter51.IR_M1.Json",
+            True,
+            {
+                "Created": "2023-02-15T09:11:12Z",
+                "Created_By": "Sample Publisher",
+                "Institution_ID": {"ISNI": ["1234123412341234"]},
+                "Institution_Name": "Sample Institution",
+                "Release": "5.1",
+                "Registry_Record": "https://registry.countermetrics.org/platform/99999999-9999-9999-9999-999999999999",
+                "Report_Filters": {
+                    "Access_Method": ["Regular"],
+                    "Begin_Date": "2022-01-01",
+                    "End_Date": "2022-12-31",
+                    "Metric_Type": ["Total_Item_Requests", "Unique_Item_Requests"],
+                    "Data_Type": [
+                        "Audiovisual",
+                        "Image",
+                        "Interactive_Resource",
+                        "Multimedia",
+                        "Sound",
+                    ],
+                },
+                "Report_ID": "IR_M1",
+                "Report_Name": "Multimedia Item Requests",
+            },
+        ),
     ),
 )
 def test_success(file, parser, success, extras):
@@ -235,10 +286,16 @@ def test_success(file, parser, success, extras):
             "static.counter51.IR.Tabular",
             [date(2022, i, 1) for i in range(1, 13)],
         ),
+        (
+            "51/IRM1_empty_r51.tsv",
+            "static.counter51.IR_M1.Tabular",
+            [date(2022, i, 1) for i in range(1, 13)],
+        ),
         ("51/DR_empty_r51.json", "static.counter51.DR.Json", [date(2022, 1, 1)]),
         ("51/PR_empty_r51.json", "static.counter51.PR.Json", [date(2022, 1, 1)]),
         ("51/TR_empty_r51.json", "static.counter51.TR.Json", [date(2022, 1, 1)]),
         ("51/IR_empty_r51.json", "static.counter51.IR.Json", [date(2022, 1, 1)]),
+        ("51/IRM1_empty_r51.json", "static.counter51.IR_M1.Json", [date(2022, 1, 1)]),
     ),
 )
 def test_empty(file, parser, months):

@@ -10,7 +10,11 @@ from . import c5
 class Counter51NameMixin:
     @property
     def name(self):
-        return f"static.counter51.{self.data_format.name[:2]}.Tabular"
+        if self.data_format.name == "IR51_M1":
+            code = "IR_M1"
+        else:
+            code = self.data_format.name[:-2]
+        return f"static.counter51.{code}.Tabular"
 
 
 class DR(Counter51NameMixin, c5.DR):
@@ -67,3 +71,24 @@ class IR(Counter51NameMixin, c5.IR):
         & RegexCondition(re.compile(r"^Release$"), Coord(2, 0))
         & RegexCondition(re.compile(r"^5.1$"), Coord(2, 1))
     )
+
+
+class IR_M1(Counter51NameMixin, c5.IR_M1):
+    data_format = DataFormatDefinition(name="IR51_M1")
+    heuristics = (
+        RegexCondition(re.compile(r"^Report_Name$"), Coord(0, 0))
+        & RegexCondition(re.compile(r"^Report_ID$"), Coord(1, 0))
+        & RegexCondition(re.compile(r"^IR_M1$"), Coord(1, 1))
+        & RegexCondition(re.compile(r"^Release$"), Coord(2, 0))
+        & RegexCondition(re.compile(r"^5.1$"), Coord(2, 1))
+    )
+
+    class Area(c5.IR_M1.Area):
+        DIMENSION_NAMES_MAP = [
+            ("Publisher", {"Publisher"}),
+            ("Platform", {"Platform"}),
+            # C5.1 IR_M1 has Data_Type dimension which is not present in C5 IR_M1
+            ("Data_Type", {"Data Type", "Data_Type"}),
+        ]
+
+    areas = [Area]

@@ -5,6 +5,7 @@ from typing import Generator, List, Optional, Set
 from celus_nigiri import CounterRecord
 from celus_nigiri.counter51 import (
     Counter51DRReport,
+    Counter51IRM1Report,
     Counter51IRReport,
     Counter51PRReport,
     Counter51ReportBase,
@@ -97,10 +98,18 @@ class NigiriIRArea(NigiriBaseArea):
         return sorted(list(self._convert_months_str_to_months(months_str)))
 
 
+class NigiriIR_M1Area(NigiriIRArea):
+    nigiri_report_class = Counter51IRM1Report
+
+
 class BaseCounter51JsonParser(c5tabular.Counter5ParserAnalyzeMixin, BaseJsonParser):
     @property
     def name(self):
-        return f"static.counter51.{self.data_format.name[:2]}.Json"
+        if self.data_format.name == "IR51_M1":
+            code = "IR_M1"
+        else:
+            code = self.data_format.name[:-2]
+        return f"static.counter51.{code}.Json"
 
     def _parse_area(self, area: BaseArea) -> Generator[CounterRecord, None, None]:
         if isinstance(area, NigiriBaseArea):
@@ -152,3 +161,13 @@ class IR(BaseCounter51JsonParser):
     data_format = DataFormatDefinition(name="IR51")
 
     areas = [NigiriIRArea]
+
+
+class IR_M1(BaseCounter51JsonParser):
+    heuristics = SheetExtraCondition(field_name="Report_ID", value="IR_M1") & SheetExtraCondition(
+        field_name="Release", value="5.1"
+    )
+    platforms = c5tabular.IR_M1.platforms
+    data_format = DataFormatDefinition(name="IR51_M1")
+
+    areas = [NigiriIR_M1Area]

@@ -6,18 +6,15 @@ authors = [
     { name = "Stepan Henek", email = "stepan@bigdigdata.com" },
     { name = "Zbynek Vyhlas", email = "zbyneksmail@gmail.com" },
 ]
-requires-python = ">=3.8.9,<4"
+requires-python = ">=3.9.6,<4"
 license = "MIT"
-keywords = [
-    "parsing",
-    "counter5",
-]
+keywords = ["parsing", "counter5"]
 classifiers = [
     "Programming Language :: Python :: 3",
     "Topic :: Software Development :: Libraries",
 ]
 dependencies = [
-    "celus-nigiri>=4.0.0,<5",
+    "celus-nigiri>=4.2.0,<5",
     "diskcache~=5.6.0",
     "nltk~=3.9.1",
     "pydantic~=2.10.6",
@@ -63,10 +60,12 @@ nibbler-eat = "celus_nibbler.__main__:main"
 "static.counter51.PR.Tabular" = "celus_nibbler.parsers.counter.c51:PR"
 "static.counter51.TR.Tabular" = "celus_nibbler.parsers.counter.c51:TR"
 "static.counter51.IR.Tabular" = "celus_nibbler.parsers.counter.c51:IR"
+"static.counter51.IR_M1.Tabular" = "celus_nibbler.parsers.counter.c51:IR_M1"
 "static.counter51.DR.Json" = "celus_nibbler.parsers.counter.c51json:DR"
 "static.counter51.PR.Json" = "celus_nibbler.parsers.counter.c51json:PR"
 "static.counter51.TR.Json" = "celus_nibbler.parsers.counter.c51json:TR"
 "static.counter51.IR.Json" = "celus_nibbler.parsers.counter.c51json:IR"
+"static.counter51.IR_M1.Json" = "celus_nibbler.parsers.counter.c51json:IR_M1"
 
 [dependency-groups]
 dev = [
@@ -90,21 +89,21 @@ line-length = 100
 src = ["celus_nibbler", "tests"]
 
 [tool.ruff.lint]
-fixable = ['I001']  # isort: imports are incorrectly sorted
+fixable = ['I001'] # isort: imports are incorrectly sorted
 select = [
-	# Pyflakes
-	"F",
-	# pycodestyle
-	"E",
-	# isort
-	"I",
+    # Pyflakes
+    "F",
+    # pycodestyle
+    "E",
+    # isort
+    "I",
 ]
 
 [tool.ruff.lint.isort]
 known-first-party = ["celus_nibbler"]
 
 [tool.ruff.lint.per-file-ignores]
-"test_*.py" = ["B011"]  # test files should have asserts
+"test_*.py" = ["B011"] # test files should have asserts
 
 [tool.mypy]
 plugins = "pydantic.mypy"
