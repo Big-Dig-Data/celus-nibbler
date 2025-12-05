@@ -20,8 +20,8 @@ class Counter51NameMixin:
 class DR(Counter51NameMixin, c5.DR):
     data_format = DataFormatDefinition(name="DR51")
     heuristics = (
-        RegexCondition(re.compile(r"^Report_Name$"), Coord(0, 0))
-        & RegexCondition(re.compile(r"^Report_ID$"), Coord(1, 0))
+        RegexCondition(re.compile(r"^Report[_ ]Name$"), Coord(0, 0))
+        & RegexCondition(re.compile(r"^Report[_ ]ID$"), Coord(1, 0))
         & RegexCondition(re.compile(r"^DR$"), Coord(1, 1))
         & RegexCondition(re.compile(r"^Release$"), Coord(2, 0))
         & RegexCondition(re.compile(r"^5.1$"), Coord(2, 1))
@@ -31,8 +31,8 @@ class DR(Counter51NameMixin, c5.DR):
 class PR(Counter51NameMixin, c5.PR):
     data_format = DataFormatDefinition(name="PR51")
     heuristics = (
-        RegexCondition(re.compile(r"^Report_Name$"), Coord(0, 0))
-        & RegexCondition(re.compile(r"^Report_ID$"), Coord(1, 0))
+        RegexCondition(re.compile(r"^Report[_ ]Name$"), Coord(0, 0))
+        & RegexCondition(re.compile(r"^Report[_ ]ID$"), Coord(1, 0))
         & RegexCondition(re.compile(r"^PR$"), Coord(1, 1))
         & RegexCondition(re.compile(r"^Release$"), Coord(2, 0))
         & RegexCondition(re.compile(r"^5.1$"), Coord(2, 1))
@@ -42,8 +42,8 @@ class PR(Counter51NameMixin, c5.PR):
 class TR(Counter51NameMixin, c5.TR):
     data_format = DataFormatDefinition(name="TR51")
     heuristics = (
-        RegexCondition(re.compile(r"^Report_Name$"), Coord(0, 0))
-        & RegexCondition(re.compile(r"^Report_ID$"), Coord(1, 0))
+        RegexCondition(re.compile(r"^Report[_ ]Name$"), Coord(0, 0))
+        & RegexCondition(re.compile(r"^Report[_ ]ID$"), Coord(1, 0))
         & RegexCondition(re.compile(r"^TR$"), Coord(1, 1))
         & RegexCondition(re.compile(r"^Release$"), Coord(2, 0))
         & RegexCondition(re.compile(r"^5.1$"), Coord(2, 1))
@@ -65,8 +65,8 @@ class TR(Counter51NameMixin, c5.TR):
 class IR(Counter51NameMixin, c5.IR):
     data_format = DataFormatDefinition(name="IR51")
     heuristics = (
-        RegexCondition(re.compile(r"^Report_Name$"), Coord(0, 0))
-        & RegexCondition(re.compile(r"^Report_ID$"), Coord(1, 0))
+        RegexCondition(re.compile(r"^Report[_ ]Name$"), Coord(0, 0))
+        & RegexCondition(re.compile(r"^Report[_ ]ID$"), Coord(1, 0))
         & RegexCondition(re.compile(r"^IR$"), Coord(1, 1))
         & RegexCondition(re.compile(r"^Release$"), Coord(2, 0))
         & RegexCondition(re.compile(r"^5.1$"), Coord(2, 1))
@@ -76,8 +76,8 @@ class IR(Counter51NameMixin, c5.IR):
 class IR_M1(Counter51NameMixin, c5.IR_M1):
     data_format = DataFormatDefinition(name="IR51_M1")
     heuristics = (
-        RegexCondition(re.compile(r"^Report_Name$"), Coord(0, 0))
-        & RegexCondition(re.compile(r"^Report_ID$"), Coord(1, 0))
+        RegexCondition(re.compile(r"^Report[_ ]Name$"), Coord(0, 0))
+        & RegexCondition(re.compile(r"^Report[_ ]ID$"), Coord(1, 0))
         & RegexCondition(re.compile(r"^IR_M1$"), Coord(1, 1))
         & RegexCondition(re.compile(r"^Release$"), Coord(2, 0))
         & RegexCondition(re.compile(r"^5.1$"), Coord(2, 1))

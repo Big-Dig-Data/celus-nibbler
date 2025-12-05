@@ -88,7 +88,8 @@ class BaseCounter5Parser(Counter5ParserAnalyzeMixin, BaseTabularParser):
             except TableException:
                 # missing right cord => consider cell as empty
                 value = ""
-            res[key] = value
+            # Convert e.g. "Report ID" to "Report_ID" automatically
+            res[key.replace(" ", "_")] = value
 
         # Fix 5.0 => 5
         if res.get("Release", "") == "5.0":
@@ -104,8 +105,8 @@ class DR(BaseCounter5Parser):
 
     platforms = ["*"]
     heuristics = (
-        RegexCondition(re.compile(r"^Report_Name$"), Coord(0, 0))
-        & RegexCondition(re.compile(r"^Report_ID$"), Coord(1, 0))
+        RegexCondition(re.compile(r"^Report[_ ]Name$"), Coord(0, 0))
+        & RegexCondition(re.compile(r"^Report[_ ]ID$"), Coord(1, 0))
         & RegexCondition(re.compile(r"^DR$"), Coord(1, 1))
         & RegexCondition(re.compile(r"^Release$"), Coord(2, 0))
         & RegexCondition(re.compile(r"^5(\.0)?$"), Coord(2, 1))
@@ -128,8 +129,8 @@ class PR(BaseCounter5Parser):
 
     platforms = ["*"]
     heuristics = (
-        RegexCondition(re.compile(r"^Report_Name$"), Coord(0, 0))
-        & RegexCondition(re.compile(r"^Report_ID$"), Coord(1, 0))
+        RegexCondition(re.compile(r"^Report[_ ]Name$"), Coord(0, 0))
+        & RegexCondition(re.compile(r"^Report[_ ]ID$"), Coord(1, 0))
         & RegexCondition(re.compile(r"^PR$"), Coord(1, 1))
         & RegexCondition(re.compile(r"^Release$"), Coord(2, 0))
         & RegexCondition(re.compile(r"^5(\.0)?$"), Coord(2, 1))
@@ -163,8 +164,8 @@ class TR(BaseCounter5Parser):
 
     platforms = ["*"]
     heuristics = (
-        RegexCondition(re.compile(r"^Report_Name$"), Coord(0, 0))
-        & RegexCondition(re.compile(r"^Report_ID$"), Coord(1, 0))
+        RegexCondition(re.compile(r"^Report[_ ]Name$"), Coord(0, 0))
+        & RegexCondition(re.compile(r"^Report[_ ]ID$"), Coord(1, 0))
         & (
             RegexCondition(re.compile(r"^TR$"), Coord(1, 1))
             | RegexCondition(re.compile(r"^TR_B1$"), Coord(1, 1))
@@ -194,8 +195,8 @@ class IR_M1(BaseCounter5Parser):
 
     platforms = ["*"]
     heuristics = (
-        RegexCondition(re.compile(r"^Report_Name$"), Coord(0, 0))
-        & RegexCondition(re.compile(r"^Report_ID$"), Coord(1, 0))
+        RegexCondition(re.compile(r"^Report[_ ]Name$"), Coord(0, 0))
+        & RegexCondition(re.compile(r"^Report[_ ]ID$"), Coord(1, 0))
         & RegexCondition(re.compile(r"^IR_M1$"), Coord(1, 1))
         & RegexCondition(re.compile(r"^Release$"), Coord(2, 0))
         & RegexCondition(re.compile(r"^5(\.0)?$"), Coord(2, 1))
@@ -228,8 +229,8 @@ class IR(BaseCounter5Parser):
 
     platforms = ["*"]
     heuristics = (
-        RegexCondition(re.compile(r"^Report_Name$"), Coord(0, 0))
-        & RegexCondition(re.compile(r"^Report_ID$"), Coord(1, 0))
+        RegexCondition(re.compile(r"^Report[_ ]Name$"), Coord(0, 0))
+        & RegexCondition(re.compile(r"^Report[_ ]ID$"), Coord(1, 0))
         & RegexCondition(re.compile(r"^IR$"), Coord(1, 1))
         & RegexCondition(re.compile(r"^Release$"), Coord(2, 0))
         & RegexCondition(re.compile(r"^5(\.0)?$"), Coord(2, 1))
@@ -246,7 +247,7 @@ class IR(BaseCounter5Parser):
             ("Platform", {"Platform"}),
             ("Publisher", {"Publisher"}),
         ]
-        TITLE_COLUMN_NAMES = ["Parent_Title"]
+        TITLE_COLUMN_NAMES = ["Parent_Title", "Parent Title"]
         ITEM_COLUMN_NAMES = ["Title", "Item"]
 
         ITEM_DOI_NAMES = Counter5HeaderArea.TITLE_DOI_NAMES
@@ -256,13 +257,13 @@ class IR(BaseCounter5Parser):
         ITEM_URI_NAMES = Counter5HeaderArea.TITLE_URI_NAMES
         ITEM_PROPRIETARY_NAMES = Counter5HeaderArea.TITLE_PROPRIETARY_NAMES
         ITEM_AUTHORS_NAMES = {"Authors"}
-        ITEM_PUBLICATION_DATE_NAMES = {"Publication_Date"}
+        ITEM_PUBLICATION_DATE_NAMES = {"Publication_Date", "Publication Date"}
 
-        TITLE_DOI_NAMES = {"Parent_DOI"}
-        TITLE_ISBN_NAMES = {"Parent_ISBN"}
-        TITLE_ISSN_NAMES = {"Parent_Print_ISSN"}
-        TITLE_EISSN_NAMES = {"Parent_Online_ISSN"}
-        TITLE_URI_NAMES = {"Parent_URI"}
-        TITLE_PROPRIETARY_NAMES = {"Parent_Proprietary_ID"}
+        TITLE_DOI_NAMES = {"Parent_DOI", "Parent DOI"}
+        TITLE_ISBN_NAMES = {"Parent_ISBN", "Parent ISBN"}
+        TITLE_ISSN_NAMES = {"Parent_Print_ISSN", "Parent Print ISSN"}
+        TITLE_EISSN_NAMES = {"Parent_Online_ISSN", "Parent Online ISSN"}
+        TITLE_URI_NAMES = {"Parent_URI", "Parent URI"}
+        TITLE_PROPRIETARY_NAMES = {"Parent_Proprietary_ID", "Parent Proprietary ID"}
 
     areas = [Area]
