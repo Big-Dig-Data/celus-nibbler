@@ -389,6 +389,12 @@ from celus_nibbler.parsers.dynamic import gen_parser
             "dynamic.non_counter.simple_format.year-column-month-row",
             False,
         ),
+        (
+            "dimensions-combination",
+            "csv",
+            "dynamic.non_counter.combination_format.dimensions_combination",
+            True,
+        ),
     ),
 )
 def test_dynamic(filename, ext, parser, ignore_order):

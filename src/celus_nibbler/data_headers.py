@@ -479,11 +479,11 @@ class DataCells:
         # Update nested fields
         for nested_name in COUNTER_RECORD_FIELD_NAMES_NESTED:
             if header_nested_data := getattr(self.header_data, nested_name):
-                if record_nested_data := getattr(record, nested_name):
-                    record_nested_data.update(header_nested_data)
-                else:
-                    # Clone header data
-                    setattr(record, nested_name, deepcopy(header_nested_data))
+                setattr(
+                    record,
+                    nested_name,
+                    header_nested_data | getattr(record, nested_name, {}),
+                )
 
         return record
 

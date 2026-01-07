@@ -1,0 +1,108 @@
+{
+  "kind": "non_counter.generic",
+  "version": 1,
+  "parser_name": "dimensions_combination",
+  "data_format": {
+    "name": "combination_format"
+  },
+  "platforms": [
+    "Platform1",
+    "Platform2"
+  ],
+  "metrics_to_skip": [],
+  "titles_to_skip": [],
+  "dimensions_to_skip": {},
+  "metric_aliases": [],
+  "dimension_aliases": [],
+  "heuristics": {
+    "conds": [
+      {
+        "pattern": "^Month$",
+        "coord": {
+          "row": 1,
+          "col": 0
+        },
+        "kind": "regex"
+      }
+    ],
+    "kind": "and"
+  },
+  "areas": [
+    {
+      "data_headers": {
+        "roles": [
+            {
+                "source": {
+                    "coord": {
+                      "row": 1,
+                      "col": 2
+                    },
+                    "direction": "right"
+                },
+                "role": "metric"
+            },
+            {
+                "name": "HDim",
+                "source": {
+                    "coord": {
+                      "row": 0,
+                      "col": 2
+                    },
+                    "direction": "right"
+                },
+                "role": "dimension"
+            }
+        ],
+        "rules": [
+            {
+                "role_idx": 1,
+                "condition": {
+                    "kind": "regex",
+                    "pattern": "^(Free|Paid).*$"
+                },
+                "on_condition_failed": "bypass",
+                "on_condition_passed": "proceed"
+            },
+            {}
+        ],
+        "data_direction": "down",
+        "data_cells": {
+          "coord": {
+            "row": 2,
+            "col": 2
+          },
+          "direction": "right"
+        }
+      },
+      "dates": {
+          "source": {
+              "coord": {
+                  "row": 2,
+                  "col": 0
+              },
+              "direction": "down"
+          },
+          "extract_params": {
+              "on_validation_error": "stop"
+          },
+          "role": "date"
+      },
+      "title_ids": [],
+      "dimensions": [
+        {
+            "name": "CDim",
+            "source": {
+                "coord": {
+                  "row": 2,
+                  "col": 1
+                },
+                "direction": "down"
+            },
+            "role": "dimension"
+        }
+      ],
+      "aggregate_same_records": true,
+      "kind": "non_counter.generic"
+    }
+  ]
+}

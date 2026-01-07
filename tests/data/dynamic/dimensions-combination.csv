@@ -1,0 +1,6 @@
+,,Free,Paid,Other
+Month,Data_Type,Metric1,Metric1,Metric1
+"2020-01","article","11","21","31"
+"2020-01","book","12","22","32"
+"2020-01","journal","13","23","33"
+"Total","article","36","66","96"
