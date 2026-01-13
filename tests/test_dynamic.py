@@ -395,6 +395,30 @@ from celus_nibbler.parsers.dynamic import gen_parser
             "dynamic.non_counter.combination_format.dimensions_combination",
             True,
         ),
+        (
+            "skip_condition",
+            "csv",
+            "dynamic.non_counter.simple_format.skip_condition",
+            False,
+        ),
+        (
+            "value_overrides",
+            "csv",
+            "dynamic.non_counter.simple_format.value_overrides",
+            False,
+        ),
+        (
+            "roles_skip_condition",
+            "csv",
+            "dynamic.non_counter.simple_format.roles_skip_condition",
+            False,
+        ),
+        (
+            "roles_value_overrides",
+            "csv",
+            "dynamic.non_counter.simple_format.roles_value_overrides",
+            False,
+        ),
     ),
 )
 def test_dynamic(filename, ext, parser, ignore_order):

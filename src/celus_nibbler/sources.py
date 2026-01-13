@@ -1,4 +1,5 @@
 import typing
+from abc import ABCMeta, abstractmethod
 from dataclasses import field
 from datetime import date
 from enum import Enum
@@ -145,6 +146,181 @@ class Role(str, Enum):
     PUBLICATION_DATE = "publication_date"
 
 
+class BaseMatch(metaclass=ABCMeta):
+    @abstractmethod
+    def check(self, value: typing.Any) -> bool:
+        pass
+
+
+class MatchKind(str, Enum):
+    NEG = "neg"
+    AND = "and"
+    OR = "or"
+    EXACT = "exact"
+    IEXACT = "iexact"
+    CONTAINS = "contains"
+    ICONTAINS = "icontains"
+    CONTAINED = "contained"
+    ICONTAINED = "icontained"
+    REGEX = "regex"
+
+
+class MatchArithmeticsMixin:
+    def __invert__(self):
+        return MatchNeg(self)
+
+    def __or__(self, other):
+        return MatchOr([self, other])
+
+    def __and__(self, other):
+        return MatchAnd([self, other])
+
+
+@dataclass(config=PydanticConfig)
+class MatchAnd(MatchArithmeticsMixin, JsonEncorder):
+    matches: typing.List["Match"]
+
+    kind: typing.Literal[MatchKind.AND] = MatchKind.AND
+
+    @abstractmethod
+    def check(self, value: typing.Any) -> bool:
+        return all(e.check(value) for e in self.matches)
+
+
+@dataclass(config=PydanticConfig)
+class MatchOr(MatchArithmeticsMixin, JsonEncorder):
+    matches: typing.List["Match"]
+
+    kind: typing.Literal[MatchKind.OR] = MatchKind.OR
+
+    @abstractmethod
+    def check(self, value: typing.Any) -> bool:
+        return any(e.check(value) for e in self.matches)
+
+
+@dataclass(config=PydanticConfig)
+class MatchNeg(MatchArithmeticsMixin, JsonEncorder):
+    match: "Match"
+
+    kind: typing.Literal[MatchKind.NEG] = MatchKind.NEG
+
+    @abstractmethod
+    def check(self, value: typing.Any) -> bool:
+        return not self.match.check(value)
+
+
+@dataclass(config=PydanticConfig)
+class MatchExact(MatchArithmeticsMixin, JsonEncorder):
+    value: str
+
+    kind: typing.Literal[MatchKind.EXACT] = MatchKind.EXACT
+
+    def check(self, value: typing.Any) -> bool:
+        if not isinstance(value, str):
+            return False
+        return value == self.value
+
+
+@dataclass(config=PydanticConfig)
+class MatchIexact(MatchArithmeticsMixin, JsonEncorder):
+    value: str
+
+    kind: typing.Literal[MatchKind.IEXACT] = MatchKind.IEXACT
+
+    def check(self, value: typing.Any) -> bool:
+        if not isinstance(value, str):
+            return False
+        return value.lower() == self.value.lower()
+
+
+@dataclass(config=PydanticConfig)
+class MatchContains(MatchArithmeticsMixin, JsonEncorder):
+    value: str
+
+    kind: typing.Literal[MatchKind.CONTAINS] = MatchKind.CONTAINS
+
+    def check(self, value: typing.Any) -> bool:
+        if not isinstance(value, str):
+            return False
+        return self.value in value
+
+
+@dataclass(config=PydanticConfig)
+class MatchIcontains(MatchArithmeticsMixin, JsonEncorder):
+    value: str
+
+    kind: typing.Literal[MatchKind.ICONTAINS] = MatchKind.ICONTAINS
+
+    def check(self, value: typing.Any) -> bool:
+        if not isinstance(value, str):
+            return False
+        return self.value.lower() in value.lower()
+
+
+@dataclass(config=PydanticConfig)
+class MatchContained(MatchArithmeticsMixin, JsonEncorder):
+    value: str
+
+    kind: typing.Literal[MatchKind.CONTAINED] = MatchKind.CONTAINED
+
+    def check(self, value: typing.Any) -> bool:
+        if not isinstance(value, str):
+            return False
+        return value in self.value
+
+
+@dataclass(config=PydanticConfig)
+class MatchIcontained(MatchArithmeticsMixin, JsonEncorder):
+    value: str
+
+    kind: typing.Literal[MatchKind.ICONTAINED] = MatchKind.ICONTAINED
+
+    def check(self, value: typing.Any) -> bool:
+        if not isinstance(value, str):
+            return False
+        return value.lower() in self.value.lower()
+
+
+@dataclass(config=PydanticConfig)
+class MatchRegex(MatchArithmeticsMixin, JsonEncorder):
+    regex: typing.Pattern
+
+    kind: typing.Literal[MatchKind.REGEX] = MatchKind.REGEX
+
+    def check(self, value: typing.Any) -> bool:
+        if not isinstance(value, str):
+            return False
+        return bool(self.regex.match(value))
+
+
+Match = Annotated[
+    typing.Union[
+        MatchOr,
+        MatchAnd,
+        MatchNeg,
+        MatchExact,
+        MatchIexact,
+        MatchContains,
+        MatchIcontains,
+        MatchContained,
+        MatchIcontained,
+        MatchRegex,
+    ],
+    Field(discriminator="kind"),
+]
+
+
+@dataclass(config=PydanticConfig)
+class ValueOverride(JsonEncorder):
+    match: Match
+    target: str
+
+    def override(self, value: typing.Any) -> str:
+        if self.match.check(value):
+            return self.target
+        return value
+
+
 @dataclass(config=PydanticConfig)
 class ExtractParams(JsonEncorder):
     regex: typing.Optional[typing.Pattern] = None
@@ -157,6 +333,8 @@ class ExtractParams(JsonEncorder):
     special_extraction: SpecialExtraction = SpecialExtraction.NO
     on_validation_error: TableException.Action = TableException.Action.FAIL
     max_idx: typing.Optional[int] = None
+    skip_condition: typing.Optional[Match] = None
+    value_overrides: typing.List[ValueOverride] = field(default_factory=list)
 
 
 class ContentExtractorMixin:
@@ -213,6 +391,17 @@ class ContentExtractorMixin:
                 )
             else:
                 raise
+
+        # try to apply overrides
+        for override in self.extract_params.value_overrides:
+            value = override.override(value)
+
+        if skip_condition := self.extract_params.skip_condition:
+            if skip_condition.check(value):
+                raise TableException(
+                    value=value, reason="skip-extracted", action=TableException.Action.SKIP
+                )
+
         return value
 
     def get_validator(
