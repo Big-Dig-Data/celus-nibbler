@@ -5,6 +5,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [13.0.0] - 2026-01-14
+
+### Added
+- extend ExtractParams with skip_condition and value_overrides
+
+### Changed
+- update dependencies
+- drop support for older versions of python (oldest supported version is 3.12)
+
+
 ## [12.4.1] - 2026-01-07
 
 ### Fixed
