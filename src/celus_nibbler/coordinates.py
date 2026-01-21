@@ -32,10 +32,18 @@ class Content(metaclass=abc.ABCMeta):
     ):
         pass
 
+    @property
+    @abc.abstractmethod
+    def mutable(self) -> bool:
+        # We expect value to change during parsing iteration
+        pass
+
 
 @dataclass(config=PydanticConfig)
 class Value(JsonEncorder, Content):
     value: typing.Any
+
+    mutable = False
 
     def content(
         self,
@@ -60,6 +68,8 @@ class Value(JsonEncorder, Content):
 @dataclass(config=PydanticConfig)
 class SheetAttr(JsonEncorder, Content):
     sheet_attr: str
+
+    mutable = False
 
     def content(
         self,
@@ -89,6 +99,8 @@ class Coord(JsonEncorder, Content):
     row: int
     col: int
     row_relative_to: RelativeTo = RelativeTo.AREA
+
+    mutable = False
 
     def row_absolute(
         self,
@@ -149,6 +161,8 @@ class CoordRange(JsonEncorder, Content):
     coord: Coord
     direction: Direction
     max_count: typing.Optional[int] = None
+
+    mutable = True
 
     def content(
         self,

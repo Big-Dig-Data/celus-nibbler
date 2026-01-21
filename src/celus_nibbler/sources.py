@@ -348,6 +348,10 @@ class ContentExtractorMixin:
     _last_extracted = None
     _last_area_row_offset = None
 
+    @property
+    def mutable(self) -> bool:
+        return self.source.mutable
+
     def content(
         self,
         sheet: SheetReader,

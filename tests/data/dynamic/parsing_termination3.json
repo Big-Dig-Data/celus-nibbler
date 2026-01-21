@@ -1,7 +1,7 @@
 {
   "kind": "non_counter.generic",
   "version": 1,
-  "parser_name": "parsing_termination",
+  "parser_name": "parsing_termination3",
   "data_format": {
     "name":"simple_format"
   },
@@ -13,7 +13,7 @@
   "titles_to_skip": [],
   "dimensions_to_skip": {},
   "metric_aliases": [],
-  "available_metrics": ["Metric1"],
+  "available_metrics": [],
   "dimension_aliases": [],
   "heuristics": {
     "conds": [
@@ -44,11 +44,8 @@
         ],
         "data_direction": "down",
         "data_cells": {
-          "coord": {
             "row": 1,
             "col": 1
-          },
-          "direction": "right"
         }
       },
       "metrics": {

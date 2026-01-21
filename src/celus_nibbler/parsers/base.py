@@ -402,11 +402,13 @@ class BaseTabularParser(BaseParser):
         metric_value_extraction_overrides = self.metric_value_extraction_overrides
 
         for idx in itertools.count(0):
+            extracted_mutable = False
             try:
                 skip = False
 
                 # iterates through ranges
                 if area.title_source:
+                    extracted_mutable = extracted_mutable or area.title_source.mutable
                     title = area.title_source.extract(
                         self.sheet,
                         idx,
@@ -419,6 +421,7 @@ class BaseTabularParser(BaseParser):
                     title = None
 
                 if area.item_source:
+                    extracted_mutable = extracted_mutable or area.item_source.mutable
                     item = area.item_source.extract(
                         self.sheet,
                         idx,
@@ -431,6 +434,7 @@ class BaseTabularParser(BaseParser):
                     item = None
 
                 if area.metric_source:
+                    extracted_mutable = extracted_mutable or area.metric_source.mutable
                     orig_metric = area.metric_source.extract(
                         self.sheet,
                         idx,
@@ -458,6 +462,7 @@ class BaseTabularParser(BaseParser):
                     metric = None
 
                 if area.organization_source:
+                    extracted_mutable = extracted_mutable or area.organization_source.mutable
                     organization = area.organization_source.extract(
                         self.sheet,
                         idx,
@@ -468,6 +473,7 @@ class BaseTabularParser(BaseParser):
                     organization = None
 
                 if area.date_source:
+                    extracted_mutable = extracted_mutable or area.date_source.mutable
                     date = area.date_source.extract(
                         self.sheet,
                         idx,
@@ -479,6 +485,7 @@ class BaseTabularParser(BaseParser):
 
                 dimension_data = {}
                 for k, dimension_source in dimensions_sources:
+                    extracted_mutable = extracted_mutable or dimension_source.mutable
                     dimension_text = dimension_source.extract(
                         self.sheet,
                         idx,
@@ -498,6 +505,7 @@ class BaseTabularParser(BaseParser):
                 item_ids = {}
                 for key in IDS:
                     if title_source := title_ids_sources.get(key):
+                        extracted_mutable = extracted_mutable or title_source.mutable
                         value = title_source.extract(
                             self.sheet,
                             idx,
@@ -508,6 +516,7 @@ class BaseTabularParser(BaseParser):
                             title_ids[title_source.last_key] = value
 
                     if item_source := item_ids_sources.get(key):
+                        extracted_mutable = extracted_mutable or item_source.mutable
                         value = item_source.extract(
                             self.sheet,
                             idx,
@@ -518,6 +527,7 @@ class BaseTabularParser(BaseParser):
                             item_ids[item_source.last_key] = value
 
                 if item_publication_date_source:
+                    extracted_mutable = extracted_mutable or item_publication_date_source.mutable
                     item_publication_date = item_publication_date_source.extract(
                         self.sheet,
                         idx,
@@ -528,6 +538,7 @@ class BaseTabularParser(BaseParser):
                     item_publication_date = None
 
                 if item_authors_source:
+                    extracted_mutable = extracted_mutable or item_authors_source.mutable
                     item_authors = item_authors_source.extract(
                         self.sheet,
                         idx,
@@ -538,7 +549,15 @@ class BaseTabularParser(BaseParser):
                     item_authors = None
 
                 if skip:
-                    continue
+                    if extracted_mutable:
+                        continue
+                    else:
+                        # There is no progress on the input data processing
+                        # this likely mean that the parser is not correct
+                        # end would end in an infinate loop
+                        #
+                        # To assure that won't happen the main loop will be terminated
+                        break
 
             except TableException as e:
                 if e.action == TableException.Action.SKIP:
@@ -555,6 +574,7 @@ class BaseTabularParser(BaseParser):
                         SpecialExtraction.NO,
                     ).get_validator()
 
+                    extracted_mutable = extracted_mutable or data_cell.value_source.mutable
                     value = data_cell.value_source.extract(
                         self.sheet,
                         idx,
@@ -590,3 +610,11 @@ class BaseTabularParser(BaseParser):
                         return
                     else:
                         raise
+
+            if not extracted_mutable:
+                # There is no progress on the input data processing
+                # this likely mean that the parser is not correct
+                # end would end in an infinate loop
+                #
+                # To assure that won't happen the main loop will be terminated
+                break

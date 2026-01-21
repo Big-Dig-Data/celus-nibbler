@@ -1,7 +1,7 @@
 {
   "kind": "non_counter.generic",
   "version": 1,
-  "parser_name": "parsing_termination",
+  "parser_name": "parsing_termination2",
   "data_format": {
     "name":"simple_format"
   },
@@ -44,11 +44,8 @@
         ],
         "data_direction": "down",
         "data_cells": {
-          "coord": {
             "row": 1,
             "col": 1
-          },
-          "direction": "right"
         }
       },
       "metrics": {
