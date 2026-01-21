@@ -9,7 +9,7 @@
     "Platform1"
   ],
   "metrics_to_skip": [],
-  "titles_to_skip": ["EMPTY"],
+  "titles_to_skip": [],
   "dimensions_to_skip": {},
   "metric_aliases": [],
   "dimension_aliases": [],
@@ -56,6 +56,9 @@
             "col": 4
           },
           "direction": "right"
+        },
+        "data_extract_params": {
+            "on_validation_error": "skip"
         }
       },
       "titles": {
@@ -67,7 +70,7 @@
           "direction": "down"
         },
         "extract_params": {
-          "default": "EMPTY"
+          "on_validation_error": "skip"
         }
       },
       "metrics": {
@@ -77,6 +80,9 @@
             "col": 3
           },
           "direction": "down"
+        },
+        "extract_params": {
+          "on_validation_error": "skip"
         }
       },
       "title_ids": [],
@@ -89,6 +95,9 @@
               "col": 1
             },
             "direction": "down"
+          },
+          "extract_params": {
+            "on_validation_error": "skip"
           }
         },
         {
@@ -99,6 +108,9 @@
               "col": 2
             },
             "direction": "down"
+          },
+          "extract_params": {
+            "on_validation_error": "skip"
           }
         }
       ],

@@ -1,0 +1,93 @@
+{
+  "kind": "non_counter.generic",
+  "version": 1,
+  "parser_name": "parsing_termination",
+  "data_format": {
+    "name":"simple_format"
+  },
+  "platforms": [
+    "Platform1",
+    "Platform2"
+  ],
+  "metrics_to_skip": [],
+  "titles_to_skip": [],
+  "dimensions_to_skip": {},
+  "metric_aliases": [],
+  "available_metrics": ["Metric1"],
+  "dimension_aliases": [],
+  "heuristics": {
+    "conds": [
+      {
+        "coord": {
+          "row": 0,
+          "col": 1
+        },
+        "kind": "is_date"
+      }
+    ],
+    "kind": "and"
+  },
+  "areas": [
+    {
+      "data_headers": {
+        "roles": [
+            {
+                "source": {
+                    "coord": {
+                      "row": 0,
+                      "col": 1
+                    },
+                    "direction": "right"
+                },
+                "role": "date"
+            }
+        ],
+        "data_direction": "down",
+        "data_cells": {
+          "coord": {
+            "row": 1,
+            "col": 1
+          },
+          "direction": "right"
+        }
+      },
+      "metrics": {
+        "source": {
+          "row": 0,
+          "col": 0
+        }
+      },
+      "title_ids": [
+        {
+          "name": "Print_ISSN",
+          "source": {
+            "coord": {
+              "row": 1,
+              "col": 1
+            },
+            "direction": "down"
+          }
+        }
+      ],
+      "dimensions": [
+        {
+          "name": "YOP",
+          "source": {
+            "coord": {
+              "row": 1,
+              "col": 2
+            },
+            "direction": "down"
+          }
+        },
+        {
+          "name": "Platform",
+          "source": {
+            "value": "P1"
+          }
+        }
+      ],
+      "kind": "non_counter.generic"
+    }
+  ]
+}

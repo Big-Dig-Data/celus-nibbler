@@ -403,6 +403,8 @@ class BaseTabularParser(BaseParser):
 
         for idx in itertools.count(0):
             try:
+                skip = False
+
                 # iterates through ranges
                 if area.title_source:
                     title = area.title_source.extract(
@@ -412,7 +414,7 @@ class BaseTabularParser(BaseParser):
                         area_row_offset=area_row_offset,
                     )
                     if title is not None and title.lower() in titles_to_skip:
-                        continue
+                        skip = True
                 else:
                     title = None
 
@@ -424,7 +426,7 @@ class BaseTabularParser(BaseParser):
                         area_row_offset=area_row_offset,
                     )
                     if item is not None and item.lower() in items_to_skip:
-                        continue
+                        skip = True
                 else:
                     item = None
 
@@ -436,13 +438,22 @@ class BaseTabularParser(BaseParser):
                         area_row_offset=area_row_offset,
                     )
                     metric = self.get_metric_name(orig_metric)
-                    self._metric_check(
-                        metric,
-                        orig_metric,
-                        metrics_to_skip,
-                        self.available_metrics,
-                        self.on_metric_check_failed,
-                    )
+                    try:
+                        self._metric_check(
+                            metric,
+                            orig_metric,
+                            metrics_to_skip,
+                            self.available_metrics,
+                            self.on_metric_check_failed,
+                        )
+                    except TableException as e:
+                        # In case that skip is required
+                        # We need to go through the rest of the fields as well
+                        # StopException can be raised when other fields are iterated
+                        if e.action == TableException.Action.SKIP:
+                            skip = True
+                        else:
+                            raise
                 else:
                     metric = None
 
@@ -467,7 +478,6 @@ class BaseTabularParser(BaseParser):
                     date = None
 
                 dimension_data = {}
-                skip = False
                 for k, dimension_source in dimensions_sources:
                     dimension_text = dimension_source.extract(
                         self.sheet,
@@ -483,9 +493,6 @@ class BaseTabularParser(BaseParser):
                         skip = True
                         break
                     dimension_data[self.get_dimension_name(k)] = dimension_text
-
-                if skip:
-                    continue
 
                 title_ids = {}
                 item_ids = {}
@@ -529,6 +536,9 @@ class BaseTabularParser(BaseParser):
                     )
                 else:
                     item_authors = None
+
+                if skip:
+                    continue
 
             except TableException as e:
                 if e.action == TableException.Action.SKIP:

@@ -419,6 +419,12 @@ from celus_nibbler.parsers.dynamic import gen_parser
             "dynamic.non_counter.simple_format.roles_value_overrides",
             False,
         ),
+        (
+            "parsing_termination",
+            "csv",
+            "dynamic.non_counter.simple_format.parsing_termination",
+            False,
+        ),
     ),
 )
 def test_dynamic(filename, ext, parser, ignore_order):
