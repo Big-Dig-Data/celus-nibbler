@@ -305,6 +305,9 @@ class BaseCounterParserDefinition(BaseParserDefinition, metaclass=abc.ABCMeta):
     dimension_aliases: typing.List[typing.Tuple[str, str]] = field(default_factory=lambda: [])
     possible_row_offsets: typing.List[int] = field(default_factory=lambda: [0])
 
+    uses_titles: bool | None = None
+    uses_items: bool | None = None
+
 
 @dataclass(config=PydanticConfig)
 class BaseCounter4ParserDefinition(BaseCounterParserDefinition):
@@ -348,6 +351,8 @@ def gen_parser(
         metric_value_extraction_overrides = dict(definition.metric_value_extraction_overrides)
         dimension_aliases = dict(definition.dimension_aliases) or dict(base.dimension_aliases)
         possible_row_offsets = definition.possible_row_offsets or base.possible_row_offsets
+        uses_titles = base.uses_titles
+        uses_items = base.uses_items
 
         areas = [definition.areas[0].make_area()]
 

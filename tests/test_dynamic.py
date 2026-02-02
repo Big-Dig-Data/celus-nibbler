@@ -9,7 +9,11 @@ from celus_nigiri import CounterRecord
 from celus_nibbler import Poop, eat
 from celus_nibbler.definitions import Definition
 from celus_nibbler.errors import (
+    ExtraItemInOutput,
+    ExtraTitleInOutput,
     MissingDateInOutput,
+    MissingItemInOutput,
+    MissingTitleInOutput,
     NegativeValueInOutput,
     SameRecordsInOutput,
     TableException,
@@ -425,6 +429,30 @@ from celus_nibbler.parsers.dynamic import gen_parser
             "dynamic.non_counter.simple_format.parsing_termination",
             False,
         ),
+        (
+            "uses_titles_required",
+            "csv",
+            "dynamic.non_counter.simple_format.uses_titles_required",
+            False,
+        ),
+        (
+            "uses_titles_forbidden",
+            "csv",
+            "dynamic.non_counter.simple_format.uses_titles_forbidden",
+            False,
+        ),
+        (
+            "uses_items_required",
+            "csv",
+            "dynamic.non_counter.simple_format.uses_items_required",
+            False,
+        ),
+        (
+            "uses_items_forbidden",
+            "csv",
+            "dynamic.non_counter.simple_format.uses_items_forbidden",
+            False,
+        ),
     ),
 )
 def test_dynamic(filename, ext, parser, ignore_order):
@@ -591,6 +619,66 @@ def test_dynamic(filename, ext, parser, ignore_order):
             "csv",
             "dynamic.non_counter.simple_format.absolute_coords_in_exception2",
             TableException(sheet=0, reason="no-header-data-found", value=None, row=4, col=1),
+        ),
+        (
+            "uses_titles_missing",
+            "csv",
+            "dynamic.non_counter.simple_format.uses_titles_missing",
+            MissingTitleInOutput(
+                idx=0,
+                record=CounterRecord(
+                    start=date(2020, 1, 1),
+                    end=date(2020, 1, 31),
+                    metric="Sessions",
+                    value=1,
+                    dimension_data={"Platform": "P1"},
+                ),
+            ),
+        ),
+        (
+            "uses_titles_extra",
+            "csv",
+            "dynamic.non_counter.simple_format.uses_titles_extra",
+            ExtraTitleInOutput(
+                idx=0,
+                record=CounterRecord(
+                    start=date(2020, 1, 1),
+                    end=date(2020, 1, 31),
+                    title="T1",
+                    metric="Sessions",
+                    value=1,
+                ),
+            ),
+        ),
+        (
+            "uses_items_missing",
+            "csv",
+            "dynamic.non_counter.simple_format.uses_items_missing",
+            MissingItemInOutput(
+                idx=0,
+                record=CounterRecord(
+                    start=date(2020, 1, 1),
+                    end=date(2020, 1, 31),
+                    metric="Sessions",
+                    value=1,
+                    dimension_data={"Platform": "P1"},
+                ),
+            ),
+        ),
+        (
+            "uses_items_extra",
+            "csv",
+            "dynamic.non_counter.simple_format.uses_items_extra",
+            ExtraItemInOutput(
+                idx=0,
+                record=CounterRecord(
+                    start=date(2020, 1, 1),
+                    end=date(2020, 1, 31),
+                    item="I1",
+                    metric="Sessions",
+                    value=1,
+                ),
+            ),
         ),
     ),
 )

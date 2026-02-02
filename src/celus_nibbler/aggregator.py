@@ -8,7 +8,14 @@ from datetime import date
 from celus_nigiri import CounterRecord
 from diskcache import Cache
 
-from celus_nibbler.errors import NegativeValueInOutput, SameRecordsInOutput
+from celus_nibbler.errors import (
+    ExtraItemInOutput,
+    ExtraTitleInOutput,
+    MissingItemInOutput,
+    MissingTitleInOutput,
+    NegativeValueInOutput,
+    SameRecordsInOutput,
+)
 
 
 class BaseAggregator(metaclass=abc.ABCMeta):
@@ -160,3 +167,39 @@ class PippedAggregator(BaseAggregator):
         self, records: typing.Generator[CounterRecord, None, None]
     ) -> typing.Generator[CounterRecord, None, None]:
         return self.a2.aggregate(self.a1.aggregate(records))
+
+
+class TitleCheckAggregator(BaseAggregator):
+    def __init__(self, required: bool):
+        self.required = required
+
+    def aggregate(
+        self, records: typing.Generator[CounterRecord, None, None]
+    ) -> typing.Generator[CounterRecord, None, None]:
+        for idx, record in enumerate(records):
+            if self.required:
+                if not record.title:
+                    raise MissingTitleInOutput(idx, record)
+            else:
+                if record.title:
+                    raise ExtraTitleInOutput(idx, record)
+
+            yield record
+
+
+class ItemCheckAggregator(BaseAggregator):
+    def __init__(self, required: bool):
+        self.required = required
+
+    def aggregate(
+        self, records: typing.Generator[CounterRecord, None, None]
+    ) -> typing.Generator[CounterRecord, None, None]:
+        for idx, record in enumerate(records):
+            if self.required:
+                if not record.item:
+                    raise MissingItemInOutput(idx, record)
+            else:
+                if record.item:
+                    raise ExtraItemInOutput(idx, record)
+
+            yield record

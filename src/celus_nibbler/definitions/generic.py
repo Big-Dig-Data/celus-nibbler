@@ -114,6 +114,9 @@ class GenericDefinition(JsonEncorder, BaseNonCounterParserDefinition):
     heuristics: typing.Optional[Condition] = None
     possible_row_offsets: typing.List[int] = field(default_factory=lambda: [0])
 
+    uses_titles: bool | None = None
+    uses_items: bool | None = None
+
     kind: typing.Literal["non_counter.generic"] = "non_counter.generic"
     version: typing.Literal[1] = 1
 
@@ -147,6 +150,9 @@ class GenericDefinition(JsonEncorder, BaseNonCounterParserDefinition):
 
             heuristics = _definition.heuristics
             possible_row_offsets = _definition.possible_row_offsets
+
+            uses_titles = self.uses_titles
+            uses_items = self.uses_items
 
             areas = [e.make_area() for e in _definition.areas]
 

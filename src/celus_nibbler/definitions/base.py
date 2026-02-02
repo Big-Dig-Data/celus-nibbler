@@ -38,6 +38,8 @@ class BaseNonCounterParserDefinition(BaseParserDefinition):
     )
     dimension_aliases: typing.List[typing.Tuple[str, str]] = []
     dimensions_validators: typing.Dict[str, ValidatorChoices] = {}
+    uses_titles: bool | None = None
+    uses_items: bool | None = None
 
 
 class BaseAreaDefinition(metaclass=abc.ABCMeta):

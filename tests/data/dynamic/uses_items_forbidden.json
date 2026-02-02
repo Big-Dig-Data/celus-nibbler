@@ -1,0 +1,92 @@
+{
+  "kind": "non_counter.generic",
+  "version": 1,
+  "parser_name": "uses_items_forbidden",
+  "data_format": {
+    "name": "simple_format"
+  },
+  "platforms": [
+    "Platform1"
+  ],
+  "uses_items": false,
+  "heuristics": {
+    "conds": [
+      {
+        "pattern": "Platform",
+        "coord": {
+          "row": 0,
+          "col": 0
+        },
+        "kind": "regex"
+      },
+      {
+        "pattern": "Metrics",
+        "coord": {
+          "row": 0,
+          "col": 1
+        },
+        "kind": "regex"
+      }
+    ],
+    "kind": "and"
+  },
+  "areas": [
+    {
+      "data_headers": {
+        "roles": [
+          {
+            "source": {
+              "coord": {
+                "row": 0,
+                "col": 2
+              },
+              "direction": "right"
+            },
+            "role": "date"
+          }
+        ],
+        "data_direction": "down",
+        "data_cells": {
+          "coord": {
+            "row": 1,
+            "col": 2
+          },
+          "direction": "right"
+        }
+      },
+      "titles": {
+        "source": {
+          "value": null
+        }
+      },
+      "items": {
+        "source": {
+          "value": null
+        }
+      },
+      "metrics": {
+        "source": {
+          "coord": {
+            "row": 1,
+            "col": 1
+          },
+          "direction": "down"
+        }
+      },
+      "title_ids": [],
+      "dimensions": [
+        {
+          "name": "Platform",
+          "source": {
+            "coord": {
+              "row": 1,
+              "col": 0
+            },
+            "direction": "down"
+          }
+        }
+      ],
+      "kind": "non_counter.generic"
+    }
+  ]
+}

@@ -7,7 +7,12 @@ from abc import ABCMeta, abstractmethod
 from celus_nigiri import CounterRecord
 
 from celus_nibbler import validators
-from celus_nibbler.aggregator import BaseAggregator, NoAggregator
+from celus_nibbler.aggregator import (
+    BaseAggregator,
+    ItemCheckAggregator,
+    NoAggregator,
+    TitleCheckAggregator,
+)
 from celus_nibbler.conditions import BaseCondition
 from celus_nibbler.data_headers import DataCells, DataFormatDefinition, DataHeaders
 from celus_nibbler.errors import MissingDateInOutput, TableException
@@ -204,6 +209,8 @@ class BaseParser(metaclass=ABCMeta):
     dimension_aliases: typing.Dict[str, str] = {}
     possible_row_offsets: typing.List[int] = [0]
     row_offset: int = 0
+    uses_titles: bool | None = None
+    uses_items: bool | None = None
 
     @classmethod
     @abstractmethod
@@ -288,7 +295,14 @@ class BaseParser(metaclass=ABCMeta):
             yield idx, record
 
     def parse_area(self, area) -> typing.Generator[typing.Tuple[int, CounterRecord], None, None]:
-        return area.aggregator.aggregate(self._parse_area(area))
+        aggregator = area.aggregator
+
+        if self.uses_titles is not None:
+            aggregator = aggregator | TitleCheckAggregator(required=self.uses_titles)
+        if self.uses_items is not None:
+            aggregator = aggregator | ItemCheckAggregator(required=self.uses_items)
+
+        return aggregator.aggregate(self._parse_area(area))
 
     @abstractmethod
     def _parse_area(

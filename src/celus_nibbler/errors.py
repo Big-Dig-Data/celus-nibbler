@@ -221,3 +221,19 @@ class NegativeValueInOutput(RecordError):
 
 class MissingDateInOutput(RecordError):
     pass
+
+
+class MissingTitleInOutput(RecordError):
+    pass
+
+
+class ExtraTitleInOutput(RecordError):
+    pass
+
+
+class MissingItemInOutput(RecordError):
+    pass
+
+
+class ExtraItemInOutput(RecordError):
+    pass

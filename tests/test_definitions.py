@@ -808,6 +808,8 @@ def test_generic_definition():
         "on_metric_check_failed": "skip",
         "titles_to_skip": [],
         "possible_row_offsets": [0],
+        "uses_titles": None,
+        "uses_items": None,
     }
 
 
