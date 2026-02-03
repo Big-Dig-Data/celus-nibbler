@@ -23,6 +23,11 @@ class RelativeTo(str, Enum):
 
 
 class Content(metaclass=abc.ABCMeta):
+    @property
+    def changes(self) -> bool:
+        """Indicates whether the content changes with next iteration"""
+        return False
+
     @abc.abstractmethod
     def content(
         self,
@@ -149,6 +154,10 @@ class CoordRange(JsonEncorder, Content):
     coord: Coord
     direction: Direction
     max_count: typing.Optional[int] = None
+
+    @property
+    def changes(self):
+        return True
 
     def content(
         self,

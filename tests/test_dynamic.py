@@ -453,6 +453,12 @@ from celus_nibbler.parsers.dynamic import gen_parser
             "dynamic.non_counter.simple_format.uses_items_forbidden",
             False,
         ),
+        (
+            "date-in-single-field",
+            "csv",
+            "dynamic.non_counter.simple_format.date-in-single-field",
+            False,
+        ),
     ),
 )
 def test_dynamic(filename, ext, parser, ignore_order):
@@ -496,6 +502,9 @@ def test_dynamic(filename, ext, parser, ignore_order):
             for idx, record in enumerate(records, 1):
                 in_file = next(reader)
                 assert in_file == list(record.as_csv()), f"Compare {idx}."
+
+            # just test that get_months works properly (without e.g. infinite loop)
+            poop.get_months()
 
         with pytest.raises(StopIteration):
             assert next(reader) is None, f"No more date present in the file (read {idx})."

@@ -175,7 +175,8 @@ class BaseHeaderArea(BaseTabularArea):
                     area_row_offset=area_row_offset,
                 )
                 res.add(date.replace(day=1))
-
+                if not self.date_source.source.changes:
+                    break
             except TableException as e:
                 if e.action == TableException.Action.SKIP:
                     continue
