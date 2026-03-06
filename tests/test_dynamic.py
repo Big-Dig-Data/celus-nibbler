@@ -459,6 +459,7 @@ from celus_nibbler.parsers.dynamic import gen_parser
             "dynamic.non_counter.simple_format.date-in-single-field",
             False,
         ),
+        ("max_count", "csv", "dynamic.non_counter.simple_format.max_count", False),
     ),
 )
 def test_dynamic(filename, ext, parser, ignore_order):

@@ -417,7 +417,15 @@ class ContentExtractorMixin:
         parser_row_offset: typing.Optional[int] = None,
         area_row_offset: typing.Optional[int] = None,
     ) -> typing.Any:
-        source = self.source[idx]
+        try:
+            source = self.source[idx]
+        except IndexError:
+            raise TableException(
+                sheet=sheet.sheet_idx,
+                reason="max-count-of-source-reached",
+                action=TableException.Action.STOP,
+                value=type(self.source),
+            )
 
         if self.extract_params.max_idx is not None:
             if idx > self.extract_params.max_idx:
