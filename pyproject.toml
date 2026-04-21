@@ -1,6 +1,6 @@
 [project]
 name = "celus-nibbler"
-version = "13.1.1"
+version = "13.1.2"
 description = "Counter-like data reader and processor."
 authors = [
     { name = "Stepan Henek", email = "stepan@bigdigdata.com" },
