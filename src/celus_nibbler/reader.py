@@ -196,15 +196,18 @@ class JsonCounter5SheetReader(SheetReader):
             self.file.seek(0)
 
             header, items = report.fd_to_dicts(self.file)
+            release = str((header or {}).get("Release", ""))
+            if release != "5.1":
+                self.extra, self.items = header, items
+                return
         except SushiException:
-            # Perhaps it is counter 51
-            report = Counter51PRReport()
+            pass
 
-            self.file.seek(0)
-            header, items = report.fd_to_dicts(self.file)
+        # Fallback to C51 - to get items from JSON any report can be used
+        report = Counter51PRReport()
 
-        self.items = items
-        self.extra = header
+        self.file.seek(0)
+        self.extra, self.items = report.fd_to_dicts(self.file)
 
     def __init__(
         self,
