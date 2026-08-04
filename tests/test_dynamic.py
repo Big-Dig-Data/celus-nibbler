@@ -424,6 +424,12 @@ from celus_nibbler.parsers.dynamic import gen_parser
             False,
         ),
         (
+            "data_value_overrides",
+            "csv",
+            "dynamic.non_counter.simple_format.data_value_overrides",
+            False,
+        ),
+        (
             "parsing_termination",
             "csv",
             "dynamic.non_counter.simple_format.parsing_termination",

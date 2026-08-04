@@ -392,10 +392,6 @@ class ContentExtractorMixin:
             else:
                 raise
 
-        # try to apply overrides
-        for override in self.extract_params.value_overrides:
-            value = override.override(value)
-
         if skip_condition := self.extract_params.skip_condition:
             if skip_condition.check(value):
                 raise TableException(
@@ -453,6 +449,8 @@ class ContentExtractorMixin:
 
         try:
             content = self.content(sheet, source, parser_row_offset, area_row_offset)
+            for override in self.extract_params.value_overrides:
+                content = override.override(content)
             if validator := self.get_validator(validator):
                 if self.extract_params.default is not None:
                     res = validators.gen_default_validator(
