@@ -1,0 +1,99 @@
+name: Assign commands
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  assign:
+    # Run only for comments containing a command, written by trusted users
+    if: >
+      (contains(github.event.comment.body, '/assign') ||
+       contains(github.event.comment.body, '/unassign')) &&
+      contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v9
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const issue_number = context.issue.number;
+            const comment_id = context.payload.comment.id;
+            const body = context.payload.comment.body || '';
+
+            // GitHub username: alphanumeric or single hyphens, max 39 chars
+            const validUser = /^[a-z\d](?:[a-z\d-]{0,38})$/i;
+
+            const toAdd = new Set();
+            const toRemove = new Set();
+            const keptLines = [];
+            let inCodeBlock = false;
+
+            // Commands must be at the start of a line: /assign @a @b, /unassign @c
+            for (const line of body.split(/\r?\n/)) {
+              // Ignore commands inside ``` code blocks (e.g. documentation examples)
+              if (/^\s*(```|~~~)/.test(line)) inCodeBlock = !inCodeBlock;
+              const m = !inCodeBlock && line.trim().match(/^\/(assign|unassign)\s+(.+)$/);
+              if (!m) {
+                keptLines.push(line);
+                continue;
+              }
+              const users = m[2]
+                .split(/[\s,]+/)
+                .map(u => u.replace(/^@/, ''))   // strip @ from autocompleted mentions
+                .filter(u => validUser.test(u));
+              const target = m[1] === 'assign' ? toAdd : toRemove;
+              users.forEach(u => target.add(u));
+            }
+
+            if (toAdd.size === 0 && toRemove.size === 0) {
+              core.info('No valid commands found.');
+              return;
+            }
+
+            const react = content =>
+              github.rest.reactions.createForIssueComment({ owner, repo, comment_id, content });
+
+            try {
+              if (toRemove.size) {
+                await github.rest.issues.removeAssignees({
+                  owner, repo, issue_number, assignees: [...toRemove],
+                });
+              }
+
+              if (toAdd.size) {
+                const { data } = await github.rest.issues.addAssignees({
+                  owner, repo, issue_number, assignees: [...toAdd],
+                });
+                // GitHub silently skips users who can't be assigned (no repo access, typo...)
+                const assigned = new Set(data.assignees.map(a => a.login.toLowerCase()));
+                const skipped = [...toAdd].filter(u => !assigned.has(u.toLowerCase()));
+                if (skipped.length) {
+                  await github.rest.issues.createComment({
+                    owner, repo, issue_number,
+                    body: `⚠️ Could not assign: ${skipped.map(u => '`' + u + '`').join(', ')} ` +
+                          `(user doesn't exist or has no access to this repository).`,
+                  });
+                  // Keep the comment untouched so the failed command stays visible
+                  await react('confused');
+                  return;
+                }
+              }
+            } catch (err) {
+              await react('-1');
+              core.setFailed(err.message);
+              return;
+            }
+
+            // Success: strip command lines, or delete the comment if nothing else is left
+            const remaining = keptLines.join('\n').trim();
+            if (remaining === '') {
+              await github.rest.issues.deleteComment({ owner, repo, comment_id });
+              core.info('Comment contained only commands, deleted it.');
+            } else {
+              await github.rest.issues.updateComment({ owner, repo, comment_id, body: remaining });
+            }
