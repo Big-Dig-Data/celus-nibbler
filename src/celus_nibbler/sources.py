@@ -18,11 +18,16 @@ Source = typing.Union[Coord, CoordRange, SheetAttr, Value]
 
 
 class KindISBN(str, Enum):
+    """ISBN variant required by strict ISBN validation."""
+
     ISBN13 = "isbn13"
     ISBN10 = "isbn10"
 
 
 class TitleIdKind(str, Enum):
+    """Kind of title or item identifier. Identifiers which aren't ISBN, ISSN, DOI or URI
+    are `Proprietary`."""
+
     ISBN = "ISBN"
     Print_ISSN = "Print_ISSN"
     Online_ISSN = "Online_ISSN"
@@ -60,9 +65,12 @@ class TitleIdKind(str, Enum):
 
 @dataclass(config=PydanticConfig)
 class IdValidatorOptsISSN:
+    """Validation options for Print ISSN."""
+
     type: typing.Literal[TitleIdKind.Print_ISSN] = TitleIdKind.Print_ISSN
 
     strict: bool = False
+    """Reject values which aren't valid ISSNs instead of only normalizing them."""
 
     def validator_class(self) -> typing.Type[validators.BaseValueModel]:
         return validators.StrictISSN if self.strict else validators.ISSN
@@ -70,8 +78,11 @@ class IdValidatorOptsISSN:
 
 @dataclass(config=PydanticConfig)
 class IdValidatorOptsEISSN:
+    """Validation options for Online ISSN."""
+
     type: typing.Literal[TitleIdKind.Online_ISSN] = TitleIdKind.Online_ISSN
     strict: bool = False
+    """Reject values which aren't valid ISSNs instead of only normalizing them."""
 
     def validator_class(self) -> typing.Type[validators.BaseValueModel]:
         return validators.StrictEISSN if self.strict else validators.EISSN
@@ -79,9 +90,13 @@ class IdValidatorOptsEISSN:
 
 @dataclass(config=PydanticConfig)
 class IdValidatorOptsISBN:
+    """Validation options for ISBN."""
+
     type: typing.Literal[TitleIdKind.ISBN] = TitleIdKind.ISBN
     strict: bool = False
+    """Reject values which aren't valid ISBNs instead of only normalizing them."""
     isbn_kind: typing.Optional[KindISBN] = None
+    """With `strict`, accept only this ISBN variant."""
 
     def validator_class(self) -> typing.Type[validators.BaseValueModel]:
         if not self.strict:
@@ -107,11 +122,22 @@ IdValidatorOpts = Annotated[
 
 
 class DateFormat(str, Enum):
+    """Order of day and month used for ambiguous dates such as 01/02/2022:
+    `us` is month first, `eu` is day first."""
+
     US = "us"  # US format 12/31/2022 (more common)
     EU = "eu"  # EU format 31/12/2022
 
 
 class SpecialExtraction(str, Enum):
+    """Conversion applied to numeric values.
+
+    - `no`: plain number.
+    - `comma_separated_number`: drops thousands separators, "1,234" -> 1234.
+    - `minutes_to_seconds`, `hours_to_seconds`: converts the number to seconds.
+    - `duration_to_seconds`: converts "HH:MM:SS" to seconds.
+    """
+
     NO = "no"
     COMMA_SEPARATED_NUMBER = "comma_separated_number"
     MINUTES_TO_SECONDS = "minutes_to_seconds"
@@ -134,6 +160,8 @@ class SpecialExtraction(str, Enum):
 
 
 class Role(str, Enum):
+    """Record field which a source fills."""
+
     VALUE = "value"
     DATE = "date"
     TITLE = "title"
@@ -178,6 +206,8 @@ class MatchArithmeticsMixin:
 
 @dataclass(config=PydanticConfig)
 class MatchAnd(MatchArithmeticsMixin, JsonEncorder):
+    """Matches when all of `matches` match."""
+
     matches: typing.List["Match"]
 
     kind: typing.Literal[MatchKind.AND] = MatchKind.AND
@@ -189,6 +219,8 @@ class MatchAnd(MatchArithmeticsMixin, JsonEncorder):
 
 @dataclass(config=PydanticConfig)
 class MatchOr(MatchArithmeticsMixin, JsonEncorder):
+    """Matches when any of `matches` matches."""
+
     matches: typing.List["Match"]
 
     kind: typing.Literal[MatchKind.OR] = MatchKind.OR
@@ -200,6 +232,8 @@ class MatchOr(MatchArithmeticsMixin, JsonEncorder):
 
 @dataclass(config=PydanticConfig)
 class MatchNeg(MatchArithmeticsMixin, JsonEncorder):
+    """Matches when `match` doesn't."""
+
     match: "Match"
 
     kind: typing.Literal[MatchKind.NEG] = MatchKind.NEG
@@ -211,6 +245,8 @@ class MatchNeg(MatchArithmeticsMixin, JsonEncorder):
 
 @dataclass(config=PydanticConfig)
 class MatchExact(MatchArithmeticsMixin, JsonEncorder):
+    """Matches strings equal to `value`."""
+
     value: str
 
     kind: typing.Literal[MatchKind.EXACT] = MatchKind.EXACT
@@ -223,6 +259,8 @@ class MatchExact(MatchArithmeticsMixin, JsonEncorder):
 
 @dataclass(config=PydanticConfig)
 class MatchIexact(MatchArithmeticsMixin, JsonEncorder):
+    """Matches strings equal to `value`, ignoring case."""
+
     value: str
 
     kind: typing.Literal[MatchKind.IEXACT] = MatchKind.IEXACT
@@ -235,6 +273,8 @@ class MatchIexact(MatchArithmeticsMixin, JsonEncorder):
 
 @dataclass(config=PydanticConfig)
 class MatchContains(MatchArithmeticsMixin, JsonEncorder):
+    """Matches strings containing `value`."""
+
     value: str
 
     kind: typing.Literal[MatchKind.CONTAINS] = MatchKind.CONTAINS
@@ -247,6 +287,8 @@ class MatchContains(MatchArithmeticsMixin, JsonEncorder):
 
 @dataclass(config=PydanticConfig)
 class MatchIcontains(MatchArithmeticsMixin, JsonEncorder):
+    """Matches strings containing `value`, ignoring case."""
+
     value: str
 
     kind: typing.Literal[MatchKind.ICONTAINS] = MatchKind.ICONTAINS
@@ -259,6 +301,9 @@ class MatchIcontains(MatchArithmeticsMixin, JsonEncorder):
 
 @dataclass(config=PydanticConfig)
 class MatchContained(MatchArithmeticsMixin, JsonEncorder):
+    """Matches strings which are a substring of `value`, e.g. `value` "views,downloads"
+    matches "views"."""
+
     value: str
 
     kind: typing.Literal[MatchKind.CONTAINED] = MatchKind.CONTAINED
@@ -271,6 +316,8 @@ class MatchContained(MatchArithmeticsMixin, JsonEncorder):
 
 @dataclass(config=PydanticConfig)
 class MatchIcontained(MatchArithmeticsMixin, JsonEncorder):
+    """Matches strings which are a substring of `value`, ignoring case."""
+
     value: str
 
     kind: typing.Literal[MatchKind.ICONTAINED] = MatchKind.ICONTAINED
@@ -283,6 +330,9 @@ class MatchIcontained(MatchArithmeticsMixin, JsonEncorder):
 
 @dataclass(config=PydanticConfig)
 class MatchRegex(MatchArithmeticsMixin, JsonEncorder):
+    """Matches strings matching `regex`. Uses `re.match`, so the pattern is anchored at
+    the start of the string; prefix it with `.*` to match anywhere."""
+
     regex: typing.Pattern
 
     kind: typing.Literal[MatchKind.REGEX] = MatchKind.REGEX
@@ -312,8 +362,13 @@ Match = Annotated[
 
 @dataclass(config=PydanticConfig)
 class ValueOverride(JsonEncorder):
+    """Replaces an extracted value with `target` when it satisfies `match`, e.g.
+    `{"match": {"kind": "iexact", "value": "download"}, "target": "Downloads"}`."""
+
     match: Match
+    """Condition on the extracted value. Non-string values never match."""
     target: str
+    """Replacement value."""
 
     def override(self, value: typing.Any) -> str:
         if self.match.check(value):
@@ -323,18 +378,44 @@ class ValueOverride(JsonEncorder):
 
 @dataclass(config=PydanticConfig)
 class ExtractParams(JsonEncorder):
+    """How values are read from a source and what happens when they are invalid.
+
+    A value is processed in this order: `regex`, `prefix` and `suffix`, `value_overrides`,
+    blank handling (`default`), validation, `skip_condition`.
+    """
+
     regex: typing.Optional[typing.Pattern] = None
+    """Pattern applied with `re.search`. The value becomes the first capture group, so the
+    pattern needs one, e.g. `"Year: ([0-9]{4})"`. A value which doesn't match is empty."""
     default: typing.Optional[typing.Any] = None
+    """Value used for blank cells (see `blank_values`), e.g. `0` for empty number cells.
+    Without it, blank cells are validated as they are, which usually fails."""
     last_value_as_default: bool = False
+    """Blank cells take the previous extracted value. Useful for merged cells, e.g. a
+    month header spanning several columns."""
     blank_values: typing.Tuple[typing.Any, ...] = field(default_factory=lambda: (None, ""))
+    """Values regarded as blank by `default` and `last_value_as_default`. Add e.g. `"-"`
+    to treat dashes as blank."""
     skip_validation: bool = False
+    """Use the value without validation, only stripped of whitespace. Ignored when
+    `default` is set."""
     prefix: str = ""
+    """Prepended to the value (after `regex`)."""
     suffix: str = ""
+    """Appended to the value (after `regex`)."""
     special_extraction: SpecialExtraction = SpecialExtraction.NO
+    """Conversion of numeric values."""
     on_validation_error: TableException.Action = TableException.Action.FAIL
+    """What to do when a value fails validation. Blank cells replaced by `default`
+    don't get here."""
     max_idx: typing.Optional[int] = None
+    """Highest index read from the source; the area stops after it."""
     skip_condition: typing.Optional[Match] = None
+    """Records whose value matches are skipped, e.g. "Total" rows."""
     value_overrides: typing.List[ValueOverride] = field(default_factory=list)
+    """Replacements of extracted values, applied in order. Use them to fix values at
+    one source; `metric_aliases` and `dimension_aliases` rename values in the whole
+    parser."""
 
 
 class ContentExtractorMixin:
@@ -523,12 +604,20 @@ class ContentExtractorMixin:
 
 @dataclass(config=PydanticConfig)
 class DimensionSource(JsonEncorder, ContentExtractorMixin):
+    """Value of the dimension `name` (e.g. "Platform" or "Access Type")."""
+
     name: str
+    """Name of the dimension."""
     source: Source
+    """Location of the values. A CoordRange yields its n-th cell for the n-th record;
+    Coord, Value and SheetAttr yield the same value for every record."""
     extract_params: ExtractParams = field(default_factory=lambda: ExtractParams())
+    """How to read and validate the values."""
     fallback: typing.Optional["DimensionSource"] = None
+    """Source tried instead when extraction fails with the `pass` action."""
     cleanup_during_header_processing: bool = True
     role: typing.Literal[Role.DIMENSION] = Role.DIMENSION
+    """Discriminator, always `"dimension"`."""
 
     @property
     def validator(self) -> typing.Optional[typing.Type[validators.BaseValueModel]]:
@@ -537,11 +626,23 @@ class DimensionSource(JsonEncorder, ContentExtractorMixin):
 
 @dataclass(config=PydanticConfig)
 class MetricSource(JsonEncorder, ContentExtractorMixin):
+    """Metric name, e.g. "Searches" or "Downloads".
+
+    Metrics which differ per data column belong to `DataHeaders.roles`, metrics in a
+    body column to `GenericAreaDefinition.metrics`. A report with a single metric uses a
+    constant, `{"value": "<metric>"}`.
+    """
+
     source: Source
+    """Location of the values. A CoordRange yields its n-th cell for the n-th record;
+    Coord, Value and SheetAttr yield the same value for every record."""
     extract_params: ExtractParams = field(default_factory=lambda: ExtractParams())
+    """How to read and validate the values."""
     fallback: typing.Optional["MetricSource"] = None
+    """Source tried instead when extraction fails with the `pass` action."""
     cleanup_during_header_processing: bool = True
     role: typing.Literal[Role.METRIC] = Role.METRIC
+    """Discriminator, always `"metric"`."""
 
     @property
     def validator(self) -> typing.Optional[typing.Type[validators.BaseValueModel]]:
@@ -550,11 +651,19 @@ class MetricSource(JsonEncorder, ContentExtractorMixin):
 
 @dataclass(config=PydanticConfig)
 class OrganizationSource(JsonEncorder, ContentExtractorMixin):
+    """Organization (institution) the usage belongs to. Only needed when one file
+    contains data of several organizations."""
+
     source: Source
+    """Location of the values. A CoordRange yields its n-th cell for the n-th record;
+    Coord, Value and SheetAttr yield the same value for every record."""
     extract_params: ExtractParams = field(default_factory=lambda: ExtractParams())
+    """How to read and validate the values."""
     fallback: typing.Optional["OrganizationSource"] = None
+    """Source tried instead when extraction fails with the `pass` action."""
     cleanup_during_header_processing: bool = True
     role: typing.Literal[Role.ORGANIZATION] = Role.ORGANIZATION
+    """Discriminator, always `"organization"`."""
 
     @property
     def validator(self) -> typing.Optional[typing.Type[validators.BaseValueModel]]:
@@ -563,11 +672,18 @@ class OrganizationSource(JsonEncorder, ContentExtractorMixin):
 
 @dataclass(config=PydanticConfig)
 class TitleSource(JsonEncorder, ContentExtractorMixin):
+    """Title name. A title is meant broadly, e.g. a journal, a book or a database."""
+
     source: Source
+    """Location of the values. A CoordRange yields its n-th cell for the n-th record;
+    Coord, Value and SheetAttr yield the same value for every record."""
     extract_params: ExtractParams = field(default_factory=lambda: ExtractParams())
+    """How to read and validate the values."""
     fallback: typing.Optional["TitleSource"] = None
+    """Source tried instead when extraction fails with the `pass` action."""
     cleanup_during_header_processing: bool = True
     role: typing.Literal[Role.TITLE] = Role.TITLE
+    """Discriminator, always `"title"`."""
 
     @property
     def validator(self) -> typing.Optional[typing.Type[validators.BaseValueModel]]:
@@ -576,13 +692,24 @@ class TitleSource(JsonEncorder, ContentExtractorMixin):
 
 @dataclass(config=PydanticConfig)
 class TitleIdSource(JsonEncorder, ContentExtractorMixin):
+    """Identifier of the title, e.g. ISSN or DOI."""
+
     name: TitleIdKind
+    """Kind of the identifier."""
     source: Source
+    """Location of the values. A CoordRange yields its n-th cell for the n-th record;
+    Coord, Value and SheetAttr yield the same value for every record."""
     extract_params: ExtractParams = field(default_factory=lambda: ExtractParams())
+    """How to read and validate the values."""
     cleanup_during_header_processing: bool = True
+    """Use a fresh copy of the source for each header position when used in
+    `DataHeaders.roles`. Keep the default."""
     fallback: typing.Optional["TitleIdSource"] = None
+    """Source tried instead when extraction fails with the `pass` action."""
     validator_opts: typing.Optional[IdValidatorOpts] = None
+    """Stricter validation of ISBN and ISSN identifiers."""
     role: typing.Literal[Role.TITLE_ID] = Role.TITLE_ID
+    """Discriminator, always `"title_id"`."""
 
     def __post_init__(self):
         self._last_key = None
@@ -618,31 +745,53 @@ class TitleIdSource(JsonEncorder, ContentExtractorMixin):
 
 @dataclass(config=PydanticConfig)
 class ItemSource(TitleSource):
-    pass
+    """Item name, e.g. an article or a book chapter."""
 
 
 @dataclass(config=PydanticConfig)
 class ItemIdSource(TitleIdSource):
-    pass
+    """Identifier of the item, e.g. DOI."""
 
 
 @dataclass(config=PydanticConfig)
 class ComposedDate(JsonEncorder):
+    """Date assembled from two sources, e.g. year and month in separate header rows.
+    Each part usually needs its own `date_pattern`, such as `"%Y"` and `"%b"`."""
+
     year: "DateSource"
+    """Source of the year."""
     month: "DateSource"
+    """Source of the month."""
 
 
 @dataclass(config=PydanticConfig)
 class DateSource(JsonEncorder, ContentExtractorMixin):
+    """Month the usage belongs to. Dates are reduced to whole months.
+
+    When the year and the month are in different places, either use `composed` (both
+    parts on the same axis) or combine a date in `DataHeaders.roles` with one in
+    `GenericAreaDefinition.dates` via `DataHeaders.data_cells_options`.
+    """
+
     source: Source
+    """Location of the values. A CoordRange yields its n-th cell for the n-th record;
+    Coord, Value and SheetAttr yield the same value for every record."""
     extract_params: ExtractParams = field(default_factory=lambda: ExtractParams())
+    """How to read and validate the values."""
     fallback: typing.Optional["DateSource"] = None
+    """Source tried instead when extraction fails with the `pass` action."""
     cleanup_during_header_processing: bool = True
     preferred_date_format: DateFormat = DateFormat.US
+    """Order of day and month in ambiguous dates when `date_pattern` isn't set."""
     composed: typing.Optional[ComposedDate] = None
+    """Read the year and the month from separate sources; `source` isn't used then."""
     date_pattern: typing.Optional[str] = None
+    """`strptime` pattern of string dates, e.g. `"%b-%y"` for "Jan-24". Common formats
+    are detected when omitted."""
     force_aligned: bool = False
+    """Reject dates which aren't the first day of a month instead of rounding them."""
     role: typing.Literal[Role.DATE] = Role.DATE
+    """Discriminator, always `"date"`."""
 
     @property
     def validator(self) -> typing.Optional[typing.Type[validators.BaseValueModel]]:
@@ -690,12 +839,26 @@ rebuild_dataclass(ComposedDate, force=True)
 
 @dataclass(config=PydanticConfig)
 class ValueSource(JsonEncorder, ContentExtractorMixin):
+    """Usage count of the record.
+
+    Values are normally read from `DataHeaders.data_cells`. A ValueSource placed in
+    `DataHeaders.roles` replaces the data cells: its `source` provides the value of each
+    record, e.g. `{"coord": {"row": 1, "col": 4}, "direction": "down"}` reads column E
+    and the constant `{"value": 1}` counts each row as 1. Use it when nothing varies
+    per data column, i.e. dates and metrics are in body columns.
+    """
+
     source: Source
+    """Location of the values. A CoordRange yields its n-th cell for the n-th record;
+    Coord, Value and SheetAttr yield the same value for every record."""
     fallback: typing.Optional["ValueSource"] = None
+    """Source tried instead when extraction fails with the `pass` action."""
     allow_negative: bool = False
+    """Accept negative values."""
     extract_params: ExtractParams = field(default_factory=lambda: ExtractParams())
     cleanup_during_header_processing: bool = True
     role: typing.Literal[Role.VALUE] = Role.VALUE
+    """Discriminator, always `"value"`."""
 
     @property
     def validator(self) -> typing.Optional[typing.Type[validators.BaseValueModel]]:
@@ -707,20 +870,34 @@ class ValueSource(JsonEncorder, ContentExtractorMixin):
 
 @dataclass(config=PydanticConfig)
 class VoidSource(JsonEncorder, ContentExtractorMixin):
+    """Header role which is read (e.g. for `DataHeaders.rules`) but not stored."""
+
     source: Source
+    """Location of the values. A CoordRange yields its n-th cell for the n-th record;
+    Coord, Value and SheetAttr yield the same value for every record."""
     extract_params: ExtractParams = field(default_factory=lambda: ExtractParams())
+    """How to read and validate the values."""
     fallback: typing.Optional["VoidSource"] = None
+    """Source tried instead when extraction fails with the `pass` action."""
     cleanup_during_header_processing: bool = True
     role: typing.Literal[Role.VOID] = Role.VOID
+    """Discriminator, always `"void"`."""
 
 
 @dataclass(config=PydanticConfig)
 class AuthorsSource(JsonEncorder, ContentExtractorMixin):
+    """Authors of the item."""
+
     source: Source
+    """Location of the values. A CoordRange yields its n-th cell for the n-th record;
+    Coord, Value and SheetAttr yield the same value for every record."""
     extract_params: ExtractParams = field(default_factory=lambda: ExtractParams())
+    """How to read and validate the values."""
     fallback: typing.Optional["AuthorsSource"] = None
+    """Source tried instead when extraction fails with the `pass` action."""
     cleanup_during_header_processing: bool = True
     role: typing.Literal[Role.AUTHORS] = Role.AUTHORS
+    """Discriminator, always `"authors"`."""
 
     def get_validator(
         self, validator: typing.Optional[typing.Type[validators.BaseValueModel]]
@@ -730,8 +907,15 @@ class AuthorsSource(JsonEncorder, ContentExtractorMixin):
 
 @dataclass(config=PydanticConfig)
 class PublicationDateSource(JsonEncorder, ContentExtractorMixin):
+    """Publication date of the item."""
+
     source: Source
+    """Location of the values. A CoordRange yields its n-th cell for the n-th record;
+    Coord, Value and SheetAttr yield the same value for every record."""
     extract_params: ExtractParams = field(default_factory=lambda: ExtractParams())
+    """How to read and validate the values."""
     fallback: typing.Optional["PublicationDateSource"] = None
+    """Source tried instead when extraction fails with the `pass` action."""
     cleanup_during_header_processing: bool = True
     role: typing.Literal[Role.PUBLICATION_DATE] = Role.PUBLICATION_DATE
+    """Discriminator, always `"publication_date"`."""

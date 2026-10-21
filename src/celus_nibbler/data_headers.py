@@ -86,6 +86,8 @@ class ArithmeticsMixin:
 
 @pydantic_dataclass(config=PydanticConfig)
 class DataHeaderNegCondition(ArithmeticsMixin, DataHeaderBaseCondition, JsonEncorder):
+    """Matches when `cond` doesn't."""
+
     cond: "DataHeaderCondition"
 
     kind: typing.Literal["neg"] = "neg"
@@ -96,6 +98,8 @@ class DataHeaderNegCondition(ArithmeticsMixin, DataHeaderBaseCondition, JsonEnco
 
 @pydantic_dataclass(config=PydanticConfig)
 class DataHeaderAndCondition(ArithmeticsMixin, DataHeaderBaseCondition, JsonEncorder):
+    """Matches when all of `conds` match."""
+
     conds: typing.List["DataHeaderCondition"]
 
     kind: typing.Literal["and"] = "and"
@@ -106,6 +110,8 @@ class DataHeaderAndCondition(ArithmeticsMixin, DataHeaderBaseCondition, JsonEnco
 
 @pydantic_dataclass(config=PydanticConfig)
 class DataHeaderOrCondition(ArithmeticsMixin, DataHeaderBaseCondition, JsonEncorder):
+    """Matches when any of `conds` matches."""
+
     conds: typing.List["DataHeaderCondition"]
 
     kind: typing.Literal["or"] = "or"
@@ -116,6 +122,8 @@ class DataHeaderOrCondition(ArithmeticsMixin, DataHeaderBaseCondition, JsonEncor
 
 @pydantic_dataclass(config=PydanticConfig)
 class DataHeaderRegexCondition(JsonEncorder):
+    """Matches header values matching `pattern` (`re.match`, anchored at the start)."""
+
     pattern: typing.Pattern
 
     kind: typing.Literal["regex"] = "regex"
@@ -129,6 +137,8 @@ class DataHeaderRegexCondition(JsonEncorder):
 
 @pydantic_dataclass(config=PydanticConfig)
 class DataHeaderIndexCondition(JsonEncorder):
+    """Matches header positions (zero-based) between `min` and `max`, inclusive."""
+
     max: typing.Optional[int]
     min: typing.Optional[int]
 
@@ -158,6 +168,14 @@ rebuild_dataclass(DataHeaderOrCondition, force=True)
 
 
 class DataHeaderAction(Enum):
+    """What to do with a header position.
+
+    - `proceed`: use the value.
+    - `bypass`: don't use the value but continue with the next role.
+    - `skip`: ignore this header position and continue with the next one.
+    - `stop`: ignore this and all following header positions.
+    """
+
     PROCEED = "proceed"
     BYPASS = "bypass"
     SKIP = "skip"
@@ -177,13 +195,24 @@ class DataHeaderAction(Enum):
 
 @pydantic_dataclass(config=PydanticConfig)
 class DataHeaderRule(JsonEncorder):
+    """Decides how a header value read by a role is handled. For each role and header
+    position the rules are tried in order until one yields a value or an action other
+    than `proceed`."""
+
     condition: typing.Optional[DataHeaderCondition] = None
+    """Condition on the header value; a missing condition always passes."""
     on_condition_failed: DataHeaderAction = DataHeaderAction.STOP
+    """Action when `condition` fails."""
     on_condition_passed: DataHeaderAction = DataHeaderAction.PROCEED
+    """Action when `condition` passes."""
     on_error: DataHeaderAction = DataHeaderAction.STOP
+    """Action when the value can't be extracted."""
     role_idx: typing.Optional[int] = None
+    """Apply the rule only to the role with this index in `roles` (0 means all roles)."""
     role_extract_params_override: typing.Optional[ExtractParams] = None
+    """Extraction params used instead of the role's own."""
     role_source_offset: int = 0
+    """Read the role value this many positions further along the role source."""
 
     def process(
         self,
@@ -230,20 +259,56 @@ class DataHeaderRule(JsonEncorder):
 
 @pydantic_dataclass(config=PydanticConfig)
 class DataHeaders(JsonEncorder):
+    """Table header and the location of the data cells.
+
+    The parser walks `data_cells` and at each position (a column of a standard table)
+    reads every role in `roles` at the same index to learn what the column holds, e.g.
+    its month. It then reads the values of the column in `data_direction`:
+
+            |  Jan  |  Feb  |
+         T1 |  100  |  200  |
+         T2 |  150  |  250  |
+
+    Here the date role reads `{"coord": {"row": 0, "col": 1}, "direction": "right"}`,
+    `data_cells` is `{"coord": {"row": 1, "col": 1}, "direction": "right"}` and
+    `data_direction` is `down`.
+    """
+
     roles: typing.List[Role]
+    """Sources of data which differ per data column, e.g. dates or metrics. Each walks
+    parallel to `data_cells`, so that its n-th value belongs to the n-th data column. When
+    nothing differs per data column, use a ValueSource. Empty roles produce no records.
+    """
 
     data_cells: CoordRange  # first data after the header
+    """The first data cell (top-left value of the table) and the direction in which the
+    data columns follow each other (`right` for a standard table). `max_count` limits the
+    number of data columns."""
     data_direction: Direction  # perpendicular to data_cells
+    """Direction in which the values of one data column follow each other, perpendicular
+    to `data_cells.direction` (`down` for a standard table)."""
     data_extract_params: ExtractParams = field(
         default_factory=lambda: ExtractParams(on_validation_error=TableException.Action.STOP)
     )
+    """Extraction params of the data cells, e.g. `{"default": 0, "blank_values": [null,
+    "", "-"]}` to read blank cells as 0. The default stops the area at the first
+    non-numeric cell; when overriding it, set `on_validation_error` explicitly, it
+    defaults to `fail` otherwise."""
     data_allow_negative: bool = False
+    """Accept negative values in the data cells."""
     data_cells_options: "DataCellsOptions" = field(
         default_factory=lambda: DataCellsOptions(use_header_year=True, use_header_month=True)
     )
+    """How to combine a date from `roles` with the date of the record."""
 
     rules: typing.List[DataHeaderRule] = Field(default_factory=lambda: [DataHeaderRule()])
+    """Rules deciding which header positions are used. By default the positions are used
+    until a role can't be extracted."""
     condition: typing.Optional[Condition] = None
+    """Locates the area. Rows are scanned downwards from the parser offset until the
+    condition matches; that row becomes the area offset which coordinates with
+    `row_relative_to="area"` are counted from. Also used to find repeated areas, see
+    `GenericAreaDefinition.max_areas_generated`."""
 
     def process_value(
         self,
@@ -408,8 +473,14 @@ class DataHeaders(JsonEncorder):
 
 @dataclass
 class DataCellsOptions:
+    """Used when a date is split between the header and the record, e.g. months in the
+    header and years in a body column (`GenericAreaDefinition.dates`). Tells which part
+    comes from the header; the other part comes from the record."""
+
     use_header_year: bool = True
+    """Take the year from the header date."""
     use_header_month: bool = True
+    """Take the month from the header date."""
 
 
 @dataclass
@@ -490,5 +561,8 @@ class DataCells:
 
 @pydantic_dataclass(config=PydanticConfig)
 class DataFormatDefinition(JsonEncorder):
+    """Data format the parser belongs to."""
+
     name: str
+    """Name of the format, part of the parser name."""
     id: typing.Optional[int] = None

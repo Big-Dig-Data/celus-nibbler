@@ -40,6 +40,8 @@ class ArithmeticsMixin:
 
 @dataclass(config=PydanticConfig)
 class NegCondition(ArithmeticsMixin, BaseCondition, JsonEncorder):
+    """Matches when `cond` doesn't."""
+
     cond: "Condition"
 
     kind: typing.Literal["neg"] = "neg"
@@ -55,6 +57,8 @@ class NegCondition(ArithmeticsMixin, BaseCondition, JsonEncorder):
 
 @dataclass(config=PydanticConfig)
 class AndCondition(ArithmeticsMixin, BaseCondition, JsonEncorder):
+    """Matches when all of `conds` match (also when `conds` is empty)."""
+
     conds: typing.List["Condition"]
 
     kind: typing.Literal["and"] = "and"
@@ -70,6 +74,8 @@ class AndCondition(ArithmeticsMixin, BaseCondition, JsonEncorder):
 
 @dataclass(config=PydanticConfig)
 class OrCondition(ArithmeticsMixin, BaseCondition, JsonEncorder):
+    """Matches when any of `conds` matches."""
+
     conds: typing.List["Condition"]
 
     kind: typing.Literal["or"] = "or"
@@ -85,8 +91,13 @@ class OrCondition(ArithmeticsMixin, BaseCondition, JsonEncorder):
 
 @dataclass(config=PydanticConfig)
 class RegexCondition(ArithmeticsMixin, BaseCondition, JsonEncorder):
+    """Matches when the cell text matches `pattern`."""
+
     pattern: typing.Pattern
+    """Uses `re.match`, so the pattern is anchored at the start of the text; prefix it
+    with `.*` to match anywhere."""
     coord: typing.Union[Coord, CoordRange]
+    """Cell to check. With a CoordRange, any of the cells may match."""
 
     kind: typing.Literal["regex"] = "regex"
 
@@ -116,8 +127,12 @@ class RegexCondition(ArithmeticsMixin, BaseCondition, JsonEncorder):
 
 @dataclass(config=PydanticConfig)
 class IsDateCondition(ArithmeticsMixin, BaseCondition, JsonEncorder):
+    """Matches when the cell contains a date."""
+
     coord: typing.Union[Coord, CoordRange]
+    """Cell to check. With a CoordRange, any of the cells may match."""
     date_format: typing.Optional[str] = None
+    """`strptime` pattern of the date; common formats are detected when omitted."""
 
     kind: typing.Literal["is_date"] = "is_date"
 
@@ -163,10 +178,16 @@ class IsDateCondition(ArithmeticsMixin, BaseCondition, JsonEncorder):
 
 @dataclass(config=PydanticConfig)
 class StemmerCondition(ArithmeticsMixin, BaseCondition, JsonEncorder):
-    """Compare content based on Porter Stemming algorithm"""
+    """Compare content based on Porter Stemming algorithm
+
+    Matches when the cell text equals `content` after both are lowercased, transliterated
+    to ASCII and stemmed, so e.g. "Total Requests" matches "total request".
+    """
 
     content: str
+    """Expected text."""
     coord: typing.Union[Coord, CoordRange]
+    """Cell to check. With a CoordRange, any of the cells may match."""
 
     kind: typing.Literal["stemmer"] = "stemmer"
 
@@ -199,7 +220,7 @@ class StemmerCondition(ArithmeticsMixin, BaseCondition, JsonEncorder):
 
 @dataclass(config=PydanticConfig)
 class SheetNameRegexCondition(ArithmeticsMixin, BaseCondition, JsonEncorder):
-    """Compare sheet name against the regex"""
+    """Compare sheet name against the regex (`re.match`, anchored at the start)"""
 
     pattern: typing.Pattern
 
@@ -219,7 +240,7 @@ class SheetNameRegexCondition(ArithmeticsMixin, BaseCondition, JsonEncorder):
 
 @dataclass(config=PydanticConfig)
 class SheetIdxCondition(ArithmeticsMixin, BaseCondition, JsonEncorder):
-    """Limit sheet by its index"""
+    """Limit sheet by its zero-based index, `min` and `max` are inclusive"""
 
     min: typing.Optional[int] = None
     max: typing.Optional[int] = None
@@ -243,7 +264,11 @@ class SheetIdxCondition(ArithmeticsMixin, BaseCondition, JsonEncorder):
 
 @dataclass(config=PydanticConfig)
 class SheetExtraCondition(ArithmeticsMixin, BaseCondition, JsonEncorder):
-    """Checks whether sheet extra attribute matches"""
+    """Checks whether sheet extra attribute matches
+
+    Matches when the extra attribute `field_name` of the sheet equals `value`. Extra
+    attributes are provided only by some readers, e.g. for JSON reports.
+    """
 
     field_name: str
     value: typing.Any
