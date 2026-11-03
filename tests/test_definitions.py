@@ -70,7 +70,6 @@ def test_generic_area_definition():
                     },
                     "fallback": None,
                     "preferred_date_format": "us",
-                    "cleanup_during_header_processing": True,
                     "composed": None,
                     "force_aligned": False,
                     "date_pattern": None,
@@ -138,7 +137,6 @@ def test_generic_area_definition():
                     "value_overrides": [],
                 },
                 "fallback": None,
-                "cleanup_during_header_processing": True,
                 "role": Role.DIMENSION,
             },
             {
@@ -163,7 +161,6 @@ def test_generic_area_definition():
                     "value_overrides": [],
                 },
                 "fallback": None,
-                "cleanup_during_header_processing": True,
                 "role": Role.DIMENSION,
             },
         ],
@@ -188,7 +185,6 @@ def test_generic_area_definition():
                 "value_overrides": [],
             },
             "fallback": None,
-            "cleanup_during_header_processing": True,
             "role": Role.METRIC,
         },
         "titles": {
@@ -212,7 +208,6 @@ def test_generic_area_definition():
                 "value_overrides": [],
             },
             "fallback": None,
-            "cleanup_during_header_processing": True,
             "role": Role.TITLE,
         },
         "title_ids": [
@@ -239,7 +234,6 @@ def test_generic_area_definition():
                 },
                 "validator_opts": None,
                 "fallback": None,
-                "cleanup_during_header_processing": True,
                 "role": Role.TITLE_ID,
             }
         ],
@@ -281,7 +275,6 @@ def test_errors():
                         "max_count": None,
                     },
                     "preferred_date_format": "us",
-                    "cleanup_during_header_processing": True,
                     "composed": None,
                     "force_aligned": False,
                     "date_pattern": None,
@@ -351,7 +344,6 @@ def test_errors():
                         "value_overrides": [],
                     },
                     "fallback": None,
-                    "cleanup_during_header_processing": True,
                     "role": Role.TITLE,
                 },
                 "title_ids": [
@@ -403,7 +395,6 @@ def test_errors():
                         "max_count": None,
                     },
                     "preferred_date_format": "us",
-                    "cleanup_during_header_processing": True,
                     "composed": None,
                     "force_aligned": False,
                     "date_pattern": None,
@@ -432,7 +423,6 @@ def test_errors():
                             "value_overrides": [],
                         },
                         "fallback": None,
-                        "cleanup_during_header_processing": True,
                         "role": Role.DIMENSION,
                     },
                     {
@@ -457,7 +447,6 @@ def test_errors():
                             "value_overrides": [],
                         },
                         "fallback": None,
-                        "cleanup_during_header_processing": True,
                         "role": Role.DIMENSION,
                     },
                 ],
@@ -482,7 +471,6 @@ def test_errors():
                         "value_overrides": [],
                     },
                     "fallback": None,
-                    "cleanup_during_header_processing": True,
                     "role": Role.METRIC,
                 },
                 "title_ids": [
@@ -509,7 +497,6 @@ def test_errors():
                         },
                         "validator_opts": None,
                         "fallback": None,
-                        "cleanup_during_header_processing": True,
                         "role": Role.TITLE_ID,
                     }
                 ],
@@ -617,7 +604,6 @@ def test_generic_definition():
                             },
                             "fallback": None,
                             "preferred_date_format": "us",
-                            "cleanup_during_header_processing": True,
                             "composed": None,
                             "force_aligned": False,
                             "date_pattern": None,
@@ -685,7 +671,6 @@ def test_generic_definition():
                             "value_overrides": [],
                         },
                         "fallback": None,
-                        "cleanup_during_header_processing": True,
                         "role": Role.DIMENSION,
                     },
                     {
@@ -710,7 +695,6 @@ def test_generic_definition():
                             "value_overrides": [],
                         },
                         "fallback": None,
-                        "cleanup_during_header_processing": True,
                         "role": Role.DIMENSION,
                     },
                 ],
@@ -735,7 +719,6 @@ def test_generic_definition():
                         "value_overrides": [],
                     },
                     "fallback": None,
-                    "cleanup_during_header_processing": True,
                     "role": Role.METRIC,
                 },
                 "titles": {
@@ -759,7 +742,6 @@ def test_generic_definition():
                         "value_overrides": [],
                     },
                     "fallback": None,
-                    "cleanup_during_header_processing": True,
                     "role": Role.TITLE,
                 },
                 "title_ids": [
@@ -786,7 +768,6 @@ def test_generic_definition():
                         },
                         "validator_opts": None,
                         "fallback": None,
-                        "cleanup_during_header_processing": True,
                         "role": Role.TITLE_ID,
                     },
                 ],

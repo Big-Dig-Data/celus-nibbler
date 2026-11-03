@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+- **Breaking:** removed the `cleanup_during_header_processing` field from all role sources (definitions containing it no longer load); header roles are now copied once per header scan instead of once per rule evaluation
+
+### Fixed
+- extraction cache could pair a new source with the previous value after a failed extraction
+
 ## [13.1.5] - 2026-10-16
 
 ### Added
