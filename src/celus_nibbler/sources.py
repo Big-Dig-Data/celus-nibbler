@@ -340,7 +340,7 @@ class ExtractParams(JsonEncorder):
 class ContentExtractorMixin:
     source: Source
     extract_params: ExtractParams
-    cleanup_during_header_processing: bool
+    cleanup_during_header_processing: bool  # deprecated, ignored
     fallback: typing.Optional["ContentExtractorMixin"]
     role: Role
     _last_sheet_idx = None
@@ -444,8 +444,6 @@ class ContentExtractorMixin:
         ):
             # Same value will be extracted from the same coord
             return self._last_extracted
-        else:
-            self._last_source = source
 
         try:
             content = self.content(sheet, source, parser_row_offset, area_row_offset)
@@ -510,7 +508,9 @@ class ContentExtractorMixin:
                 action=TableException.Action.STOP,
             ) from e
 
-        # update last extracted
+        # update last extracted (source is updated together with the value, so a failed
+        # extraction can never pair a new source with the previous value)
+        self._last_source = source
         self._last_extracted = res
         self._last_sheet_idx = sheet.sheet_idx
         self._last_area_row_offset = area_row_offset

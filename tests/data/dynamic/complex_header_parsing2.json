@@ -66,8 +66,7 @@
             },
             "extract_params": {
               "last_value_as_default": true
-            },
-            "cleanup_during_header_processing": false
+            }
           },
           {
             "name": "Product Kind",
@@ -96,8 +95,7 @@
             },
             "extract_params": {
               "last_value_as_default": true
-            },
-            "cleanup_during_header_processing": false
+            }
           }
         ],
         "rules": [

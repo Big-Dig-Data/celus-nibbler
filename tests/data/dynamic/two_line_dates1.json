@@ -92,7 +92,6 @@
                         "role": "date"
                     }
                 },
-                "cleanup_during_header_processing": false,
                 "role": "date"
             }
         ],

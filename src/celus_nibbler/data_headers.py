@@ -193,10 +193,11 @@ class DataHeaderRule(JsonEncorder):
         parser_row_offset: typing.Optional[int],
         area_row_offset: typing.Optional[int],
     ) -> typing.Tuple[DataHeaderAction, typing.Optional[typing.Any]]:
-        if role.cleanup_during_header_processing:
-            role = deepcopy(role)
-
         if self.role_extract_params_override:
+            # keep the override local to this rule
+            role = deepcopy(role)
+            # the cache is keyed by source only, not by extract params -> don't reuse it
+            role._last_source = None
             role.extract_params = deepcopy(self.role_extract_params_override)
 
         try:
@@ -319,7 +320,12 @@ class DataHeaders(JsonEncorder):
         # When role with ValueSource is present make it value_source
         # for all other roles
         root_value_source = None
-        for role in self.roles:
+
+        # Roles keep extraction state (cache, last_value_as_default). Work on copies so the
+        # state is shared across the cells of this scan only and never leaks to other
+        # sheets/files parsed with the same definition.
+        roles = deepcopy(self.roles)
+        for role in roles:
             if isinstance(role, ValueSource):
                 res.append(
                     DataCells(
@@ -345,7 +351,7 @@ class DataHeaders(JsonEncorder):
             )
 
             # Process data from header
-            for role_idx, role in enumerate(self.roles):
+            for role_idx, role in enumerate(roles):
                 if isinstance(role, ValueSource):
                     continue
 
