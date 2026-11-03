@@ -8,7 +8,7 @@ from abc import ABCMeta, abstractmethod
 from collections import deque
 from functools import lru_cache
 from io import BufferedIOBase, BytesIO, RawIOBase, StringIO, TextIOBase, TextIOWrapper
-from typing import IO, Any, Dict, List, Optional, Sequence, Union
+from typing import IO, Any, Dict, Iterator, List, Optional, Sequence, Union
 
 import openpyxl
 from celus_nigiri.counter5 import Counter5ReportBase
@@ -17,6 +17,7 @@ from celus_nigiri.csv_detect import detect_csv_dialect, detect_file_encoding
 from celus_nigiri.exceptions import SushiException
 
 from .errors import XlsError
+from .utils import normalize_row
 
 logger = logging.getLogger(__name__)
 
@@ -94,12 +95,16 @@ class CsvSheetReader(SheetReader):
         self.file = file
 
         self.dialect = dialect or detect_csv_dialect(file)
-        self.csv_reader = csv.reader(file, self.dialect)
+        self.csv_reader = self._make_csv_reader()
         # Load basic window
         self.window_start = 0
         self.window_size = window_size
         self.window: Optional[deque[List[str]]] = None
         self.update_window(0)
+
+    def _make_csv_reader(self) -> Iterator[List[str]]:
+        # Normalize repeated spaces in every cell which is read from the file
+        return map(normalize_row, csv.reader(self.file, self.dialect))
 
     def update_window(self, window_start: int):
         if self.window is not None and self.window_start <= window_start:
@@ -125,7 +130,7 @@ class CsvSheetReader(SheetReader):
 
         # moving backward or at start
         self.file.seek(0)
-        self.csv_reader = csv.reader(self.file, self.dialect)
+        self.csv_reader = self._make_csv_reader()
         self.window_start = window_start
         self.window = deque(
             itertools.islice(
