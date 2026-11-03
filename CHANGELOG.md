@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
-- `cleanup_during_header_processing` is now ignored; header roles are copied once per header scan instead of once per rule evaluation
+- **Breaking:** removed the `cleanup_during_header_processing` field from all role sources (definitions containing it no longer load); header roles are now copied once per header scan instead of once per rule evaluation
 
 ### Fixed
 - extraction cache could pair a new source with the previous value after a failed extraction

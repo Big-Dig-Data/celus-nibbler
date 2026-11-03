@@ -340,7 +340,6 @@ class ExtractParams(JsonEncorder):
 class ContentExtractorMixin:
     source: Source
     extract_params: ExtractParams
-    cleanup_during_header_processing: bool  # deprecated, ignored
     fallback: typing.Optional["ContentExtractorMixin"]
     role: Role
     _last_sheet_idx = None
@@ -527,7 +526,6 @@ class DimensionSource(JsonEncorder, ContentExtractorMixin):
     source: Source
     extract_params: ExtractParams = field(default_factory=lambda: ExtractParams())
     fallback: typing.Optional["DimensionSource"] = None
-    cleanup_during_header_processing: bool = True
     role: typing.Literal[Role.DIMENSION] = Role.DIMENSION
 
     @property
@@ -540,7 +538,6 @@ class MetricSource(JsonEncorder, ContentExtractorMixin):
     source: Source
     extract_params: ExtractParams = field(default_factory=lambda: ExtractParams())
     fallback: typing.Optional["MetricSource"] = None
-    cleanup_during_header_processing: bool = True
     role: typing.Literal[Role.METRIC] = Role.METRIC
 
     @property
@@ -553,7 +550,6 @@ class OrganizationSource(JsonEncorder, ContentExtractorMixin):
     source: Source
     extract_params: ExtractParams = field(default_factory=lambda: ExtractParams())
     fallback: typing.Optional["OrganizationSource"] = None
-    cleanup_during_header_processing: bool = True
     role: typing.Literal[Role.ORGANIZATION] = Role.ORGANIZATION
 
     @property
@@ -566,7 +562,6 @@ class TitleSource(JsonEncorder, ContentExtractorMixin):
     source: Source
     extract_params: ExtractParams = field(default_factory=lambda: ExtractParams())
     fallback: typing.Optional["TitleSource"] = None
-    cleanup_during_header_processing: bool = True
     role: typing.Literal[Role.TITLE] = Role.TITLE
 
     @property
@@ -579,7 +574,6 @@ class TitleIdSource(JsonEncorder, ContentExtractorMixin):
     name: TitleIdKind
     source: Source
     extract_params: ExtractParams = field(default_factory=lambda: ExtractParams())
-    cleanup_during_header_processing: bool = True
     fallback: typing.Optional["TitleIdSource"] = None
     validator_opts: typing.Optional[IdValidatorOpts] = None
     role: typing.Literal[Role.TITLE_ID] = Role.TITLE_ID
@@ -637,7 +631,6 @@ class DateSource(JsonEncorder, ContentExtractorMixin):
     source: Source
     extract_params: ExtractParams = field(default_factory=lambda: ExtractParams())
     fallback: typing.Optional["DateSource"] = None
-    cleanup_during_header_processing: bool = True
     preferred_date_format: DateFormat = DateFormat.US
     composed: typing.Optional[ComposedDate] = None
     date_pattern: typing.Optional[str] = None
@@ -694,7 +687,6 @@ class ValueSource(JsonEncorder, ContentExtractorMixin):
     fallback: typing.Optional["ValueSource"] = None
     allow_negative: bool = False
     extract_params: ExtractParams = field(default_factory=lambda: ExtractParams())
-    cleanup_during_header_processing: bool = True
     role: typing.Literal[Role.VALUE] = Role.VALUE
 
     @property
@@ -710,7 +702,6 @@ class VoidSource(JsonEncorder, ContentExtractorMixin):
     source: Source
     extract_params: ExtractParams = field(default_factory=lambda: ExtractParams())
     fallback: typing.Optional["VoidSource"] = None
-    cleanup_during_header_processing: bool = True
     role: typing.Literal[Role.VOID] = Role.VOID
 
 
@@ -719,7 +710,6 @@ class AuthorsSource(JsonEncorder, ContentExtractorMixin):
     source: Source
     extract_params: ExtractParams = field(default_factory=lambda: ExtractParams())
     fallback: typing.Optional["AuthorsSource"] = None
-    cleanup_during_header_processing: bool = True
     role: typing.Literal[Role.AUTHORS] = Role.AUTHORS
 
     def get_validator(
@@ -733,5 +723,4 @@ class PublicationDateSource(JsonEncorder, ContentExtractorMixin):
     source: Source
     extract_params: ExtractParams = field(default_factory=lambda: ExtractParams())
     fallback: typing.Optional["PublicationDateSource"] = None
-    cleanup_during_header_processing: bool = True
     role: typing.Literal[Role.PUBLICATION_DATE] = Role.PUBLICATION_DATE
