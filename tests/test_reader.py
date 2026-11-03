@@ -1,6 +1,7 @@
 from io import BytesIO, StringIO
 from pathlib import Path
 
+import openpyxl
 import pytest
 
 from celus_nibbler.errors import XlsError
@@ -76,6 +77,53 @@ class TestCsvSheetReader:
             {"Name": "Second", "Values": "2"},
             {"Name": "Third", "Values": "3"},
             {"Name": "Fourth", "Values": "4"},
+        ]
+
+    SPACES_CSV = (
+        'Name  Of   Item,Values\n"First  item",1\nSecond,2\n"Third   item  here",3\nFourth,4\n'
+    )
+    SPACES_ROWS = [
+        ["Name Of Item", "Values"],
+        ["First item", "1"],
+        ["Second", "2"],
+        ["Third item here", "3"],
+        ["Fourth", "4"],
+    ]
+
+    @pytest.mark.parametrize("window_size", [2, 100])
+    def test_spaces_normalized_iteration(self, window_size):
+        reader = CsvSheetReader(0, None, StringIO(self.SPACES_CSV), window_size=window_size)
+        assert list(reader) == self.SPACES_ROWS
+
+    @pytest.mark.parametrize("window_size", [2, 100])
+    def test_whitespaces_normalized(self, window_size):
+        data = 'Name,Values\n"Tab\t\tname",1\n"Multi\n\nline",2\n"Nbsp  name",3\n"Single\ttab",4\n'
+        reader = CsvSheetReader(0, None, StringIO(data), window_size=window_size, dialect="excel")
+        assert list(reader) == [
+            ["Name", "Values"],
+            ["Tab name", "1"],
+            ["Multi line", "2"],
+            ["Nbsp name", "3"],
+            ["Single tab", "4"],
+        ]
+
+    @pytest.mark.parametrize("window_size", [2, 100])
+    def test_spaces_normalized_getitem(self, window_size):
+        reader = CsvSheetReader(0, None, StringIO(self.SPACES_CSV), window_size=window_size)
+        # jump forward and backward to exercise window updates (rewinding the file)
+        for idx in [4, 0, 3, 1, 2, 0]:
+            assert reader[idx] == self.SPACES_ROWS[idx]
+
+    @pytest.mark.parametrize("window_size", [2, 100])
+    def test_spaces_normalized_dict_reader(self, window_size):
+        reader = CsvSheetReader(0, None, StringIO(self.SPACES_CSV), window_size=window_size)
+        dict_reader = reader.dict_reader()
+        assert dict_reader.fieldnames == ["Name Of Item", "Values"]
+        assert [e for e in dict_reader] == [
+            {"Name Of Item": "First item", "Values": "1"},
+            {"Name Of Item": "Second", "Values": "2"},
+            {"Name Of Item": "Third item here", "Values": "3"},
+            {"Name Of Item": "Fourth", "Values": "4"},
         ]
 
 
@@ -428,6 +476,22 @@ class TestXlsxReader:
             {"a": "", "b": "", "c": ""},
             {"a": "another", "b": "", "c": ""},
             {"a": "Extra", "b": "line", "c": "present"},
+        ]
+
+    def test_spaces_normalized(self, tmp_path):
+        workbook = openpyxl.Workbook()
+        sheet = workbook.active
+        sheet.append(["Title  Name", "Metric   Type", "Value"])
+        sheet.append(["My  First    Title", "Total  Requests", 1])
+        sheet.append(["Plain", "Unique Requests", 2])
+        path = tmp_path / "spaces.xlsx"
+        workbook.save(path)
+
+        sheets = XlsxReader(path)
+        assert list(sheets[0]) == [
+            ["Title Name", "Metric Type", "Value"],
+            ["My First Title", "Total Requests", "1"],
+            ["Plain", "Unique Requests", "2"],
         ]
 
 
