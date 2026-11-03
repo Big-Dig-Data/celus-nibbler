@@ -89,6 +89,14 @@ class TableException(NibblerError):
     """
 
     class Action(str, Enum):
+        """What to do when a value can't be extracted or fails validation.
+
+        - `fail`: abort the parsing with an error.
+        - `skip`: skip the current record and continue.
+        - `stop`: stop reading the current area, e.g. at the end of a table.
+        - `pass`: try the `fallback` source instead.
+        """
+
         FAIL = "fail"
         SKIP = "skip"
         STOP = "stop"

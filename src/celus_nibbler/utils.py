@@ -32,6 +32,8 @@ PydanticConfig = ConfigDict(
     frozen=False,
     undefined_types_warning=False,
     defer_build=True,
+    # attribute docstrings become field descriptions in the JSON schema
+    use_attribute_docstrings=True,
 )
 
 

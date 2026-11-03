@@ -10,6 +10,8 @@ from .utils import JsonEncorder, PydanticConfig
 
 
 class Direction(str, Enum):
+    """Direction in which a CoordRange walks over the sheet."""
+
     LEFT = "left"
     RIGHT = "right"
     UP = "up"
@@ -17,6 +19,15 @@ class Direction(str, Enum):
 
 
 class RelativeTo(str, Enum):
+    """What `Coord.row` is counted from.
+
+    - `area`: the area offset, i.e. the row where `DataHeaders.condition` matched
+      (the parser offset when the area has no condition).
+    - `parser`: the parser offset, i.e. the entry of `possible_row_offsets` for which
+      the heuristics matched.
+    - `start`: the top of the sheet (absolute row).
+    """
+
     AREA = "area"
     PARSER = "parser"
     START = "start"
@@ -40,7 +51,11 @@ class Content(metaclass=abc.ABCMeta):
 
 @dataclass(config=PydanticConfig)
 class Value(JsonEncorder, Content):
+    """Constant value, e.g. `{"value": "Searches"}`. Used for data which isn't present
+    in the sheet, such as the only metric of a report."""
+
     value: typing.Any
+    """The constant itself."""
 
     def content(
         self,
@@ -64,7 +79,11 @@ class Value(JsonEncorder, Content):
 
 @dataclass(config=PydanticConfig)
 class SheetAttr(JsonEncorder, Content):
+    """Value taken from the sheet itself rather than from a cell, e.g.
+    `{"sheet_attr": "name"}` reads the sheet (tab) name."""
+
     sheet_attr: str
+    """`name` for the sheet name or `sheet_idx` for the zero-based sheet index."""
 
     def content(
         self,
@@ -91,9 +110,17 @@ class SheetAttr(JsonEncorder, Content):
 
 @dataclass(config=PydanticConfig)
 class Coord(JsonEncorder, Content):
+    """Single cell, e.g. `{"row": 0, "col": 5}`. Indexing is zero-based.
+
+    Note that a single cell has no `coord` key, `{"coord": {...}, ...}` is a CoordRange.
+    """
+
     row: int
+    """Zero-based row, counted from the offset given by `row_relative_to`."""
     col: int
+    """Zero-based column (0 is column A). Columns are always absolute."""
     row_relative_to: RelativeTo = RelativeTo.AREA
+    """What `row` is counted from, the area offset by default."""
 
     def row_absolute(
         self,
@@ -151,9 +178,15 @@ class Coord(JsonEncorder, Content):
 
 @dataclass(config=PydanticConfig)
 class CoordRange(JsonEncorder, Content):
+    """Cells starting at `coord` and following each other in `direction`, e.g.
+    `{"coord": {"row": 2, "col": 1}, "direction": "right"}`."""
+
     coord: Coord
+    """The first cell."""
     direction: Direction
+    """Direction in which to walk from `coord`."""
     max_count: typing.Optional[int] = None
+    """Maximum number of cells. When omitted, the range ends at the edge of the sheet."""
 
     @property
     def changes(self):
