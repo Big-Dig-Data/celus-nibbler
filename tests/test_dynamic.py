@@ -67,6 +67,14 @@ from celus_nibbler.parsers.dynamic import gen_parser
             False,
         ),
         ("blank", "csv", "dynamic.non_counter.simple_format.blank", False),
+        ("blank_skip", "csv", "dynamic.non_counter.simple_format.blank_skip", False),
+        ("blank_stop", "csv", "dynamic.non_counter.simple_format.blank_stop", False),
+        (
+            "blank_data_skip",
+            "csv",
+            "dynamic.non_counter.simple_format.blank_data_skip",
+            False,
+        ),
         ("counter5.TR", "xlsx", "dynamic.counter5.TR.MY_TR_CUSTOM", False),
         ("counter5.IR_M1", "csv", "dynamic.counter5.IR_M1.MY_IR_M1_CUSTOM", False),
         (
@@ -526,6 +534,12 @@ def test_dynamic(filename, ext, parser, ignore_order):
             "csv",
             "dynamic.non_counter.simple_format.date_cells_out_of_range",
             TableException(sheet=0, col=5, row=1, reason="no-header-data-found", value=None),
+        ),
+        (
+            "blank_fail",
+            "csv",
+            "dynamic.non_counter.simple_format.blank_fail",
+            TableException(sheet=0, reason="blank-value", value="", row=2, col=2),
         ),
         (
             "wrong_fixed_value",

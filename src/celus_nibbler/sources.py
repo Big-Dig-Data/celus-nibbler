@@ -332,6 +332,7 @@ class ExtractParams(JsonEncorder):
     suffix: str = ""
     special_extraction: SpecialExtraction = SpecialExtraction.NO
     on_validation_error: TableException.Action = TableException.Action.FAIL
+    on_blank_value: TableException.Action = TableException.Action.PASS
     max_idx: typing.Optional[int] = None
     skip_condition: typing.Optional[Match] = None
     value_overrides: typing.List[ValueOverride] = field(default_factory=list)
@@ -422,13 +423,15 @@ class ContentExtractorMixin:
                 value=type(self.source),
             )
 
+        def row_absolute() -> typing.Optional[int]:
+            return getattr(source, "row_absolute", lambda x, y: None)(
+                parser_row_offset, area_row_offset
+            )
+
         if self.extract_params.max_idx is not None:
             if idx > self.extract_params.max_idx:
                 raise TableException(
-                    row=getattr(source, "row_absolute", lambda x, y: None)(
-                        parser_row_offset,
-                        area_row_offset,
-                    ),
+                    row=row_absolute(),
                     col=getattr(source, "col", None),
                     sheet=sheet.sheet_idx,
                     reason="out-of-bounds",
@@ -448,6 +451,18 @@ class ContentExtractorMixin:
             content = self.content(sheet, source, parser_row_offset, area_row_offset)
             for override in self.extract_params.value_overrides:
                 content = override.override(content)
+            if (
+                self.extract_params.on_blank_value != TableException.Action.PASS
+                and content in self.extract_params.blank_values
+            ):
+                raise TableException(
+                    content,
+                    row=row_absolute(),
+                    col=getattr(source, "col", None),
+                    sheet=sheet.sheet_idx,
+                    reason="blank-value",
+                    action=self.extract_params.on_blank_value,
+                )
             if validator := self.get_validator(validator):
                 if self.extract_params.default is not None:
                     res = validators.gen_default_validator(
@@ -486,10 +501,7 @@ class ContentExtractorMixin:
                             reason = ",".join(args)
                 raise TableException(
                     content,
-                    row=getattr(source, "row_absolute", lambda x, y: None)(
-                        parser_row_offset,
-                        area_row_offset,
-                    ),
+                    row=row_absolute(),
                     col=getattr(source, "col", None),
                     sheet=sheet.sheet_idx,
                     reason=reason,
@@ -497,10 +509,7 @@ class ContentExtractorMixin:
                 ) from e
         except IndexError as e:
             raise TableException(
-                row=getattr(source, "row_absolute", lambda x, y: None)(
-                    parser_row_offset,
-                    area_row_offset,
-                ),
+                row=row_absolute(),
                 col=getattr(source, "col", None),
                 sheet=sheet.sheet_idx,
                 reason="out-of-bounds",
