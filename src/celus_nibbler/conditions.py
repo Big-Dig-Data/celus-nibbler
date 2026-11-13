@@ -264,6 +264,31 @@ class SheetExtraCondition(ArithmeticsMixin, BaseCondition, JsonEncorder):
             return False
 
 
+@dataclass(config=PydanticConfig)
+class OnSheetCondition(ArithmeticsMixin, BaseCondition, JsonEncorder):
+    """Checks whether the cell is present on the sheet (content is not inspected)"""
+
+    coord: Coord
+
+    kind: typing.Literal["on_sheet"] = "on_sheet"
+
+    def check(
+        self,
+        sheet: SheetReader,
+        parser_row_offset: typing.Optional[int] = None,
+        area_row_offset: typing.Optional[int] = None,
+    ) -> bool:
+        row = self.coord.row_absolute(parser_row_offset, area_row_offset)
+        if row < 0 or self.coord.col < 0:
+            # avoid python negative indexing
+            return False
+        try:
+            self.coord.content(sheet, parser_row_offset, area_row_offset)
+        except (TableException, IndexError):
+            return False
+        return True
+
+
 Condition = Annotated[
     typing.Union[
         NegCondition,
@@ -275,6 +300,7 @@ Condition = Annotated[
         SheetIdxCondition,
         IsDateCondition,
         SheetExtraCondition,
+        OnSheetCondition,
     ],
     Field(discriminator="kind"),
 ]

@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- `OnSheetCondition` (`kind: "on_sheet"`) which checks whether a cell is present on the sheet (never raises out-of-bounds errors)
+
 ### Changed
 - **Breaking:** removed the `cleanup_during_header_processing` field from all role sources (definitions containing it no longer load); header roles are now copied once per header scan instead of once per rule evaluation
 

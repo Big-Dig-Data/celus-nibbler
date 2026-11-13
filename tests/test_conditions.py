@@ -1,8 +1,16 @@
 import json
 
 import pytest
+from pydantic import TypeAdapter
 
-from celus_nibbler.conditions import IsDateCondition, RegexCondition, StemmerCondition
+from celus_nibbler.conditions import (
+    AndCondition,
+    Condition,
+    IsDateCondition,
+    OnSheetCondition,
+    RegexCondition,
+    StemmerCondition,
+)
 from celus_nibbler.coordinates import Coord, CoordRange, Direction, RelativeTo
 
 
@@ -247,3 +255,56 @@ def test_serialization():
             regex_dict,
         ],
     }
+
+
+def test_on_sheet(csv_sheet_reader, csv_sheet_generator):
+    # sheet is 5 rows x 2 cols
+    assert OnSheetCondition(Coord(0, 0, RelativeTo.START)).check(csv_sheet_reader) is True
+    assert OnSheetCondition(Coord(4, 1, RelativeTo.START)).check(csv_sheet_reader) is True
+    assert OnSheetCondition(Coord(0, 2, RelativeTo.START)).check(csv_sheet_reader) is False
+    assert OnSheetCondition(Coord(5, 0, RelativeTo.START)).check(csv_sheet_reader) is False
+    assert OnSheetCondition(Coord(5, 2, RelativeTo.START)).check(csv_sheet_reader) is False
+    assert OnSheetCondition(Coord(100, 100, RelativeTo.START)).check(csv_sheet_reader) is False
+    assert OnSheetCondition(Coord(-1, 0, RelativeTo.START)).check(csv_sheet_reader) is False
+    assert OnSheetCondition(Coord(0, -1, RelativeTo.START)).check(csv_sheet_reader) is False
+
+    # area / parser offsets
+    assert OnSheetCondition(Coord(1, 0)).check(csv_sheet_reader, 0, 3) is True
+    assert OnSheetCondition(Coord(1, 0)).check(csv_sheet_reader, 0, 4) is False
+    assert OnSheetCondition(Coord(1, 0, RelativeTo.PARSER)).check(csv_sheet_reader, 4, 0) is False
+
+    # ragged rows and empty cells
+    reader = csv_sheet_generator("a,b,c\nd\ne,,\n")
+    assert OnSheetCondition(Coord(0, 2, RelativeTo.START)).check(reader) is True
+    assert OnSheetCondition(Coord(1, 0, RelativeTo.START)).check(reader) is True
+    assert OnSheetCondition(Coord(1, 1, RelativeTo.START)).check(reader) is False
+    assert OnSheetCondition(Coord(2, 2, RelativeTo.START)).check(reader) is True  # empty cell
+    assert OnSheetCondition(Coord(3, 0, RelativeTo.START)).check(reader) is False
+
+    # composition
+    present = OnSheetCondition(Coord(0, 1, RelativeTo.START))
+    missing = OnSheetCondition(Coord(0, 2, RelativeTo.START))
+    name = RegexCondition("^Name$", Coord(0, 0, RelativeTo.START))
+    assert (~missing).check(csv_sheet_reader) is True
+    assert (present & name).check(csv_sheet_reader) is True
+    assert (missing & name).check(csv_sheet_reader) is False
+    assert (missing | name).check(csv_sheet_reader) is True
+
+
+def test_on_sheet_serialization():
+    cond = OnSheetCondition(Coord(1, 2))
+    cond_dict = json.loads(cond.json())
+    assert cond_dict == {
+        "coord": {"col": 2, "row": 1, "row_relative_to": "area"},
+        "kind": "on_sheet",
+    }
+    assert cond == OnSheetCondition.parse(cond_dict)
+
+    # through discriminated union
+    adapter = TypeAdapter(Condition)
+    parsed = adapter.validate_python(
+        {"kind": "and", "conds": [cond_dict, {"kind": "on_sheet", "coord": {"row": 0, "col": 0}}]}
+    )
+    assert isinstance(parsed, AndCondition)
+    assert parsed.conds[0] == cond
+    assert isinstance(parsed.conds[1], OnSheetCondition)

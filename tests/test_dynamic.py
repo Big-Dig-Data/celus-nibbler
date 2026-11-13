@@ -15,6 +15,7 @@ from celus_nibbler.errors import (
     MissingItemInOutput,
     MissingTitleInOutput,
     NegativeValueInOutput,
+    NoParserMatchesHeuristics,
     SameRecordsInOutput,
     TableException,
 )
@@ -261,6 +262,12 @@ from celus_nibbler.parsers.dynamic import gen_parser
             "data_header-condition",
             "csv",
             "dynamic.non_counter.simple_format.data_header-condition",
+            False,
+        ),
+        (
+            "data_header-on_sheet",
+            "csv",
+            "dynamic.non_counter.simple_format.data_header-on_sheet",
             False,
         ),
         (
@@ -733,3 +740,21 @@ def test_dynamic_errors(name, ext, parser, exception):
     with pytest.raises(type(exception)) as exc:
         list(poop.records(same_check_size=100))
     assert exc.value == exception
+
+
+def test_dynamic_on_sheet_heuristics_no_match():
+    """Heuristics require the first row to contain only a single cell"""
+    data_dir = pathlib.Path(__file__).parent / "data/dynamic"
+    with (data_dir / "data_header-on_sheet.json").open() as f:
+        definition = json.load(f)
+    dynamic_parsers = [gen_parser(Definition.parse(definition))]
+
+    poops = eat(
+        data_dir / "data_header-on_sheet-no-match.csv",
+        "Platform1",
+        check_platform=False,
+        parsers=["dynamic.non_counter.simple_format.data_header-on_sheet"],
+        dynamic_parsers=dynamic_parsers,
+    )
+    assert len(poops) == 1
+    assert isinstance(poops[0], NoParserMatchesHeuristics)
